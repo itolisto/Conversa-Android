@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false">
+
+    <RelativeLayout
+        android:id="@+id/rlToMeLayout"
+        android:gravity="left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="5dp"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <RelativeLayout
+            android:id="@+id/rlForBackgroundToMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/wall_msg_you"
+            android:clipToPadding="false" >
+
+            <ee.app.conversa.view.RegularTextView
+                android:id="@+id/messageTextToMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:gravity="left"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:textColor="@color/text_gray"
+                android:textSize="15sp" />
+
+            <RelativeLayout
+                android:id="@+id/rlImageToMe"
+                android:layout_below="@id/messageTextToMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <RelativeLayout
+                    android:id="@+id/rlMapImageToMe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center" >
+
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/mapImageViewToMe"
+                        xmlns:map="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        map:liteMode="true"
+                        map:mapType="normal"
+                        map:cameraZoom="14"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlImageImageToMe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/ivMessagePhotoToMe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:background="@color/loading_background"
+                        android:contentDescription="@null"
+                        android:scaleType="fitCenter"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false" />
+
+                    <ProgressBar
+                        android:id="@+id/pbLoadingForImageToMe"
+                        style="@style/CustomProgressBar"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_centerInParent="true" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <ee.app.conversa.view.LightTextView
+            android:id="@+id/messageSubTextToMe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/rlForBackgroundToMe"
+            android:layout_gravity="left"
+            android:gravity="left"
+            android:paddingLeft="15dp"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/light_gray_subtext"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <!-- **************************************************** -->
+    <!-- **************************************************** -->
+
+    <RelativeLayout
+        android:id="@+id/rlFromMeLayout"
+        android:gravity="right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="5dp"
+        android:clipToPadding="false"
+        android:visibility="visible"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <RelativeLayout
+            android:id="@+id/rlForBackgroundFromMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/wall_msg_me">
+
+            <ee.app.conversa.view.RegularTextView
+                android:id="@+id/messageTextFromMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:gravity="right"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:textColor="@color/text_gray"
+                android:textSize="15sp" />
+
+            <RelativeLayout
+                android:id="@+id/rlImageFromMe"
+                android:layout_below="@id/messageTextFromMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" >
+
+                <RelativeLayout
+                    android:id="@+id/rlMapImageFromMe"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center" >
+
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/mapImageViewFromMe"
+                        xmlns:map="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        map:liteMode="true"
+                        map:mapType="normal"
+                        map:cameraZoom="14"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlImageImageFromMe"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center" >
+
+                    <ImageView
+                        android:id="@+id/ivMessagePhotoFromMe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:background="@color/loading_background"
+                        android:contentDescription="@null"
+                        android:scaleType="fitCenter"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"/>
+
+                    <ProgressBar
+                        android:id="@+id/pbLoadingForImageFromMe"
+                        style="@style/CustomProgressBar"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_centerInParent="true" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <ee.app.conversa.view.LightTextView
+            android:id="@+id/messageSubTextFromMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/rlForBackgroundFromMe"
+            android:layout_gravity="right"
+            android:gravity="right"
+            android:paddingRight="15dp"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/light_gray_subtext"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/unread"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="right"
+            android:paddingBottom="3dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/rlForBackgroundFromMe"
+            android:src="@drawable/icon_unread"
+            android:background="@null"
+            android:contentDescription="@null"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+</RelativeLayout>

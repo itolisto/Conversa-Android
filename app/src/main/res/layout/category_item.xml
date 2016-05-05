@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlCategoryLayout"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:clipToPadding="false"
+    android:background="@android:color/white" >
+
+    <RelativeLayout
+        android:id="@+id/rlCategoryImage"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:gravity="center" >
+
+        <ImageView
+            android:id="@+id/ivCategoryImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="1dp"
+            android:layout_centerInParent="true"
+            android:contentDescription="@null" />
+
+        <ProgressBar
+            android:id="@+id/pbLoadingForImage"
+            style="@style/CustomProgressBar"
+            android:layout_width="match_parent"
+            android:elevation="2dp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <ee.app.conversa.view.MediumTextView
+        android:id="@+id/tvCategoryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/rlCategoryImage"
+        android:layout_marginLeft="30dp"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textColor="#444444"
+        android:textSize="17sp" />
+
+    <LinearLayout
+        android:id="@+id/llUserIndicators"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:weightSum="1"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="bottom|center_horizontal" >
+
+        <ee.app.conversa.view.RegularTextView
+            android:id="@+id/tvMessages"
+            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:contentDescription="@null"
+            android:background="@null"
+            android:layout_weight="1"
+            android:textColor="@color/hookup_alert"
+            android:textSize="16sp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="bottom"/>
+    </LinearLayout>
+
+    <View
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"
+        android:background="@drawable/line" />
+</RelativeLayout>

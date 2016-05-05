@@ -1,0 +1,27 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FragmentUsersChat" >
+
+    <ImageView
+        android:id="@+id/tvNoUsers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/no_chats"
+        android:background="@color/background_no_element"
+        android:scaleType="fitCenter"
+        android:visibility="visible" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/lvUsers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@drawable/line"
+        android:clipToPadding="true"
+        android:listSelector="@android:color/transparent"
+        android:overScrollMode="ifContentScrolls"
+        android:visibility="gone" />
+</RelativeLayout>

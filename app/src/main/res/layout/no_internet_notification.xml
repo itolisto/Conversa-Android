@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="35dp"
+    android:background="@color/no_connection_background"
+    android:elevation="1dp"
+    android:padding="2dp"
+    android:gravity="center" >
+    
+    <ImageView 
+       android:id="@+id/ivNoInternet"
+       android:layout_height="wrap_content"
+       android:layout_width="wrap_content"
+       android:contentDescription="@null"
+       android:src="@drawable/no_internet_connection_icon"
+       android:scaleType="fitCenter"
+       android:layout_centerVertical="true"/>
+
+    <ee.app.conversa.view.BoldTextView
+        android:id="@+id/tvNoInternet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/ivNoInternet"
+        android:layout_marginLeft="6dp"
+        android:text="@string/NO_INTERNET_CONNECTION"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:singleLine="true"
+        android:layout_centerVertical="true" />
+
+</RelativeLayout>
