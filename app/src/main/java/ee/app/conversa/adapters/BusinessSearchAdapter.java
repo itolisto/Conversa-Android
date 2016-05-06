@@ -1,6 +1,5 @@
 package ee.app.conversa.adapters;
 
-import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,19 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
-import ee.app.conversa.model.Database.Business;
 import ee.app.conversa.view.CircleImageView;
 
 public class BusinessSearchAdapter extends BaseAdapter {
 
     private AppCompatActivity mActivity;
-    private List<Business> mBusiness = new ArrayList<>();
+    private List<Object> mBusiness = new ArrayList<>();
     private BusinessSearchAdapter adapter;
     private List<Fav> favBusiness;
 
     public void clearFavBusiness(){ favBusiness.clear(); }
 
-    public BusinessSearchAdapter(AppCompatActivity activity, List<Business> business) {
+    public BusinessSearchAdapter(AppCompatActivity activity, List<Object> business) {
         mBusiness = business;
         mActivity = activity;
         favBusiness = new ArrayList<>();
@@ -34,13 +32,19 @@ public class BusinessSearchAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount()               { return (mBusiness == null) ? 0 : mBusiness.size(); }
+    public int getCount() {
+        return (mBusiness == null) ? 0 : mBusiness.size();
+    }
 
     @Override
-    public Object getItem(int position) { return null; }
+    public Object getItem(int position) {
+        return null;
+    }
 
     @Override
-    public long getItemId(int position) { return 0; }
+    public long getItemId(int position) {
+        return 0;
+    }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -58,77 +62,79 @@ public class BusinessSearchAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        final Business business = mBusiness.get(position);
-
-//        Utils.displayImage(business.getmAvatarThumbFileId(), Const.BUSINESS_FOLDER, holder.ivBusinessBackground,
-//                holder.pbLoadingSearchImage, ImageLoader.SMALL, R.drawable.business_default, false);
-
-        holder.tvCategoryName.setText(business.getmTitle(mActivity));
-        holder.tvName.setText(business.getDisplayName());
-
-        if(business.isFavorite()){
-            if (Build.VERSION.SDK_INT >= 16) {
-                holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav));
-            } else {
-                holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav));
-            }
-        }else{
-            if (Build.VERSION.SDK_INT >= 16) {
-                holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav_not));
-            } else {
-                holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav_not));
-            }
-        }
-
-        if(favBusiness.size() > 0) {
-            for (Fav commerce : favBusiness) {
-                if (commerce.getPosition() == position) {
-                    if (Build.VERSION.SDK_INT >= 16) {
-                        holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav));
-                    } else {
-                        holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav));
-                    }
-                }
-            }
-        }
-
-        holder.ivFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean toFav = true;
-
-                if(business.isFavorite())
-                    toFav = false;
-                else
-                    toFav = true;
-
-                for (Fav commerce : favBusiness) {
-                    if(commerce.getPosition() == position){ toFav = false; }
-                }
-
-                if(toFav) {
-//                    CouchDB.addFavoriteCommerceAsync(
-//                            business.getmId(), new AddRemoveFavoriteFinish("add", view, position), mActivity, true
-//                    );
-                }else{
-//                    CouchDB.removeFavoriteCommerceAsync(
-//                            business.getmId(), new AddRemoveFavoriteFinish("remove", view, position), mActivity, true
-//                    );
-                }
-            }
-        });
-
-        holder.ivStartChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                CouchDB.addUserContactAsync(business.getmId(), new AddContactFinish(position), mActivity, true);
-            }
-        });
+//        final dBusiness business = mBusiness.get(position);
+//
+////        Utils.displayImage(business.getmAvatarThumbFileId(), Const.BUSINESS_FOLDER, holder.ivBusinessBackground,
+////                holder.pbLoadingSearchImage, ImageLoader.SMALL, R.drawable.business_default, false);
+//
+//        holder.tvCategoryName.setText(business.getmTitle(mActivity));
+//        holder.tvName.setText(business.getDisplayName());
+//
+//        if(business.isFavorite()){
+//            if (Build.VERSION.SDK_INT >= 16) {
+//                holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav));
+//            } else {
+//                holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav));
+//            }
+//        }else{
+//            if (Build.VERSION.SDK_INT >= 16) {
+//                holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav_not));
+//            } else {
+//                holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav_not));
+//            }
+//        }
+//
+//        if(favBusiness.size() > 0) {
+//            for (Fav commerce : favBusiness) {
+//                if (commerce.getPosition() == position) {
+//                    if (Build.VERSION.SDK_INT >= 16) {
+//                        holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav));
+//                    } else {
+//                        holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav));
+//                    }
+//                }
+//            }
+//        }
+//
+//        holder.ivFavorite.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                boolean toFav = true;
+//
+//                if(business.isFavorite())
+//                    toFav = false;
+//                else
+//                    toFav = true;
+//
+//                for (Fav commerce : favBusiness) {
+//                    if(commerce.getPosition() == position){ toFav = false; }
+//                }
+//
+//                if(toFav) {
+////                    CouchDB.addFavoriteCommerceAsync(
+////                            business.getmId(), new AddRemoveFavoriteFinish("add", view, position), mActivity, true
+////                    );
+//                }else{
+////                    CouchDB.removeFavoriteCommerceAsync(
+////                            business.getmId(), new AddRemoveFavoriteFinish("remove", view, position), mActivity, true
+////                    );
+//                }
+//            }
+//        });
+//
+//        holder.ivStartChat.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                CouchDB.addUserContactAsync(business.getmId(), new AddContactFinish(position), mActivity, true);
+//            }
+//        });
 
         return convertView;
     }
 
-    public void setItems(List<Business> business) { mBusiness = business; }
+    public void setItems(List<Object> business) {
+        mBusiness = business;
+    }
 
     public class ViewHolder {
 

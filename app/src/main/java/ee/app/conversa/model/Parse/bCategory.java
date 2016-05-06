@@ -7,7 +7,7 @@ import com.parse.ParseObject;
 /**
  * Created by edgargomez on 4/15/16.
  */
-@ParseClassName("bCategory")
+@ParseClassName("Category")
 public class bCategory extends ParseObject {
 
     public String getName() {

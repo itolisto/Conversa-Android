@@ -59,8 +59,8 @@ public class Const {
 	public static final String kClassCustomer       = "Customer";
 	public static final String kCustomerUserInfoKey = "userInfo";
 
-	// Business class
-	public static final String kClassBusiness           = "Business";
+	// dBusiness class
+	public static final String kClassBusiness           = "dBusiness";
 	public static final String kBusinessBusinessInfoKey = "businessInfo";
 	public static final String kBusinessConversaIdKey   = "conversaID";
 	public static final String kBusinessActiveKey       = "active";

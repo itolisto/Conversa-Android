@@ -37,6 +37,11 @@ import android.preference.PreferenceManager;
 public class Preferences {
 
 	// Defining SharedPreferences entries
+    private static final String CATEGORIES_LOAD = "CATEGORIES_LOAD";
+
+
+
+
     private static final String USER_ID = "user_id";
     private static final String USER_NAME = "name";
 	private static final String USER_EMAIL = "email";
@@ -59,6 +64,15 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ GETTERS *********************************** */
 	/* ******************************************************************************** */
+    public boolean getCategoriesLoad() {
+        return sharedPreferences.getBoolean(CATEGORIES_LOAD, false);
+    }
+
+
+
+
+
+
 	public String getUserEmail() { return sharedPreferences.getString(USER_EMAIL, ""); }
     public String getUserName() { return sharedPreferences.getString(USER_NAME, ""); }
 	public String getUserToken() { return sharedPreferences.getString(USER_TOKEN, ""); }
@@ -78,7 +92,18 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
-	
+    public void setCategoriesLoad(boolean value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(CATEGORIES_LOAD, value);
+        editor.apply();
+    }
+
+
+
+
+
+
+
 	public void setUserEmail(String email) {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putString(USER_EMAIL, email);

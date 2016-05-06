@@ -56,6 +56,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-base:8.4.0'
     compile 'com.parse:parse-android:1.+'
     compile 'com.parse.bolts:bolts-android:1.+'
+    compile 'com.parse:parseui-widget-android:0.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

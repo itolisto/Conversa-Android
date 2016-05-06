@@ -22,7 +22,7 @@ import java.util.List;
 
 import ee.app.conversa.adapters.ChatsAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.model.Database.Business;
+import ee.app.conversa.model.Database.dBusiness;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 
@@ -31,7 +31,7 @@ public class FragmentUsersChat extends Fragment {
     private LongOperation getUsersAsynTask;
 	public static RecyclerView mLvUsers;
 	public static ImageView mIvNoUsers;
-	public static List<Business> mUsers;
+	public static List<dBusiness> mUsers;
 	public static ChatsAdapter mUserListAdapter;
 //    public static int updateRecentById;
     public static boolean updateListAdapter;
@@ -79,7 +79,7 @@ public class FragmentUsersChat extends Fragment {
 //        if(updateRecentById != 0) {
 //            boolean change = false;
 //            int iterator = 0;
-//            for (Business commerce : mUsers) {
+//            for (dBusiness commerce : mUsers) {
 //                if(commerce.getObjectId().equals(String.valueOf(updateRecentById))) {
 //                    change = true;
 //                    break;
@@ -122,7 +122,7 @@ public class FragmentUsersChat extends Fragment {
         getUsersAsynTask.execute();
     }
 
-    private class LongOperation extends AsyncTask<String, Void, List<Business>> {
+    private class LongOperation extends AsyncTask<String, Void, List<dBusiness>> {
 
         @Override
         protected void onPreExecute() {
@@ -130,7 +130,7 @@ public class FragmentUsersChat extends Fragment {
         }
 
         @Override
-        protected List<Business> doInBackground(String... params) {
+        protected List<dBusiness> doInBackground(String... params) {
             if(isCancelled()){
                 return null;
             }
@@ -144,7 +144,7 @@ public class FragmentUsersChat extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<Business> result) {
+        protected void onPostExecute(List<dBusiness> result) {
             mUsers = result;
 
             if(mUsers.size() == 0) {
@@ -158,7 +158,7 @@ public class FragmentUsersChat extends Fragment {
         }
 
         @Override
-        protected void onCancelled(List<Business> businesses) {
+        protected void onCancelled(List<dBusiness> businesses) {
             // Task was cancelled before completed. This method will always get
             // called from doInBackground when a task is cancelled by user
             Logger.error("FragmentUsersChat", "getUserContactsAsync was cancelled");
@@ -170,7 +170,7 @@ public class FragmentUsersChat extends Fragment {
         if (id != null) {
             boolean change = false;
             int iterator = 0;
-            for (Business commerce : mUsers) {
+            for (dBusiness commerce : mUsers) {
                 if(commerce.getObjectId().equals(id)) {
                     change = true;
                     break;
@@ -183,7 +183,7 @@ public class FragmentUsersChat extends Fragment {
                 mUserListAdapter.notifyItemMoved(iterator,0);
                 //mUsers = ConversaApp.getDB().getAllContacts();
                 // Cambiar de posicion dentro de arreglo
-                Business tempNew = mUsers.get(iterator);
+                dBusiness tempNew = mUsers.get(iterator);
                 mUsers.remove(iterator);
                 mUsers.add(0, tempNew);
                 // Actualizar lista en Adaptador

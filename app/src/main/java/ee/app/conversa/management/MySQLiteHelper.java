@@ -17,7 +17,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.model.Database.Business;
+import ee.app.conversa.model.Database.dBusiness;
 import ee.app.conversa.model.Database.Location;
 import ee.app.conversa.model.Database.Message;
 import ee.app.conversa.utils.Const;
@@ -160,8 +160,8 @@ public class MySQLiteHelper {
     /************************************************************/
     /*********************OPERATIONS METHODS*********************/
     /************************************************************/
-    private Business cursorToUser(Cursor cursor) {
-        Business contact = new Business();
+    private dBusiness cursorToUser(Cursor cursor) {
+        dBusiness contact = new dBusiness();
         contact.setId(cursor.getLong(0));
         contact.setObjectId(cursor.getString(1));
         contact.setBusinessId(cursor.getString(2));
@@ -178,7 +178,7 @@ public class MySQLiteHelper {
         return contact;
     }
 
-    public boolean addContact(Business user) {
+    public boolean addContact(dBusiness user) {
         ContentValues contact = new ContentValues();
         contact.put(sBusinessObjectId, user.getObjectId());
         contact.put(sBusinessBusinessId, user.getBusinessId());
@@ -198,15 +198,15 @@ public class MySQLiteHelper {
         return result != -1;
     }
 
-    public List<Business> getAllContacts() {
-        List<Business> contacts = new ArrayList<>();
+    public List<dBusiness> getAllContacts() {
+        List<dBusiness> contacts = new ArrayList<>();
 
         openContactsTable();
         Cursor cursor = myDb.query(TABLE_CV_CONTACTS,null,null,null,null,null, sBusinessRecent + " DESC");
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            Business contact = cursorToUser(cursor);
+            dBusiness contact = cursorToUser(cursor);
             contacts.add(contact);
             cursor.moveToNext();
         }
@@ -229,11 +229,11 @@ public class MySQLiteHelper {
         }
     }
 
-    public Business isContact(String id) {
+    public dBusiness isContact(String id) {
         openContactsTable();
         Cursor cursor = myDb.query(TABLE_CV_CONTACTS, null, sBusinessId + " = ?", new String[]{id}, null, null, null);
         cursor.moveToFirst();
-        Business contact = null;
+        dBusiness contact = null;
 
         while (!cursor.isAfterLast()) {
             contact = cursorToUser(cursor);

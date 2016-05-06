@@ -35,7 +35,7 @@ import ee.app.conversa.R;
  * Model class for business.
  */
 
-public class Business extends User {
+public class dBusiness extends User {
 
     public String mBusinessId;
     public String mConversaId;
@@ -47,9 +47,9 @@ public class Business extends User {
     public boolean mFavorite;
     public long mRecent; // Used for order chat view
 
-    public Business() {}
+    public dBusiness() {}
 
-    public Business(String mObjectId, String mBusinessId, String mDisplayName, String mConversaId, String mAbout, String mStatusMessage, String mComposingMessageString, boolean mBlocked, boolean mMuted, boolean mFavorite) {
+    public dBusiness(String mObjectId, String mBusinessId, String mDisplayName, String mConversaId, String mAbout, String mStatusMessage, String mComposingMessageString, boolean mBlocked, boolean mMuted, boolean mFavorite) {
         this.mObjectId = mObjectId;
         this.mBusinessId = mBusinessId;
         this.mDisplayName = mDisplayName;

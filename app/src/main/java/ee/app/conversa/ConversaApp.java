@@ -121,7 +121,9 @@ public class ConversaApp extends Application {
         setTfRalewayMedium( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf") );
         setTfRalewayBold( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf") );
 
-		SendBirdController.init();
+		if (Account.getCurrentUser() != null) {
+			SendBirdController.init();
+		}
 		
 		//Iniciar apropiadamente los valores por defecto de la
 		//aplicacion. Es necesario ya que la aplicacion podria

@@ -22,16 +22,26 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.adapters.BusinessSearchAdapter;
 import ee.app.conversa.adapters.NoBusinessAdapter;
-import ee.app.conversa.model.Database.Business;
+import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.model.Parse.BusinessCategory;
+import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.PagerAdapter;
 
 public class FragmentBusiness extends Fragment {
+
+    private String categoryId;
 
     private RelativeLayout mRlSearch;
     private RelativeLayout mRlBusiness;
@@ -48,8 +58,8 @@ public class FragmentBusiness extends Fragment {
     private TextView mTvNoBusiness;
     private PagerAdapter.FirstPageFragmentListener firstPageListener;
 
-    private List<Business> mBusiness;
-    private List<Business> mBusinessSearch;
+    private List<dBusiness> mBusiness;
+    private List<dBusiness> mBusinessSearch;
 
     private SearchView searchView;
 
@@ -113,6 +123,31 @@ public class FragmentBusiness extends Fragment {
 //        mIvNoBusiness       = (ImageView)    rootView.findViewById(R.id.tvNoBusiness);
         mBusinessListAdapter= new BusinessAdapter((AppCompatActivity) getActivity(), mBusiness);
 
+        ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
+        Collection<String> collection = new ArrayList<>();
+        collection.add(Const.kBusinessCategoryBusinessKey);
+        query.selectKeys(collection);
+        query.include(Const.kBusinessCategoryBusinessKey.concat(".").concat(Const.kBusinessBusinessInfoKey));
+        query.whereEqualTo(Const.kBusinessCategoryCategoryKey, this.categoryId);
+        query.whereEqualTo(Const.kBusinessCategoryActiveKey, true);
+
+        ParseQuery<ee.app.conversa.model.Parse.Business> param1 = ParseQuery.getQuery(ee.app.conversa.model.Parse.Business.class);
+        param1.whereEqualTo(Const.kBusinessActiveKey, true);
+        param1.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
+        param1.whereDoesNotExist(Const.kBusinessBusinessKey);
+
+        query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
+        query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
+        query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
+
+        query.findInBackground(new FindCallback<BusinessCategory>() {
+
+            @Override
+            public void done(List<BusinessCategory> objects, ParseException e) {
+
+            }
+        });
+
         //mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.orange, R.color.blue);
 //        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 //            @Override
@@ -130,9 +165,9 @@ public class FragmentBusiness extends Fragment {
         /* Para busqueda */
         mRvBusinessSearch    = (GridView) rootView.findViewById(R.id.rvUsersSearchBusinessByCategory);
         mTvNoBusiness        = (TextView) rootView.findViewById(R.id.tvSearchBusinessByCategoryEmpty);
-        mBusinessListAdapterSearch = new BusinessSearchAdapter((AppCompatActivity) getActivity(), mBusinessSearch);
+//        mBusinessListAdapterSearch = new BusinessSearchAdapter((AppCompatActivity) getActivity(), mBusinessSearch);
 
-        mRvBusinessSearch.setAdapter(mBusinessListAdapterSearch);
+//        mRvBusinessSearch.setAdapter(mBusinessListAdapterSearch);
         return rootView;
     }
 
@@ -211,9 +246,9 @@ public class FragmentBusiness extends Fragment {
         }
     }
 
-//    private class GetBusinessByCategoryFinish implements ResultListener<List<Business>> {
+//    private class GetBusinessByCategoryFinish implements ResultListener<List<dBusiness>> {
 //        @Override
-//        public void onResultsSuccess(List<Business> result) {
+//        public void onResultsSuccess(List<dBusiness> result) {
 //
 ////            if(mSwipeRefreshLayout != null && mSwipeRefreshLayout.isRefreshing()) {
 ////                mSwipeRefreshLayout.setRefreshing(false);
@@ -235,9 +270,9 @@ public class FragmentBusiness extends Fragment {
 //            }
 //
 //            // sorting users by name
-//            Collections.sort(mBusiness, new Comparator<Business>() {
+//            Collections.sort(mBusiness, new Comparator<dBusiness>() {
 //                @Override
-//                public int compare(Business lhs, Business rhs) {
+//                public int compare(dBusiness lhs, dBusiness rhs) {
 //                    return lhs.getmName().compareToIgnoreCase(rhs.getmName());
 //                }
 //            });
@@ -269,9 +304,9 @@ public class FragmentBusiness extends Fragment {
 //        }
 //    }
 //
-//    private class SearchBusinessFinish implements ResultListener<List<Business>> {
+//    private class SearchBusinessFinish implements ResultListener<List<dBusiness>> {
 //        @Override
-//        public void onResultsSuccess(List<Business> result) {
+//        public void onResultsSuccess(List<dBusiness> result) {
 //
 //            mBusinessSearch = result;
 //
@@ -285,9 +320,9 @@ public class FragmentBusiness extends Fragment {
 //            }
 //
 //            // sorting users by name
-//            Collections.sort(mBusinessSearch, new Comparator<Business>() {
+//            Collections.sort(mBusinessSearch, new Comparator<dBusiness>() {
 //                @Override
-//                public int compare(Business lhs, Business rhs) {
+//                public int compare(dBusiness lhs, dBusiness rhs) {
 //                    return lhs.getmName().compareToIgnoreCase(rhs.getmName());
 //                }
 //            });

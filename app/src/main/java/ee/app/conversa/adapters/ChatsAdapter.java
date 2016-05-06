@@ -19,17 +19,17 @@ import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.management.SettingsManager;
-import ee.app.conversa.model.Database.Business;
+import ee.app.conversa.model.Database.dBusiness;
 import ee.app.conversa.model.Database.Message;
 import ee.app.conversa.sendbird.SendBirdController;
 import ee.app.conversa.utils.Const;
 
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> implements SendBirdController.ChatControllerListener{
 
-	private List<Business> mUsers = new ArrayList<>();
+	private List<dBusiness> mUsers = new ArrayList<>();
 	private AppCompatActivity mActivity;
 
-	public ChatsAdapter(AppCompatActivity activity, List<Business> users) {
+	public ChatsAdapter(AppCompatActivity activity, List<dBusiness> users) {
 		mUsers = users;
 		mActivity = activity;
 	}
@@ -52,7 +52,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int i) {
-        Business user = mUsers.get(i);
+        dBusiness user = mUsers.get(i);
 
         if( ConversaApp.getDB().hasUnreadMessagesOrNewMessages(user.getObjectId()) ){
             holder.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification));
@@ -128,7 +128,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         }
     }
 
-    public void addItem(int position, Business user) {
+    public void addItem(int position, dBusiness user) {
         mUsers.add(position, user);
         notifyItemInserted(position);
     }
@@ -138,7 +138,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         notifyItemRemoved(position);
     }
 
-    public void setItems(List<Business> users) {
+    public void setItems(List<dBusiness> users) {
         mUsers = users;
     }
 
@@ -201,7 +201,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            Business user = mUsers.get(getAdapterPosition());
+            dBusiness user = mUsers.get(getAdapterPosition());
             Context context = mActivity;
             //UsersManagement.setToUser(user);
 
@@ -215,7 +215,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         @Override
         public boolean onLongClick(View v) {
-            final Business user = mUsers.get(getAdapterPosition());
+            final dBusiness user = mUsers.get(getAdapterPosition());
             //new DeleteUserDialog(adapter, mActivity, user.getId(), getPosition() ).show();
             return true;
         }

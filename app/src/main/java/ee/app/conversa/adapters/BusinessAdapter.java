@@ -13,19 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
-import ee.app.conversa.model.Database.Business;
+import ee.app.conversa.model.Database.dBusiness;
 import ee.app.conversa.view.CircleImageView;
 
 public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder>{
 
     private AppCompatActivity mActivity;
-    private List<Business> mBusiness = new ArrayList<>();
+    private List<dBusiness> mBusiness = new ArrayList<>();
     private BusinessAdapter adapter;
     private List<Fav> favBusiness;
 
     public void clearFavBusiness(){ favBusiness.clear(); }
 
-    public BusinessAdapter(AppCompatActivity activity, List<Business> business) {
+    public BusinessAdapter(AppCompatActivity activity, List<dBusiness> business) {
         mBusiness = business;
         mActivity = activity;
         favBusiness = new ArrayList<>();
@@ -50,7 +50,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int i) {
-        Business business = mBusiness.get(i);
+        dBusiness business = mBusiness.get(i);
 
 //        Utils.displayImage(business.getmAvatarThumbFileId(), Const.BUSINESS_FOLDER, holder.ivBusinessBackground,
 //                null, ImageLoader.SMALL, R.drawable.business_default, false);
@@ -85,7 +85,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         }
     }
 
-    public void setItems(List<Business> business) { mBusiness = business; }
+    public void setItems(List<dBusiness> business) { mBusiness = business; }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
@@ -118,7 +118,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         @Override
         public void onClick(View view) {
 //            int position = getPosition();
-//            Business business = mBusiness.get(position);
+//            dBusiness business = mBusiness.get(position);
 //
 //            if(view.getId() == R.id.ivFavorite) {
 //                boolean toFav = business.ismFavorite();

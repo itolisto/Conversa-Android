@@ -22,18 +22,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.adapters.BusinessSearchAdapter;
 import ee.app.conversa.adapters.CategoryAdapter;
-import ee.app.conversa.model.Database.Business;
-import ee.app.conversa.model.Database.Category;
+import ee.app.conversa.decorations.SimpleDividerItemDecoration;
+import ee.app.conversa.model.Parse.bCategory;
 import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.utils.Utils;
-
-//import ee.app.conversa.couchdb.CouchDB;
-//import ee.app.conversa.couchdb.ResultListener;
 
 public class FragmentCategory extends Fragment implements PagerAdapter.FirstPageFragmentListener{
 
@@ -49,8 +50,8 @@ public class FragmentCategory extends Fragment implements PagerAdapter.FirstPage
     private PagerAdapter.FirstPageFragmentListener firstPageListener;
     private TextView mTvNoBusiness;
 
-    private List<Category> mCategories;
-    private List<Business> mBusiness;
+    private List<bCategory> mCategories;
+    private List<Object> mBusiness;
 
     private SearchView searchView;
 
@@ -112,19 +113,45 @@ public class FragmentCategory extends Fragment implements PagerAdapter.FirstPage
 
         /* Para categorias */
         mRvCategory          = (RecyclerView)       rootView.findViewById(R.id.lvCategories);
-        mCategoryListAdapter = new CategoryAdapter(
-                (AppCompatActivity) getActivity(), mCategories, firstPageListener);
-
-        mRvCategory.setHasFixedSize(true);
+        mCategoryListAdapter = new CategoryAdapter((AppCompatActivity) getActivity(), mCategories, firstPageListener);
         mRvCategory.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvCategory.setAdapter(mCategoryListAdapter);
         mRvCategory.setItemAnimator(new DefaultItemAnimator());
+        mRvCategory.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
+
         /* Para busqueda */
         mRvBusiness          = (GridView) rootView.findViewById(R.id.rvUsersSearch);
         mTvNoBusiness        = (TextView) rootView.findViewById(R.id.tvSearchEmpty);
         mBusinessListAdapter = new BusinessSearchAdapter((AppCompatActivity) getActivity(), mBusiness);
-
         mRvBusiness.setAdapter(mBusinessListAdapter);
+
+        ParseQuery<bCategory> query = ParseQuery.getQuery(bCategory.class);
+
+        query.orderByAscending("relevance");
+        query.addAscendingOrder("createdAt");
+
+        if(ConversaApp.getPreferences().getCategoriesLoad()) {
+            query.fromLocalDatastore();
+        }
+
+        query.findInBackground(new FindCallback<bCategory>() {
+
+            @Override
+            public void done(List<bCategory> objects, ParseException e) {
+                if (e == null) {
+                    // Save to local datastore and change future searches
+                    // to be direct to local datastore
+                    if(!ConversaApp.getPreferences().getCategoriesLoad()) {
+                        bCategory.pinAllInBackground(objects);
+                        ConversaApp.getPreferences().setCategoriesLoad(true);
+                    }
+                    // Add to adapter and refresh
+                    mCategories.addAll(objects);
+                    mCategoryListAdapter.setItems(mCategories);
+                }
+            }
+        });
+
         return rootView;
     }
 
@@ -136,7 +163,6 @@ public class FragmentCategory extends Fragment implements PagerAdapter.FirstPage
 
     @Override
     public void onResume() {
-        getCategoriesAsync();
         super.onResume();
     }
 
@@ -149,12 +175,6 @@ public class FragmentCategory extends Fragment implements PagerAdapter.FirstPage
         searchView.setQueryHint(getActivity().getString(R.string.search_hint));
         searchView.setQuery("", false);
         searchView.clearFocus();
-    }
-
-    private void getCategoriesAsync() {
-//        CouchDB.findAllCategories(
-//                new GetCategoriesFinish(), getActivity(), true
-//        );
     }
 
     private void getBusinessByIdAsync(String name) {
@@ -192,9 +212,9 @@ public class FragmentCategory extends Fragment implements PagerAdapter.FirstPage
 //        }
 //    }
 //
-//    private class SearchBusinessFinish implements ResultListener<List<Business>> {
+//    private class SearchBusinessFinish implements ResultListener<List<dBusiness>> {
 //        @Override
-//        public void onResultsSuccess(List<Business> result) {
+//        public void onResultsSuccess(List<dBusiness> result) {
 //
 //            mBusiness = result;
 //
@@ -208,9 +228,9 @@ public class FragmentCategory extends Fragment implements PagerAdapter.FirstPage
 //            }
 //
 //            // sorting users by name
-//            Collections.sort(mBusiness, new Comparator<Business>() {
+//            Collections.sort(mBusiness, new Comparator<dBusiness>() {
 //                @Override
-//                public int compare(Business lhs, Business rhs) {
+//                public int compare(dBusiness lhs, dBusiness rhs) {
 //                    return lhs.getmName().compareToIgnoreCase(rhs.getmName());
 //                }
 //            });
