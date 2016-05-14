@@ -22,13 +22,19 @@ public class BusinessSearchAdapter extends BaseAdapter {
     private BusinessSearchAdapter adapter;
     private List<Fav> favBusiness;
 
-    public void clearFavBusiness(){ favBusiness.clear(); }
-
     public BusinessSearchAdapter(AppCompatActivity activity, List<Object> business) {
         mBusiness = business;
         mActivity = activity;
         favBusiness = new ArrayList<>();
         adapter = this;
+    }
+
+    public void clearFavBusiness() {
+        favBusiness.clear();
+    }
+
+    public void setItems(List<Object> business) {
+        mBusiness = business;
     }
 
     @Override
@@ -130,10 +136,6 @@ public class BusinessSearchAdapter extends BaseAdapter {
 //        });
 
         return convertView;
-    }
-
-    public void setItems(List<Object> business) {
-        mBusiness = business;
     }
 
     public class ViewHolder {

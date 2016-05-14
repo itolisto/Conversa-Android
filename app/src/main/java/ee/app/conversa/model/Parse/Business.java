@@ -6,7 +6,7 @@ import com.parse.ParseObject;
 /**
  * Created by edgargomez on 4/15/16.
  */
-@ParseClassName("dBusiness")
+@ParseClassName("Business")
 public class Business extends ParseObject {
 
     public String getConversaID() {

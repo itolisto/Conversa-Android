@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,6 +23,7 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"
+            android:layout_below="@id/toolbar"
             app:tabMode="fixed"
             app:tabGravity="fill"
             android:layout_width="match_parent"
@@ -51,10 +53,9 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
+        android:id="@+id/searchPager"
+        android:layout_below="@id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-    <!--android:layout_below="@id/tabLayout"-->
-
 </android.support.design.widget.CoordinatorLayout>

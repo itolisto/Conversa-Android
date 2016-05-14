@@ -32,14 +32,34 @@
         android:id="@+id/rlCategories"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/lvCategories"
+
+        <RelativeLayout
+            android:id="@+id/rlNoCategories"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:cacheColorHint="@android:color/transparent"
-            android:divider="@null"
-            android:listSelector="@android:color/transparent"
-            android:overScrollMode="never" />
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <ImageView
+                android:scaleType="fitStart"
+                android:background="@drawable/no_commerce"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srlCategories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/lvCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:cacheColorHint="@android:color/transparent"
+                android:divider="@null"
+                android:listSelector="@android:color/transparent"
+                android:overScrollMode="never" />
+        </android.support.v4.widget.SwipeRefreshLayout>
     </RelativeLayout>
 </RelativeLayout>

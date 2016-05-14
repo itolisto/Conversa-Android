@@ -3,10 +3,12 @@
     xmlns:myapp="http://schemas.android.com/apk/res-auto" >
 
     <item
+        android:title="Titulo"
         android:id="@+id/grid_default_search"
         android:icon="@android:drawable/ic_menu_search"
-        myapp:actionViewClass="android.support.v7.widget.SearchView"
-        myapp:showAsAction="always" />
+        myapp:showAsAction="ifRoom|collapseActionView"
+        myapp:actionViewClass="android.support.v7.widget.SearchView" />
+    <!--myapp:showAsAction="always"-->
 
     <!-- other items or whatever  -->
 </menu>

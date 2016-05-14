@@ -9,8 +9,8 @@ import com.parse.ParseObject;
 @ParseClassName("BusinessCategory")
 public class BusinessCategory extends ParseObject {
 
-    public Account getBusiness() {
-        return (Account)getParseObject("business");
+    public Business getBusiness() {
+        return (Business)getParseObject("business");
     }
 
     public void setBusiness(ParseObject value) {

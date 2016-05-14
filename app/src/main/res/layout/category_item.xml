@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rlCategoryLayout"
     android:layout_width="match_parent"
-    android:layout_height="55dp"
+    android:layout_height="65dp"
     android:clipToPadding="false"
     android:background="@android:color/white" >
 
@@ -69,9 +69,4 @@
             android:layout_gravity="bottom"/>
     </LinearLayout>
 
-    <View
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="7dp"
-        android:background="@drawable/line" />
 </RelativeLayout>

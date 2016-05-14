@@ -19,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:weightSum="3"
+            android:background="@android:color/holo_blue_dark"
             android:orientation="horizontal" >
 
             <RelativeLayout
@@ -33,16 +34,24 @@
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_centerHorizontal="true" >
-                    <ee.app.conversa.view.CircleImageView
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                    <!--<ee.app.conversa.view.CircleImageView-->
+                        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+                        <!--android:id="@+id/ivBusinessBackground"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:layout_centerInParent="true"-->
+                        <!--android:contentDescription="@null"-->
+                        <!--android:elevation="1dp"-->
+                        <!--android:src="@drawable/business_default"-->
+                        <!--app:border_color="@android:color/transparent"/>-->
+                    <com.parse.ParseImageView
                         android:id="@+id/ivBusinessBackground"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:elevation="1dp"
                         android:layout_centerInParent="true"
                         android:contentDescription="@null"
-                        android:elevation="1dp"
-                        android:src="@drawable/business_default"
-                        app:border_color="@android:color/transparent"/>
+                        android:visibility="gone" />
                 </RelativeLayout>
 
             </RelativeLayout>

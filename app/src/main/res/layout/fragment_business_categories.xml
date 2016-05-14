@@ -15,16 +15,18 @@
             android:text="@string/no_found"
             android:layout_centerInParent="true"
             android:gravity="center"/>
-        <GridView
-            android:id="@+id/rvUsersSearchBusinessByCategory"
-            android:numColumns="auto_fit"
-            android:gravity="center"
-            android:background="@android:color/transparent"
-            android:cacheColorHint="@android:color/transparent"
-            android:stretchMode="columnWidth"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"/>
+
+        <include layout="@layout/include_search"/>
+        <!--<GridView-->
+            <!--android:id="@+id/rvUsersSearchBusinessByCategory"-->
+            <!--android:numColumns="auto_fit"-->
+            <!--android:gravity="center"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:cacheColorHint="@android:color/transparent"-->
+            <!--android:stretchMode="columnWidth"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:visibility="visible"/>-->
     </RelativeLayout>
 
     <RelativeLayout
@@ -33,39 +35,40 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:clickable="true" >
+        android:clickable="true"
+        android:visibility="gone" >
 
-        <!--<ImageView-->
-            <!--android:id="@+id/tvNoBusiness"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:src="@drawable/no_commerce"-->
-            <!--android:background="@color/background_no_element"-->
-            <!--android:scaleType="fitCenter"-->
-            <!--android:visibility="gone" />-->
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvNoBusiness"
+        <ImageView
+            android:id="@+id/tvNoBusiness"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:cacheColorHint="@android:color/transparent"
-            android:divider="@null"
-            android:listSelector="@android:color/transparent"
-            android:overScrollMode="never" />
+            android:src="@drawable/no_commerce"
+            android:background="@color/background_no_element"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
 
-        <!--<RelativeLayout-->
-            <!--android:id="@+id/rlCategories"-->
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/rvNoBusiness"-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"-->
-            <!--android:paddingBottom="5dp"-->
-            <!--android:paddingTop="5dp"-->
-            <!--android:visibility="visible" >-->
+            <!--android:background="@android:color/white"-->
+            <!--android:cacheColorHint="@android:color/transparent"-->
+            <!--android:divider="@null"-->
+            <!--android:listSelector="@android:color/transparent"-->
+            <!--android:overScrollMode="never" />-->
 
-            <!--<android.support.v4.widget.SwipeRefreshLayout-->
-                <!--android:id="@+id/srlBusiness"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content">-->
+        <RelativeLayout
+            android:id="@+id/rlCategories"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:visibility="visible" >
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/srlBusiness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rvBusiness"
@@ -78,9 +81,8 @@
                     android:divider="@null"
                     android:listSelector="@android:color/transparent"
                     android:overScrollMode="never" />
-                    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"/>-->
 
-            <!--</android.support.v4.widget.SwipeRefreshLayout>-->
-        <!--</RelativeLayout>-->
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

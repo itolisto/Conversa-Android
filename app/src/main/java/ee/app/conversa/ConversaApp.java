@@ -34,6 +34,8 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.github.stkent.bugshaker.BugShaker;
+import com.github.stkent.bugshaker.flow.dialog.AlertDialogType;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -123,6 +125,18 @@ public class ConversaApp extends Application {
 
 		if (Account.getCurrentUser() != null) {
 			SendBirdController.init();
+
+			BugShaker.get(this)
+					.setEmailAddresses("appconversa@gmail.com")   // required
+					.setEmailSubjectLine("Conversa Error") // optional
+					.setAlertDialogType(AlertDialogType.NATIVE) // optional
+					.setLoggingEnabled(BuildConfig.DEBUG)       // optional
+					.setIgnoreFlagSecure(true)                  // optional
+					.assemble()                                 // required
+					.start();                                   // required
+			// It is recommended that logging always be disabled in production builds.
+
+			ConversaApp.getPreferences().setCurrentCategory("");
 		}
 		
 		//Iniciar apropiadamente los valores por defecto de la

@@ -1,6 +1,5 @@
 package ee.app.conversa.adapters;
 
-import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,23 +8,28 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseImageView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
 import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.view.CircleImageView;
+import ee.app.conversa.model.Parse.Business;
+import ee.app.conversa.model.Parse.BusinessCategory;
 
 public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder>{
 
     private AppCompatActivity mActivity;
-    private List<dBusiness> mBusiness = new ArrayList<>();
+    private List<Object> mBusiness = new ArrayList<>();
     private BusinessAdapter adapter;
     private List<Fav> favBusiness;
 
-    public void clearFavBusiness(){ favBusiness.clear(); }
+    public void clearFavBusiness(){
+        favBusiness.clear();
+    }
 
-    public BusinessAdapter(AppCompatActivity activity, List<dBusiness> business) {
+    public BusinessAdapter(AppCompatActivity activity, List<Object> business) {
         mBusiness = business;
         mActivity = activity;
         favBusiness = new ArrayList<>();
@@ -50,46 +54,36 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int i) {
-        dBusiness business = mBusiness.get(i);
+        Object object = mBusiness.get(i);
 
-//        Utils.displayImage(business.getmAvatarThumbFileId(), Const.BUSINESS_FOLDER, holder.ivBusinessBackground,
-//                null, ImageLoader.SMALL, R.drawable.business_default, false);
+        if (object.getClass().equals(BusinessCategory.class)) {
+            BusinessCategory temp = (BusinessCategory) object;
+            Business business = temp.getBusiness();
 
-        holder.tvBusiness.setText(business.getDisplayName());
-        holder.tvAbout.setText(business.getAbout());
+            holder.tvBusiness.setText(business.getBusinessInfo().getDisplayName());
+            holder.tvAbout.setText(business.getAbout());
+        } else if (object.getClass().equals(dBusiness.class)) {
+            dBusiness business = (dBusiness) object;
 
-        if (business.isFavorite()) {
-            if (Build.VERSION.SDK_INT >= 16) {
-                holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav));
-            } else {
-                holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav));
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= 16) {
-                holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav_not));
-            } else {
-                holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav_not));
-            }
-        }
-
-        if (favBusiness.size() > 0) {
-            for (Fav commerce : favBusiness) {
-                if (commerce.getPosition() == i) {
-                    if (Build.VERSION.SDK_INT >= 16) {
-                        holder.ivFavorite.setBackground(mActivity.getResources().getDrawable(R.drawable.fav));
-                    } else {
-                        holder.ivFavorite.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav));
-                    }
-                }
-            }
+            holder.tvBusiness.setText(business.getDisplayName());
+            holder.tvAbout.setText(business.getConversaId());
         }
     }
 
-    public void setItems(List<dBusiness> business) { mBusiness = business; }
+    public void setItems(List<Object> business) {
+        mBusiness = business;
+        this.notifyDataSetChanged();
+    }
+
+    public void addItems(List<Object> business, boolean addLoadMoreCell) {
+        int position = mBusiness.size();
+        mBusiness.addAll(business);
+        this.notifyItemRangeInserted(position, business.size());
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public CircleImageView ivBusinessBackground;
+        public ParseImageView ivBusinessBackground;
         public TextView tvBusiness;
         public TextView tvAbout;
         public ImageView ivFavorite;
@@ -98,7 +92,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
 
-            this.ivBusinessBackground = (CircleImageView) itemView
+            this.ivBusinessBackground = (ParseImageView) itemView
                     .findViewById(R.id.ivBusinessBackground);
             this.ivFavorite = (ImageView) itemView
                     .findViewById(R.id.ivFavorite);
@@ -109,8 +103,6 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
             this.tvAbout = (TextView) itemView
                     .findViewById(R.id.tvBusinessAbout);
 
-            //LayoutHelper.scaleWidthAndHeightAbsolute(mActivity, 2.5f, this.ivBusinessBackground);
-
             ivFavorite.setOnClickListener(this);
             ivStartChat.setOnClickListener(this);
         }
@@ -118,7 +110,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         @Override
         public void onClick(View view) {
 //            int position = getPosition();
-//            dBusiness business = mBusiness.get(position);
+            Object business = mBusiness.get(getAdapterPosition());
 //
 //            if(view.getId() == R.id.ivFavorite) {
 //                boolean toFav = business.ismFavorite();

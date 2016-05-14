@@ -57,6 +57,7 @@ dependencies {
     compile 'com.parse:parse-android:1.+'
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.parse:parseui-widget-android:0.0.1'
+    compile 'com.github.stkent:bugshaker:1.3.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

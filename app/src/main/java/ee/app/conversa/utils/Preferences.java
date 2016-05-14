@@ -68,6 +68,14 @@ public class Preferences {
         return sharedPreferences.getBoolean(CATEGORIES_LOAD, false);
     }
 
+    public String getCurrentCategory() {
+        return sharedPreferences.getString(CURRENT_CATEGORY, "");
+    }
+
+    public String getCurrentCategoryTitle() {
+        return sharedPreferences.getString(CURRENT_CATEGORY_TITLE, "");
+    }
+
 
 
 
@@ -78,8 +86,6 @@ public class Preferences {
 	public String getUserToken() { return sharedPreferences.getString(USER_TOKEN, ""); }
     public String getUserId() { return sharedPreferences.getString(USER_ID, ""); }
     public int getBusLocation() { return sharedPreferences.getInt(BUS_LOCATION, 0); }
-    public String getCurrentCategory() { return sharedPreferences.getString(CURRENT_CATEGORY, ""); }
-    public String getCurrentCategoryTitle() { return sharedPreferences.getString(CURRENT_CATEGORY_TITLE, ""); }
     public boolean isFirstCallForUsers() { return sharedPreferences.getBoolean(FIRST_USER_SERVER_CALL, true); }
 
     public SharedPreferences getSharedPreferences(){ return sharedPreferences; }
@@ -92,13 +98,27 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
-    public void setCategoriesLoad(boolean value) {
+    public void setCategoriesLoad(boolean value, boolean inBackground) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(CATEGORIES_LOAD, value);
+        if (inBackground) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
+    }
+
+    public void setCurrentCategory (String category) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(CURRENT_CATEGORY, category);
         editor.apply();
     }
 
-
+    public void setCurrentCategoryTitle (String category) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(CURRENT_CATEGORY_TITLE, category);
+        editor.apply();
+    }
 
 
 
@@ -125,18 +145,6 @@ public class Preferences {
     public void setUserId(String id) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(USER_ID, id);
-        editor.commit();
-    }
-
-    public void setCurrentCategory (String category) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(CURRENT_CATEGORY, category);
-        editor.commit();
-    }
-
-    public void setCurrentCategoryTitle (String category) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(CURRENT_CATEGORY_TITLE, category);
         editor.commit();
     }
 

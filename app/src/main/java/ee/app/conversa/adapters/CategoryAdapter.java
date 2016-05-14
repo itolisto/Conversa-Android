@@ -1,5 +1,7 @@
 package ee.app.conversa.adapters;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,22 +18,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
+import ee.app.conversa.FragmentBusiness;
 import ee.app.conversa.R;
 import ee.app.conversa.model.Parse.bCategory;
-import ee.app.conversa.utils.PagerAdapter;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder>{
 
     private AppCompatActivity mActivity;
     private List<bCategory> mCategories = new ArrayList<>();
     private CategoryAdapter adapter;
-    private PagerAdapter.FirstPageFragmentListener firstPageListener;
+    private FragmentManager fragment;
+//    private PagerAdapter.FirstPageFragmentListener firstPageListener;
 
-    public CategoryAdapter(AppCompatActivity activity, List<bCategory> categories, PagerAdapter.FirstPageFragmentListener listener) {
+    public CategoryAdapter(AppCompatActivity activity, List<bCategory> categories, FragmentManager fragment) {
         mCategories = categories;
         mActivity = activity;
         adapter = this;
-        firstPageListener = listener;
+        this.fragment = fragment;
+//        firstPageListener = listener;
     }
 
     @Override
@@ -89,12 +93,28 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
-//            Category category = (Category) mCategories.get(getPosition());
-//            ConversaApp.getPreferences().setCurrentCategory(category.getmId());
-//            ConversaApp.getPreferences().setCurrentCategoryTitle(category.getmTitle(mActivity));
-//            ((AppCompatActivity) mActivity).getSupportActionBar().setTitle(category.getmTitle(mActivity));
-//            ((AppCompatActivity) mActivity).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//            firstPageListener.onSwitchToNextFragment();
+            bCategory category = mCategories.get(getAdapterPosition());
+            ConversaApp.getPreferences().setCurrentCategory(category.getObjectId());
+            ConversaApp.getPreferences().setCurrentCategoryTitle(category.getName());
+            mActivity.getSupportActionBar().setTitle(category.getName());
+            mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+//            FragmentTransaction trans = mActivity.getFragmentManager().beginTransaction();
+            FragmentTransaction transaction = fragment.beginTransaction();
+
+            /*
+             * IMPORTANT: We use the "root frame" defined in
+             * "root_fragment.xml" as the reference to replace fragment
+             */
+            transaction.replace(R.id.root_frame, new FragmentBusiness(fragment));
+
+            /*
+             * IMPORTANT: The following lines allow us to add the fragment
+             * to the stack and return to it later, by pressing back
+             */
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.addToBackStack(null);
+            transaction.commit();
         }
     }
 }

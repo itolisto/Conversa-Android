@@ -13,6 +13,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -52,24 +54,28 @@ public class ActivityMain extends ConversaActivity {
         mViewPager.setAdapter(mPagerAdapter);
 
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-
-        // Needed since support libraries version 23.0.0
-        mViewPager.clearOnPageChangeListeners();
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        // ------
-
         tabLayout.setupWithViewPager(mViewPager);
+
+        // Initial state of tabs and titles
+        try {
+            getSupportActionBar().setTitle(titles[0]);
+            tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+            tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+            tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+        } catch (NullPointerException e) {
+            Logger.error(this.toString(), e);
+        }
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
-
                 int p = tab.getPosition();
 
                 try {
                     getSupportActionBar().setTitle(titles[p]);
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                    supportInvalidateOptionsMenu();
                 } catch (NullPointerException e) {
                     Logger.error(this.toString(), e.getMessage());
                 }
@@ -80,9 +86,9 @@ public class ActivityMain extends ConversaActivity {
                         getSupportActionBar().setBackgroundDrawable(
                                 new ColorDrawable(getResources().getColor(R.color.settings_tab)));
 
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.settings_tab)));
-                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.settings_background)));
+                        if (Build.VERSION.SDK_INT >= 23) {
+                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.settings_tab, null)));
+                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.settings_background, null)));
                         } else {
                             tabLayout.setBackgroundColor(getResources().getColor(R.color.settings_tab));
                             mViewPager.setBackgroundColor(getResources().getColor(R.color.settings_background));
@@ -136,16 +142,6 @@ public class ActivityMain extends ConversaActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-
-        // Initial state of tabs and titles
-        try {
-            getSupportActionBar().setTitle(titles[0]);
-            tabLayout.getTabAt(0).setIcon(tabIcons[0]);
-            tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-            tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-        } catch (NullPointerException e) {
-            Logger.error(this.toString(), e.getMessage());
-        }
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -217,13 +213,12 @@ public class ActivityMain extends ConversaActivity {
     @Override
     public void onBackPressed() {
         if(mViewPager.getCurrentItem() == 1) {
-            if (mPagerAdapter.getItem(1) instanceof FragmentCategory) {
-                ConversaApp.getPreferences().setCurrentCategoryTitle("");
-                super.onBackPressed();
+            if (mPagerAdapter.getItem(1) instanceof FragmentRoot) {
+                ((FragmentRoot) mPagerAdapter.getItem(1)).backPressed();
+                return;
             }
         }
 
-        ConversaApp.getPreferences().setCurrentCategoryTitle("");
         super.onBackPressed();
     }
 
@@ -247,6 +242,35 @@ public class ActivityMain extends ConversaActivity {
 
             startActivity(new Intent(this, ActivityChatWall.class));
         }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        int pagePosition = mViewPager.getCurrentItem();
+
+        MenuItem item = menu.findItem(R.id.grid_default_search);
+
+        switch (pagePosition) {
+            case 0:
+                if (item != null) {
+                    item.setVisible(false);
+                }
+                break;
+            case 1:
+                if (item != null) {
+                    item.setVisible(false);
+                }
+                break;
+            case 2:
+                if (item != null) {
+                    item.setVisible(false);
+                }
+                break;
+        }
+
+        return true;
     }
 
     /*********************************************************************************************/
