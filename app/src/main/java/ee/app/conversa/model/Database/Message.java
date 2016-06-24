@@ -36,8 +36,8 @@ public class Message implements Comparable<Message>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String mRev;
-	private String mType;
+	private String mRev;//
+	private String mType;//
 	private int mMessageType;
 	private String mMessageTargetType;
 	private String mBody;

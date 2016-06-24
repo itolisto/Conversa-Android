@@ -124,6 +124,7 @@ public class Preferences {
 
 
 
+
 	public void setUserEmail(String email) {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putString(USER_EMAIL, email);

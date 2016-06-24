@@ -7,8 +7,10 @@ import com.parse.ParseUser;
 /**
  * Created by edgargomez on 4/15/16.
  */
+
 @ParseClassName("_User")
 public class Account extends ParseUser {
+
 
     public String getDisplayName() {
         return getString("displayName");

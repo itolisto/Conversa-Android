@@ -1,7 +1,6 @@
 <resources>
 
     <!-- Base application theme. -->
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowActionBar">false</item>
@@ -23,6 +22,9 @@
         <item name="android:textColorSecondary">@color/my_secondary_text</item>
 
         <item name="android:windowBackground">@color/window_background</item>
+
+        <!-- For preferences -->
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <!-- <style name="Base.Theme.ConversaApp" parent="Theme.AppCompat.NoActionBar"> -->

@@ -33,9 +33,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.crashlytics.android.Crashlytics;
-import com.github.stkent.bugshaker.BugShaker;
-import com.github.stkent.bugshaker.flow.dialog.AlertDialogType;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -53,10 +51,8 @@ import ee.app.conversa.model.Parse.Message;
 import ee.app.conversa.model.Parse.Options;
 import ee.app.conversa.model.Parse.PopularSearch;
 import ee.app.conversa.model.Parse.bCategory;
-import ee.app.conversa.sendbird.SendBirdController;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Preferences;
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Basic Application class, holds references to often used single instance
@@ -75,18 +71,17 @@ public class ConversaApp extends Application {
 	private Preferences mPreferences;
 	private LocalBroadcastManager mLocalBroadcastManager;
 
-	public static ConversaApp getInstance() { return sInstance; }
-
 	/**
 	 * Called when the application is starting, before any other application objects have been created
 	 */
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Fabric.with(this, new Crashlytics());
         sInstance = this;
-        mDb = new MySQLiteHelper( this );
-		setPreferences( new Preferences(this) );
+        mDb = new MySQLiteHelper(this);
+		Fresco.initialize(this);
+		setPreferences(new Preferences(this));
+		setLocalBroadcastManager(LocalBroadcastManager.getInstance(this));
 
 		// Register subclassing for using as Parse objects
 		ParseObject.registerSubclass(Options.class);
@@ -114,35 +109,17 @@ public class ConversaApp extends Application {
 ////				.build()
 //		);
 
-		setLocalBroadcastManager( LocalBroadcastManager.getInstance(this) );
-
 		//Crea las tipografias
 		setTfRalewayThin( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf") );
 		setTfRalewayLight( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Light.ttf") );
         setTfRalewayRegular( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf") );
         setTfRalewayMedium( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf") );
         setTfRalewayBold( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf") );
-
-		if (Account.getCurrentUser() != null) {
-			SendBirdController.init();
-
-			BugShaker.get(this)
-					.setEmailAddresses("appconversa@gmail.com")   // required
-					.setEmailSubjectLine("Conversa Error") // optional
-					.setAlertDialogType(AlertDialogType.NATIVE) // optional
-					.setLoggingEnabled(BuildConfig.DEBUG)       // optional
-					.setIgnoreFlagSecure(true)                  // optional
-					.assemble()                                 // required
-					.start();                                   // required
-			// It is recommended that logging always be disabled in production builds.
-
-			ConversaApp.getPreferences().setCurrentCategory("");
-		}
 		
 		//Iniciar apropiadamente los valores por defecto de la
 		//aplicacion. Es necesario ya que la aplicacion podria
 		//necesitar leer los ajustes para comportarse de cierta manera
-        //PreferenceManager.setDefaultValues(this, R.layout.fragment_settings, false);
+//        PreferenceManager.setDefaultValues(this, R.layout.fragment_settings, false);
 	}
 
     /* ************************************************************************************************ */
@@ -211,13 +188,11 @@ public class ConversaApp extends Application {
 		for (NetworkInfo ni : netInfo) {
 			if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
                 if (ni.isConnected()) {
-                    //Logger.error("internet", "wifi on");
                     return true;
                 }
             }
 			if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
                 if (ni.isConnected()) {
-                    //Logger.error("internet", "mobile on");
                     return true;
                 }
             }

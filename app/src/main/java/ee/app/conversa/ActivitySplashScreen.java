@@ -16,11 +16,12 @@ import com.parse.ParseUser;
 
 public class ActivitySplashScreen extends AppCompatActivity {
 
+    private final String TAG = getClass().getSimpleName();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         ParseUser currentUser = ParseUser.getCurrentUser();
-
         if (currentUser != null) {
             Intent intent = new Intent(ActivitySplashScreen.this, ActivityMain.class);
             startActivity(intent);
@@ -34,8 +35,8 @@ public class ActivitySplashScreen extends AppCompatActivity {
                 }
             }, 1200);
         }
-
 	}
+
 }
 
 

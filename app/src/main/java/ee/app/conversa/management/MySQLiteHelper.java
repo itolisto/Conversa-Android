@@ -62,7 +62,6 @@ public class MySQLiteHelper {
     private static final String tmIndex1 = "CREATE INDEX M_search on "  + TABLE_MESSAGES + "(from_user_id, from_user_type, to_user_id); ";
     private static final String tmIndex2 = "CREATE INDEX M_readAt on "  + TABLE_MESSAGES + "(from_user_id, from_user_type, read_at); ";
 
-
     // CONTACTS
     public static final String sBusinessId = "_id";
     public static final String sBusinessObjectId = "objectId";

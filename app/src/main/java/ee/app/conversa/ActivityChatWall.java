@@ -36,7 +36,6 @@ import java.util.List;
 
 import ee.app.conversa.adapters.LocationsAdapter;
 import ee.app.conversa.adapters.MessagesAdapter;
-import ee.app.conversa.dialog.HookUpDialog;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.management.SettingsManager;
 import ee.app.conversa.messageshandling.UpdateMessages;
@@ -109,6 +108,9 @@ public class ActivityChatWall extends ConversaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_wall);
+
+		// Deactivate broadcast and check internet connection
+		checkInternetConnection = false;
 
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -442,12 +444,12 @@ public class ActivityChatWall extends ConversaActivity {
         mBtnProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new HookUpDialog(ActivityChatWall.sInstance).showOnlyOK(getResources().getString(R.string.profiles_to_be_implemented));
+                //new HookUpDialog(ActivityChatWall.sInstance).showOnlyOK(getResources().getString(R.string.profiles_to_be_implemented));
             }
         });
 	}
 
-	private void initialization() {
+	protected void initialization() {
 		mRvWallMessages = (RecyclerView) findViewById(R.id.lvWallMessages);
 		mRvLocation     = (RecyclerView) findViewById(R.id.rvLocations);
 		mTvNoMessages 	= (TextView) 	 findViewById(R.id.tvNoMessages);

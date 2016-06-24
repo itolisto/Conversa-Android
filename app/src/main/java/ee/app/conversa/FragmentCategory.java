@@ -6,7 +6,6 @@ package ee.app.conversa;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -36,14 +35,17 @@ import java.util.List;
 import ee.app.conversa.adapters.BusinessSearchAdapter;
 import ee.app.conversa.adapters.CategoryAdapter;
 import ee.app.conversa.decorations.SimpleDividerItemDecoration;
+import ee.app.conversa.extendables.ConversaFragment;
 import ee.app.conversa.model.Parse.bCategory;
+import ee.app.conversa.utils.Const;
 
-public class FragmentCategory extends Fragment implements SearchView.OnQueryTextListener {
+public class FragmentCategory extends ConversaFragment implements SearchView.OnQueryTextListener, CategoryAdapter.OnItemClickListener {
 
     private SearchView searchView;
 
-    private RelativeLayout mRlSearch;
-    private RelativeLayout mRlCategories;
+    private RelativeLayout mRlSearchCategories;
+//    private RelativeLayout mRlCategories;
+    private RelativeLayout mRlCategoriesNoCategories;
 
     private RecyclerView mRvCategory;
     private GridView     mRvBusiness;
@@ -55,8 +57,9 @@ public class FragmentCategory extends Fragment implements SearchView.OnQueryText
     private FragmentManager fragmentManager;
     private TextView mTvNoBusiness;
 
-    private List<bCategory> mCategories;
     private List<Object> mBusiness;
+
+    private boolean isLoading;
 
     public FragmentCategory(){}
 //    @Override
@@ -65,28 +68,31 @@ public class FragmentCategory extends Fragment implements SearchView.OnQueryText
     @SuppressWarnings("ValidFragment")
     public FragmentCategory(FragmentManager fragmentManager) {
         mBusiness           = new ArrayList<>();
-        mCategories         = new ArrayList<>();
         this.fragmentManager = fragmentManager;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
         View rootView = inflater.inflate(R.layout.fragment_category, container, false);
 
-        mRlSearch       = (RelativeLayout) rootView.findViewById(R.id.rlSearchCategories);
-        mRlCategories   = (RelativeLayout) rootView.findViewById(R.id.rlCategories);
+        mRlSearchCategories = (RelativeLayout) rootView.findViewById(R.id.rlSearchCategories);
+        //mRlCategories = (RelativeLayout) rootView.findViewById(R.id.rlCategories);
+        mRlCategoriesNoCategories = (RelativeLayout) rootView.findViewById(R.id.rlNoCategories);
+        mRvCategory = (RecyclerView) rootView.findViewById(R.id.rvCategories);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.srlCategories);
+        mRvBusiness = (GridView) rootView.findViewById(R.id.rvUsersSearch);
+        mTvNoBusiness = (TextView) rootView.findViewById(R.id.tvSearchEmpty);
 
-        /* Para categorias */
-        mRvCategory          = (RecyclerView)       rootView.findViewById(R.id.lvCategories);
-        mCategoryListAdapter = new CategoryAdapter((AppCompatActivity) getActivity(), mCategories, this.fragmentManager);//, firstPageListener);
+        mCategoryListAdapter = new CategoryAdapter(this);//, firstPageListener);
         mRvCategory.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvCategory.setAdapter(mCategoryListAdapter);
+        mRvCategory.setHasFixedSize(true);
         mRvCategory.setItemAnimator(new DefaultItemAnimator());
         mRvCategory.addItemDecoration(new SimpleDividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout)  rootView.findViewById(R.id.srlCategories);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.orange, R.color.blue);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -98,8 +104,6 @@ public class FragmentCategory extends Fragment implements SearchView.OnQueryText
         });
 
         /* Para busqueda */
-        mRvBusiness          = (GridView) rootView.findViewById(R.id.rvUsersSearch);
-        mTvNoBusiness        = (TextView) rootView.findViewById(R.id.tvSearchEmpty);
         mBusinessListAdapter = new BusinessSearchAdapter((AppCompatActivity) getActivity(), mBusiness);
         mRvBusiness.setAdapter(mBusinessListAdapter);
 
@@ -114,30 +118,15 @@ public class FragmentCategory extends Fragment implements SearchView.OnQueryText
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    private void getBusinessByIdAsync(String name) {
-//        CouchDB.searchBusinessByIdAsync(name,
-//                new SearchBusinessFinish(), getActivity(), true
-//        );
-//        if(mBusiness == null || mBusiness.size() == 0) {
-//            mTvNoBusiness.setVisibility(View.VISIBLE);
-//            mRvBusiness.setVisibility(View.GONE);
-//            return;
-//        } else {
-//            mTvNoBusiness.setVisibility(View.GONE);
-//            mRvBusiness.setVisibility(View.VISIBLE);
-//        }
-    }
-
     private void getCategoriesAsync() {
+        isLoading = true;
+        mSwipeRefreshLayout.setEnabled(false);
+
         ParseQuery<bCategory> query = ParseQuery.getQuery(bCategory.class);
 
-        query.orderByAscending("relevance");
-        query.addAscendingOrder("createdAt");
+        query.orderByAscending(Const.kCategoryRelevance);
+        query.addAscendingOrder(Const.kCategoryPosition);
+        query.setLimit(30);
 
         if(ConversaApp.getPreferences().getCategoriesLoad()) {
             query.fromLocalDatastore();
@@ -147,9 +136,8 @@ public class FragmentCategory extends Fragment implements SearchView.OnQueryText
 
             @Override
             public void done(List<bCategory> objects, ParseException e) {
-                if(mSwipeRefreshLayout.isRefreshing()) {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
+                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeRefreshLayout.setEnabled(true);
 
                 if (e == null && objects != null) {
                     // Save to local datastore and change future searches
@@ -158,42 +146,20 @@ public class FragmentCategory extends Fragment implements SearchView.OnQueryText
                         bCategory.pinAllInBackground(objects);
                         ConversaApp.getPreferences().setCategoriesLoad(true, true);
                     }
+
                     // Add to adapter and refresh
-                    mCategories.addAll(objects);
-                    mCategoryListAdapter.setItems(mCategories);
+                    if(objects.size() > 0) {
+                        mCategoryListAdapter.setItems(objects);
+                        mRlCategoriesNoCategories.setVisibility(View.GONE);
+                        mRvCategory.setVisibility(View.VISIBLE);
+                    } else {
+                        mRlCategoriesNoCategories.setVisibility(View.VISIBLE);
+                        mRvCategory.setVisibility(View.GONE);
+                    }
                 }
             }
         });
     }
-
-//    private class SearchBusinessFinish implements ResultListener<List<dBusiness>> {
-//        @Override
-//        public void onResultsSuccess(List<dBusiness> result) {
-//
-//            mBusiness = result;
-//
-//            if(mBusiness == null || mBusiness.size() == 0) {
-//                mTvNoBusiness.setVisibility(View.VISIBLE);
-//                mRvBusiness.setVisibility(View.GONE);
-//                return;
-//            } else {
-//                mTvNoBusiness.setVisibility(View.GONE);
-//                mRvBusiness.setVisibility(View.VISIBLE);
-//            }
-//
-//            // sorting users by name
-//            Collections.sort(mBusiness, new Comparator<dBusiness>() {
-//                @Override
-//                public int compare(dBusiness lhs, dBusiness rhs) {
-//                    return lhs.getmName().compareToIgnoreCase(rhs.getmName());
-//                }
-//            });
-//
-//            mBusinessListAdapter.clearFavBusiness();
-//            mBusinessListAdapter.setItems(mBusiness);
-//            mBusinessListAdapter.notifyDataSetChanged();
-//        }
-//    }
 
 
     @Override
@@ -222,8 +188,8 @@ public class FragmentCategory extends Fragment implements SearchView.OnQueryText
     @Override
     public boolean onQueryTextChange(String newText) {
         // Perform the final search
-//        if(mRlSearch.getVisibility() == View.GONE) {
-//            mRlSearch.setVisibility(View.VISIBLE);
+//        if(mRlSearchCategories.getVisibility() == View.GONE) {
+//            mRlSearchCategories.setVisibility(View.VISIBLE);
 //            mRlCategories.setVisibility(View.GONE);
 //        }
 //
@@ -231,11 +197,36 @@ public class FragmentCategory extends Fragment implements SearchView.OnQueryText
 //            mTvNoBusiness.setVisibility(View.VISIBLE);
 //            mRvBusiness.setVisibility(View.GONE);
 //            mBusiness.clear();
-//            mRlSearch.setVisibility(View.GONE);
+//            mRlSearchCategories.setVisibility(View.GONE);
 //            mRlCategories.setVisibility(View.VISIBLE);
 //            //Utils.hideKeyboard((AppCompatActivity) getActivity());
 //        }
         return true;
     }
 
+    @Override
+    public void onItemClick(View itemView, int position, bCategory category) {
+        Toast.makeText(getActivity(), "Category: " + category + "\nNombre: " + category.getName(), Toast.LENGTH_SHORT).show();
+//        ConversaApp.getPreferences().setCurrentCategory(category.getObjectId());
+        ConversaApp.getPreferences().setCurrentCategoryTitle(category.getName());
+//        mActivity.getSupportActionBar().setTitle(category.getName());
+//        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//
+//        FragmentTransaction trans = mActivity.getFragmentManager().beginTransaction();
+//        FragmentTransaction transaction = fragment.beginTransaction();
+//
+//        /*
+//         * IMPORTANT: We use the "root frame" defined in
+//         * "root_fragment.xml" as the reference to replace fragment
+//         */
+//        transaction.replace(R.id.root_frame, new FragmentBusiness(fragment));
+//
+//        /*
+//         * IMPORTANT: The following lines allow us to add the fragment
+//         * to the stack and return to it later, by pressing back
+//         */
+//        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
+    }
 }

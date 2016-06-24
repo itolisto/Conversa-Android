@@ -17,16 +17,16 @@ public class Contact extends ParseObject {
         put("activeChat", value);
     }
 
-    public Account getToBusiness() {
-        return (Account)getParseObject("toBusiness");
+    public ParseObject getToBusiness() {
+        return getParseObject("toBusiness");
     }
 
     public void setToBusiness(ParseObject value) {
         put("toBusiness", value);
     }
 
-    public Account getFromUser() {
-        return (Account)getParseObject("fromUser");
+    public ParseObject getFromUser() {
+        return getParseObject("fromUser");
     }
 
     public void setFromUser(ParseObject value) {

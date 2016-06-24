@@ -14,24 +14,8 @@ public class bCategory extends ParseObject {
         return getString("name");
     }
 
-    public void setName(String value) {
-        put("name", value);
-    }
-
-    public int getRelevance() {
-        return getInt("relevance");
-    }
-
-    public void setRelevance(int value) {
-        put("relevance", value);
-    }
-
     public ParseFile getThumbnail() {
         return getParseFile("thumbnail");
-    }
-
-    public void setThumbnail(ParseFile value) {
-        put("thumbnail", value);
     }
 
 }

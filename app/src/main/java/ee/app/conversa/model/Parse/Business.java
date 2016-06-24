@@ -25,8 +25,8 @@ public class Business extends ParseObject {
         put("about", value);
     }
 
-    public Account getBusinessInfo() {
-        return (Account)getParseObject("businessInfo");
+    public ParseObject getBusinessInfo() {
+        return getParseObject("businessInfo");
     }
 
     public void setBusinessInfo(ParseObject value) {

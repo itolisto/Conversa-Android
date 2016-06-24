@@ -56,34 +56,41 @@
         <string name="cant_send">Location is currently unavailable, please select another</string>
 
 	    <!-- FOR HOOKUP DIALOGS -->
-	    <string name="OK">OK</string>
-	    <string name="CANCEL"> @android:string/cancel</string>
+	    <string name="Ok">@android:string/ok</string>
+	    <string name="Cancel">@android:string/cancel</string>
+        <string name="delete_user">Delete conversation?</string>
 
 	   	<!-- FOR NO INTERNET CONNECTION -->
 	    <string name="NO_INTERNET_CONNECTION">NO INTERNET CONNECTION</string>
 
-    	<!-- FOR DIALOG INFO -->
-        <string name="delete_user">Delete conversation?</string>
-	    <string name="dont_delete">No</string>
-	    <string name="delete_close">OK</string>
 
 	    <!-- FOR SETTINGS LAYOUT -->
 	    <string name="notification_preferences">Notifications</string>
+        <string name="in_app_checkbox_preference_key">in_app_checkbox_preference_key</string>
 	    <string name="in_app_checkbox_preference">In-App</string>
 	    <string name="summary_in_app_checkbox_preference">In-App Notifications</string>
+        <string name="notification_checkbox_preference_key">notification_checkbox_preference_key</string>
 	    <string name="notification_checkbox_preference">Notification</string>
 	    <string name="summary_notification_checkbox_preference">In Notification Center</string>
 
 	    <string name="account_preferences">Account</string>
+        <string name="email_edittext_preference_key">email_edittext_preference_key</string>
 	    <string name="email_edittext_preference">e-mail</string>
 	    <string name="dialog_email_edittext_preference">Change e-mail</string>
+
+        <string name="name_edittext_preference_key">name_edittext_preference_key</string>
 	    <string name="name_edittext_preference">Username</string>
 	    <string name="dialog_name_edittext_preference">Change username</string>
+
+        <string name="password_edittext_preference_key">password_edittext_preference_key</string>
         <string name="password_edittext_preference">Password</string>
         <string name="dialog_password_edittext_preference">Change password</string>
+
+        <string name="logout_preference_key">logout_preference_key</string>
 	    <string name="logout_preference">Log Out</string>
 
 	    <string name="about_attributes">Conversa</string>
+        <string name="share_preference_key">share_preference_key</string>
 	    <string name="share_preference">Share</string>
 	    <string name="summary_share_preference">Do you love Conversa? Share it! (:</string>
 	    <string name="go_intent_preference">Conversa</string>
@@ -102,8 +109,6 @@
         <string name="an_server_error_has_occurred">An server error has occurred</string>
 
     	<!-- FOR MainActivity -->
-    	<string name="logout_message">Do you want to logout?</string>
-
         <string-array name="categories_titles">
             <item name="Conversas">Chats</item>
             <item name="Categories">Categories</item>
@@ -130,8 +135,7 @@
         <string name="gender_error">Please select gender</string>
         <string name="birthday_error">Please select your birthday</string>
         <string name="birthday_error1">You must be at least 18 years old to use Conversa</string>
-    	<string name="confirm_email">Are you sure this is your email address?</string>
-    	<string name="confirm_email_2">Will send an email to reset your password, be careful!</string>
+    	<string name="confirm_email">Are you sure this is your email address? %1s \nWill send an email to reset your password, be careful!</string>
         <string name="fb_action_error">An error ocurred while connecting to Facebook, please try later</string>
 
         <string name="email_already_taken">Email is already taken</string>
@@ -190,6 +194,8 @@
         <string name="category_24">Shoes</string>
 
         <!-- FOR FragmentSettings -->
+        <string name="logout_message">Do you want to logout?</string>
+
         <string name="settings_using_conversa">I\'m using</string>
         <string name="settings_body1_conversa">I been using</string>
         <string name="settings_body2_conversa">and I really like it (: Go to the Play Store and download it!</string>

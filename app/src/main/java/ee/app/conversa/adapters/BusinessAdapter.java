@@ -8,14 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.parse.ParseImageView;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
 import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Parse.Business;
 import ee.app.conversa.model.Parse.BusinessCategory;
 
 public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder>{
@@ -58,10 +55,10 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
 
         if (object.getClass().equals(BusinessCategory.class)) {
             BusinessCategory temp = (BusinessCategory) object;
-            Business business = temp.getBusiness();
+//            Business business = temp.getBusiness();
 
-            holder.tvBusiness.setText(business.getBusinessInfo().getDisplayName());
-            holder.tvAbout.setText(business.getAbout());
+            holder.tvBusiness.setText("");//business.getBusinessInfo().getDisplayName());
+            holder.tvAbout.setText("");//business.getAbout());
         } else if (object.getClass().equals(dBusiness.class)) {
             dBusiness business = (dBusiness) object;
 
@@ -83,7 +80,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public ParseImageView ivBusinessBackground;
+//        public ParseImageView ivBusinessBackground;
         public TextView tvBusiness;
         public TextView tvAbout;
         public ImageView ivFavorite;
@@ -92,8 +89,8 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
 
-            this.ivBusinessBackground = (ParseImageView) itemView
-                    .findViewById(R.id.ivBusinessBackground);
+//            this.ivBusinessBackground = (ParseImageView) itemView
+//                    .findViewById(R.id.ivBusinessBackground);
             this.ivFavorite = (ImageView) itemView
                     .findViewById(R.id.ivFavorite);
             this.ivStartChat = (ImageView) itemView

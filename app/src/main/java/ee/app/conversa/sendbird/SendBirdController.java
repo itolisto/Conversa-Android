@@ -11,7 +11,7 @@ import com.sendbird.android.model.ReadStatus;
 import com.sendbird.android.model.SystemMessage;
 import com.sendbird.android.model.TypeStatus;
 
-import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.utils.Const;
 
 /**
  * Created by edgargomez on 4/21/16.
@@ -43,8 +43,11 @@ public class SendBirdController {
     }
 
     public static void init() {
-        SendBird.init("17FB6C41-7B2E-41C2-B481-C2B168633616");
-        SendBird.login(Account.getCurrentUser().getObjectId(), Account.getCurrentUser().getUsername());
+        // Init SendBird
+        SendBird.init(Const.sbAppId);
+        SendBird.login("userId", "userName");
+        // Join all channels
+
     }
 
     public void joinChannel(String channelURL, String userId) {
@@ -72,6 +75,11 @@ public class SendBirdController {
             }
 
             @Override
+            public void onMutedMessageReceived(Message message) {
+
+            }
+
+            @Override
             public void onSystemMessageReceived(SystemMessage systemMessage) {
 
             }
@@ -83,6 +91,11 @@ public class SendBirdController {
 
             @Override
             public void onFileReceived(FileLink fileLink) {
+
+            }
+
+            @Override
+            public void onMutedFileReceived(FileLink fileLink) {
 
             }
 
@@ -108,6 +121,7 @@ public class SendBirdController {
             public void onAllDataReceived(SendBird.SendBirdDataType sendBirdDataType, int i) {
 
             }
+
 
             @Override
             public void onMessageDelivery(boolean b, String s, String s1, String s2) {
@@ -157,6 +171,5 @@ public class SendBirdController {
     private void sendMessage(String message) {
         SendBird.send(message);
     }
-
 
 }

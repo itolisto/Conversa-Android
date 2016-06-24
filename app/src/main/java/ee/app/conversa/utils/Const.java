@@ -31,6 +31,9 @@ package ee.app.conversa.utils;
  */
 public class Const {
 
+	/* SendBird */
+	public static final String sbAppId = "17FB6C41-7B2E-41C2-B481-C2B168633616";
+
 	/* Debug/Production variables */
 	public static final boolean IS_DEBUG = true;
 
@@ -71,6 +74,8 @@ public class Const {
 
 // Category class
 	public static final String kClassCategory = "Category";
+	public static final String kCategoryRelevance = "relevance";
+	public static final String kCategoryPosition = "position";
 
 // Contact class
 	public static final String kClassContact         = "UserContact";
@@ -112,7 +117,9 @@ public class Const {
 	public static final String kUserEmailKey    = "email";
 	public static final String kUserPasswordKey = "password";
 	public static final String kUserDisplayNameKey  = "displayName";
-	public static final String kUserTypeKey     = "isUserCustomer";
+	public static final String kUserTypeKey     = "userType";
+	public static final String kUserBirthday = "birthday";
+	public static final String kUserGender = "gender";
 
 // Statistics class
 	public static final String kClassStatistics = "Statistics";
@@ -150,8 +157,6 @@ public class Const {
 	public static final String NAME                 = "name";
 	public static final String PASSWORD             = "password";
 	public static final String EMAIL                = "email";
-    public static final String BIRTHDAY             = "birthday";
-    public static final String GENDER               = "gender";
     public static final String ACTION               = "action";
 
 	/* Message constants */
@@ -197,5 +202,4 @@ public class Const {
 	/* For Gcm */
 	public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
 	public static final String REGISTRATION_COMPLETE = "registrationComplete";
-
 }

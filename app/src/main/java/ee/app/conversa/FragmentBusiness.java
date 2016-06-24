@@ -22,21 +22,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.adapters.BusinessSearchAdapter;
-import ee.app.conversa.model.Parse.Business;
-import ee.app.conversa.model.Parse.BusinessCategory;
-import ee.app.conversa.model.Parse.bCategory;
-import ee.app.conversa.utils.Const;
 
 public class FragmentBusiness extends Fragment implements SearchView.OnQueryTextListener {
 
@@ -188,51 +178,51 @@ public class FragmentBusiness extends Fragment implements SearchView.OnQueryText
 //            mRvNoBusiness.setVisibility(View.VISIBLE);//mIvNoBusiness.setVisibility(View.VISIBLE);
             mRvBusiness.setVisibility(View.GONE);
         } else {
-            ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
-            Collection<String> collection = new ArrayList<>();
-            collection.add(Const.kBusinessCategoryBusinessKey);
-            query.selectKeys(collection);
-            String cat = Const.kBusinessCategoryBusinessKey.concat(".").concat(Const.kBusinessBusinessInfoKey);
-            query.include(cat);
-            query.whereEqualTo(Const.kBusinessCategoryCategoryKey, ParseObject.createWithoutData(bCategory.class, categoryId));
-            query.whereEqualTo(Const.kBusinessCategoryActiveKey, true);
-
-            ParseQuery<Business> param1 = ParseQuery.getQuery(Business.class);
-            param1.whereEqualTo(Const.kBusinessActiveKey, true);
-            param1.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
-            param1.whereDoesNotExist(Const.kBusinessBusinessKey);
-
-            query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
-            query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
-            query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
-            query.setLimit(15);
-            query.setSkip(page * 15);
-
-            query.findInBackground(new FindCallback<BusinessCategory>() {
-
-                @Override
-                public void done(List<BusinessCategory> objects, ParseException e) {
-                    boolean reloadAll = mSwipeRefreshLayout.isRefreshing();
-
-                    if (reloadAll) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-
-                    if (e == null && objects != null) {
-                        if (reloadAll) {
-                            mBusiness.clear();
-                            mBusiness.addAll(objects);
-                            mBusinessListAdapter.setItems(mBusiness);
-                        } else {
-                            boolean add = (objects.size() == 15);
-                            mBusiness.addAll(objects);
-                            mBusinessListAdapter.addItems(mBusiness, add);
-                        }
-
-                        page++;
-                    }
-                }
-            });
+//            ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
+//            Collection<String> collection = new ArrayList<>();
+//            collection.add(Const.kBusinessCategoryBusinessKey);
+//            query.selectKeys(collection);
+//            String cat = Const.kBusinessCategoryBusinessKey.concat(".").concat(Const.kBusinessBusinessInfoKey);
+//            query.include(cat);
+//            query.whereEqualTo(Const.kBusinessCategoryCategoryKey, ParseObject.createWithoutData(fbCategory.class, categoryId));
+//            query.whereEqualTo(Const.kBusinessCategoryActiveKey, true);
+//
+//            ParseQuery<Business> param1 = ParseQuery.getQuery(Business.class);
+//            param1.whereEqualTo(Const.kBusinessActiveKey, true);
+//            param1.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
+//            param1.whereDoesNotExist(Const.kBusinessBusinessKey);
+//
+//            query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
+//            query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
+//            query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
+//            query.setLimit(15);
+//            query.setSkip(page * 15);
+//
+//            query.findInBackground(new FindCallback<BusinessCategory>() {
+//
+//                @Override
+//                public void done(List<BusinessCategory> objects, ParseException e) {
+//                    boolean reloadAll = mSwipeRefreshLayout.isRefreshing();
+//
+//                    if (reloadAll) {
+//                        mSwipeRefreshLayout.setRefreshing(false);
+//                    }
+//
+//                    if (e == null && objects != null) {
+//                        if (reloadAll) {
+//                            mBusiness.clear();
+//                            mBusiness.addAll(objects);
+//                            mBusinessListAdapter.setItems(mBusiness);
+//                        } else {
+//                            boolean add = (objects.size() == 15);
+//                            mBusiness.addAll(objects);
+//                            mBusinessListAdapter.addItems(mBusiness, add);
+//                        }
+//
+//                        page++;
+//                    }
+//                }
+//            });
         }
     }
 

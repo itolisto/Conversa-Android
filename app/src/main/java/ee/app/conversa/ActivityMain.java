@@ -18,7 +18,6 @@ import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.parse.ParseAnalytics;
 
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.management.SettingsManager;
@@ -29,6 +28,7 @@ import ee.app.conversa.utils.PagerAdapter;
 
 public class ActivityMain extends ConversaActivity {
 
+    public static ActivityMain sInstance;
     private boolean mPushHandledOnNewIntent = false;
     private ViewPager mViewPager;
     private TabLayout tabLayout;
@@ -57,14 +57,10 @@ public class ActivityMain extends ConversaActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         // Initial state of tabs and titles
-        try {
-            getSupportActionBar().setTitle(titles[0]);
-            tabLayout.getTabAt(0).setIcon(tabIcons[0]);
-            tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-            tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-        } catch (NullPointerException e) {
-            Logger.error(this.toString(), e);
-        }
+        getSupportActionBar().setTitle(titles[0]);
+        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -159,8 +155,6 @@ public class ActivityMain extends ConversaActivity {
             }
         };
 
-        ParseAnalytics.trackAppOpenedInBackground(getIntent());
-
         /* QUITAR CON EMULADOR DE ECLIPSE*/
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
@@ -169,6 +163,7 @@ public class ActivityMain extends ConversaActivity {
         } else {
             Logger.error(TAG_GCM, "No valid Google Play Services APK found.");
         }
+        sInstance = this;
 	}
 	
 	@Override
@@ -273,6 +268,10 @@ public class ActivityMain extends ConversaActivity {
         return true;
     }
 
+    public void logOut() {
+//        mAuth.signOut();
+    }
+
     /*********************************************************************************************/
 	/***********************************GOOGLE CLOUD MESSAGING************************************/
 	/********************************************* GCM *******************************************/
@@ -280,7 +279,7 @@ public class ActivityMain extends ConversaActivity {
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG_GCM = "GCM Conversa";
-    
+
 	/**
 	 * Revisa el dispositivo para asegurarse que tiene la APK de Google Play Services.
 	 * Si no lo tiene, despliega un dialogo que permite al usuario descargar la APK
@@ -301,4 +300,5 @@ public class ActivityMain extends ConversaActivity {
         }
         return true;
     }
+
 }

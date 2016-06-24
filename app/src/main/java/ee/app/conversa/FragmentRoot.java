@@ -53,7 +53,7 @@ public class FragmentRoot extends Fragment {
             trans.addToBackStack(null);
             trans.commit();
         }catch (NullPointerException e) {
-            Logger.error(this.toString(), e.getMessage());
+            Logger.error("", e.getMessage());
         }
         //firstPageListener.onSwitchToNextFragment();
     }

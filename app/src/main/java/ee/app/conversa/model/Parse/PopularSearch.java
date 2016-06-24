@@ -16,4 +16,5 @@ public class PopularSearch extends ParseObject {
     public void setBusiness(ParseObject value) {
         put("business", value);
     }
+
 }

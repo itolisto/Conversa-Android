@@ -7,7 +7,6 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -45,7 +44,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ActivitySplashScreen"
+            android:name="ee.app.conversa.ActivitySplashScreen"
             android:label="@string/app_name"
             android:noHistory="true"
             android:screenOrientation="portrait" >
@@ -61,14 +60,10 @@
             </intent-filter>
         </activity>
 
-
         <activity
-            android:name="ee.app.conversa.extendables.ConversaActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".ActivitySignIn"
+            android:name="ee.app.conversa.ActivitySignIn"
             android:screenOrientation="portrait"
+            android:noHistory="true"
             android:launchMode="singleTop" >
         </activity>
         <!-- enable the search dialog to send searches to MainActivity -->
@@ -76,11 +71,10 @@
         <meta-data android:name="android.app.default_searchable"
             android:value="ee.app.conversa.MainActivity" />
 
-
         <activity
-            android:name=".ActivityMain"
+            android:name="ee.app.conversa.ActivityMain"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTask" >
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -92,6 +86,7 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
         </activity>
+
         <activity
             android:name="ee.app.conversa.notifications.NotificationReceiver"
             android:screenOrientation="portrait"
@@ -123,7 +118,7 @@
             </intent-filter>
         </receiver>
         <!-- **************************************************************************************** -->
-        <!-- [START gcm_receiver] -->
+         <!--[START gcm_receiver]-->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -135,8 +130,8 @@
                 <category android:name="gcm.play.android.samples.com.gcmquickstart" />
             </intent-filter>
         </receiver>
-        <!-- [END gcm_receiver] -->
-        <!-- [START gcm_listener] -->
+         <!--[END gcm_receiver]-->
+         <!--[START gcm_listener]-->
         <service
             android:name="ee.app.conversa.MyGcmListenerService"
             android:exported="false" >
@@ -144,8 +139,8 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-        <!-- [END gcm_listener] -->
-        <!-- [START instanceId_listener] -->
+         <!--[END gcm_listener]-->
+         <!--[START instanceId_listener]-->
         <service
             android:name="ee.app.conversa.MyInstanceIDListenerService"
             android:exported="false">
@@ -153,15 +148,31 @@
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
             </intent-filter>
         </service>
-        <!-- [END instanceId_listener] -->
+         <!--[END instanceId_listener]-->
+
+        <!-- [START firebase_service] -->
+        <!--<service-->
+            <!--android:name="ee.app.conversa.MyGcmListenerService">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.google.firebase.MESSAGING_EVENT"/>-->
+            <!--</intent-filter>-->
+        <!--</service>-->
+        <!--&lt;!&ndash; [START firebase_iid_service] &ndash;&gt;-->
+        <!--<service-->
+            <!--android:name="ee.app.conversa.MyInstanceIDListenerService">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>-->
+            <!--</intent-filter>-->
+        <!--</service>-->
+
+        <!--<meta-data-->
+            <!--android:name="io.fabric.ApiKey"-->
+            <!--android:value="617c5ff8d2055123134c25a4b496d078123ef1da" />-->
+
         <service
             android:name="ee.app.conversa.RegistrationIntentService"
             android:exported="false">
         </service>
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="617c5ff8d2055123134c25a4b496d078123ef1da" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
