@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp" >
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="7dp"
+        android:textColor="@android:color/black"
+        android:text="@string/test_string"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:id="@+id/rlBackground"
+        android:layout_below="@id/tvDate"
+        android:layout_marginTop="7dp"
+        android:background="@drawable/wall_msg_you"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ee.app.conversa.view.RegularTextView
+            android:id="@+id/rtvMessageText"
+            android:text="@string/test_string"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:linksClickable="true"
+            android:textColor="@color/text_gray"
+            android:textSize="15sp" />
+
+        <RelativeLayout
+            android:id="@+id/rlImageContainer"
+            android:layout_below="@id/rtvMessageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:gravity="center" >
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mvMessageMap"
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                map:liteMode="true"
+                map:mapType="normal"
+                map:cameraZoom="14"/>
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/sdvMessageImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                fresco:fadeDuration="300"
+                fresco:actualImageScaleType="focusCrop"
+                fresco:placeholderImage="@drawable/business_default"
+                fresco:placeholderImageScaleType="fitCenter"
+                fresco:failureImage="@drawable/username_icon"
+                fresco:failureImageScaleType="centerInside"
+                fresco:retryImage="@drawable/refresh_icon"
+                fresco:retryImageScaleType="centerCrop"
+                fresco:progressBarImage="@drawable/rotate_loading"
+                fresco:progressBarImageScaleType="centerInside"
+                fresco:progressBarAutoRotateInterval="1000" />
+            <!--android:layout_width="110dp"-->
+            <!--android:layout_height="110dp"-->
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <ee.app.conversa.view.LightTextView
+        android:id="@+id/ltvSubText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rlBackground"
+        android:layout_marginTop="2dp"
+        android:text="@string/test_string"
+        android:textColor="@color/light_gray_subtext"
+        android:textSize="12sp" />
+</RelativeLayout>

@@ -1,68 +1,103 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/clParent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rlSearchCategories"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        <ee.app.conversa.view.MediumTextView
+            android:id="@+id/tvSearchEmpty"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="@string/no_found"
+            android:layout_centerInParent="true"
+            android:gravity="center"/>
+        <GridView
+            android:id="@+id/rvUsersSearch"
+            android:numColumns="auto_fit"
+            android:gravity="center"
+            android:background="@android:color/transparent"
+            android:cacheColorHint="@android:color/transparent"
+            android:stretchMode="columnWidth"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/rlSearchByCategory"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:visibility="gone">-->
+
+        <!--<ee.app.conversa.view.MediumTextView-->
+            <!--android:id="@+id/tvSearchBusinessByCategoryEmpty"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:text="@string/no_found"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:gravity="center"/>-->
+
+        <!--<include layout="@layout/include_search"/>-->
+        <!--&lt;!&ndash;<GridView&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/rvUsersSearchBusinessByCategory"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:numColumns="auto_fit"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:gravity="center"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:background="@android:color/transparent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:cacheColorHint="@android:color/transparent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:stretchMode="columnWidth"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:visibility="visible"/>&ndash;&gt;-->
+    <!--</RelativeLayout>-->
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" >
 
         <RelativeLayout
-            android:id="@+id/rlSearchCategories"
+            android:id="@+id/rlNoCategories"
+            android:background="@android:color/white"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-            <ee.app.conversa.view.MediumTextView
-                android:id="@+id/tvSearchEmpty"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:text="@string/no_found"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivNoBusiness"
+                android:scaleType="centerCrop"
                 android:layout_centerInParent="true"
-                android:gravity="center"/>
-            <GridView
-                android:id="@+id/rvUsersSearch"
-                android:numColumns="auto_fit"
-                android:gravity="center"
-                android:background="@android:color/transparent"
-                android:cacheColorHint="@android:color/transparent"
-                android:stretchMode="columnWidth"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"/>
+                android:contentDescription="@null"
+                android:background="@drawable/no_commerce"
+                android:layout_width="160dp"
+                android:layout_height="160dp" />
+
+            <ProgressBar
+                android:id="@+id/pbLoadingCategories"
+                android:layout_above="@id/ivNoBusiness"
+                android:layout_centerHorizontal="true"
+                style="@style/CustomProgressBar"
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srlCategories"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <RelativeLayout
-                android:id="@+id/rlNoCategories"
+            android:layout_height="wrap_content" >
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvCategories"
+                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:scaleType="fitStart"
-                    android:background="@drawable/no_commerce"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </RelativeLayout>
-
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/srlCategories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rvCategories"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:cacheColorHint="@android:color/transparent"
-                    android:divider="@null"
-                    android:listSelector="@android:color/transparent"
-                    android:overScrollMode="never" />
-            </android.support.v4.widget.SwipeRefreshLayout>
-        </RelativeLayout>
-
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:cacheColorHint="@android:color/transparent"
+                android:divider="@null"
+                android:listSelector="@android:color/transparent"
+                android:overScrollMode="never" />
+        </android.support.v4.widget.SwipeRefreshLayout>
     </RelativeLayout>
-</android.support.design.widget.CoordinatorLayout>
+
+</RelativeLayout>

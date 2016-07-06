@@ -24,15 +24,19 @@
 
 package ee.app.conversa.utils;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,9 +47,42 @@ import ee.app.conversa.R;
  * 
  * Contains various methods used through the application.
  */
-
-@SuppressLint("SimpleDateFormat")
 public class Utils {
+
+	public static class ForegroundCheckAsync extends AsyncTask<Context, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Context... params) {
+			final Context context = params[0];
+			return isAppOnForeground(context);
+		}
+
+		private boolean isAppOnForeground(Context context) {
+			ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+			List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+			if (appProcesses == null) {
+				return false;
+			}
+			final String packageName = context.getPackageName();
+			for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+				if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+						&& appProcess.processName.equals(packageName)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	/**
+	 * Checks whether this app has mobile or wireless connection
+	 *
+	 * @return true if connected
+	 */
+	public static boolean hasNetworkConnection(Context context) {
+		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnected();
+	}
 
 	public static void hideKeyboard(AppCompatActivity activity) {
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

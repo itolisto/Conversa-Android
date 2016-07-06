@@ -53,9 +53,7 @@ public class ActivitySignIn extends BaseActivity {
 	private RelativeLayout mLlSignUp;
 	private LinearLayout mLlForgotPassword;
 	private TextView mTvTitle;
-    private String mSignUpBirthday;
-    private String mSignUpGender;
-	private Screen mActiveScreen;
+    private Screen mActiveScreen;
 
     private enum Screen { SIGN_BODY, SIGN_IN, SIGN_UP, FORGOT_PASSWORD }
 
@@ -163,13 +161,6 @@ public class ActivitySignIn extends BaseActivity {
                             user.setUsername(mSignUpName);
                             user.setPassword(mSignUpPassword);
                             user.put(Const.kUserTypeKey, 1);
-                            user.put(Const.kUserBirthday, mSignUpBirthday);
-
-                            if (mSignUpGender.equals("1")) {
-                                user.put(Const.kUserGender, true);
-                            } else {
-                                user.put(Const.kUserGender, false);
-                            }
 
                             user.signUpInBackground(new SignUpCallback() {
                                 public void done(ParseException e) {
@@ -353,9 +344,6 @@ public class ActivitySignIn extends BaseActivity {
 				mLlSignIn.setVisibility(View.GONE);
 				mLlForgotPassword.setVisibility(View.GONE);
 
-                mSignUpBirthday = "";
-                mSignUpGender   = "";
-
                 mEtSignInEmail.setText("");
                 mEtSignInPassword.setText("");
                 mEtSignUpName.setText("");
@@ -453,6 +441,7 @@ public class ActivitySignIn extends BaseActivity {
      */
     public void AuthListener(boolean result, ParseException error) {
         if(result) {
+            // Do intent
             Intent intent = new Intent(ActivitySignIn.this, ActivityMain.class);
             ActivitySignIn.this.startActivity(intent);
             ActivitySignIn.this.finish();

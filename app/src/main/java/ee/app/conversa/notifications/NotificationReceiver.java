@@ -2,20 +2,15 @@ package ee.app.conversa.notifications;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
-import ee.app.conversa.ActivityChatWall;
-import ee.app.conversa.ActivityMain;
 import ee.app.conversa.ActivitySplashScreen;
-import ee.app.conversa.ConversaApp;
-import ee.app.conversa.management.SettingsManager;
-import ee.app.conversa.model.Database.User;
 import ee.app.conversa.utils.Const;
 
 /**
  * Created by edgargomez on 5/5/15.
  */
-public class NotificationReceiver extends ActionBarActivity {
+public class NotificationReceiver extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +40,7 @@ public class NotificationReceiver extends ActionBarActivity {
             final String fromUserId   = intent.getStringExtra(Const.PUSH_FROM_USER_ID);
 
             if(fromUserId != null) {
-                User fromUser = ConversaApp.getDB().isContact(fromUserId);
+//                User fromUser = ConversaApp.getDB().isContact(fromUserId);
 //                if (fromUser == null) {
 //                    try {
 //                        fromUser = new GetUserByIdAsync(this).execute(fromUserId).get(6500, TimeUnit.MILLISECONDS);
@@ -54,19 +49,19 @@ public class NotificationReceiver extends ActionBarActivity {
 //                    }
 //                }
 
-                if (fromUser != null) {
+//                if (fromUser != null) {
                     //UsersManagement.setToUser(fromUser);
-                    SettingsManager.ResetSettings();
+                    //SettingsManager.ResetSettings();
 
-                    if (ActivityChatWall.gCurrentMessages != null)
-                        ActivityChatWall.gCurrentMessages.clear();
+//                    if (ActivityChatWall.gCurrentMessages != null)
+//                        ActivityChatWall.gCurrentMessages.clear();
 
-                    startActivity(new Intent(getApplicationContext(), ActivityChatWall.class));
-                    finish();
-                } else {
-                    startActivity(new Intent(getApplicationContext(), ActivityMain.class));
-                    finish();
-                }
+//                    startActivity(new Intent(getApplicationContext(), ActivityChatWall.class));
+//                    finish();
+//                } else {
+//                    startActivity(new Intent(getApplicationContext(), ActivityMain.class));
+//                    finish();
+//                }
             }
         } else {
             startActivity(new Intent(getApplicationContext(), ActivitySplashScreen.class));

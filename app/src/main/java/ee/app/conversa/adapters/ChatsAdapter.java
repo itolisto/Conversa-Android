@@ -1,7 +1,7 @@
 package ee.app.conversa.adapters;
 
-import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,119 +12,110 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.management.SettingsManager;
 import ee.app.conversa.model.Database.dBusiness;
 import ee.app.conversa.model.Database.Message;
-import ee.app.conversa.sendbird.SendBirdController;
 import ee.app.conversa.utils.Const;
 
-public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> implements SendBirdController.ChatControllerListener{
+public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> {
 
-	private List<dBusiness> mUsers = new ArrayList<>();
-	private AppCompatActivity mActivity;
+    private final WeakReference<AppCompatActivity> mActivity;
+	private List<dBusiness> mUsers;
 
-	public ChatsAdapter(AppCompatActivity activity, List<dBusiness> users) {
-		mUsers = users;
-		mActivity = activity;
+	public ChatsAdapter(AppCompatActivity activity) {
+        this.mUsers = new ArrayList<>();
+        this.mActivity = new WeakReference<>(activity);
 	}
 
     @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
-    }
-
-    @Override
     public int getItemCount() {
-        return (mUsers == null) ? 0 : mUsers.size();
+        return mUsers.size();
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int i) {
-        dBusiness user = mUsers.get(i);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        dBusiness user = mUsers.get(position);
+        AppCompatActivity activity = mActivity.get();
+        final int sdk = Build.VERSION.SDK_INT;
 
-        if( ConversaApp.getDB().hasUnreadMessagesOrNewMessages(user.getObjectId()) ){
-            holder.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification));
+        if (ConversaApp.getDB().hasUnreadMessagesOrNewMessages(user.getBusinessId())) {
+            holder.ivUnread.setVisibility(View.VISIBLE);
+            if (activity != null) {
+                if(sdk >= 21) {
+                    holder.ivUnread.setBackground(activity.getResources().getDrawable(R.drawable.notification, null));
+                } else {
+                    holder.ivUnread.setBackground(activity.getResources().getDrawable(R.drawable.notification));
+                }
+            }
         } else {
-            holder.ivUnread.setBackground(null);
+            holder.ivUnread.setVisibility(View.GONE);
         }
-
-//        Utils.displayImage(user.getAvatarThumbFileId(), Const.BUSINESS_FOLDER, holder.ivUserImage,
-//                holder.pbLoading, ImageLoader.SMALL, R.drawable.business_default, false);
-
-//        Picasso.with(holder.mPostImageView.getContext())
-//                .load(post.getPostImageUrl())
-////                    .placeholder(R.drawable.ic_facebook)
-//                .centerCrop()
-//                .resize(QuickReturnUtils.dp2px(mContext, 346), //QuickReturnUtils es una clase de la app QuickReturn
-//                        QuickReturnUtils.dp2px(mContext, 320))
-//                .error(android.R.drawable.stat_notify_error)
-//                .into(holder.mPostImageView);
 
         holder.tvUser.setText(user.getDisplayName());
 
-        Message lastMessage = ConversaApp.getDB().getLastMessage(user.getObjectId());
+        Message lastMessage = ConversaApp.getDB().getLastMessage(user.getBusinessId());
 
         if(lastMessage == null) {
             holder.tvLastMessage.setText("");
         } else {
-            switch(lastMessage.getMessageType()) {
-                case 2:
-                    if(lastMessage.getType().equals(String.valueOf(Const.C_TYPE))) {
-                        holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
-                                + mActivity.getString(R.string.ca_picture));
-                    } else {
-                        holder.tvLastMessage.setText(user.getDisplayName() + ": "
-                                + mActivity.getString(R.string.ca_picture));
-                    }
-                    break;
-                case 3:
-                    if(lastMessage.getType().equals(String.valueOf(Const.C_TYPE))) {
-                        holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
-                                + mActivity.getString(R.string.ca_location));
-                    } else {
-                        holder.tvLastMessage.setText(user.getDisplayName() + ": "
-                                + mActivity.getString(R.string.ca_location));
-                    }
-                    break;
-                case 1:
-                    if(lastMessage.getType().equals(String.valueOf(Const.C_TYPE))) {
-                        if(lastMessage.getBody().length() > 35) {
-                            holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
-                                    + lastMessage.getBody().substring(0,35));
-                        } else {
-                            holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
-                                    + lastMessage.getBody());
-                        }
-                    } else {
-                        if(lastMessage.getBody().length() > 35) {
-                            holder.tvLastMessage.setText(user.getDisplayName() + ": " + lastMessage.getBody().substring(0,35));
-                        } else {
-                            holder.tvLastMessage.setText(user.getDisplayName() + ": " + lastMessage.getBody());
-                        }
-                    }
-                    break;
-                default:
-                    if(lastMessage.getType().equals(String.valueOf(Const.C_TYPE))) {
-                        holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
-                                + mActivity.getString(R.string.ca_message));
-                    } else {
-                        holder.tvLastMessage.setText(user.getDisplayName() + ": "
-                                + mActivity.getString(R.string.ca_message));
-                    }
-                    break;
-            }
+//            switch(lastMessage.getMessageType()) {
+//                case Const.kMessageTypeImage:
+//                    if(lastMessage.getFromUserId().equals(String.valueOf(Const.B_TYPE))) {
+//                        holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
+//                                + mActivity.getString(R.string.ca_picture));
+//                    } else {
+//                        holder.tvLastMessage.setText(user.getDisplayName() + ": "
+//                                + mActivity.getString(R.string.ca_picture));
+//                    }
+//                    break;
+//                case Const.kMessageTypeLocation:
+//                    if(lastMessage.getFromUserId().equals(String.valueOf(Const.B_TYPE))) {
+//                        holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
+//                                + mActivity.getString(R.string.ca_location));
+//                    } else {
+//                        holder.tvLastMessage.setText(user.getDisplayName() + ": "
+//                                + mActivity.getString(R.string.ca_location));
+//                    }
+//                    break;
+//                case Const.kMessageTypeText:
+//                    if(lastMessage.getFromUserId().equals(String.valueOf(Const.B_TYPE))) {
+//                        if(lastMessage.getBody().length() > 35) {
+//                            holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
+//                                    + lastMessage.getBody().substring(0,35));
+//                        } else {
+//                            holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
+//                                    + lastMessage.getBody());
+//                        }
+//                    } else {
+//                        if(lastMessage.getBody().length() > 35) {
+//                            holder.tvLastMessage.setText(user.getDisplayName() + ": " + lastMessage.getBody().substring(0,35));
+//                        } else {
+//                            holder.tvLastMessage.setText(user.getDisplayName() + ": " + lastMessage.getBody());
+//                        }
+//                    }
+//                    break;
+//                default:
+//                    if(lastMessage.getFromUserId().equals(String.valueOf(Const.B_TYPE))) {
+//                        holder.tvLastMessage.setText(mActivity.getString(R.string.you) + ": "
+//                                + mActivity.getString(R.string.ca_message));
+//                    } else {
+//                        holder.tvLastMessage.setText(user.getDisplayName() + ": "
+//                                + mActivity.getString(R.string.ca_message));
+//                    }
+//                    break;
+//            }
         }
     }
 
@@ -140,31 +131,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     public void setItems(List<dBusiness> users) {
         mUsers = users;
-    }
-
-    @Override
-    public void onMessageReceived() {
-
-    }
-
-    @Override
-    public void onMessageDelivery() {
-
-    }
-
-    @Override
-    public void onReadReceived() {
-
-    }
-
-    @Override
-    public void onTypeStartReceived() {
-
-    }
-
-    @Override
-    public void onTypeEndReceived() {
-
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
@@ -193,24 +160,25 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             this.tvUser.setTypeface(ConversaApp.getTfRalewayMedium());
             this.tvLastMessage.setTypeface(ConversaApp.getTfRalewayRegular());
 
-//            LayoutHelper.scaleWidthAndHeightAbsolute(mActivity, 2.5f, this.ivUserImage);
-
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            dBusiness user = mUsers.get(getAdapterPosition());
-            Context context = mActivity;
-            //UsersManagement.setToUser(user);
-
-            SettingsManager.ResetSettings();
-            if(ActivityChatWall.gCurrentMessages != null) {
-                ActivityChatWall.gCurrentMessages.clear();
+            AppCompatActivity activity = mActivity.get();
+            if (activity != null) {
+                dBusiness user = mUsers.get(getAdapterPosition());
+                Intent intent = new Intent(activity, ActivityChatWall.class);
+                intent.putExtra(Const.kClassBusiness, user);
+                intent.putExtra(Const.kYapDatabaseName, false);
+                activity.startActivity(intent);
+                //UsersManagement.setToUser(user);
+                //SettingsManager.ResetSettings();
+                //if(ActivityChatWall.gCurrentMessages != null) {
+                    //ActivityChatWall.gCurrentMessages.clear();
+                //}
             }
-
-            context.startActivity(new Intent(context, ActivityChatWall.class));
         }
 
         @Override

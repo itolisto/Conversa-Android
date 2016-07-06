@@ -24,33 +24,24 @@
 
 package ee.app.conversa;
 
-import android.app.ActivityManager;
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Typeface;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.parse.Parse;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-
-import java.util.List;
 
 import ee.app.conversa.management.MySQLiteHelper;
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.model.Parse.Business;
 import ee.app.conversa.model.Parse.BusinessCategory;
 import ee.app.conversa.model.Parse.BusinessOptions;
-import ee.app.conversa.model.Parse.Contact;
 import ee.app.conversa.model.Parse.Customer;
-import ee.app.conversa.model.Parse.Favorite;
-import ee.app.conversa.model.Parse.Message;
 import ee.app.conversa.model.Parse.Options;
-import ee.app.conversa.model.Parse.PopularSearch;
 import ee.app.conversa.model.Parse.bCategory;
+import ee.app.conversa.model.Parse.pMessage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Preferences;
 
@@ -61,15 +52,14 @@ import ee.app.conversa.utils.Preferences;
 
 public class ConversaApp extends Application {
 
-	private static ConversaApp sInstance;
-    private MySQLiteHelper mDb;
-	private Typeface mTfRalewayThin;
-    private Typeface mTfRalewayLight;
-    private Typeface mTfRalewayRegular;
-    private Typeface mTfRalewayMedium;
-	private Typeface mTfRalewayBold;
-	private Preferences mPreferences;
-	private LocalBroadcastManager mLocalBroadcastManager;
+	private static Typeface mTfRalewayThin;
+    private static Typeface mTfRalewayLight;
+    private static Typeface mTfRalewayRegular;
+    private static Typeface mTfRalewayMedium;
+	private static Typeface mTfRalewayBold;
+	private static MySQLiteHelper mDb;
+	private static Preferences mPreferences;
+	private static LocalBroadcastManager mLocalBroadcastManager;
 
 	/**
 	 * Called when the application is starting, before any other application objects have been created
@@ -77,7 +67,6 @@ public class ConversaApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-        sInstance = this;
         mDb = new MySQLiteHelper(this);
 		Fresco.initialize(this);
 		setPreferences(new Preferences(this));
@@ -88,11 +77,8 @@ public class ConversaApp extends Application {
 		ParseObject.registerSubclass(Account.class);
 		ParseObject.registerSubclass(bCategory.class);
 		ParseObject.registerSubclass(Business.class);
-		ParseObject.registerSubclass(Contact.class);
 		ParseObject.registerSubclass(Customer.class);
-		ParseObject.registerSubclass(Favorite.class);
-		ParseObject.registerSubclass(Message.class);
-		ParseObject.registerSubclass(PopularSearch.class);
+		ParseObject.registerSubclass(pMessage.class);
 		ParseObject.registerSubclass(BusinessCategory.class);
 		ParseObject.registerSubclass(BusinessOptions.class);
 
@@ -103,11 +89,16 @@ public class ConversaApp extends Application {
 		// Initialize Parse.
 		Parse.initialize(this, "39H1RFC1jalMV3cv8pmDGPRh93Bga1mB4dyxbLwl", "YC3vORNGt6I4f8yEsO6TyGF97XbmitofOrrS5PCC");
 
+//		You need to enable the local datastore inside your initialization command, not before like it used to be.
 //		Parse.initialize(new Parse.Configuration.Builder(this)
-//				.applicationId("39H1RFC1jalMV3cv8pmDGPRh93Bga1mB4dyxbLwl")
-////				.server("http://YOUR_PARSE_SERVER:1337/parse")
-////				.build()
+//			.applicationId("yourappid")
+//			.clientKey("yourclientkey")
+//			.server("serverurl")
+//			.enableLocalDataStore()
+//			.build()
 //		);
+
+		ParseInstallation.getCurrentInstallation().saveEventually();
 
 		//Crea las tipografias
 		setTfRalewayThin( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf") );
@@ -115,19 +106,13 @@ public class ConversaApp extends Application {
         setTfRalewayRegular( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf") );
         setTfRalewayMedium( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf") );
         setTfRalewayBold( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf") );
-		
-		//Iniciar apropiadamente los valores por defecto de la
-		//aplicacion. Es necesario ya que la aplicacion podria
-		//necesitar leer los ajustes para comportarse de cierta manera
-//        PreferenceManager.setDefaultValues(this, R.layout.fragment_settings, false);
 	}
 
-    /* ************************************************************************************************ */
-	/* **********************************PREFERENCES/FILE/BROADCAST INIT******************************* */
 	/* ************************************************************************************************ */
-	public static Preferences getPreferences() { return sInstance.mPreferences; }
-    public static LocalBroadcastManager getLocalBroadcastManager() { return sInstance.mLocalBroadcastManager; }
-    public static MySQLiteHelper getDB(){ return sInstance.mDb; }
+
+	public static Preferences getPreferences() { return mPreferences; }
+    public static LocalBroadcastManager getLocalBroadcastManager() { return mLocalBroadcastManager; }
+    public static MySQLiteHelper getDB(){ return mDb; }
 
     private void setPreferences(Preferences preferences) { mPreferences = preferences; }
 	private void setLocalBroadcastManager(LocalBroadcastManager localBroadcastManager) {
@@ -135,13 +120,12 @@ public class ConversaApp extends Application {
 	}
 
     /* ************************************************************************************************ */
-	/* *********************************************FONTS********************************************** */
-	/* ************************************************************************************************ */
-	public static Typeface getTfRalewayThin() { return sInstance.mTfRalewayThin; }
-    public static Typeface getTfRalewayLight() { return sInstance.mTfRalewayLight; }
-    public static Typeface getTfRalewayRegular() { return sInstance.mTfRalewayRegular; }
-    public static Typeface getTfRalewayMedium() { return sInstance.mTfRalewayMedium; }
-    public static Typeface getTfRalewayBold() { return sInstance.mTfRalewayBold; }
+
+	public static Typeface getTfRalewayThin() { return mTfRalewayThin; }
+    public static Typeface getTfRalewayLight() { return mTfRalewayLight; }
+    public static Typeface getTfRalewayRegular() { return mTfRalewayRegular; }
+    public static Typeface getTfRalewayMedium() { return mTfRalewayMedium; }
+    public static Typeface getTfRalewayBold() { return mTfRalewayBold; }
 
 	private void setTfRalewayThin(Typeface tfRaleway) { mTfRalewayThin = tfRaleway; }
     private void setTfRalewayLight(Typeface tfRaleway) { mTfRalewayLight = tfRaleway; }
@@ -149,54 +133,4 @@ public class ConversaApp extends Application {
     private void setTfRalewayMedium(Typeface tfRaleway) { mTfRalewayMedium = tfRaleway; }
     private void setTfRalewayBold(Typeface tfRaleway) { mTfRalewayBold = tfRaleway; }
 
-    /* ************************************************************************************************ */
-	/* **********************************************UTILS********************************************* */
-	/* ************************************************************************************************ */
-	public static class ForegroundCheckAsync extends AsyncTask<Context, Void, Boolean> {
-		@Override
-		protected Boolean doInBackground(Context... params) {
-			final Context context = params[0];
-			return isAppOnForeground(context);
-		}
-
-		private boolean isAppOnForeground(Context context) {
-			ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-			List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-			if (appProcesses == null) {
-				return false;
-			}
-			final String packageName = context.getPackageName();
-			for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-				if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-						&& appProcess.processName.equals(packageName)) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
-
-	/**
-	 * Checks whether this app has mobile or wireless connection
-     *
-	 * @return true if connected
-	 */
-	public static boolean hasNetworkConnection() {
-		final ConnectivityManager connectivityManager = (ConnectivityManager) sInstance
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		final NetworkInfo[] netInfo = connectivityManager.getAllNetworkInfo();
-		for (NetworkInfo ni : netInfo) {
-			if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
-                if (ni.isConnected()) {
-                    return true;
-                }
-            }
-			if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
-                if (ni.isConnected()) {
-                    return true;
-                }
-            }
-		}
-		return false;
-	}
 }

@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.parse.ParsePush;
+
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.utils.Logger;
 
@@ -49,8 +51,8 @@ public class FragmentSettings extends PreferenceFragmentCompat implements Shared
         mPreferenceLogout.setOnPreferenceClickListener(this);
         mPreferenceShare.setOnPreferenceClickListener(this);
 
-        mEditTextPreferenceEmail.setSummary(ConversaApp.getPreferences().getUserEmail());
-        mEditTextPreferenceName.setSummary(ConversaApp.getPreferences().getUserName());
+        //mEditTextPreferenceEmail.setSummary(ConversaApp.getPreferences().getUserEmail());
+        //mEditTextPreferenceName.setSummary(ConversaApp.getPreferences().getUserName());
 
         return super.onCreateView(paramLayoutInflater, paramViewGroup, paramBundle);
     }
@@ -178,6 +180,8 @@ public class FragmentSettings extends PreferenceFragmentCompat implements Shared
 //
 //        }
 
+        ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pbc");
+        ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pvt");
         Account.logOut();
 
         AppCompatActivity fromActivity = ActivityMain.sInstance;

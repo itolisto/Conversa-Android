@@ -1,41 +1,44 @@
 package ee.app.conversa.adapters;
 
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
 import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Parse.BusinessCategory;
+import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.model.Parse.Business;
 
-public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder>{
+public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder> {
 
-    private AppCompatActivity mActivity;
-    private List<Object> mBusiness = new ArrayList<>();
-    private BusinessAdapter adapter;
-    private List<Fav> favBusiness;
+    private final WeakReference<AppCompatActivity> mActivity;
+    private List<Business> mBusiness;
+    private OnItemClickListener listener;
 
-    public void clearFavBusiness(){
-        favBusiness.clear();
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position, Business business);
     }
 
-    public BusinessAdapter(AppCompatActivity activity, List<Object> business) {
-        mBusiness = business;
-        mActivity = activity;
-        favBusiness = new ArrayList<>();
-        adapter = this;
+    public BusinessAdapter(AppCompatActivity activity, OnItemClickListener listener) {
+        this.mActivity = new WeakReference<>(activity);
+        this.mBusiness = new ArrayList<>();
+        this.listener = listener;
     }
 
     @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
+    public int getItemCount() {
+        return mBusiness.size();
     }
 
     @Override
@@ -45,180 +48,57 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
     }
 
     @Override
-    public int getItemCount() {
-        return (mBusiness == null) ? 0 : mBusiness.size();
-    }
-
-    @Override
     public void onBindViewHolder(ViewHolder holder, int i) {
         Object object = mBusiness.get(i);
 
-        if (object.getClass().equals(BusinessCategory.class)) {
-            BusinessCategory temp = (BusinessCategory) object;
-//            Business business = temp.getBusiness();
-
-            holder.tvBusiness.setText("");//business.getBusinessInfo().getDisplayName());
-            holder.tvAbout.setText("");//business.getAbout());
+        if (object.getClass().equals(Business.class)) {
+            Business temp = (Business) object;
+            holder.tvBusiness.setText(temp.getConversaID());
+            holder.tvAbout.setText(temp.getAbout());
+            try {
+                Uri uri = Uri.parse(((Account) temp.getBusinessInfo()).getAvatar().getUrl());
+                holder.sdvCategoryImage.setImageURI(uri);
+            } catch (NullPointerException e) {
+                Log.e(this.getClass().getSimpleName(), "Business " + temp.getObjectId() + " has no avatar");
+            }
         } else if (object.getClass().equals(dBusiness.class)) {
             dBusiness business = (dBusiness) object;
-
             holder.tvBusiness.setText(business.getDisplayName());
             holder.tvAbout.setText(business.getConversaId());
         }
     }
 
-    public void setItems(List<Object> business) {
+    public void setItems(List<Business> business) {
         mBusiness = business;
         this.notifyDataSetChanged();
     }
 
-    public void addItems(List<Object> business, boolean addLoadMoreCell) {
-        int position = mBusiness.size();
+    public void addItems(List<Business> business, boolean addLoadMoreCell) {
         mBusiness.addAll(business);
-        this.notifyItemRangeInserted(position, business.size());
+        this.notifyItemRangeInserted(mBusiness.size(), business.size());
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-//        public ParseImageView ivBusinessBackground;
         public TextView tvBusiness;
         public TextView tvAbout;
-        public ImageView ivFavorite;
-        public ImageView ivStartChat;
+        public SimpleDraweeView sdvCategoryImage;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-//            this.ivBusinessBackground = (ParseImageView) itemView
-//                    .findViewById(R.id.ivBusinessBackground);
-            this.ivFavorite = (ImageView) itemView
-                    .findViewById(R.id.ivFavorite);
-            this.ivStartChat = (ImageView) itemView
-                    .findViewById(R.id.ivStartChat);
-            this.tvBusiness = (TextView) itemView
-                    .findViewById(R.id.tvBusiness);
-            this.tvAbout = (TextView) itemView
-                    .findViewById(R.id.tvBusinessAbout);
+            this.tvBusiness = (TextView) itemView.findViewById(R.id.tvConversaId);
+            this.tvAbout = (TextView) itemView.findViewById(R.id.tvDisplayName);
+            this.sdvCategoryImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvBusinessImage);
 
-            ivFavorite.setOnClickListener(this);
-            ivStartChat.setOnClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-//            int position = getPosition();
-            Object business = mBusiness.get(getAdapterPosition());
-//
-//            if(view.getId() == R.id.ivFavorite) {
-//                boolean toFav = business.ismFavorite();
-//
-//                for (Fav commerce : favBusiness) {
-//                    if(commerce.getPosition() == position){ toFav = false; }
-//                }
-//
-//                if(toFav) {
-//                    CouchDB.addFavoriteCommerceAsync(
-//                            business.getmId(), new AddRemoveFavoriteFinish("add", view, position), mActivity, false
-//                    );
-//                } else {
-//                    CouchDB.removeFavoriteCommerceAsync(
-//                            business.getmId(), new AddRemoveFavoriteFinish("remove", view, position), mActivity, false
-//                    );
-//                }
-//            } else {
-//                if(view.getId() == R.id.ivStartChat) {
-//                    CouchDB.addUserContactAsync(business.getmId(), new AddContactFinish(), mActivity, false);
-//                }
-//            }
+            if (listener != null)
+                listener.onItemClick(itemView, getLayoutPosition(), mBusiness.get(getAdapterPosition()));
         }
-    }
-
-//    private class AddRemoveFavoriteFinish implements ResultListener<Boolean> {
-//
-//        String action;
-//        View view;
-//        int position;
-//
-//        public AddRemoveFavoriteFinish (String action, View view, int position) {
-//            this.action = action;
-//            this.view = view;
-//            this.position = position;
-//        }
-//
-//        @Override
-//        public void onResultsSuccess(Boolean result) {
-//            ImageView image = (ImageView) view.findViewById( R.id.ivFavorite );
-//            if (result) {
-//                if(action.equals("add")) {
-//                    if (Build.VERSION.SDK_INT >= 16) {
-//                        image.setBackground(mActivity.getResources().getDrawable(R.drawable.fav));
-//                    } else {
-//                        image.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav));
-//                    }
-//                    //Agregar a lista
-//                    Fav commerce = new Fav(position);
-//                    favBusiness.add(commerce);
-//                } else {
-//                    if (Build.VERSION.SDK_INT >= 16) {
-//                        image.setBackground(mActivity.getResources().getDrawable(R.drawable.fav_not));
-//                    } else {
-//                        image.setBackgroundDrawable(mActivity.getResources().getDrawable(R.drawable.fav_not));
-//                    }
-//                    //Eliminar de lista
-//                    int i = 0;
-//                    for (Fav commerce : favBusiness) {
-//                        if(commerce.getPosition() == position){ favBusiness.remove(i); break; }
-//                        i++;
-//                    }
-//                }
-//                Logger.error("BusinessAdapter", action + ": " + position);
-//            } else {
-//                Toast.makeText(mActivity, mActivity.getString(R.string.fav_error), Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//
-//        @Override
-//        public void onResultsFail() {
-//            Toast.makeText(mActivity, mActivity.getString(R.string.fav_error), Toast.LENGTH_SHORT).show();
-//        }
-//    }
-//
-//    private class AddContactFinish implements ResultListener<User> {
-//
-//        public AddContactFinish() { }
-//
-//        @Override
-//        public void onResultsSuccess(User result) {
-//            if (result != null) {
-//                Context context = mActivity;
-//                UsersManagement.setToUser(result);
-//
-//                SettingsManager.ResetSettings();
-//                if(ActivityChatWall.gCurrentMessages != null)
-//                    ActivityChatWall.gCurrentMessages.clear();
-//
-//                context.startActivity(new Intent(context, ActivityChatWall.class));
-//            } else {
-//                Toast.makeText(mActivity, mActivity.getString(R.string.adding_contact_error), Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//
-//        @Override
-//        public void onResultsFail() {
-//            Toast.makeText(mActivity, mActivity.getString(R.string.adding_contact_error), Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
-    // Es necesario ya que cuando se obtienen los negocios se envie cuales son favoritos
-    // pero si escojo uno que aun no era favorito tengo que saber cual es su posicion porque
-    // cuando se reciclan las vistas y no se cual era su posicion, todas las vistas en que se
-    // reciclen usando esa vista van a tener favorito.
-    class Fav{
-        private int position;
-        public Fav() {}
-        public Fav(int position) { this.position = position; }
-        public int getPosition() { return position; }
-        public void setPosition(int position) { this.position = position; }
     }
 }
 

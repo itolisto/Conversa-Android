@@ -1,5 +1,6 @@
 package ee.app.conversa.adapters;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,23 +19,18 @@ import ee.app.conversa.model.Parse.bCategory;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder>{
 
+    private Context activity;
     private List<bCategory> mCategories;
     private OnItemClickListener listener;
-//    private PagerAdapter.FirstPageFragmentListener firstPageListener;
 
     public interface OnItemClickListener {
         void onItemClick(View itemView, int position, bCategory category);
     }
 
-    public CategoryAdapter(OnItemClickListener listener) {
+    public CategoryAdapter(Context activity, OnItemClickListener listener) {
+        this.activity = activity;
         this.mCategories = new ArrayList<>();
         this.listener = listener;
-//        firstPageListener = listener;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
     }
 
     @Override
@@ -51,7 +47,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @Override
     public void onBindViewHolder(final ViewHolder holder, int i) {
         final bCategory category = mCategories.get(i);
-        holder.tvCategoryTitle.setText(category.getName());
+        holder.tvCategoryTitle.setText(category.getCategoryName(activity));
 
         if(category.getThumbnail().getUrl().length() > 0) {
             Uri uri = Uri.parse(category.getThumbnail().getUrl());

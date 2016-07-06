@@ -1,88 +1,51 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:background="@android:color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:id="@+id/rlSearchBusinessByCategory"
+        android:id="@+id/rlNoBusiness"
+        android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
-        <ee.app.conversa.view.MediumTextView
-            android:id="@+id/tvSearchBusinessByCategoryEmpty"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:text="@string/no_found"
-            android:layout_centerInParent="true"
-            android:gravity="center"/>
-
-        <include layout="@layout/include_search"/>
-        <!--<GridView-->
-            <!--android:id="@+id/rvUsersSearchBusinessByCategory"-->
-            <!--android:numColumns="auto_fit"-->
-            <!--android:gravity="center"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:cacheColorHint="@android:color/transparent"-->
-            <!--android:stretchMode="columnWidth"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:visibility="visible"/>-->
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rlBody"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:clickable="true"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <ImageView
-            android:id="@+id/tvNoBusiness"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/no_commerce"
-            android:background="@color/background_no_element"
-            android:scaleType="fitCenter"
-            android:visibility="gone" />
+            android:id="@+id/ivNoBusiness"
+            android:scaleType="centerCrop"
+            android:layout_centerInParent="true"
+            android:contentDescription="@null"
+            android:background="@drawable/no_commerce"
+            android:layout_width="160dp"
+            android:layout_height="160dp" />
 
-        <!--<android.support.v7.widget.RecyclerView-->
-            <!--android:id="@+id/rvNoBusiness"-->
+        <!--<ee.app.conversa.view.MediumTextView-->
+            <!--android:id="@+id/tvSearchBusinessByCategoryEmpty"-->
+            <!--android:layout_height="wrap_content"-->
             <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:background="@android:color/white"-->
-            <!--android:cacheColorHint="@android:color/transparent"-->
-            <!--android:divider="@null"-->
-            <!--android:listSelector="@android:color/transparent"-->
-            <!--android:overScrollMode="never" />-->
+            <!--android:text="@string/no_found"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:gravity="center"/>-->
 
-        <RelativeLayout
-            android:id="@+id/rlCategories"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:visibility="visible" >
-
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/srlBusiness"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rvBusiness"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
-                    android:paddingTop="5dp"
-                    android:background="@android:color/transparent"
-                    android:cacheColorHint="@android:color/transparent"
-                    android:divider="@null"
-                    android:listSelector="@android:color/transparent"
-                    android:overScrollMode="never" />
-
-            </android.support.v4.widget.SwipeRefreshLayout>
-        </RelativeLayout>
+        <ProgressBar
+            android:id="@+id/pbLoadingCategory"
+            android:layout_above="@id/ivNoBusiness"
+            android:layout_centerHorizontal="true"
+            style="@style/CustomProgressBar"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
     </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvBusiness"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:visibility="gone"
+        android:overScrollMode="never" />
 </RelativeLayout>

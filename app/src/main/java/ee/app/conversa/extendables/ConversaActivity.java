@@ -131,13 +131,13 @@ public class ConversaActivity extends BaseActivity {
             return value;
         } else {
             switch(lastMessage.getMessageType()) {
-                case 2:
+                case Const.kMessageTypeImage:
                     value = getString(R.string.ca_picture);
                     break;
-                case 3:
+                case Const.kMessageTypeLocation:
                     value = getString(R.string.ca_location);
                     break;
-                case 1:
+                case Const.kMessageTypeText:
                     if(lastMessage.getBody().length() > 19) {
                         value = lastMessage.getBody().substring(0,19).concat("...");
                     } else {

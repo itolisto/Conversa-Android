@@ -13,24 +13,16 @@ public class Business extends ParseObject {
         return getString("conversaID");
     }
 
-    public void setConversaID(String value) {
-        put("conversaID", value);
-    }
-
     public String getAbout() {
         return getString("about");
     }
 
-    public void setAbout(String value) {
-        put("about", value);
+    public String getStatus() {
+        return getString("status");
     }
 
-    public ParseObject getBusinessInfo() {
-        return getParseObject("businessInfo");
-    }
-
-    public void setBusinessInfo(ParseObject value) {
-        put("businessInfo", value);
+    public Account getBusinessInfo() {
+        return (Account)getParseObject("businessInfo");
     }
 
 }

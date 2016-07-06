@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-	<rotate
-	    xmlns:android="http://schemas.android.com/apk/res/android" 
-    	android:drawable="@drawable/loading_icon"
-    	android:pivotX="50%"
-    	android:pivotY="50%" 
-    	android:fromDegrees="0"
-    	android:toDegrees="710"
-    	android:interpolator="@android:anim/linear_interpolator" >
+<rotate
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:fromDegrees="90"
+	android:pivotX="50%"
+	android:pivotY="50%"
+	android:toDegrees="360">
 
- </rotate> 
+	<shape
+		android:innerRadiusRatio="3"
+		android:shape="ring"
+		android:thicknessRatio="7.0">
+
+		<gradient
+			android:centerColor="#007DD6"
+			android:endColor="#007DD6"
+			android:startColor="#007DD6"
+			android:angle="0"
+			android:type="sweep"
+			android:useLevel="false" />
+	</shape>
+
+</rotate>
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+	<!--<rotate-->
+	    <!--xmlns:android="http://schemas.android.com/apk/res/android" -->
+    	<!--android:drawable="@drawable/loading_icon"-->
+    	<!--android:pivotX="50%"-->
+    	<!--android:pivotY="50%" -->
+    	<!--android:fromDegrees="0"-->
+    	<!--android:toDegrees="710"-->
+    	<!--android:interpolator="@android:anim/linear_interpolator" >-->
+
+ <!--</rotate> -->

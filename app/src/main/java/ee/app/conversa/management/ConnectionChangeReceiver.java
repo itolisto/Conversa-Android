@@ -29,7 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
-import ee.app.conversa.ConversaApp;
+import ee.app.conversa.utils.Utils;
 
 /**
  * ConnectionChangeReceiver
@@ -46,7 +46,8 @@ public class ConnectionChangeReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		boolean hasInternetConnection = ConversaApp.hasNetworkConnection();
+		boolean hasInternetConnection = Utils.hasNetworkConnection(context);
+
 		if(hasInternetConnection) {
 			mConnectionChangeBroadcast.putExtra(HAS_INTERNET_CONNECTION, true);
 		} else {

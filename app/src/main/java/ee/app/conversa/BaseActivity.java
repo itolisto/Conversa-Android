@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import com.google.firebase.auth.FirebaseUser;
 
 import ee.app.conversa.management.ConnectionChangeReceiver;
+import ee.app.conversa.utils.Utils;
 
 /**
  * Created by edgargomez on 6/3/16.
@@ -77,7 +78,7 @@ public class BaseActivity extends AppCompatActivity {
     };
 
     protected boolean checkInternetConnection() {
-        return ConversaApp.hasNetworkConnection();
+        return Utils.hasNetworkConnection(getApplicationContext());
     }
 
     public void noInternetConnection() {

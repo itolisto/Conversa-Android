@@ -36,11 +36,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.sendbird.android.model.User;
-
 import ee.app.conversa.R;
-
-//import ee.app.conversa.WallActivity;
+import ee.app.conversa.model.Database.dBusiness;
 
 /**
  * PushNotification
@@ -60,7 +57,7 @@ public class PushNotification {
 	private int mAnimationDuration;
 
 	private RelativeLayout mPushLayout;
-	private User mFromUser;
+	private dBusiness mFromUser;
 	private Context mContext;
 
 	private final TranslateAnimation mSlideFromTop = new TranslateAnimation(
@@ -91,7 +88,7 @@ public class PushNotification {
 	 * @param message
 	 * @param fromUser
 	 */
-	public static void show(Context context, RelativeLayout layout, String message, User fromUser) {
+	public static void show(Context context, RelativeLayout layout, String message, dBusiness fromUser) {
 		sInstance.mContext = context;
 		sInstance.mPushLayout = layout;
         sInstance.mFromUser = fromUser;
@@ -131,7 +128,7 @@ public class PushNotification {
 		mPushLayout.setVisibility(View.VISIBLE);
 		final TextView tvUserName = (TextView) mPushLayout
 				.findViewById(R.id.tvUserName);
-		tvUserName.setText(sInstance.mFromUser.getName());
+		tvUserName.setText(sInstance.mFromUser.getDisplayName());
 		final TextView tvNotification = (TextView) mPushLayout
 				.findViewById(R.id.tvNotification);
 		tvNotification.setText(message);

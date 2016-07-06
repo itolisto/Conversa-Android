@@ -13,15 +13,16 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.parse.ParsePush;
 
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.management.SettingsManager;
-import ee.app.conversa.model.Database.User;
+import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
@@ -92,12 +93,6 @@ public class ActivityMain extends ConversaActivity {
                         break;
                     default:
                         if (p == 1) {
-                            String title = ConversaApp.getPreferences().getCurrentCategoryTitle();
-                            if (!title.isEmpty()) {
-                                getSupportActionBar().setTitle(title);
-                                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                            }
-
                             tab.setIcon(R.drawable.actuales_active);
                         } else {
                             tab.setIcon(R.drawable.chats_active);
@@ -155,14 +150,15 @@ public class ActivityMain extends ConversaActivity {
             }
         };
 
-        /* QUITAR CON EMULADOR DE ECLIPSE*/
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
+        if (ConversaApp.getPreferences().getCustomerId().isEmpty()) {
+            // Get Customer Id
+            Account.getCustomerId();
         } else {
-            Logger.error(TAG_GCM, "No valid Google Play Services APK found.");
+            // 2. Subscribe to Customer channels
+            ParsePush.subscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pbc");
+            ParsePush.subscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pvt");
         }
+
         sInstance = this;
 	}
 	
@@ -208,9 +204,16 @@ public class ActivityMain extends ConversaActivity {
     @Override
     public void onBackPressed() {
         if(mViewPager.getCurrentItem() == 1) {
-            if (mPagerAdapter.getItem(1) instanceof FragmentRoot) {
-                ((FragmentRoot) mPagerAdapter.getItem(1)).backPressed();
+            Log.e(this.getClass().getSimpleName(), "getBackStackEntryCountness " + getSupportFragmentManager().getBackStackEntryCount());
+            if(getSupportFragmentManager().getBackStackEntryCount() > 1) {
+                getSupportActionBar().setTitle(getString(R.string.categories));
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                getSupportFragmentManager().popBackStack();
                 return;
+            } else {
+                // We need to pop immediate because root fragment is being pop when
+                // back is pressed. This way we exit application as expected.
+                getSupportFragmentManager().popBackStack();
             }
         }
 
@@ -219,9 +222,9 @@ public class ActivityMain extends ConversaActivity {
 
     private void openWallFromNotification(Intent intent) {
         String fromUserId = intent.getStringExtra(Const.PUSH_FROM_USER_ID);
-        User fromUser     = ConversaApp.getDB().isContact(fromUserId);
+//        User fromUser     = ConversaApp.getDB().isContact(fromUserId);
 
-        if(fromUser == null) {
+//        if(fromUser == null) {
 //            try {
 //                fromUser = new ConversaAsyncTask<Void, Void, User>(
 //                        new CouchDB.FindBusinessById(fromUserId), null, getApplicationContext(), true
@@ -229,14 +232,14 @@ public class ActivityMain extends ConversaActivity {
 //            } catch (InterruptedException | ExecutionException e) {
 //                e.printStackTrace();
 //            }
-        } else {
-            //UsersManagement.setToUser(fromUser);
-            SettingsManager.ResetSettings();
-            if (ActivityChatWall.gCurrentMessages != null)
-                ActivityChatWall.gCurrentMessages.clear();
+//        } else {
+            //UsersManagement.setBusiness(fromUser);
+            //SettingsManager.ResetSettings();
+//            if (ActivityChatWall.gCurrentMessages != null)
+//                ActivityChatWall.gCurrentMessages.clear();
 
-            startActivity(new Intent(this, ActivityChatWall.class));
-        }
+//            startActivity(new Intent(this, ActivityChatWall.class));
+//        }
     }
 
     @Override
@@ -255,7 +258,7 @@ public class ActivityMain extends ConversaActivity {
                 break;
             case 1:
                 if (item != null) {
-                    item.setVisible(false);
+                    item.setVisible(true);
                 }
                 break;
             case 2:

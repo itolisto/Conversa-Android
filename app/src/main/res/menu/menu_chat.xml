@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto">
+    <item
+        android:icon="@drawable/more_btn_off"
+        myapp:showAsAction="always"
+        android:title="br">
+        <menu>
+            <item
+                android:id="@+id/badge"
+                android:icon="@drawable/more_btn_off"
+                myapp:actionLayout="@layout/menu_actionbar_chat"
+                android:title="Options"
+                myapp:showAsAction="always"
+                android:visible="true"/>
+        </menu>
+    </item>
+</menu>

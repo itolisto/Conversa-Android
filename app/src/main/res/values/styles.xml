@@ -50,6 +50,7 @@
     </style>
 
     <style name="CustomProgressBar" parent="@android:style/Widget.ProgressBar.Large">
+        <item name="android:indeterminate">true</item>
         <item name="android:indeterminateDrawable">@drawable/rotate_loading</item>
     </style>
 

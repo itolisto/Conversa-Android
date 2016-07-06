@@ -24,10 +24,20 @@
 
 package ee.app.conversa.model.Database;
 
-import android.os.SystemClock;
-import android.support.v7.app.AppCompatActivity;
+import android.database.SQLException;
+import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
 
-import ee.app.conversa.R;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
+import ee.app.conversa.ConversaApp;
+import ee.app.conversa.adapters.ChatsAdapter;
+import ee.app.conversa.interfaces.OnContactTaskCompleted;
+import ee.app.conversa.responses.ContactResponse;
 
 /**
  * Emoticon
@@ -35,189 +45,190 @@ import ee.app.conversa.R;
  * Model class for business.
  */
 
-public class dBusiness extends User {
+public class dBusiness implements Parcelable {
 
-    public String mBusinessId;
-    public String mConversaId;
-    public String mAbout;
-    public String mStatusMessage;
-    public String mComposingMessageString;
-    public boolean mBlocked;
-    public boolean mMuted;
-    public boolean mFavorite;
-    public long mRecent; // Used for order chat view
+    private long mId;
+    private String mBusinessId;
+    private String mDisplayName;
+    private String mConversaId;
+    private String mAbout;
+    private String mStatusMessage;
+    private String mComposingMessageString;
+    private String mAvatarThumbFileId;
+    private boolean mBlocked;
+    private boolean mMuted;
+    private long mRecent;
+    private long mCreated;
 
-    public dBusiness() {}
+    // MESSAGE ACTIONS
+    public static final int ACTION_MESSAGE_SAVE = 1;
+    public static final int ACTION_MESSAGE_UPDATE = 2;
+    public static final int ACTION_MESSAGE_DELETE = 3;
+    public static final int ACTION_MESSAGE_NONE = 4;
+    public static final int ACTION_MESSAGE_RETRIEVE_ALL = 5;
 
-    public dBusiness(String mObjectId, String mBusinessId, String mDisplayName, String mConversaId, String mAbout, String mStatusMessage, String mComposingMessageString, boolean mBlocked, boolean mMuted, boolean mFavorite) {
-        this.mObjectId = mObjectId;
-        this.mBusinessId = mBusinessId;
-        this.mDisplayName = mDisplayName;
-        this.mConversaId = mConversaId;
-        this.mAbout             = mAbout;
-        this.mStatusMessage = mStatusMessage;
-        this.mComposingMessageString = mComposingMessageString;
-        this.mBlocked = mBlocked;
-        this.mMuted = mMuted;
-        this.mFavorite = mFavorite;
-        this.mRecent = SystemClock.currentThreadTimeMillis() / 1000;
+    private final WeakReference<ChatsAdapter> adapter;
+
+    public dBusiness(long id, ChatsAdapter adapter) {
+        this.mId = id;
+        this.mComposingMessageString = "";
+        this.mBlocked = false;
+        this.mMuted = false;
+        this.mCreated = System.currentTimeMillis();
+        this.mRecent = this.mCreated;
+        this.adapter = new WeakReference<>(adapter);
     }
 
-    public String getBusinessId() {
-        return mBusinessId;
-    }
+    public long getId() { return mId; }
+    public String getBusinessId() { return mBusinessId; }
+    public String getDisplayName() { return mDisplayName; }
+    public String getConversaId() { return mConversaId; }
+    public String getAbout() { return mAbout; }
+    public String getStatusMessage() { return mStatusMessage; }
+    public String getComposingMessage() { return mComposingMessageString; }
+    public String getAvatarThumbFileId() { return mAvatarThumbFileId; }
+    public boolean isBlocked() { return mBlocked; }
+    public boolean isMuted() { return mMuted; }
+    public long getRecent() { return mRecent; }
+    public long getCreated() { return mCreated; }
 
-    public String getConversaId() {
-        return mConversaId;
-    }
-
-    public String getAbout() {
-        return mAbout;
-    }
-
-    public String getDisplayName() {
-        return mDisplayName;
-    }
-
-    public String getComposingMessage() {
-        return mComposingMessageString;
-    }
-
-    public String getStatusMessage() {
-        return mStatusMessage;
-    }
-
-    public boolean isFavorite() {
-        return mFavorite;
-    }
-
-    public boolean isBlocked() {
-        return mBlocked;
-    }
-
-    public boolean isMuted() {
-        return mMuted;
-    }
-
-    public long getRecent() {
-        return mRecent;
-    }
-
-    public String getmTitle(AppCompatActivity activity) {
-        int id;
-        try {
-            id = Integer.valueOf("1");
-        } catch(NumberFormatException e) {
-            return "";
-        }
-
-        String category = "";
-        switch(id) {
-            case 1:
-                category =  activity.getString(R.string.category_1);
-                break;
-            case 2:
-                category =  activity.getString(R.string.category_2);
-                break;
-            case 3:
-                category =  activity.getString(R.string.category_3);
-                break;
-            case 4:
-                category =  activity.getString(R.string.category_4);
-                break;
-            case 5:
-                category =  activity.getString(R.string.category_5);
-                break;
-            case 6:
-                category =  activity.getString(R.string.category_6);
-                break;
-            case 7:
-                category =  activity.getString(R.string.category_7);
-                break;
-            case 8:
-                category =  activity.getString(R.string.category_8);
-                break;
-            case 9:
-                category =  activity.getString(R.string.category_9);
-                break;
-            case 10:
-                category =  activity.getString(R.string.category_10);
-                break;
-            case 11:
-                category =  activity.getString(R.string.category_11);
-                break;
-            case 12:
-                category =  activity.getString(R.string.category_12);
-                break;
-            case 13:
-                category =  activity.getString(R.string.category_13);
-                break;
-            case 14:
-                category =  activity.getString(R.string.category_14);
-                break;
-            case 15:
-                category =  activity.getString(R.string.category_15);
-                break;
-            case 16:
-                category =  activity.getString(R.string.category_16);
-                break;
-            case 17:
-                category =  activity.getString(R.string.category_17);
-                break;
-            case 18:
-                category =  activity.getString(R.string.category_18);
-                break;
-            case 19:
-                category =  activity.getString(R.string.category_19);
-                break;
-            case 20:
-                category =  activity.getString(R.string.category_20);
-                break;
-            case 21:
-                category =  activity.getString(R.string.category_21);
-                break;
-            case 22:
-                category =  activity.getString(R.string.category_22);
-                break;
-            case 23:
-                category =  activity.getString(R.string.category_23);
-                break;
-            case 24:
-                category =  activity.getString(R.string.category_24);
-                break;
-        }
-
-        return category;
-    }
-
-
-    public void setBusinessId(String mBusinessId) {
-        this.mBusinessId = mBusinessId;
-    }
-
-    public void setConversaId(String mConversaId) {
-        this.mConversaId = mConversaId;
-    }
-
-    public void setComposingMessage(String mComposingMessageString) {
-        this.mComposingMessageString = mComposingMessageString;
-    }
-
-    public void setRecent(long mRecent) {
-        this.mRecent = mRecent;
-    }
-
-    public void setStatusMessage(String mStatusMessage) {
-        this.mStatusMessage = mStatusMessage;
-    }
-
+    public void setId(long mId) { this.mId = mId; }
+    public void setBusinessId(String mBusinessId) { this.mBusinessId = mBusinessId; }
+    public void setDisplayName(String mDisplayName) { this.mDisplayName = mDisplayName; }
+    public void setConversaId(String mConversaId) { this.mConversaId = mConversaId; }
     public void setAbout(String about) { this.mAbout = about; }
+    public void setStatusMessage(String mStatusMessage) { this.mStatusMessage = mStatusMessage; }
+    public void setComposingMessage(String mComposingMessageString) { this.mComposingMessageString = mComposingMessageString; }
+    public void setAvatarThumbFileId(String mAvatarThumbFileId) { this.mAvatarThumbFileId = mAvatarThumbFileId; }
+    public void setBlocked(boolean mBlocked) { this.mBlocked = mBlocked; }
+    public void setMuted(boolean mMuted) { this.mMuted = mMuted; }
+    public void setRecent(long mRecent) { this.mRecent = mRecent; }
+    public void setCreated(long mCreated) { this.mCreated = mCreated; }
 
-    public void setBlocked(boolean mBlocked) {
-        this.mBlocked = mBlocked;
+    /* ******************************************************************************** */
+	/* ************************************ SETTERS *********************************** */
+	/* ******************************************************************************** */
+    public void saveToLocalDatabase(OnContactTaskCompleted e) {
+        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner(e);
+        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_SAVE, this);
     }
 
-    public void setMuted(boolean mMuted) {
-        this.mMuted = mMuted;
+    public static void getAllContacts(OnContactTaskCompleted e) {
+        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner(e);
+        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL);
     }
+
+    private static class ContactAsyncTaskRunner extends AsyncTask<Object, String, ContactResponse> {
+
+        private OnContactTaskCompleted taskCompleted;
+
+        public ContactAsyncTaskRunner(OnContactTaskCompleted activityContext) {
+            this.taskCompleted = activityContext;
+        }
+
+        @Override
+        protected ContactResponse doInBackground(Object... params) {
+            try {
+                Log.e("ContactAsyncTaskRunner", "INTENTANDO GUARDAR/ACTUALIZAR/ELIMINAR USUARIO...");
+                int val = (int)params[0];
+
+                List<dBusiness> users = new ArrayList<>();
+                dBusiness user = new dBusiness(-1, null);
+
+                if (params.length > 1) {
+                    user = (dBusiness) params[1];
+                }
+
+                switch (val) {
+                    case ACTION_MESSAGE_SAVE:
+                        users.add(ConversaApp.getDB().saveContact(user));
+                        break;
+                    case ACTION_MESSAGE_UPDATE:
+                        break;
+                    case ACTION_MESSAGE_DELETE:
+                        break;
+                    case ACTION_MESSAGE_RETRIEVE_ALL:
+                        users = ConversaApp.getDB().getAllContacts();
+                        break;
+                }
+
+                return new ContactResponse(val, users);
+            } catch (SQLException e) {
+                Log.e("ContactAsyncTaskRunner", "No se pudo guardar usuario porque ocurrio el siguiente error: " + e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ContactResponse user) {
+            Log.e("ContactAsyncTaskRunner", "onPostExecute HA FINALIZADO, EL RESULTADO: " + (user != null));
+            if (taskCompleted != null) {
+                taskCompleted.OnContactTaskCompleted(user);
+            }
+        }
+    }
+
+    // In the vast majority of cases you can simply return 0 for this.
+    // There are cases where you need to use the constant `CONTENTS_FILE_DESCRIPTOR`
+    // But this is out of scope of this tutorial
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // This is where you write the values you want to save to the `Parcel`.
+    // The `Parcel` class has methods defined to help you save all of your values.
+    // Note that there are only methods defined for simple values, lists, and other Parcelable objects.
+    // You may need to make several classes Parcelable to send the data you want.
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.mId);
+        dest.writeString(this.mBusinessId);
+        dest.writeString(this.mDisplayName);
+        dest.writeString(this.mConversaId);
+        dest.writeString(this.mAbout);
+        dest.writeString(this.mStatusMessage);
+        dest.writeString(this.mComposingMessageString);
+        dest.writeString(this.mAvatarThumbFileId);
+        dest.writeByte(this.mBlocked ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.mMuted ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.mRecent);
+        dest.writeLong(this.mCreated);
+    }
+
+    // Using the `in` variable, we can retrieve the values that
+    // we originally wrote into the `Parcel`.  This constructor is usually
+    // private so that only the `CREATOR` field can access.
+    protected dBusiness(Parcel in) {
+        this.mId = in.readLong();
+        this.mBusinessId = in.readString();
+        this.mDisplayName = in.readString();
+        this.mConversaId = in.readString();
+        this.mAbout = in.readString();
+        this.mStatusMessage = in.readString();
+        this.mComposingMessageString = in.readString();
+        this.mAvatarThumbFileId = in.readString();
+        this.mBlocked = in.readByte() != 0;
+        this.mMuted = in.readByte() != 0;
+        this.mRecent = in.readLong();
+        this.mCreated = in.readLong();
+        this.adapter = null;
+    }
+
+    // After implementing the `Parcelable` interface, we need to create the
+    // `Parcelable.Creator<MyParcelable> CREATOR` constant for our class;
+    // Notice how it has our class specified as its type.
+    public static final Parcelable.Creator<dBusiness> CREATOR = new Parcelable.Creator<dBusiness>() {
+        // This simply calls our new constructor (typically private) and
+        // passes along the unmarshalled `Parcel`, and then returns the new object!
+        @Override
+        public dBusiness createFromParcel(Parcel source) {
+            return new dBusiness(source);
+        }
+        // We just need to copy this and change the type to match our class.
+        @Override
+        public dBusiness[] newArray(int size) {
+            return new dBusiness[size];
+        }
+    };
 }

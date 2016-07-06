@@ -38,6 +38,51 @@ public class Const {
 	public static final boolean IS_DEBUG = true;
 
     /* Parse */
+	// Category class
+	public static final String kClassCategory = "Category";
+	public static final String kCategoryThumbnail = "thumbnail";
+	public static final String kCategoryRelevance = "relevance";
+	public static final String kCategoryPosition = "position";
+
+	// Message class
+		// pMessage
+		public static final String kClassMessage       = "Message";
+		public static final String kMessageUserKey = "user";
+		public static final String kMessageBusinessKey = "business";
+		public static final String kMessageFromUserKey = "fromUser";
+		public static final String kMessageSizeInBytesKey = "sizeInBytes";
+		public static final String kMessageWidthKey    = "width";
+		public static final String kMessageHeightKey   = "height";
+		public static final String kMessageThumbKey    = "thumbnail";
+		public static final String kMessageFileKey     = "file";
+		public static final String kMessageTextKey     = "text";
+		public static final String kMessageDurationKey = "duration";
+		public static final String kMessageLocationKey = "location";
+		public static final String kMessageReadAtKey = "reatAt";
+		// Message
+		public static final String kMessageTypeText = "t";
+		public static final String kMessageTypeAudio = "a";
+		public static final String kMessageTypeVideo = "v";
+		public static final String kMessageTypeImage = "i";
+		public static final String kMessageTypeLocation = "l";
+
+
+	// User class
+	public static final String kUserAvatarKey   = "avatar";
+	public static final String kUserUsernameKey = "username";
+	public static final String kUserEmailKey    = "email";
+	public static final String kUserPasswordKey = "password";
+	public static final String kUserDisplayNameKey  = "displayName";
+	public static final String kUserTypeKey     = "userType";
+	public static final String kUserBirthday = "birthday";
+	public static final String kUserGender = "gender";
+
+
+
+
+
+
+
 	// Options class
 	public static final String kClassOptions           = "Options";
 	public static final String kOptionsCodeKey         = "code";
@@ -72,11 +117,6 @@ public class Const {
 	public static final String kBusinessBusinessKey     = "business";
 	public static final String kBusinessTagTagKey       = "tags";
 
-// Category class
-	public static final String kClassCategory = "Category";
-	public static final String kCategoryRelevance = "relevance";
-	public static final String kCategoryPosition = "position";
-
 // Contact class
 	public static final String kClassContact         = "UserContact";
 	public static final String kContactFromUserKey   = "fromUser";
@@ -89,18 +129,6 @@ public class Const {
 	public static final String kFavoriteToBusinessKey = "toBusiness";
 	public static final String kFavoriteIsFavoriteKey = "isCurrentlyFavorite";
 
-// Message class
-	public static final String kClassMessage       = "Message";
-	public static final String kMessageFromUserKey = "fromUser";
-	public static final String kMessageToUserKey   = "toUser";
-	public static final String kMessageFileKey     = "file";
-	public static final String kMessageThumbKey    = "thumbnail";
-	public static final String kMessageWidthKey    = "width";
-	public static final String kMessageHeightKey   = "height";
-	public static final String kMessageDurationKey = "duration";
-	public static final String kMessageLocationKey = "location";
-	public static final String kMessageTextKey     = "text";
-
 // PubNubMessage class
 	public static final String kPubNubMessageTextKey = "message";
 	public static final String kPubNubMessageFromKey = "from";
@@ -110,16 +138,6 @@ public class Const {
 	public static final String kMessageMediaImageLocation = "/image";
 	public static final String kMessageMediaVideoLocation = "/video";
 	public static final String kMessageMediaAudioLocation = "/audio";
-
-// User class
-	public static final String kUserAvatarKey   = "avatar";
-	public static final String kUserUsernameKey = "username";
-	public static final String kUserEmailKey    = "email";
-	public static final String kUserPasswordKey = "password";
-	public static final String kUserDisplayNameKey  = "displayName";
-	public static final String kUserTypeKey     = "userType";
-	public static final String kUserBirthday = "birthday";
-	public static final String kUserGender = "gender";
 
 // Statistics class
 	public static final String kClassStatistics = "Statistics";
@@ -159,7 +177,7 @@ public class Const {
 	public static final String EMAIL                = "email";
     public static final String ACTION               = "action";
 
-	/* Message constants */
+	/* pMessage constants */
 	public static final String MESSAGE_TYPE         = "message_type";
 	public static final String LOCATION             = "location";
 	public static final String MODIFIED             = "modified";
@@ -191,10 +209,6 @@ public class Const {
 	
 	/* File handler constants */
 	public static final String FILE                     = "file";
-
-    /* Connection handler, messages constants */
-    public static final int C_TYPE = 2;
-    public static final int C_TYPE_TO = 1;
 
 	/* File download constant folder name */
 	public static final String IMAGE_FOLDER 	= "E0g0zfGqox0p";

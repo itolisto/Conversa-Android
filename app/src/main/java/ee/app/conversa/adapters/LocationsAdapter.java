@@ -33,13 +33,12 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-//import com.bignerdranch.android.multiselector.MultiSelector;
-
 import java.util.List;
 
-import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.model.Database.Location;
+
+//import com.bignerdranch.android.multiselector.MultiSelector;
 
 /**
  * MessagesAdapter
@@ -60,10 +59,9 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
 	}
 
 	@Override
-	public long getItemId(int position) { return super.getItemId(position); }
-
-	@Override
-	public int getItemCount() { return (mLocations == null) ? 0 : mLocations.size(); }
+	public int getItemCount() {
+		return mLocations.size();
+	}
 
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
@@ -81,7 +79,7 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		Location crime = mLocations.get(position);
 		if(position == 0) {
-			ConversaApp.getPreferences().setBusLocation(crime.getLocationId());
+			//ConversaApp.getPreferences().setBusLocation(crime.getLocationId());
 		}
 		holder.bindCrime(crime);
 		Log.d("LocationsAdpater", "binding crime" + crime + "at position" + position);
@@ -115,7 +113,7 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
 		@Override
 		public void onClick(View v) {
 			if (mCrime != null) {
-				ConversaApp.getPreferences().setBusLocation(mCrime.getLocationId());
+				//ConversaApp.getPreferences().setBusLocation(mCrime.getLocationId());
 			}
 		}
 	}

@@ -30,36 +30,26 @@ import android.preference.PreferenceManager;
 
 /**
  * Preferences
- * 
+ *
  * Holds and managed application's preferences.
  */
 
 public class Preferences {
 
-	// Defining SharedPreferences entries
+    // Defining SharedPreferences entries
     private static final String CATEGORIES_LOAD = "CATEGORIES_LOAD";
-
-
-
-
-    private static final String USER_ID = "user_id";
-    private static final String USER_NAME = "name";
-	private static final String USER_EMAIL = "email";
-    private static final String USER_TOKEN = "user_token";
-	private static final String BUS_LOCATION = "business_location";
-    private static final String CURRENT_CATEGORY = "current_category";
-    private static final String CURRENT_CATEGORY_TITLE = "current_category_title";
+    private static final String CUSTOMER_ID = "customer_id";
     private static final String FIRST_USER_SERVER_CALL = "first_users_server_call";
 
-	private SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
 
-	/**
-	 * Gets a SharedPreferences instance that points to the default file that is
-	 * used by the preference framework in the given context.
-	 */
-	public Preferences(Context context) {
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-	}
+    /**
+     * Gets a SharedPreferences instance that points to the default file that is
+     * used by the preference framework in the given context.
+     */
+    public Preferences(Context context) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
 
     /* ******************************************************************************** */
 	/* ************************************ GETTERS *********************************** */
@@ -68,29 +58,15 @@ public class Preferences {
         return sharedPreferences.getBoolean(CATEGORIES_LOAD, false);
     }
 
-    public String getCurrentCategory() {
-        return sharedPreferences.getString(CURRENT_CATEGORY, "");
+    public String getCustomerId() {
+        return sharedPreferences.getString(CUSTOMER_ID, "");
     }
 
-    public String getCurrentCategoryTitle() {
-        return sharedPreferences.getString(CURRENT_CATEGORY_TITLE, "");
+    public boolean isFirstCallForUsers() {
+        return sharedPreferences.getBoolean(FIRST_USER_SERVER_CALL, true);
     }
 
-
-
-
-
-
-	public String getUserEmail() { return sharedPreferences.getString(USER_EMAIL, ""); }
-    public String getUserName() { return sharedPreferences.getString(USER_NAME, ""); }
-	public String getUserToken() { return sharedPreferences.getString(USER_TOKEN, ""); }
-    public String getUserId() { return sharedPreferences.getString(USER_ID, ""); }
-    public int getBusLocation() { return sharedPreferences.getInt(BUS_LOCATION, 0); }
-    public boolean isFirstCallForUsers() { return sharedPreferences.getBoolean(FIRST_USER_SERVER_CALL, true); }
-
-    public SharedPreferences getSharedPreferences(){ return sharedPreferences; }
-
-    public boolean cleanSharedPreferences(){
+    public boolean cleanSharedPreferences() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         return editor.commit();
@@ -108,56 +84,16 @@ public class Preferences {
         }
     }
 
-    public void setCurrentCategory (String category) {
+    public void setCustomerId(String id) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(CURRENT_CATEGORY, category);
+        editor.putString(CUSTOMER_ID, id);
         editor.apply();
-    }
-
-    public void setCurrentCategoryTitle (String category) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(CURRENT_CATEGORY_TITLE, category);
-        editor.apply();
-    }
-
-
-
-
-
-
-	public void setUserEmail(String email) {
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putString(USER_EMAIL, email);
-		editor.commit();
-	}
-
-    public void setUserName(String name) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(USER_NAME, name);
-        editor.commit();
-    }
-	
-	public void setUserToken(String token) {
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putString(USER_TOKEN, token);
-		editor.commit();
-	}
-	
-    public void setUserId(String id) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(USER_ID, id);
-        editor.commit();
     }
 
     public void setIsFirstCallForUsers(boolean isFirst) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(FIRST_USER_SERVER_CALL, isFirst);
-        editor.commit();
+        editor.apply();
     }
 
-    public void setBusLocation(int busLocation) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(BUS_LOCATION, busLocation);
-        editor.commit();
-    }
 }

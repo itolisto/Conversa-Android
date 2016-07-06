@@ -7,16 +7,14 @@ package ee.app.conversa;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ee.app.conversa.utils.Logger;
-
 public class FragmentRoot extends Fragment {
-
-//    private SearchView searchView;
 
     public FragmentRoot() {}
 
@@ -25,37 +23,22 @@ public class FragmentRoot extends Fragment {
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_root, container, false);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-		/*
-		 * When this container fragment is created, we fill it with our first
-		 * "real" fragment
-		 */
-        if(ConversaApp.getPreferences().getCurrentCategory().isEmpty()) {
-            transaction.replace(R.id.root_frame, new FragmentCategory(getFragmentManager()));
-        } else {
-            transaction.replace(R.id.root_frame, new FragmentBusiness(getFragmentManager()));
-        }
+        FragmentManager fm = getFragmentManager();
 
-        transaction.commit();
+        if (fm != null) {
+            FragmentTransaction transaction = fm.beginTransaction();
+            /*
+             * When this container fragment is created, we fill it with our first
+             * "real" fragment
+             */
+            transaction.replace(R.id.root_frame, new FragmentCategory());
+            transaction.addToBackStack(null);
+            transaction.commit();
+        } else {
+            Log.e("toggleFragment", "fm is null");
+        }
 
         return rootView;
-    }
-
-    public void backPressed() {
-        ConversaApp.getPreferences().setCurrentCategoryTitle("");
-
-        try {
-            ((ActivityMain) getActivity()).getSupportActionBar().setTitle(getActivity().getString(R.string.categories));
-            ((ActivityMain) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            FragmentTransaction trans = getFragmentManager().beginTransaction();
-            trans.replace(R.id.root_frame, new FragmentCategory());
-            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-            trans.addToBackStack(null);
-            trans.commit();
-        }catch (NullPointerException e) {
-            Logger.error("", e.getMessage());
-        }
-        //firstPageListener.onSwitchToNextFragment();
     }
 
 }
