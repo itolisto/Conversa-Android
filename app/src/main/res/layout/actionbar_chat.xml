@@ -2,43 +2,52 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@android:color/white"
+    android:background="@android:color/transparent"
     android:padding="7dp"
     android:gravity="center_vertical" >
 
+    <ee.app.conversa.view.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ivAvatarChat"
+        android:src="@drawable/no_commerce"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="7dp"
+        android:layout_marginEnd="7dp"
+        app:border_color="@android:color/transparent"/>
+
     <LinearLayout
-        android:weightSum="10"
-        android:orientation="horizontal"
+        android:weightSum="3"
+        android:orientation="vertical"
+        android:layout_toLeftOf="@id/ivAvatarChat"
+        android:layout_toStartOf="@id/ivAvatarChat"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical" >
+        android:layout_height="match_parent">
 
         <ee.app.conversa.view.MediumTextView
             android:id="@+id/tvChatName"
-            android:gravity="center_vertical|start"
-            android:textColor="@android:color/black"
-            android:layout_weight="5"
-            android:textSize="16sp"
-            android:text="@string/test_string"
-            android:maxLines="1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
-
-        <ImageView
-            android:id="@+id/ivMoreOptions"
-            android:background="@drawable/search"
-            android:scaleType="fitCenter"
             android:layout_weight="2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="15sp"
+            android:text="@string/test_string"
+            android:maxLines="1" />
 
-        <ee.app.conversa.view.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/ivAvatarChat"
-            android:src="@drawable/no_commerce"
-            android:layout_weight="3"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            app:border_color="@android:color/transparent"/>
+        <ee.app.conversa.view.LightTextView
+            android:id="@+id/tvChatStatus"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="@color/default_gray"
+            android:textSize="13sp"
+            android:text="@string/test_string"
+            android:visibility="gone"
+            android:maxLines="1" />
     </LinearLayout>
+
 </RelativeLayout>

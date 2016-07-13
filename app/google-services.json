@@ -1,31 +1,20 @@
 {
   "project_info": {
-    "project_number": "753901434477",
-    "firebase_url": "https://formal-thunder-87705.firebaseio.com",
-    "project_id": "formal-thunder-87705",
-    "storage_bucket": "formal-thunder-87705.appspot.com"
+    "project_number": "362452554166",
+    "project_id": "firebase-conversa"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:753901434477:android:54b1566df0278f2b",
+        "mobilesdk_app_id": "1:362452554166:android:54b1566df0278f2b",
         "android_client_info": {
           "package_name": "ee.app.conversa"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "753901434477-7lf3rn9lqajtvtugbpqtn7bu4dghrt8k.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "753901434477-eg3af0ok6h0o5ku8bk5rq7ndpkq6qq38.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA8DHkLP5DNacCQ_SFaikKQJ0MC3ql5L1s"
+          "current_key": "AIzaSyBrWJZuAiphXpuktc39E-VxJKe7VjYKeQo"
         }
       ],
       "services": {
@@ -37,7 +26,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 2
+          "status": 1
         }
       }
     }

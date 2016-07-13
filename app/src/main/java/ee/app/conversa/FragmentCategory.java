@@ -4,17 +4,16 @@
 
 package ee.app.conversa;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,11 +21,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -36,33 +32,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import ee.app.conversa.adapters.BusinessSearchAdapter;
 import ee.app.conversa.adapters.CategoryAdapter;
 import ee.app.conversa.decorations.SimpleDividerItemDecoration;
-import ee.app.conversa.extendables.ConversaFragment;
 import ee.app.conversa.model.Parse.bCategory;
 import ee.app.conversa.utils.Const;
 
-public class FragmentCategory extends ConversaFragment implements SearchView.OnQueryTextListener, CategoryAdapter.OnItemClickListener {
+public class FragmentCategory extends Fragment implements CategoryAdapter.OnItemClickListener {
 
-    private SearchView searchView;
-
-    private RelativeLayout mRlSearchCategories;
     private RelativeLayout mRlCategoriesNoCategories;
     private RecyclerView mRvCategory;
-    private GridView mRvBusiness;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private BusinessSearchAdapter mBusinessListAdapter;
     private CategoryAdapter mCategoryListAdapter;
     private ProgressBar mPbLoadingCategories;
 
-    private TextView mTvNoBusiness;
-
-    private List<Object> mBusiness;
-
-    public FragmentCategory() {
-        mBusiness = new ArrayList<>();
-    }
+    public FragmentCategory() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -71,14 +54,10 @@ public class FragmentCategory extends ConversaFragment implements SearchView.OnQ
 
         View rootView = inflater.inflate(R.layout.fragment_category, container, false);
 
-        mRlSearchCategories = (RelativeLayout) rootView.findViewById(R.id.rlSearchCategories);
-        //mRlCategories = (RelativeLayout) rootView.findViewById(R.id.rlCategories);
         mRlCategoriesNoCategories = (RelativeLayout) rootView.findViewById(R.id.rlNoCategories);
         mRvCategory = (RecyclerView) rootView.findViewById(R.id.rvCategories);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.srlCategories);
-        mRvBusiness = (GridView) rootView.findViewById(R.id.rvUsersSearch);
         mPbLoadingCategories = (ProgressBar) rootView.findViewById(R.id.pbLoadingCategories);
-        mTvNoBusiness = (TextView) rootView.findViewById(R.id.tvSearchEmpty);
 
         mCategoryListAdapter = new CategoryAdapter(getActivity(), this);
         mRvCategory.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -97,10 +76,6 @@ public class FragmentCategory extends ConversaFragment implements SearchView.OnQ
             }
         });
 
-        /* Para busqueda */
-        mBusinessListAdapter = new BusinessSearchAdapter((AppCompatActivity) getActivity(), mBusiness);
-        mRvBusiness.setAdapter(mBusinessListAdapter);
-
         return rootView;
     }
 
@@ -109,6 +84,21 @@ public class FragmentCategory extends ConversaFragment implements SearchView.OnQ
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
         getCategoriesAsync();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_category, menu);
+        MenuItem searchItem = menu.findItem(R.id.grid_default_search);
+        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent = new Intent(getActivity(), ActivitySearch.class);
+                startActivity(intent);
+                return false;
+            }
+        });
     }
 
     private void getCategoriesAsync() {
@@ -161,49 +151,6 @@ public class FragmentCategory extends ConversaFragment implements SearchView.OnQ
                 mSwipeRefreshLayout.setEnabled(true);
             }
         });
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_users, menu);
-        MenuItem searchItem = menu.findItem(R.id.grid_default_search);
-        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
-        searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint(getActivity().getString(R.string.search_category_hint));
-        searchView.setQuery("", false);
-        searchView.clearFocus();
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // Text has changed, apply filtering?
-        //Toast.makeText(getActivity(), "Searching for: " + query, Toast.LENGTH_SHORT).show();
-//        getBusinessByIdAsync(query);
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        Toast.makeText(getActivity(), "Searching for: " + newText, Toast.LENGTH_SHORT).show();
-        // Perform the final search
-//        if(mRlSearchCategories.getVisibility() == View.GONE) {
-//            mRlSearchCategories.setVisibility(View.VISIBLE);
-//            mRlCategories.setVisibility(View.GONE);
-//        }
-//
-//        if(newText.isEmpty()) {
-//            mTvNoBusiness.setVisibility(View.VISIBLE);
-//            mRvBusiness.setVisibility(View.GONE);
-//            mBusiness.clear();
-//            mRlSearchCategories.setVisibility(View.GONE);
-//            mRlCategories.setVisibility(View.VISIBLE);
-//            //Utils.hideKeyboard((AppCompatActivity) getActivity());
-//        }
-        return true;
     }
 
     @Override

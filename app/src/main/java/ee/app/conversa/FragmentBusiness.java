@@ -40,7 +40,6 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
     private RelativeLayout mRlNoBusiness;
     private RecyclerView mRvBusiness;
     private ProgressBar mPbLoadingCategory;
-    //private TextView mTvNoBusiness;
 
     private List<Business> mBusiness;
     private BusinessAdapter mBusinessListAdapter;
@@ -81,7 +80,6 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
         mRlNoBusiness = (RelativeLayout) rootView.findViewById(R.id.rlNoBusiness);
         mRvBusiness = (RecyclerView) rootView.findViewById(R.id.rvBusiness);
         mPbLoadingCategory = (ProgressBar) rootView.findViewById(R.id.pbLoadingCategory);
-        //mTvNoBusiness = (TextView) rootView.findViewById(R.id.tvSearchBusinessByCategoryEmpty);
 
         mBusinessListAdapter= new BusinessAdapter((AppCompatActivity)getActivity(), this);
         mRvBusiness.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -104,7 +102,6 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 FragmentManager fm = getFragmentManager();
 
@@ -193,14 +190,13 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
 
     @Override
     public void onItemClick(View itemView, int position, Business business) {
-        // Find business
         dBusiness dbBusiness = ConversaApp.getDB().isContact(business.getObjectId());
         Intent intent = new Intent(getActivity(), ActivityProfile.class);
 
         if (dbBusiness == null) {
-            dbBusiness = new dBusiness(-1, null);
+            dbBusiness = new dBusiness();
             dbBusiness.setBusinessId(business.getObjectId());
-            dbBusiness.setDisplayName(business.getBusinessInfo().getDisplayName());
+            dbBusiness.setDisplayName(business.getAbout());
             dbBusiness.setConversaId(business.getConversaID());
             dbBusiness.setAbout(business.getAbout());
             dbBusiness.setStatusMessage(business.getStatus());

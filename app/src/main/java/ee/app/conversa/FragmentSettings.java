@@ -179,18 +179,44 @@ public class FragmentSettings extends PreferenceFragmentCompat implements Shared
 //        } catch (IOException e) {
 //
 //        }
-
         ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pbc");
         ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pvt");
         Account.logOut();
 
-        AppCompatActivity fromActivity = ActivityMain.sInstance;
+        AppCompatActivity fromActivity = (AppCompatActivity)getActivity();
         Intent goToSignIn = new Intent(fromActivity, ActivitySignIn.class);
         ConversaApp.getPreferences().cleanSharedPreferences();
         goToSignIn.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        ActivityMain.sInstance.logOut();
+        //ActivityMain.sInstance.logOut();
         fromActivity.startActivity(goToSignIn);
         fromActivity.finish();
+
+//        ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pbc", new SaveCallback() {
+//            @Override
+//            public void done(ParseException e) {
+//                if (e == null) {
+//                    ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pvt", new SaveCallback() {
+//                        @Override
+//                        public void done(ParseException e) {
+//                            if (e == null) {
+//                                Account.logOut();
+//                                AppCompatActivity fromActivity = ActivityMain.sInstance;
+//                                Intent goToSignIn = new Intent(fromActivity, ActivitySignIn.class);
+//                                ConversaApp.getPreferences().cleanSharedPreferences();
+//                                goToSignIn.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                //ActivityMain.sInstance.logOut();
+//                                fromActivity.startActivity(goToSignIn);
+//                                fromActivity.finish();
+//                            } else {
+//
+//                            }
+//                        }
+//                    });
+//                } else {
+//
+//                }
+//            }
+//        });
     }
 
 

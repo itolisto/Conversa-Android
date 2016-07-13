@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="window_background">#EDEDED</color>
-    <color name="my_primary_text">#ffffff</color>
-    <color name="my_secondary_text">#ffffff</color>
+    <color name="default_white">#FFFFFF</color>
+    <color name="default_green">#37FF77</color>
+    <color name="default_black">#505050</color>
+    <color name="default_gray">#A3A3A3</color>
+    <!-- Tabs -->
+    <color name="regular_tabs">#37FF77</color>
+    <color name="settings_tab">#626663</color>
     <color name="tab_indicator">#6F726D</color>
 
-    <!-- Tabs -->
-    <color name="regular_tabs">#16EF5E</color>
-    <color name="settings_tab">#626663</color>
-
     <!-- Backgrounds -->
+    <color name="normal_background">#FFFFFF</color>
     <color name="settings_background">#8F8F8F</color>
-    <color name="normal_background">#E0E0E0</color>
     <color name="no_connection_background">#CDe81757</color>
     <color name="push_notification_background">#E61D1D1D</color>
     <color name="image_view_background">#000000</color>
     <color name="loading_background">#ebebeb</color>
-    
+
     <!-- Buttons -->
    	<color name="sign_in_light_gray">#7d7d7d</color>
    	<color name="button_neutral_off">#333333</color>
@@ -29,36 +29,20 @@
     <color name="hookup_neutral">#333333</color>
     <color name="sidemenu_button">#090909</color>
 
-    <!-- EditTexts -->
-    <color name="sign_edittext">#7d7d7d</color>
-
     <!-- TextViews -->
     <color name="image_view_text">#FFFFFF</color>
    	<color name="text_gray">#222222</color>
-    <color name="settings_text">#1b1b1b</color>
-    
+
     <!-- Alerts and Dialogs -->
     <color name="hookup_alert">#f1015d</color>
-    <color name="alert_off">#f1015d</color>
-    <color name="alert_on">#fa80ae</color>
     <color name="light_gray_subtext">#d6d6d6</color>
-    
+
     <!-- ImageButton -->
     <color name="send_button">#16EF5E</color>
     <color name="send_button_off">#7CEF92</color>
-    <color name="open_drawer">#87E476</color>
-    <color name="delete_pink">#E81A57</color>
-    
-    <!-- Chronometer -->
-    <color name="light_red">#E81A57</color>
-    
+
 	<!-- Others -->
     <color name="chat_bottom_bar">#ededed</color>
     <color name="hookup_positive">#2fcb72</color>
-    <color name="positive_off">#2fcb72</color>
-    <color name="positive_on">#97e5b9</color>
-
-    <!-- When no elements are display (users chat, business categories) -->
-    <color name="background_no_element">#FCFFFB</color>
 
 </resources>

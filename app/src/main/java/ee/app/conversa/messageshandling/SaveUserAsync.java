@@ -1,7 +1,5 @@
 package ee.app.conversa.messageshandling;
 
-import ee.app.conversa.adapters.ChatsAdapter;
-import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.model.Database.dBusiness;
 
 /**
@@ -9,9 +7,9 @@ import ee.app.conversa.model.Database.dBusiness;
  */
 public class SaveUserAsync {
 
-    public static void saveBusinessAsContact(ChatsAdapter adapter, dBusiness business, OnContactTaskCompleted callback) {
+    public static void saveBusinessAsContact(dBusiness business) {
         // 1. Save locally on background
-        business.saveToLocalDatabase(callback);
+        business.saveToLocalDatabase();
     }
 
 }

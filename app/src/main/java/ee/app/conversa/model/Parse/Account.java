@@ -7,6 +7,7 @@ import com.parse.ParseClassName;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParsePush;
 import com.parse.ParseUser;
 
 import java.util.HashMap;
@@ -29,6 +30,9 @@ public class Account extends ParseUser {
                 if(e == null) {
                     // 1. Save Customer object id
                     ConversaApp.getPreferences().setCustomerId(result);
+                    // 2. Subscribe to Customer channels
+                    ParsePush.subscribeInBackground(result + "_pbc");
+                    ParsePush.subscribeInBackground(result + "_pvt");
                 }
             }
         });

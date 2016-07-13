@@ -206,14 +206,4 @@ public class Const {
 	public static final String PUSH_MESSAGE_CONTENT = "messageContent";
 	public static final String PUSH_TO_USER_ID      = "toUser";
 	public static final String PUSH_INTENT          = "push_intent";
-	
-	/* File handler constants */
-	public static final String FILE                     = "file";
-
-	/* File download constant folder name */
-	public static final String IMAGE_FOLDER 	= "E0g0zfGqox0p";
-
-	/* For Gcm */
-	public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
-	public static final String REGISTRATION_COMPLETE = "registrationComplete";
 }

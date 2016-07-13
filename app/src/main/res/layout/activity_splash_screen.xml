@@ -4,16 +4,17 @@
     android:id="@+id/relativeLayout_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    tools:context=".ActivitySplashScreen" >
+    android:background="@color/default_white"
+    tools:context="ee.app.conversa.ActivitySplashScreen" >
 
     <ImageView
         android:id="@+id/ivSplashScreen"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:contentDescription="@null"
         android:padding="0px"
-        android:scaleType="centerCrop"
-        android:src="@drawable/splash" />
+        android:scaleType="fitCenter"
+        android:src="@drawable/image_logo_text" />
 
 </RelativeLayout>

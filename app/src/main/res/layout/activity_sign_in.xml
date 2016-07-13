@@ -2,511 +2,324 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_init"
+    android:background="@color/default_white"
     tools:context="ee.app.conversa.ActivitySignIn" >
 
-    <RelativeLayout
-        android:id="@+id/rlSignInForm"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="10dp" >
+	<LinearLayout android:focusable="true"
+		android:focusableInTouchMode="true" android:layout_width="0px"
+		android:layout_height="0px" />
         
-        <RelativeLayout
-            android:id="@+id/llSignBody"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:visibility="visible" >
+	<RelativeLayout
+		android:id="@+id/llSignBody"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:visibility="visible" >
 
-            <ImageView
-                android:id="@+id/ivConversa"
-                android:layout_width="match_parent"
-                android:layout_height="130dp"
-                android:layout_marginBottom="2dp"
-                android:contentDescription="@null"
-                android:src="@drawable/sign_body" />
+		<ImageView
+			android:id="@+id/ivConversa"
+			android:layout_width="match_parent"
+			android:layout_height="130dp"
+			android:layout_marginTop="65dp"
+			android:contentDescription="@null"
+			android:scaleType="fitXY"
+			android:src="@drawable/image_logo_text" />
 
-            <Button
-                android:layout_below="@+id/ivConversa"
-                android:layout_centerInParent="true"
-                android:id="@+id/btnSignUp"
-                android:layout_width="270dp"
-                android:layout_height="60dp"
-                android:text="@string/SIGN_UP"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
-				android:background="@drawable/button_shape_white"
-                android:layout_marginBottom="36dp" />
+		<ee.app.conversa.view.LightTextView
+			android:id="@+id/ltvFirstUnderTitle"
+			android:layout_below="@id/ivConversa"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="-7dp"
+			android:layout_centerHorizontal="true"
+			android:gravity="center"
+			android:text="@string/string_signin_title_one"
+			android:textColor="@color/default_gray"
+			android:textSize="20sp" />
 
-            <ee.app.conversa.view.RegularTextView
-                android:id="@+id/tvAlready"
-                android:layout_below="@+id/btnSignUp"
-                android:layout_centerInParent="true"
-                android:layout_width="270dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/have_account"
-                android:gravity="center"
-                android:textColor="#F7F7F7"
-                android:textSize="20sp" />
-            
-            <Button
-                android:layout_below="@+id/tvAlready"
-                android:layout_centerInParent="true"
-				android:id="@+id/btnSignIn"
-				android:text="@string/SIGN_IN"
-				android:textColor="@color/button_shape_green_textcolor"
-				android:textSize="20sp"
-				android:layout_width="270dp"
-				android:layout_height="60dp"
-				android:background="@drawable/button_shape_green_border" />
-        </RelativeLayout>
+		<ee.app.conversa.view.LightTextView
+			android:id="@+id/ltvSecondUnderTitle"
+			android:layout_below="@id/ltvFirstUnderTitle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:gravity="center"
+			android:text="@string/string_signin_title_two"
+			android:textColor="@color/default_gray"
+			android:textSize="20sp" />
 
-        <RelativeLayout
-            android:id="@+id/llSignInBody"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:visibility="gone" >
-            
-            <RelativeLayout
-                android:id="@+id/rlFacebook"
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
-			    android:layout_marginBottom="27dp"
-			    android:orientation="vertical">
+		<ee.app.conversa.view.BoldTextView
+			android:id="@+id/btvSignUpInfo"
+			android:layout_below="@id/ltvSecondUnderTitle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="50dp"
+			android:layout_centerHorizontal="true"
+			android:gravity="center"
+			android:text="@string/string_signin_are_you_new"
+			android:textColor="@color/default_black"
+			android:textSize="20sp" />
 
-                <!--<com.facebook.login.widget.LoginButton-->
-                    <!--android:id="@+id/btnSignFb"-->
-                    <!--android:padding="10dp"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_alignParentTop="true"-->
-                    <!--android:layout_centerHorizontal="true" />-->
-				
-			</RelativeLayout>
+		<Button
+			android:id="@+id/btnSignUp"
+			android:layout_below="@id/btvSignUpInfo"
+			android:layout_width="270dp"
+			android:layout_height="60dp"
+			android:layout_marginTop="7dp"
+			android:layout_centerHorizontal="true"
+			android:gravity="center"
+			android:text="@string/SIGN_UP"
+			android:textColor="@drawable/textcolor_white_state"
+			android:textSize="20sp"
+			android:background="@drawable/button_shape_white" />
 
-            <LinearLayout
-                android:id="@+id/vSeparator"
-                android:layout_below="@+id/rlFacebook"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="3"
-                android:layout_marginBottom="27dp" >
+		<ee.app.conversa.view.BoldTextView
+			android:id="@+id/tvAlready"
+			android:layout_below="@id/btnSignUp"
+			android:layout_width="270dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="35dp"
+			android:layout_centerHorizontal="true"
+			android:gravity="center"
+			android:text="@string/string_signin_already_have_an_account"
+			android:textColor="@color/default_black"
+			android:textSize="20sp" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/line_white" />
+		<Button
+			android:id="@+id/btnSignIn"
+			android:layout_below="@+id/tvAlready"
+			android:layout_width="270dp"
+			android:layout_height="60dp"
+			android:layout_marginTop="7dp"
+			android:layout_centerHorizontal="true"
+			android:gravity="center"
+			android:text="@string/SIGN_IN"
+			android:textColor="@drawable/textcolor_green_state"
+			android:textSize="20sp"
+			android:background="@drawable/button_shape_green_border" />
 
-                <ee.app.conversa.view.RegularTextView
-                    android:id="@+id/tvOrWithLogIn"
-                    android:text="@string/or_with"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp"
-                    android:layout_weight="1" />
+		<ee.app.conversa.view.LightTextView
+			android:layout_above="@+id/ltvClickHere"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:textAllCaps="true"
+			android:text="@string/string_signin_sign_up_business_one"
+			android:textSize="14sp" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/line_white" />
+		<ee.app.conversa.view.LightTextView
+			android:id="@+id/ltvClickHere"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
+			android:textAllCaps="true"
+			android:text="@string/string_signin_sign_up_business_two"
+			android:textSize="14sp" />
+	</RelativeLayout>
 
-            </LinearLayout>
+	<RelativeLayout
+		android:id="@+id/llSignInBody"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:gravity="center_vertical"
+		android:visibility="gone" >
 
-            <LinearLayout
-                android:layout_below="@+id/vSeparator"
-                android:id="@+id/llSignInEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="vertical"
-                android:weightSum="2" >
-            
-	            <RelativeLayout
-                    android:id="@+id/rlSignInEmail"
-	                android:layout_width="match_parent"
-	                android:layout_height="match_parent"
-                    android:padding="14dp"
-	                android:layout_weight="1" >
-	
-	                <ImageView
-	                    android:id="@+id/ivEmailIcon"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_alignBottom="@+id/etSignInEmail"
-	                    android:layout_marginBottom="2dp"
-	                    android:contentDescription="@null"
-	                    android:src="@drawable/email_icon" />
-	
-	                <EditText
-	                    android:id="@+id/etSignInEmail"
-	                    android:layout_width="match_parent"
-	                    android:layout_height="wrap_content"
-	                    android:layout_centerVertical="true"
-	                    android:layout_marginLeft="10dp"
-	                    android:layout_toRightOf="@+id/ivEmailIcon"
-	                    android:background="@null"
-	                    android:gravity="bottom"
-	                    android:hint="@string/email"
-	                    android:inputType="textEmailAddress"
-	                    android:textColor="@android:color/white"
-                        android:textColorHint="@android:color/white"
-	                    android:textSize="18sp" />
-	            </RelativeLayout>
-	
-	            <View
-	                android:layout_width="match_parent"
-	                android:layout_height="1dp"
-	                android:background="@drawable/sign_in_divider" />
-	
-	            <RelativeLayout
-                    android:id="@+id/rlSignInPassword"
-	                android:layout_width="match_parent"
-	                android:layout_height="match_parent"
-                    android:padding="14dp"
-	                android:layout_weight="1" >
-	
-	                <ImageView
-	                    android:id="@+id/ivPasswordIcon"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_alignBottom="@+id/etSignInPassword"
-	                    android:layout_marginBottom="3dp"
-	                    android:contentDescription="@null"
-	                    android:src="@drawable/password_icon" />
-	
-	                <EditText
-	                    android:id="@+id/etSignInPassword"
-	                    android:layout_width="match_parent"
-	                    android:layout_height="wrap_content"
-	                    android:layout_centerVertical="true"
-	                    android:layout_marginLeft="10dp"
-	                    android:layout_toRightOf="@+id/ivPasswordIcon"
-	                    android:background="@null"
-	                    android:gravity="bottom"
-	                    android:hint="@string/password"
-	                    android:inputType="textPassword"
-                        android:textColor="@android:color/white"
-                        android:textColorHint="@android:color/white"
-	                    android:textSize="18sp" />
-	            </RelativeLayout>
-            </LinearLayout>
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilEmail"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="14dp" >
 
-            <Button
-                android:id="@+id/btnForgotPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/llSignInEmail"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="3dp"
-                android:background="@null"
-                android:text="@string/forgot_password"
-                android:textColor="@android:color/white" />
+			<EditText
+				android:id="@+id/etSignInEmail"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@null"
+				android:gravity="bottom"
+				android:hint="@string/email"
+				android:inputType="textEmailAddress"
+				android:textColor="@color/default_black"
+				android:textColorHint="@color/default_gray"
+				android:textSize="18sp" />
+		</android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/btnSignInIn"
-                android:layout_width="175dp"
-                android:layout_height="35dp"
-                android:layout_below="@+id/btnForgotPassword"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="22dp"
-                android:background="@drawable/rounded_rect_neutral_selector"
-                android:gravity="center"
-                android:text="@string/SIGN_IN"
-                android:textColor="@android:color/white" />
-        </RelativeLayout>
+		<Button
+			android:id="@+id/btnForgotPassword"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/tilEmail"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
+			android:layout_marginTop="3dp"
+			android:layout_marginRight="3dp"
+			android:layout_marginEnd="3dp"
+			android:background="@null"
+			android:gravity="bottom"
+			android:textAllCaps="false"
+			android:text="@string/forgot_password"
+			android:textColor="@color/default_gray" />
 
-        <RelativeLayout
-            android:id="@+id/llSignUpBody"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:visibility="gone" >
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilPassword"
+			android:layout_below="@id/tilEmail"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@id/btnForgotPassword"
+			android:layout_toStartOf="@id/btnForgotPassword"
+			android:padding="14dp" >
 
-            <RelativeLayout
-                android:id="@+id/rlFacebookUp"
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
-			    android:layout_marginBottom="27dp"
-                android:visibility="gone"
-			    android:orientation="vertical">
+			<EditText
+				android:id="@+id/etSignInPassword"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@null"
+				android:gravity="bottom"
+				android:hint="@string/password"
+				android:inputType="textPassword"
+				android:textColor="@color/default_black"
+				android:textColorHint="@color/default_gray"
+				android:textSize="18sp" />
+		</android.support.design.widget.TextInputLayout>
 
-                <!--<com.facebook.login.widget.LoginButton-->
-                    <!--android:id="@+id/btnRegFb"-->
-                    <!--android:padding="10dp"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_alignParentTop="true"-->
-                    <!--android:layout_centerHorizontal="true" />-->
-				
-			</RelativeLayout>
+		<Button
+			android:id="@+id/btnSignInIn"
+			android:layout_width="175dp"
+			android:layout_height="35dp"
+			android:layout_below="@+id/btnForgotPassword"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="22dp"
+			android:gravity="center"
+			android:text="@string/SIGN_IN"
+			android:textColor="@drawable/textcolor_white_state"
+			android:textSize="20sp"
+			android:background="@drawable/button_shape_white" />
+	</RelativeLayout>
 
-            <LinearLayout
-                android:id="@+id/vSeparatorUp"
-                android:layout_below="@+id/rlFacebookUp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="3"
-                android:visibility="gone"
-                android:layout_marginBottom="27dp" >
+	<RelativeLayout
+		android:id="@+id/llSignUpBody"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:gravity="center_vertical"
+		android:visibility="gone" >
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/line" />
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilNameSignUp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="14dp" >
 
-                <ee.app.conversa.view.RegularTextView
-                    android:id="@+id/tvOrWithSignUp"
-                    android:text="@string/or_with"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:textSize="20sp"
-                    android:layout_weight="1" />
+			<EditText
+				android:id="@+id/etSignUpName"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@null"
+				android:gravity="bottom"
+				android:hint="@string/username"
+				android:inputType="text"
+				android:textColor="@color/default_black"
+				android:textColorHint="@color/default_gray"
+				android:textSize="18sp" />
+		</android.support.design.widget.TextInputLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/line" />
-            </LinearLayout>
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilEmailSignUp"
+			android:layout_below="@id/tilNameSignUp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="14dp" >
 
-            <LinearLayout
-                android:layout_below="@+id/vSeparatorUp"
-                android:id="@+id/llSignUp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="vertical"
-                android:weightSum="5" >
+			<EditText
+				android:id="@+id/etSignUpEmail"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@null"
+				android:gravity="bottom"
+				android:hint="@string/email"
+				android:inputType="textEmailAddress"
+				android:textColor="@color/default_black"
+				android:textColorHint="@color/default_gray"
+				android:textSize="18sp" />
+		</android.support.design.widget.TextInputLayout>
 
-                <RelativeLayout
-                    android:id="@+id/rlSignUpName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="14dp"
-                    android:layout_weight="1" >
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilPasswordSignUp"
+			android:layout_below="@id/tilEmailSignUp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="14dp" >
 
-                    <ImageView
-                        android:id="@+id/ivUserNameIcon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBottom="@+id/etSignUpName"
-                        android:contentDescription="@null"
-                        android:src="@drawable/username_icon" />
+			<EditText
+				android:id="@+id/etSignUpPassword"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@null"
+				android:gravity="bottom"
+				android:hint="@string/password"
+				android:inputType="textPassword"
+				android:textColor="@color/default_black"
+				android:textColorHint="@color/default_gray"
+				android:textSize="18sp" />
+		</android.support.design.widget.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/etSignUpName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_toRightOf="@+id/ivUserNameIcon"
-                        android:background="@null"
-                        android:gravity="bottom"
-                        android:hint="@string/username"
-                        android:singleLine="true"
-                        android:textColor="@android:color/white"
-                        android:textColorHint="@android:color/white"
-                        android:textSize="18sp" />
-                </RelativeLayout>
+		<Button
+			android:id="@+id/btnSignUpUp"
+			android:layout_width="175dp"
+			android:layout_height="35dp"
+			android:layout_below="@id/tilPasswordSignUp"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="22dp"
+			android:gravity="center"
+			android:text="@string/SIGN_UP"
+			android:textColor="@drawable/textcolor_white_state"
+			android:textSize="20sp"
+			android:background="@drawable/button_shape_white" />
+	</RelativeLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@drawable/sign_in_divider" />
+	<LinearLayout
+		android:id="@+id/llForgotPasswordBody"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:layout_marginTop="80dp"
+		android:orientation="vertical"
+		android:visibility="gone"
+		android:weightSum="1" >
 
-                <RelativeLayout
-                    android:id="@+id/rlSignUpEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="14dp"
-                    android:layout_weight="1" >
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilPasswordForgot"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="14dp" >
 
-                    <ImageView
-                        android:id="@+id/ivEmailIconUp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBottom="@+id/etSignUpEmail"
-                        android:layout_marginBottom="2dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/email_icon" />
+			<EditText
+				android:id="@+id/etSendEmail"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@null"
+				android:gravity="bottom"
+				android:hint="@string/email"
+				android:inputType="textEmailAddress"
+				android:textColor="@color/default_black"
+				android:textColorHint="@color/default_gray"
+				android:textSize="18sp" />
+		</android.support.design.widget.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/etSignUpEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_toRightOf="@+id/ivEmailIconUp"
-                        android:background="@null"
-                        android:gravity="bottom"
-                        android:hint="@string/email"
-                        android:inputType="textEmailAddress"
-                        android:textColor="@android:color/white"
-                        android:textColorHint="@android:color/white"
-                        android:textSize="18sp" />
-                </RelativeLayout>
+		<Button
+			android:id="@+id/btnSendPassword"
+			android:layout_width="180dp"
+			android:layout_height="35dp"
+			android:layout_gravity="center"
+			android:gravity="center"
+			android:text="@string/FORGOT_PASSWORD"
+			android:textColor="@drawable/textcolor_white_state"
+			android:textSize="15sp"
+			android:background="@drawable/button_shape_white" />
+	</LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@drawable/sign_in_divider" />
-
-                <RelativeLayout
-                    android:id="@+id/rlSignUpPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="14dp"
-                    android:layout_weight="1" >
-
-                    <ImageView
-                        android:id="@+id/ivPasswordIconUp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBottom="@+id/etSignUpPassword"
-                        android:layout_marginBottom="3dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/password_icon" />
-
-                    <EditText
-                        android:id="@+id/etSignUpPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_toRightOf="@+id/ivPasswordIconUp"
-                        android:background="@null"
-                        android:gravity="bottom"
-                        android:hint="@string/password"
-                        android:inputType="textPassword"
-                        android:textColor="@android:color/white"
-                        android:textColorHint="@android:color/white"
-                        android:textSize="18sp" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@drawable/sign_in_divider" />
-
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnSignUpUp"
-                android:layout_width="175dp"
-                android:layout_height="35dp"
-                android:layout_below="@+id/llSignUp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="22dp"
-                android:background="@drawable/rounded_rect_neutral_selector"
-                android:gravity="center"
-                android:text="@string/SIGN_UP"
-                android:textColor="@android:color/white" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/llForgotPasswordBody"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="80dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:orientation="vertical"
-            android:visibility="gone"
-            android:weightSum="1" >
-
-            <RelativeLayout
-                android:id="@+id/rlForgotPassword"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:padding="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1" >
-
-                <ImageView
-                    android:id="@+id/ivEmailIconForgot"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/etForgotPasswordEmail"
-                    android:layout_marginLeft="7dp"
-                    android:layout_marginBottom="2dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/email_icon" />
-
-                <EditText
-                    android:id="@+id/etForgotPasswordEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_toRightOf="@+id/ivEmailIconForgot"
-                    android:background="@null"
-                    android:gravity="bottom"
-                    android:hint="@string/email"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="@android:color/white"
-                    android:textSize="18sp" />
-            </RelativeLayout>
-
-            <Button
-                android:id="@+id/btnSendPassword"
-                android:layout_width="180dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/rounded_rect_neutral_selector"
-                android:text="@string/FORGOT_PASSWORD"
-                android:textSize="15sp"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rlSignInTitle"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_alignParentTop="true"
-        android:visibility="gone"
-        android:background="@color/sidemenu_button" >
-
-        <ee.app.conversa.view.BoldTextView
-            android:id="@+id/tvSignInTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="@null"
-            android:textColor="@android:color/white"
-            android:textSize="17sp" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rlNoInternetNotification"
-        android:layout_below="@id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" >
-
-        <include layout="@layout/no_internet_notification" />
-    </RelativeLayout>
+	<include android:id="@+id/rlNoInternetNotification"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+		layout="@layout/no_internet_notification" />
 
 </RelativeLayout>

@@ -2,19 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    tools:context="ee.app.conversa.ActivityLocation">
 
     <fragment
+        tools:layout="@layout/dummy_mapviewfragment"
+        android:name="com.google.android.gms.maps.MapFragment"
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.google.android.gms.maps.SupportMapFragment" />
+        android:layout_height="match_parent" />
 
     <RelativeLayout
         android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:gravity="center" >
 
@@ -24,8 +28,8 @@
             android:layout_height="60dp"
             android:text="@string/back_button_label"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:background="@drawable/button_shape_red_rounded" />
+            android:textSize="16sp" />
+            <!--android:background="@drawable/button_shape_red_rounded" />-->
 
         <Button
             android:id="@+id/btnSend"
@@ -35,7 +39,7 @@
             android:layout_height="60dp"
             android:text="@string/SEND"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:background="@drawable/button_shape_green_rounded" />
+            android:textSize="16sp" />
+            <!--android:background="@drawable/button_shape_green_rounded" />-->
     </RelativeLayout>
 </RelativeLayout>

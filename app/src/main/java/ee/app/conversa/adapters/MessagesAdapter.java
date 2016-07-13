@@ -39,9 +39,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.gms.maps.MapView;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
@@ -60,15 +58,15 @@ import ee.app.conversa.view.RegularTextView;
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
 
 	private final String fromUser;
-	private final WeakReference<AppCompatActivity> mActivity;
+	private final AppCompatActivity mActivity;
 	private List<Message> mMessages;
 
-	public final static String PUSH = "ee.app.conversabusiness.chatwallMessage.showImage";
+	public final static String PUSH = "ee.app.conversa.chatwallMessage.showImage";
 	private static final Intent mPushBroadcast = new Intent(PUSH);
 
 	public MessagesAdapter(AppCompatActivity activity) {
 		this.fromUser = ConversaApp.getPreferences().getCustomerId();
-		this.mActivity = new WeakReference<>(activity);
+		this.mActivity = activity;
 		this.mMessages = new ArrayList<>();
 	}
 
@@ -93,26 +91,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 		}
 	}
 
-	protected AppCompatActivity getActivity() {
-		return this.mActivity.get();
-	}
-
 	public void addMessage(Message message) {
-		int position = mMessages.size();
-		mMessages.add(message);
-		notifyItemInserted(position);
+		mMessages.add(0, message);
+		notifyItemInserted(0);
 	}
 
 	public void addMessages(List<Message> messages, int positionStart) {
-		Collections.reverse(messages);
 		mMessages.addAll(messages);
 		notifyItemRangeInserted(positionStart, messages.size());
-	}
-
-	public void setMessages(List<Message> messages) {
-		mMessages = messages;
-		Collections.reverse(mMessages);
-		notifyDataSetChanged();
 	}
 
 	public void updateMessage(Message message, String status) {
@@ -143,28 +129,24 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 		long diffd = diff / (1000 * 60 * 60 * 24);
 		long diffw  = diff / (1000 * 60 * 60 * 24 * 7);
 
-		AppCompatActivity mActivity = getActivity();
-
-		if (mActivity != null) {
-			if (diffw >= 2) {
-				subText = diffw + " " + mActivity.getString(R.string.weeks_ago);
-			} else if (diffw >= 1 && diffw < 2) {
-				subText = diffw + " " + mActivity.getString(R.string.week_ago);
-			} else if (diffh >= 48 && diffh < 168) {
-				subText = diffd + " " + mActivity.getString(R.string.days_ago);
-			} else if (diffh >= 24 && diffh < 48) {
-				subText = diffd + " " + mActivity.getString(R.string.day_ago);
-			} else if (diffh >= 2 && diffh < 24) {
-				subText = diffh + " " + mActivity.getString(R.string.hours_ago);
-			} else if (diffm >= 60 && diffm < 120) {
-				subText = diffh + " " + mActivity.getString(R.string.hour_ago);
-			} else if (diffm > 1 && diffm < 60) {
-				subText = diffm + " " + mActivity.getString(R.string.minutes_ago);
-			} else if (diffm == 1) {
-				subText = diffm + " " + mActivity.getString(R.string.minute_ago);
-			} else {
-				subText = mActivity.getString(R.string.posted_less_than_a_minute_ago);
-			}
+		if (diffw >= 2) {
+			subText = diffw + " " + mActivity.getString(R.string.weeks_ago);
+		} else if (diffw >= 1 && diffw < 2) {
+			subText = diffw + " " + mActivity.getString(R.string.week_ago);
+		} else if (diffh >= 48 && diffh < 168) {
+			subText = diffd + " " + mActivity.getString(R.string.days_ago);
+		} else if (diffh >= 24 && diffh < 48) {
+			subText = diffd + " " + mActivity.getString(R.string.day_ago);
+		} else if (diffh >= 2 && diffh < 24) {
+			subText = diffh + " " + mActivity.getString(R.string.hours_ago);
+		} else if (diffm >= 60 && diffm < 120) {
+			subText = diffh + " " + mActivity.getString(R.string.hour_ago);
+		} else if (diffm > 1 && diffm < 60) {
+			subText = diffm + " " + mActivity.getString(R.string.minutes_ago);
+		} else if (diffm == 1) {
+			subText = diffm + " " + mActivity.getString(R.string.minute_ago);
+		} else {
+			subText = mActivity.getString(R.string.posted_less_than_a_minute_ago);
 		}
 
 		return subText;
@@ -176,25 +158,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 			@Override
 			public void onClick(View v) {
 				if (m != null) {
-					AppCompatActivity mActivity = getActivity();
-					if (mActivity != null) {
-						Intent pushExtras = new Intent();
-						pushExtras.putExtra("message", m);
-						mPushBroadcast.replaceExtras(pushExtras);
-						LocalBroadcastManager.getInstance(mActivity.getApplicationContext()).sendBroadcast(mPushBroadcast);
-					}
+					Intent pushExtras = new Intent();
+					//pushExtras.putExtra("message", m);
+					mPushBroadcast.replaceExtras(pushExtras);
+					LocalBroadcastManager.getInstance(mActivity.getApplicationContext()).sendBroadcast(mPushBroadcast);
 				}
 			}
 		};
 	}
 
 	private void showMessageFromMe(final Message m, final ViewHolder holder, final int position) {
-		AppCompatActivity mActivity = getActivity();
-		final int sdk = Build.VERSION.SDK_INT;
-
 		// 1. Change RelativeLayout background
 		if (mActivity != null) {
-			if(sdk >= 21) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				holder.mRlBackground.setBackground(mActivity.getResources().getDrawable(R.drawable.wall_msg_you, null));
 			} else {
 				holder.mRlBackground.setBackground(mActivity.getResources().getDrawable(R.drawable.wall_msg_you));
@@ -204,7 +180,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 		// 2. Change RelativeLayout alignment
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-		if(sdk >= 17) {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 			params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
 		}
 		params.addRule(RelativeLayout.BELOW, holder.mTvDate.getId());
@@ -213,7 +189,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
 		RelativeLayout.LayoutParams paramsTwo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		paramsTwo.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-		if(sdk >= 17) {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 			paramsTwo.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
 		}
 
@@ -312,6 +288,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 	}
 
 	private void showMessageToMe(final Message m, final ViewHolder holder, final int position) {
+		holder.mRtvMessageText.setText(m.getBody());
 
 //		holder.rlToMe.setVisibility(View.VISIBLE);
 //		holder.tvMessageTextToMe.setVisibility(View.GONE);
@@ -423,4 +400,5 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 			this.mMvMessageMap.setClickable(false);
 		}
 	}
+
 }

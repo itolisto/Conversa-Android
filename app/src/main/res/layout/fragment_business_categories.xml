@@ -21,14 +21,6 @@
             android:layout_width="160dp"
             android:layout_height="160dp" />
 
-        <!--<ee.app.conversa.view.MediumTextView-->
-            <!--android:id="@+id/tvSearchBusinessByCategoryEmpty"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:text="@string/no_found"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:gravity="center"/>-->
-
         <ProgressBar
             android:id="@+id/pbLoadingCategory"
             android:layout_above="@id/ivNoBusiness"

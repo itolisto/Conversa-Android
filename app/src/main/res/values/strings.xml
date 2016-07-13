@@ -2,13 +2,47 @@
 <resources>
 
     <string name="app_name">Conversa</string>
-    <string name="facebook_app_id">1622700701349422</string>
     <string name="test_string">Test string test string</string>
 
-    <!-- FOR ACTION BAR  -->
-    <string name="search_settings">Settings</string>
-    <string name="search_hint">Search</string>
-    <string name="search_category_hint">Search in this category</string>
+
+    <string name="string_signin_title_one">Chat to any business</string>
+    <string name="string_signin_title_two">Simple. Fast. Effective.</string>
+    <string name="string_signin_are_you_new">Are you new?</string>
+    <string name="string_signin_already_have_an_account">I already have an account</string>
+    <string name="string_signin_sign_up_business_one">Looking to sign up your</string>
+    <string name="string_signin_sign_up_business_two">business click here</string>
+
+    <string name="signup_name_error">Name should contain more than 1 character in length</string>
+    <string name="signup_password_length_error">Password is required</string>
+    <string name="signup_password_regex_error">Password should contain at least one digit, one lowercase letter and a special character</string>
+    <string name="sign_email_not_valid_error">Email is not valid</string>
+    <string name="sign_email_length_error">Email is required</string>
+
+    <string-array name="categories_titles">
+        <item name="Conversas">Chats</item>
+        <item name="Categories">Categories</item>
+        <item name="Settings">Settings</item>
+    </string-array>
+
+    <string-array name="search_titles">
+        <item name="Top">Top</item>
+        <item name="Recent">Recent</item>
+        <item name="Popular">Popular</item>
+    </string-array>
+
+    <string name="search_title_menu">Search</string>
+
+    <string name="me">Me</string>
+    <string name="contacts_last_message_text">%1$s: %2$s</string>
+    <string name="contacts_last_message_image">%1s: Picture</string>
+    <string name="contacts_last_message_video">%1s: Video</string>
+    <string name="contacts_last_message_audio">%1s: Audio</string>
+    <string name="contacts_last_message_location">%1s: Location</string>
+    <string name="contacts_last_message_default">%1s: Message</string>
+
+
+
+
 
     <!-- ******* FOR LAYOUTS  ******* -->
     <!-- FOR FRAGMENT_SEARCH -->
@@ -16,21 +50,16 @@
     <string name="back_button_label">Back</string>
 
     <!-- FOR SIGN IN/UP  -->
-    <string name="SIGN_BODY">CONVERSA</string>
     <string name="SIGN_IN">Log In</string>
     <string name="SIGN_UP">Sign Up</string>
-    <string name="log_fb">Log in with Facebook</string>
-    <string name="sign_fb">Sign up with Facebook</string>
-    <string name="or_with">or with</string>
 
     <string name="have_account">Already have an account?</string>
     <string name="FORGOT_PASSWORD">Send password</string>
-    <string name="forgot_password"><u>forgot your password?</u></string>
+    <string name="forgot_password"><u>forgot password?</u></string>
 
     <string name="username">username</string>
     <string name="email">email</string>
     <string name="password">password</string>
-    <string name="birthday">yyyy-mm-dd</string>
 
     <string-array name="gender_array">
         <item>Select gender</item>
@@ -39,22 +68,11 @@
     </string-array>
 
     <!-- FOR CHAT WALL -->
-    <string name="profiles_to_be_implemented">Profiles coming soon!</string>
-    <string name="action_profile">Profile</string>
-    <string name="action_block">Block</string>
-    <string name="action_unblock">Unblock</string>
     <string name="action_location">Locations</string>
     <string name="select_location">Select the location your message will be delivered</string>
     <string name="no_wall_messages">No wall messages</string>
     <string name="SEND">SEND</string>
     <string name="Send">Send</string>
-    <string name="you">You</string>
-    <string name="ca_message">Message</string>
-    <string name="ca_picture">Image</string>
-    <string name="ca_location">Location</string>
-    <string name="location_received">Location received</string>
-    <string name="location_sent">Location sent</string>
-    <string name="cant_send">Location is currently unavailable, please select another</string>
 
     <!-- FOR HOOKUP DIALOGS -->
     <string name="Ok">@android:string/ok</string>
@@ -63,7 +81,6 @@
 
     <!-- FOR NO INTERNET CONNECTION -->
     <string name="NO_INTERNET_CONNECTION">NO INTERNET CONNECTION</string>
-
 
     <!-- FOR SETTINGS LAYOUT -->
     <string name="notification_preferences">Notifications</string>
@@ -109,13 +126,6 @@
     <string name="an_internal_error_has_occurred">An internal error has occurred</string>
     <string name="an_server_error_has_occurred">An server error has occurred</string>
 
-    <!-- FOR MainActivity -->
-    <string-array name="categories_titles">
-        <item name="Conversas">Chats</item>
-        <item name="Categories">Categories</item>
-        <item name="Settings">Settings</item>
-    </string-array>
-
     <!-- FOR HookUpAlertDialog -->
     <string name="invalid_token_message">Token has expired.\nPlease login again.</string>
 
@@ -125,13 +135,8 @@
     <string name="email_fail_sent">Couldn\'t find an account associated with this email!</string>
     <string name="email_sent">Password sent to your email address</string>
     <string name="email_ok">Email OK</string>
-    <string name="name_error">Name should contain more than 1 character in length</string>
+
     <string name="name_ok">Name OK</string>
-    <string name="email_not_valid">Email is not valid</string>
-    <string name="email_length">Email is required</string>
-    <string name="password_error_empty">Password should not be empty</string>
-    <string name="password_error_number_of_characters">Password should contain at least 6 characters in length</string>
-    <string name="password_error_invalid_characters">Password should contain at least one uppercase letter, one lowercase letter and a special character</string>
     <string name="password_ok">Password OK</string>
     <string name="gender_error">Please select gender</string>
     <string name="birthday_error">Please select your birthday</string>

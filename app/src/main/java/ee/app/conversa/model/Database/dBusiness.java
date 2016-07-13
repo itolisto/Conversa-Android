@@ -30,14 +30,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.adapters.ChatsAdapter;
-import ee.app.conversa.interfaces.OnContactTaskCompleted;
-import ee.app.conversa.responses.ContactResponse;
+import ee.app.conversa.response.ContactResponse;
 
 /**
  * Emoticon
@@ -64,19 +61,15 @@ public class dBusiness implements Parcelable {
     public static final int ACTION_MESSAGE_SAVE = 1;
     public static final int ACTION_MESSAGE_UPDATE = 2;
     public static final int ACTION_MESSAGE_DELETE = 3;
-    public static final int ACTION_MESSAGE_NONE = 4;
-    public static final int ACTION_MESSAGE_RETRIEVE_ALL = 5;
+    public static final int ACTION_MESSAGE_RETRIEVE_ALL = 4;
 
-    private final WeakReference<ChatsAdapter> adapter;
-
-    public dBusiness(long id, ChatsAdapter adapter) {
-        this.mId = id;
+    public dBusiness() {
+        this.mId = -1;
         this.mComposingMessageString = "";
         this.mBlocked = false;
         this.mMuted = false;
         this.mCreated = System.currentTimeMillis();
         this.mRecent = this.mCreated;
-        this.adapter = new WeakReference<>(adapter);
     }
 
     public long getId() { return mId; }
@@ -105,43 +98,38 @@ public class dBusiness implements Parcelable {
     public void setRecent(long mRecent) { this.mRecent = mRecent; }
     public void setCreated(long mCreated) { this.mCreated = mCreated; }
 
-    /* ******************************************************************************** */
-	/* ************************************ SETTERS *********************************** */
-	/* ******************************************************************************** */
-    public void saveToLocalDatabase(OnContactTaskCompleted e) {
-        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner(e);
+    /* ******************************************************************************************* */
+    /* ******************************************************************************************* */
+
+    public void saveToLocalDatabase() {
+        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
         runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_SAVE, this);
     }
 
-    public static void getAllContacts(OnContactTaskCompleted e) {
-        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner(e);
+    public static void getAllContacts() {
+        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
         runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL);
     }
 
     private static class ContactAsyncTaskRunner extends AsyncTask<Object, String, ContactResponse> {
 
-        private OnContactTaskCompleted taskCompleted;
-
-        public ContactAsyncTaskRunner(OnContactTaskCompleted activityContext) {
-            this.taskCompleted = activityContext;
-        }
+        public ContactAsyncTaskRunner() { }
 
         @Override
         protected ContactResponse doInBackground(Object... params) {
+            if (params.length == 0)
+                return new ContactResponse(-1);
+
+            int actionCode = (int)params[0];
+            dBusiness user = new dBusiness();
+            List<dBusiness> users = new ArrayList<>();
+
             try {
                 Log.e("ContactAsyncTaskRunner", "INTENTANDO GUARDAR/ACTUALIZAR/ELIMINAR USUARIO...");
-                int val = (int)params[0];
 
-                List<dBusiness> users = new ArrayList<>();
-                dBusiness user = new dBusiness(-1, null);
-
-                if (params.length > 1) {
-                    user = (dBusiness) params[1];
-                }
-
-                switch (val) {
+                switch (actionCode) {
                     case ACTION_MESSAGE_SAVE:
-                        users.add(ConversaApp.getDB().saveContact(user));
+                        user = ConversaApp.getDB().saveContact((dBusiness) params[1]);
                         break;
                     case ACTION_MESSAGE_UPDATE:
                         break;
@@ -152,21 +140,21 @@ public class dBusiness implements Parcelable {
                         break;
                 }
 
-                return new ContactResponse(val, users);
             } catch (SQLException e) {
                 Log.e("ContactAsyncTaskRunner", "No se pudo guardar usuario porque ocurrio el siguiente error: " + e.getMessage());
-                return null;
             }
+
+            return new ContactResponse(actionCode, user, users);
         }
 
         @Override
-        protected void onPostExecute(ContactResponse user) {
-            Log.e("ContactAsyncTaskRunner", "onPostExecute HA FINALIZADO, EL RESULTADO: " + (user != null));
-            if (taskCompleted != null) {
-                taskCompleted.OnContactTaskCompleted(user);
-            }
+        protected void onPostExecute(ContactResponse contactResponse) {
+            ConversaApp.getDB().notifyContactListeners(contactResponse);
         }
     }
+
+    /* ******************************************************************************************* */
+    /* ******************************************************************************************* */
 
     // In the vast majority of cases you can simply return 0 for this.
     // There are cases where you need to use the constant `CONTENTS_FILE_DESCRIPTOR`
@@ -212,7 +200,6 @@ public class dBusiness implements Parcelable {
         this.mMuted = in.readByte() != 0;
         this.mRecent = in.readLong();
         this.mCreated = in.readLong();
-        this.adapter = null;
     }
 
     // After implementing the `Parcelable` interface, we need to create the

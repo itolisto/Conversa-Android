@@ -26,17 +26,14 @@ package ee.app.conversa.model.Database;
 
 import android.database.SQLException;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-import java.io.Serializable;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.adapters.MessagesAdapter;
-import ee.app.conversa.interfaces.OnMessageTaskCompleted;
-import ee.app.conversa.responses.MessageResponse;
+import ee.app.conversa.response.MessageResponse;
 
 /**
  * pMessage
@@ -44,22 +41,20 @@ import ee.app.conversa.responses.MessageResponse;
  * Model class for messages.
  */
 
-public class Message implements Comparable<Message>, Serializable {
+public class Message implements Parcelable {
 
 	private long mId;
 	private String mMessageType;
 	private String mBody;
 	private String mDeliveryStatus;
 	private String mFromUserId;
-    private String mToUserId;
+	private String mToUserId;
 	private float mLatitude;
 	private float mLongitude;
-    private String mImageFileId;
-    private long mReadAt;
+	private String mImageFileId;
+	private long mReadAt;
 	private long mCreated;
 	private long mModified;
-
-	private final WeakReference<MessagesAdapter> adapter;
 
 	// MESSAGE STATUS
 	// Error
@@ -73,13 +68,12 @@ public class Message implements Comparable<Message>, Serializable {
 	public static final String statusUploading = "7";
 	// MESSAGE ACTIONS
 	public static final int ACTION_MESSAGE_SAVE = 1;
-	public static final int ACTION_MESSAGE_UPDATE = 2;
-	public static final int ACTION_MESSAGE_DELETE = 3;
-	public static final int ACTION_MESSAGE_NONE = 4;
+	public static final int ACTION_MESSAGE_NEW_MESSAGE = 2;
+	public static final int ACTION_MESSAGE_UPDATE = 3;
+	public static final int ACTION_MESSAGE_DELETE = 4;
 	public static final int ACTION_MESSAGE_RETRIEVE_ALL = 5;
-	
-	public Message(MessagesAdapter adapter) {
-		this.adapter = new WeakReference<>(adapter);
+
+	public Message() {
 		this.mId = -1;
 		this.mReadAt = 0;
 		this.mCreated = System.currentTimeMillis();
@@ -90,48 +84,31 @@ public class Message implements Comparable<Message>, Serializable {
 		this.mDeliveryStatus = statusUploading;
 	}
 
-    /* ******************************************************************************** */
-	/* ************************************ GETTERS *********************************** */
-	/* ******************************************************************************** */
 	public long getId() { return mId; }
 	public String getMessageType() { return mMessageType; }
-    public String getBody() { return mBody; }
+	public String getBody() { return mBody; }
 	public String getDeliveryStatus() { return mDeliveryStatus; }
-    public String getFromUserId() { return mFromUserId; }
-    public String getToUserId() { return mToUserId; }
-    public long getCreated() { return mCreated; }
-    public long getModified() { return mModified; }
-    public String getImageFileId() { return mImageFileId; }
-    public long getReadAt() { return mReadAt; }
-    public float getLatitude() { return mLatitude; }
-    public float getLongitude() { return mLongitude; }
+	public String getFromUserId() { return mFromUserId; }
+	public String getToUserId() { return mToUserId; }
+	public long getCreated() { return mCreated; }
+	public long getModified() { return mModified; }
+	public String getImageFileId() { return mImageFileId; }
+	public long getReadAt() { return mReadAt; }
+	public float getLatitude() { return mLatitude; }
+	public float getLongitude() { return mLongitude; }
 
-	/* ******************************************************************************** */
-	/* ************************************ SETTERS *********************************** */
-	/* ******************************************************************************** */
 	public void setId(long id) { this.mId = id; }
 	public void setMessageType(String type) { this.mMessageType = type; }
-    public void setBody(String body) { this.mBody = body; }
-    public void setFromUserId(String fromUserId) { this.mFromUserId = fromUserId; }
-    public void setToUserId(String toUserId) { this.mToUserId = toUserId; }
-    public void setCreated(long created) { this.mCreated = created; }
-    public void setModified(long modified) { this.mModified = modified; }
-    public void setImageFileId(String mImageFileId) { this.mImageFileId = mImageFileId; }
-    public void setReadAt(long mReadAt) { this.mReadAt = mReadAt; }
-    public void setLatitude(float latitude) { this.mLatitude = latitude; }
-    public void setLongitude(float longitude) { this.mLongitude = longitude; }
+	public void setBody(String body) { this.mBody = body; }
+	public void setFromUserId(String fromUserId) { this.mFromUserId = fromUserId; }
+	public void setToUserId(String toUserId) { this.mToUserId = toUserId; }
+	public void setCreated(long created) { this.mCreated = created; }
+	public void setModified(long modified) { this.mModified = modified; }
+	public void setImageFileId(String mImageFileId) { this.mImageFileId = mImageFileId; }
+	public void setReadAt(long mReadAt) { this.mReadAt = mReadAt; }
+	public void setLatitude(float latitude) { this.mLatitude = latitude; }
+	public void setLongitude(float longitude) { this.mLongitude = longitude; }
 	public void setDeliveryStatus(String status) { this.mDeliveryStatus = status; }
-
-	@Override
-	public int compareTo(Message another) {
-		if(this.getCreated() < another.getCreated()) {
-			return -1;
-		} else if(this.getCreated() > another.getCreated()) {
-			return 1;
-		} else {
-			return 0;
-		}
-	}
 
 	@Override
 	public String toString() {
@@ -150,58 +127,52 @@ public class Message implements Comparable<Message>, Serializable {
 				+ ", mModified=" + mModified + "]";
 	}
 
-	/* ******************************************************************************** */
-	/* ************************************ SETTERS *********************************** */
-	/* ******************************************************************************** */
-	public void saveToLocalDatabase(OnMessageTaskCompleted e) {
-		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner(e);
-		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_SAVE, this);
+	/* ******************************************************************************************* */
+	/* ******************************************************************************************* */
+
+	public void saveToLocalDatabase(int action) {
+		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
+		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, action, this);
 	}
 
-	public static void getAllMessageForChat(OnMessageTaskCompleted e, String businessId, int skip) {
-		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner(e);
+	public static void getAllMessageForChat(String businessId, int skip) {
+		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
 		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL, businessId, skip);
 	}
 
 	public void updateDelivery(String status) {
 		// 1. Update status on db on a background process
-		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner(null);
+		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
 		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_UPDATE, this, status);
-		// 2. Update this message and try to update on MessagesAdapter
-		if(adapter != null) {
-			final MessagesAdapter localAdapter = adapter.get();
-			if (localAdapter != null) {
-				localAdapter.updateMessage(this, status);
-			}
-		}
 	}
 
 	private static class MessageAsyncTaskRunner extends AsyncTask<Object, String, MessageResponse> {
 
-		private OnMessageTaskCompleted taskCompleted;
-
-		public MessageAsyncTaskRunner(OnMessageTaskCompleted activityContext) {
-			this.taskCompleted = activityContext;
-		}
+		public MessageAsyncTaskRunner() { }
 
 		@Override
 		protected MessageResponse doInBackground(Object... params) {
+			if (params.length == 0)
+				return new MessageResponse(-1);
+
+			Message message = new Message();
+			List<Message> messages = null;
+			int actionCode = (int)params[0];
+
 			try {
 				Log.e("MessageAsyncTaskRunner", "INTENTANDO GUARDAR/ACTUALIZAR/ELIMINAR MENSAJE...");
-				int val = (int)params[0];
 
-				List<Message> messages = new ArrayList<>();
-
-				switch (val) {
+				switch (actionCode) {
 					case ACTION_MESSAGE_SAVE:
-						Message message1 = (Message) params[1];
-						message1 = ConversaApp.getDB().saveMessage(message1);
-						messages.add(message1);
+						message = ConversaApp.getDB().saveMessage((Message) params[1]);
+						break;
+					case ACTION_MESSAGE_NEW_MESSAGE:
+						message = ConversaApp.getDB().saveMessage((Message) params[1]);
 						break;
 					case ACTION_MESSAGE_UPDATE:
-						Message message2 = (Message) params[1];
+						message = (Message) params[1];
 						String status = (String)params[2];
-						ConversaApp.getDB().updateDeliveryStatus(message2.getId(), status);
+						ConversaApp.getDB().updateDeliveryStatus(message.getId(), status);
 						break;
 					case ACTION_MESSAGE_RETRIEVE_ALL:
 						String businessId = (String) params[1];
@@ -209,30 +180,67 @@ public class Message implements Comparable<Message>, Serializable {
 						messages = ConversaApp.getDB().getMessagesByContact(businessId, 20, skip);
 						break;
 				}
-
-				return new MessageResponse(val, messages);
 			} catch (SQLException e) {
 				Log.e("MessageAsyncTaskRunner", "No se pudo guardar mensaje porque ocurrio el siguiente error: " + e.getMessage());
-				return null;
 			}
+
+			return new MessageResponse(actionCode, message, messages);
 		}
 
 		@Override
-		protected void onPostExecute(MessageResponse message) {
-			Log.e("MessageAsyncTaskRunner", "onPostExecute HA FINALIZADO, EL RESULTADO: " + (message != null));
-			if (taskCompleted != null) {
-				taskCompleted.OnMessageTaskCompleted(message);
-			}
+		protected void onPostExecute(MessageResponse response) {
+			ConversaApp.getDB().notifyMessageListeners(response);
 		}
 	}
 
-	public void addMessageToAdapter() {
-		if(adapter != null) {
-			final MessagesAdapter localAdapter = adapter.get();
-			if (localAdapter != null) {
-				localAdapter.addMessage(this);
-			}
-		}
+	/* ******************************************************************************************* */
+	/* ******************************************************************************************* */
+
+	@Override
+	public int describeContents() {
+		return 0;
 	}
 
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(this.mId);
+		dest.writeString(this.mMessageType);
+		dest.writeString(this.mBody);
+		dest.writeString(this.mDeliveryStatus);
+		dest.writeString(this.mFromUserId);
+		dest.writeString(this.mToUserId);
+		dest.writeFloat(this.mLatitude);
+		dest.writeFloat(this.mLongitude);
+		dest.writeString(this.mImageFileId);
+		dest.writeLong(this.mReadAt);
+		dest.writeLong(this.mCreated);
+		dest.writeLong(this.mModified);
+	}
+
+	protected Message(Parcel in) {
+		this.mId = in.readLong();
+		this.mMessageType = in.readString();
+		this.mBody = in.readString();
+		this.mDeliveryStatus = in.readString();
+		this.mFromUserId = in.readString();
+		this.mToUserId = in.readString();
+		this.mLatitude = in.readFloat();
+		this.mLongitude = in.readFloat();
+		this.mImageFileId = in.readString();
+		this.mReadAt = in.readLong();
+		this.mCreated = in.readLong();
+		this.mModified = in.readLong();
+	}
+
+	public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>() {
+		@Override
+		public Message createFromParcel(Parcel source) {
+			return new Message(source);
+		}
+
+		@Override
+		public Message[] newArray(int size) {
+			return new Message[size];
+		}
+	};
 }

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rlNotificationBody"
     android:layout_width="match_parent"
-    android:layout_height="62dp"
+    android:layout_height="?attr/actionBarSize"
     android:background="@color/push_notification_background"
     android:clickable="true"
     android:padding="2dp" >
@@ -12,8 +12,10 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
         android:gravity="center" >
         
         <ee.app.conversa.view.CircleImageView
@@ -23,7 +25,6 @@
 		    android:layout_height="match_parent"
 		    android:layout_centerInParent="true"
 		    android:contentDescription="@null"
-            android:elevation="1dp"
 		    app:border_color="@android:color/transparent"/>
 
         <ProgressBar
@@ -42,11 +43,14 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/rlImage"
         android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
         android:layout_toLeftOf="@+id/btnClose"
+        android:layout_toStartOf="@+id/btnClose"
         android:layout_toRightOf="@+id/rlImage"
-        android:gravity="left|bottom"
+        android:layout_toEndOf="@+id/rlImage"
+        android:gravity="start|bottom"
         android:singleLine="true"
-        android:text="User name"
+        android:text="@string/test_string"
         android:textColor="@android:color/white"
         android:textSize="17sp" />
 
@@ -56,11 +60,14 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvUserName"
         android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
         android:layout_toLeftOf="@+id/btnClose"
+        android:layout_toStartOf="@+id/btnClose"
         android:layout_toRightOf="@+id/rlImage"
-        android:gravity="left|bottom"
+        android:layout_toEndOf="@+id/rlImage"
+        android:gravity="start|bottom"
         android:singleLine="true"
-        android:text="Notification"
+        android:text="@string/test_string"
         android:textColor="@android:color/white"
         android:textSize="14sp" />
 
@@ -69,6 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:background="@android:drawable/list_selector_background"
         android:contentDescription="@null"

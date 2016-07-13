@@ -25,8 +25,6 @@
 package ee.app.conversa.messageshandling;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.adapters.MessagesAdapter;
-import ee.app.conversa.interfaces.OnMessageTaskCompleted;
 import ee.app.conversa.model.Database.Message;
 import ee.app.conversa.utils.Const;
 
@@ -38,16 +36,29 @@ import ee.app.conversa.utils.Const;
 
 public class SendMessageAsync {
 
-	public static void sendTextMessage(MessagesAdapter adapter, String businessId, String text, OnMessageTaskCompleted callback) {
+	public static void sendTextMessage(String businessId, String text) {
 		// 1. Create local message
-		Message message = new Message(adapter);
+		Message message = new Message();
 		message.setFromUserId(ConversaApp.getPreferences().getCustomerId());
 		message.setToUserId(businessId);
 		message.setBody(text);
 		message.setMessageType(Const.kMessageTypeText);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(callback);
+		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+	}
+
+	public static void sendLocationMessage(String businessId, float lat, float lon) {
+		// 1. Create local message
+		Message message = new Message();
+		message.setFromUserId(ConversaApp.getPreferences().getCustomerId());
+		message.setToUserId(businessId);
+		message.setLatitude(lat);
+		message.setLongitude(lon);
+		message.setMessageType(Const.kMessageTypeLocation);
+
+		// 2. Save locally on background
+		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
 	}
 
 }

@@ -1,14 +1,14 @@
-<android.support.design.widget.CoordinatorLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    tools:context=".ActivityMain">
+    tools:context="ee.app.conversa.ActivityMain">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
+        android:id="@+id/ablToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
@@ -28,33 +28,20 @@
             android:layout_height="wrap_content"
             android:background="@color/regular_tabs"
             style="@style/MyCustomTabLayout" />
-
-        <RelativeLayout
-            android:id="@+id/rlNoInternetNotification"
-            android:layout_below="@id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" >
-
-            <include layout="@layout/no_internet_notification" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlPushNotification"
-            android:layout_below="@id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" >
-
-            <include layout="@layout/push_notification" />
-        </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
+
+    <include android:id="@+id/rlPushNotification"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:visibility="gone"
+        layout="@layout/push_notification" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
+        android:layout_below="@id/ablToolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-    <!--android:layout_below="@id/tabLayout"-->
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

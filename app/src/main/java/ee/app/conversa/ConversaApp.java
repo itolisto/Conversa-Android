@@ -33,7 +33,7 @@ import com.parse.Parse;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 
-import ee.app.conversa.management.MySQLiteHelper;
+import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.model.Parse.Business;
 import ee.app.conversa.model.Parse.BusinessCategory;

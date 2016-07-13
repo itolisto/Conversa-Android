@@ -12,10 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
-import com.google.firebase.auth.FirebaseUser;
-
 import ee.app.conversa.management.ConnectionChangeReceiver;
-import ee.app.conversa.utils.Utils;
 
 /**
  * Created by edgargomez on 6/3/16.
@@ -24,22 +21,22 @@ public class BaseActivity extends AppCompatActivity {
 
     protected RelativeLayout mRlNoInternetNotification;
     protected boolean checkInternetConnection;
+    protected boolean hasInternetConnection;
 
-    private final IntentFilter mConnectionChangeFilter = new IntentFilter(
-            ConnectionChangeReceiver.INTERNET_CONNECTION_CHANGE);
+    private final IntentFilter mConnectionChangeFilter = new IntentFilter(ConnectionChangeReceiver.INTERNET_CONNECTION_CHANGE);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkInternetConnection = true;
+        hasInternetConnection = true;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (checkInternetConnection) {
-            ConversaApp.getLocalBroadcastManager().registerReceiver(
-                    mConnectionChangeReceiver, mConnectionChangeFilter);
+            ConversaApp.getLocalBroadcastManager().registerReceiver(mConnectionChangeReceiver, mConnectionChangeFilter);
         }
     }
 
@@ -47,7 +44,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (checkInternetConnection) {
-            if (checkInternetConnection()) {
+            if (hasInternetConnection) {
                 yesInternetConnection();
             } else {
                 noInternetConnection();
@@ -63,23 +60,17 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected void authStateChanged(FirebaseUser currentUser) {
-
-    }
-
     private BroadcastReceiver mConnectionChangeReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             if (intent.getBooleanExtra(ConnectionChangeReceiver.HAS_INTERNET_CONNECTION, true)) {
                 yesInternetConnection();
+                hasInternetConnection = true;
             } else {
                 noInternetConnection();
+                hasInternetConnection = false;
             }
         }
     };
-
-    protected boolean checkInternetConnection() {
-        return Utils.hasNetworkConnection(getApplicationContext());
-    }
 
     public void noInternetConnection() {
         if (mRlNoInternetNotification != null && mRlNoInternetNotification.getVisibility() == View.GONE) {
@@ -100,7 +91,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void initialization() {
-        if (mRlNoInternetNotification == null) {
+        if (checkInternetConnection) {
             mRlNoInternetNotification = (RelativeLayout) findViewById(R.id.rlNoInternetNotification);
         }
     }

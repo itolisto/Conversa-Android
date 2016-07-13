@@ -11,7 +11,9 @@
         android:layout_height="70dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
         android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginTop="5dp"
         android:gravity="center" >
 
@@ -22,18 +24,33 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:contentDescription="@null"
-            android:elevation="1dp"
             app:border_color="@android:color/transparent"/>
 
         <ProgressBar
             android:id="@+id/pbLoadingForImage"
             style="@style/CustomProgressBar"
             android:layout_width="30dp"
-            android:elevation="2dp"
             android:layout_height="30dp"
             android:layout_centerInParent="true"
             android:visibility="gone" />
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/ivUnread"
+        android:layout_height="15dp"
+        android:layout_width="15dp"
+        android:contentDescription="@null"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:weightSum="1"
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/notification"
+        android:textColor="@color/hookup_alert"
+        android:textSize="16sp"
+        android:layout_gravity="bottom" />
 
     <ee.app.conversa.view.MediumTextView
         android:id="@+id/tvUser"
@@ -42,51 +59,27 @@
         android:layout_marginTop="10dp"
         android:textColor="#444444"
         android:layout_toRightOf="@id/rlImage"
-        android:layout_toLeftOf="@+id/llUserIndicators"
+        android:layout_toEndOf="@id/rlImage"
+        android:layout_toLeftOf="@id/ivUnread"
+        android:layout_toStartOf="@id/ivUnread"
         android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:textSize="18sp" />
 
     <ee.app.conversa.view.RegularTextView
         android:id="@+id/tvLastMessage"
         android:layout_below="@+id/tvUser"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="5dp"
         android:textColor="@color/light_gray_subtext"
         android:maxLines="2"
         android:layout_toRightOf="@id/rlImage"
-        android:layout_toLeftOf="@+id/llUserIndicators"
+        android:layout_toEndOf="@id/rlImage"
+        android:layout_toLeftOf="@id/ivUnread"
+        android:layout_toStartOf="@id/ivUnread"
         android:layout_marginRight="5dp"
-        android:textSize="15sp" />
-
-    <LinearLayout
-        android:id="@+id/llUserIndicators"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:weightSum="1"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center" >
-
-        <ImageView
-            android:id="@+id/ivUnread"
-            android:layout_height="15dp"
-            android:layout_width="15dp"
-            android:contentDescription="@null"
-            android:elevation="1dp"
-            android:background="@drawable/notification"
-            android:layout_weight="1"
-            android:textColor="@color/hookup_alert"
-            android:textSize="16sp"
-            android:layout_marginRight="8dp"
-            android:layout_gravity="bottom" />
-    </LinearLayout>
-
-    <!--<View-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="7dp"-->
-        <!--android:background="@drawable/line" />-->
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="7dp"
+        android:textSize="14sp" />
 </RelativeLayout>

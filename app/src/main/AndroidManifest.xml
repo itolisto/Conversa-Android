@@ -2,12 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ee.app.conversa">
 
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.camera.autofocus"
-        android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,15 +14,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
-    <permission
-        android:name="ee.app.conversa.permission.MAPS_RECEIVE"
-        android:protectionLevel="signature" />
-
-    <uses-feature
-        android:glEsVersion="0x00020000"
-        android:required="true" />
-
-    <uses-permission android:name="ee.app.conversa.permission.MAPS_RECEIVE" />
+    <uses-feature android:glEsVersion="0x00020000"
+        android:required="true"/>
 
     <!-- [START gcm_permission] -->
     <!-- App receives GCM messages. -->
@@ -39,84 +28,69 @@
         android:protectionLevel="signature" />
     <!-- Prevent other Android applications from registering and receiving the Android application's messages -->
     <uses-permission android:name="ee.app.conversa.permission.C2D_MESSAGE" />
-
     <!-- [END gcm_permission] -->
-    <application
-        android:name=".ConversaApp"
+
+    <application android:name="ee.app.conversa.ConversaApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".ActivitySplashScreen"
+
+        <activity android:name="ee.app.conversa.ActivitySplashScreen"
             android:label="@string/app_name"
             android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <data
-                    android:host="user"
-                    android:scheme="conversapp" />
-
+                <data android:scheme="conversapp" android:host="user" />
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ActivitySignIn"
-            android:launchMode="singleTop"
-            android:noHistory="true"
-            android:screenOrientation="portrait" />
-        <!-- enable the search dialog to send searches to MainActivity -->
 
+        <activity
+            android:name="ee.app.conversa.ActivitySignIn"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:launchMode="singleTop"
+            android:noHistory="true" />
+
+        <!-- enable the search dialog to send searches to MainActivity -->
         <meta-data
             android:name="android.app.default_searchable"
             android:value="ee.app.conversa.MainActivity" />
 
         <activity
-            android:name=".ActivityMain"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+            android:name="ee.app.conversa.ActivityMain"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
 
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity
-            android:name=".notifications.NotificationReceiver"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"/>
+        <activity android:name="ee.app.conversa.ActivitySearch"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
+
         <activity android:name=".ActivityProfile"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
+
         <activity
             android:name=".ActivityChatWall"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"> <!--  -->
-        </activity>
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
+
         <activity
             android:name=".ActivityLocation"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"> <!--  -->
-        </activity>
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
+
         <activity
             android:name=".ActivityCameraCrop"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"> <!--  -->
-        </activity>
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
 
         <!-- **************************************************************************************** -->
         <receiver android:name=".management.ConnectionChangeReceiver">
@@ -127,11 +101,14 @@
         </receiver>
         <!-- **************************************************************************************** -->
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBBJNcckAXPeisYmj-ej2bwN13F-tKtux8" />
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBrWJZuAiphXpuktc39E-VxJKe7VjYKeQo" />
 
         <service android:name="com.parse.PushService" />
-        <receiver android:name="com.parse.ParsePushBroadcastReceiver"
+        <receiver android:name="ee.app.conversa.notifications.CustomParseReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
@@ -147,8 +124,10 @@
                 <category android:name="ee.app.conversa" />
             </intent-filter>
         </receiver>
-        <meta-data android:name="com.parse.push.gcm_sender_id"
-            android:value="id:753901434477" />;
+
+        <service
+            android:name=".services.NewMessageService"
+            android:exported="false"/>
     </application>
 
 </manifest>

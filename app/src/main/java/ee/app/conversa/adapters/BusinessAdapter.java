@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,7 @@ import ee.app.conversa.model.Parse.Business;
 
 public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder> {
 
-    private final WeakReference<AppCompatActivity> mActivity;
+    private final AppCompatActivity mActivity;
     private List<Business> mBusiness;
     private OnItemClickListener listener;
 
@@ -31,7 +30,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
     }
 
     public BusinessAdapter(AppCompatActivity activity, OnItemClickListener listener) {
-        this.mActivity = new WeakReference<>(activity);
+        this.mActivity = activity;
         this.mBusiness = new ArrayList<>();
         this.listener = listener;
     }
@@ -64,7 +63,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         } else if (object.getClass().equals(dBusiness.class)) {
             dBusiness business = (dBusiness) object;
             holder.tvBusiness.setText(business.getDisplayName());
-            holder.tvAbout.setText(business.getConversaId());
+            holder.tvAbout.setText(business.getBusinessId());
         }
     }
 

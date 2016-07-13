@@ -24,23 +24,15 @@
 
 package ee.app.conversa.utils;
 
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import ee.app.conversa.R;
 
 /**
  * Utils
@@ -48,30 +40,6 @@ import ee.app.conversa.R;
  * Contains various methods used through the application.
  */
 public class Utils {
-
-	public static class ForegroundCheckAsync extends AsyncTask<Context, Void, Boolean> {
-		@Override
-		protected Boolean doInBackground(Context... params) {
-			final Context context = params[0];
-			return isAppOnForeground(context);
-		}
-
-		private boolean isAppOnForeground(Context context) {
-			ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-			List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-			if (appProcesses == null) {
-				return false;
-			}
-			final String packageName = context.getPackageName();
-			for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-				if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-						&& appProcess.processName.equals(packageName)) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
 
 	/**
 	 * Checks whether this app has mobile or wireless connection
@@ -97,56 +65,18 @@ public class Utils {
 			Logger.error(activity.getClass().toString(), e.getMessage());
 		}
 	}
-	
-	public static String checkPassword(Activity activity, String password) {
-		if (password.length() < 6) {
-			return activity.getString(R.string.password_error_number_of_characters);
-		} else if (!isAlphaNumeric(password)){
-			return activity.getString(R.string.password_error_invalid_characters);
-		}
-		return activity.getString(R.string.password_ok);
+
+	public static boolean checkName(String name) {
+		return (name != null && name.length() > 1);
 	}
 
-    public static String checkEmail(Activity activity, String email) {
-        if (email == null || email.isEmpty()) {
-            return activity.getString(R.string.email_length);
-        } else if (!isEmailValid(email)) {
-            return activity.getString(R.string.email_not_valid);
-        }
-        return activity.getString(R.string.email_ok);
-    }
-	
-	public static String checkName(Activity activity, String name) {
-		if (name != null && name.length() > 1) {
-			return activity.getString(R.string.name_ok);
-		} else {
-			return activity.getString(R.string.name_error);
-		}
-	}
-	
-	private static boolean isAlphaNumeric(final String s){
-	    String pattern = "/^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\\W).{6,}$/";
-		Pattern mPattern = Pattern.compile(pattern);
-        Matcher matcher = mPattern.matcher(s);
-        return matcher.matches();
-	}
-
-    /**
-     * Used for checking valid email format.
-     *
-     * @param email String that will be checked
-     * @return boolean true for valid false for invalid
-     */
-    private static boolean isEmailValid(String email) {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    public static boolean checkEmail(String email) {
+		return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-	public static int getToolbarHeight(Context context) {
-		final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
-				new int[]{R.attr.actionBarSize});
-		int toolbarHeight = (int) styledAttributes.getDimension(0, 0);
-		styledAttributes.recycle();
-
-		return toolbarHeight;
+	public static boolean checkPassword(String password) {
+		String pattern = "/^(?=.*[A-Za-z])(?=.*\\d)(?=.*\\W).{6,}$/";
+		return Pattern.compile(pattern).matcher(password).matches();
 	}
+
 }

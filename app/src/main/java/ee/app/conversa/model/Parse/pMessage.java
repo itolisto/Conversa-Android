@@ -73,7 +73,7 @@ public class pMessage extends ParseObject {
         return getParseFile(Const.kMessageFileKey);
     }
 
-    public String getText(String value) {
+    public String getText() {
         return getString(Const.kMessageTextKey);
     }
 

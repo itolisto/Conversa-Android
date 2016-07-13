@@ -1,4 +1,4 @@
-package ee.app.conversa.management;
+package ee.app.conversa.database;
 
 /**
  * Created by edgargomez on 2/11/15.
@@ -10,17 +10,26 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.UiThread;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
+import ee.app.conversa.interfaces.OnContactTaskCompleted;
+import ee.app.conversa.interfaces.OnMessageTaskCompleted;
 import ee.app.conversa.model.Database.Message;
 import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.response.ContactResponse;
+import ee.app.conversa.response.MessageResponse;
 import ee.app.conversa.utils.Logger;
 
 public class MySQLiteHelper {
+
+    private OnMessageTaskCompleted messageListeners;
+    private OnContactTaskCompleted contactListeners;
 
     private static final String TAG = "MySQLiteHelper";
     private final Context context;
@@ -105,6 +114,9 @@ public class MySQLiteHelper {
         myDbHelperForMessages = new DatabaseHelperMessages(context);
         myDbHelperForContacts = new DatabaseHelperContacts(context);
 
+        messageListeners = null;
+        contactListeners = null;
+
         openMessagesTable();
         closeMessagesTable();
         openContactsTable();
@@ -182,16 +194,17 @@ public class MySQLiteHelper {
         return contacts;
     }
 
-    public boolean deleteContactById(String id) {
+    public dBusiness deleteContactById(dBusiness customer) {
+        String id = Long.toString(customer.getId());
         openContactsTable();
         int result = myDb.delete(TABLE_CV_CONTACTS, COLUMN_ID + " = ? ", new String[]{id});
         closeContactsTable();
+
         if( result == 1 ) {
             deleteAllMessagesById(id);
-            return true;
-        }else {
-            return false;
         }
+
+        return customer;
     }
 
     public dBusiness isContact(String businessId) {
@@ -209,31 +222,6 @@ public class MySQLiteHelper {
         closeContactsTable();
 
         return contact;
-    }
-
-    public boolean callForMessages(String id) {
-        openContactsTable();
-        Cursor cursor = myDb.query(TABLE_CV_CONTACTS, new String[] {"stopCallingForMessages"}, COLUMN_ID + " = ?",new String[] { id },null,null,null);
-        cursor.moveToFirst();
-        int has = 0;
-
-        while (!cursor.isAfterLast()) {
-            has = cursor.getInt(0);
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-        closeContactsTable();
-
-        return (has == 0);
-    }
-
-    public void setCallNoMore(String id) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("stopCallingForMessages", 1);
-        openContactsTable();
-        myDb.update(TABLE_CV_CONTACTS, contentValues, "_id = ? ", new String[]{id});
-        closeContactsTable();
     }
 
     public boolean hasPendingMessages(String id) {
@@ -261,16 +249,8 @@ public class MySQLiteHelper {
         closeContactsTable();
     }
 
-    public void updateAvatarFileId(String avatar, String id){
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("avatar_thumb_file_id", avatar);
-        openContactsTable();
-        myDb.update(TABLE_CV_CONTACTS, contentValues, "_id = ? ", new String[]{id});
-        closeContactsTable();
-    }
-
     private dBusiness cursorToUser(Cursor cursor) {
-        dBusiness contact = new dBusiness(-1, null);
+        dBusiness contact = new dBusiness();
         contact.setId(cursor.getLong(0));
         contact.setBusinessId(cursor.getString(1));
         contact.setDisplayName(cursor.getString(2));
@@ -292,42 +272,38 @@ public class MySQLiteHelper {
     /* ******************************************* */
     /* ******************************************* */
 
-    public Message saveMessage(Message messages) throws SQLException {
+    public Message saveMessage(Message newMessage) {
         ContentValues message = new ContentValues();
-        message.put(sMessageFromUserId, messages.getFromUserId());
-        message.put(sMessageToUserId, messages.getToUserId());
-        message.put(sMessageType, messages.getMessageType());
-        message.put(sMessageDeliveryStatus, messages.getDeliveryStatus());
-        message.put(sMessageBody, messages.getBody());
-        message.put(sMessageFileId, messages.getImageFileId());
-        message.put(sMessageLongitude, messages.getLongitude());
-        message.put(sMessageLatitude, messages.getLatitude());
-        message.put(sMessageCreatedAt, messages.getCreated());
-        message.put(sMessageModifiedAt, messages.getModified());
-        message.put(sMessageReadAt, messages.getReadAt());
+        message.put(sMessageFromUserId, newMessage.getFromUserId());
+        message.put(sMessageToUserId, newMessage.getToUserId());
+        message.put(sMessageType, newMessage.getMessageType());
+        message.put(sMessageDeliveryStatus, newMessage.getDeliveryStatus());
+        message.put(sMessageBody, newMessage.getBody());
+        message.put(sMessageFileId, newMessage.getImageFileId());
+        message.put(sMessageLongitude, newMessage.getLongitude());
+        message.put(sMessageLatitude, newMessage.getLatitude());
+        message.put(sMessageCreatedAt, newMessage.getCreated());
+        message.put(sMessageModifiedAt, newMessage.getModified());
+        message.put(sMessageReadAt, newMessage.getReadAt());
 
         openMessagesTable();
         long id = myDb.insert(TABLE_MESSAGES, null, message);
         closeMessagesTable();
 
         if(id > 0) {
-            messages.setId(id);
+            newMessage.setId(id);
         }
 
-        return messages;
+        return newMessage;
     }
 
     public int updateDeliveryStatus(long messageId, String status) {
-        if (messageId > 0) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(sMessageDeliveryStatus, status);
-            openMessagesTable();
-            int result = myDb.update(TABLE_MESSAGES, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(messageId)});
-            closeMessagesTable();
-            return result;
-        } else {
-            return 0;
-        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(sMessageDeliveryStatus, status);
+        openMessagesTable();
+        int result = myDb.update(TABLE_MESSAGES, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(messageId)});
+        closeMessagesTable();
+        return result;
     }
 
     public int messageCountForContact(String id) {
@@ -353,13 +329,13 @@ public class MySQLiteHelper {
         Message message = null;
         openMessagesTable();
         String query = "SELECT m.* FROM "
-                        + TABLE_MESSAGES + " m"
-                        + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
-                + " UNION " +
-                        "SELECT p.* FROM "
-                        + TABLE_MESSAGES + " p"
-                        + " WHERE p." + sMessageFromUserId + " = \'" + fromId + "\' AND p." + sMessageToUserId + " = \'" + id + "\'"
-                        + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT 1";
+                + TABLE_MESSAGES + " m"
+                + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
+                + " UNION ALL " +
+                "SELECT p.* FROM "
+                + TABLE_MESSAGES + " p"
+                + " WHERE p." + sMessageFromUserId + " = \'" + fromId + "\' AND p." + sMessageToUserId + " = \'" + id + "\'"
+                + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT 1";
 
         Cursor cursor = myDb.rawQuery(query, new String[]{});
         cursor.moveToFirst();
@@ -391,50 +367,28 @@ public class MySQLiteHelper {
         cursor.close();
         closeMessagesTable();
 
-        if(count == 0) {
-//            openContactsTable();
-//            cursor = myDb.query(TABLE_CV_CONTACTS, new String[] {"hasPendingMessages"}, COLUMN_ID + " = ?",new String[] { id },null,null,null);
-//            cursor.moveToFirst();
-//
-//            while (!cursor.isAfterLast()) {
-//                count = cursor.getInt(0);
-//                cursor.moveToNext();
-//            }
-//
-//            cursor.close();
-//            closeContactsTable();
-        }
-
         return (count > 0);
     }
 
-    public boolean updateReadMessages(String id) {
+    public int updateReadMessages(String id) {
         ContentValues contentValues = new ContentValues();
         GregorianCalendar now = new GregorianCalendar();
         long currentTimestamp = now.getTimeInMillis() / 1000;
         contentValues.put("read_at", currentTimestamp);
         openMessagesTable();
         String fromId = ConversaApp.getPreferences().getCustomerId();
-        myDb.update(TABLE_MESSAGES, contentValues, sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
+        int result1 = myDb.update(TABLE_MESSAGES, contentValues, sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
                 new String[] {id, fromId} );
         closeMessagesTable();
-        return true;
-    }
-
-    public boolean updateReadMessagesMe(String id) {
-        ContentValues contentValues = new ContentValues();
-        GregorianCalendar now = new GregorianCalendar();
-        long currentTimestamp = now.getTimeInMillis() / 1000;
-        contentValues.put("read_at", currentTimestamp);
+        //return result;
         openMessagesTable();
-        String fromId = ConversaApp.getPreferences().getCustomerId();
-        myDb.update(TABLE_MESSAGES, contentValues, "" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
+        int result2 = myDb.update(TABLE_MESSAGES, contentValues, "" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
                 new String[] { fromId, id } );
         closeMessagesTable();
-        return true;
+        return result1 + result2;
     }
 
-    private void deleteAllMessagesById(String id) {
+    private int deleteAllMessagesById(String id) {
         openMessagesTable();
         String fromId = ConversaApp.getPreferences().getCustomerId();
         int result1 = myDb.delete(TABLE_MESSAGES, "" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
@@ -444,20 +398,21 @@ public class MySQLiteHelper {
         int result = result1 + result2;
         Logger.error("MySQLiteHelper", "A total of  " + result + " messages were deleted from internal database for contact " + id);
         closeMessagesTable();
+        return result;
     }
 
-    public ArrayList<Message> getMessagesByContact(String id, int count, int offset) throws SQLException {
+    public List<Message> getMessagesByContact(String id, int count, int offset) throws SQLException {
         String fromId = ConversaApp.getPreferences().getCustomerId();
         ArrayList<Message> messages = new ArrayList<>();
         openMessagesTable();
         String query = "SELECT m.* FROM "
-                        + TABLE_MESSAGES + " m"
-                        + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
-                        + " UNION " +
-                        "SELECT p.* FROM "
-                        + TABLE_MESSAGES + " p"
-                        + " WHERE p." + sMessageFromUserId + " = \'" + fromId + "\' AND p." + sMessageToUserId + " = \'" + id + "\'"
-                        + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT " + count + " OFFSET " + (offset * count);
+                + TABLE_MESSAGES + " m"
+                + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
+                + " UNION ALL " +
+                "SELECT p.* FROM "
+                + TABLE_MESSAGES + " p"
+                + " WHERE p." + sMessageFromUserId + " = \'" + fromId + "\' AND p." + sMessageToUserId + " = \'" + id + "\'"
+                + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT " + count + " OFFSET " + (offset * count);
         Cursor cursor = myDb.rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
@@ -473,7 +428,7 @@ public class MySQLiteHelper {
     }
 
     private Message cursorToMessage(Cursor cursor) {
-        Message message = new Message(null);
+        Message message = new Message();
         message.setId(cursor.getLong(0));
         message.setFromUserId(cursor.getString(1));
         message.setToUserId(cursor.getString(2));
@@ -483,17 +438,90 @@ public class MySQLiteHelper {
         message.setImageFileId(cursor.getString(6));
         message.setLongitude(cursor.getFloat(7));
         message.setLatitude(cursor.getFloat(8));
-        String number = Integer.toString(cursor.getInt(9));
-        message.setCreated(Long.valueOf(number));
-        number = Integer.toString(cursor.getInt(10));
-        message.setModified(Long.valueOf(number));
-        message.setReadAt(cursor.getInt(11));
+        message.setCreated(cursor.getLong(9));
+        message.setModified(cursor.getLong(10));
+        message.setReadAt(cursor.getLong(11));
 
         return message;
     }
+
     /************************************************************/
     /*******************CREATE/UPGRADE METHODS*******************/
     /************************************************************/
+
+    public void setMessageListener(OnMessageTaskCompleted listener) {
+        messageListeners = listener;
+    }
+
+    public void removeMessageListener () {
+        messageListeners = null;
+    }
+
+    @UiThread
+    public void notifyMessageListeners(MessageResponse response) {
+        switch (response.getActionCode()) {
+            case Message.ACTION_MESSAGE_SAVE:
+                if (messageListeners != null) {
+                    messageListeners.MessageSent(response);
+                }
+                break;
+            case Message.ACTION_MESSAGE_UPDATE:
+                if (messageListeners != null) {
+                    messageListeners.MessageUpdated(response);
+                }
+                break;
+            case Message.ACTION_MESSAGE_DELETE:
+                if (messageListeners != null) {
+                    messageListeners.MessageDeleted(response);
+                }
+                break;
+            case Message.ACTION_MESSAGE_RETRIEVE_ALL:
+                if (messageListeners != null) {
+                    messageListeners.MessagesGetAll(response);
+                }
+                break;
+            default:
+                Log.e(TAG, "notifyMessageListeners: " + response.getActionCode() + "\nObjeto puede ser null: " + response);
+                break;
+        }
+    }
+
+    public void setContactListener(OnContactTaskCompleted listener) {
+        contactListeners = listener;
+    }
+
+    public void removeContactListener () {
+        contactListeners = null;
+    }
+
+    @UiThread
+    public void notifyContactListeners(ContactResponse response) {
+        switch (response.getActionCode()) {
+            case dBusiness.ACTION_MESSAGE_SAVE:
+                if (contactListeners != null) {
+                    contactListeners.ContactAdded(response);
+                }
+                break;
+            case dBusiness.ACTION_MESSAGE_UPDATE:
+                if (contactListeners != null) {
+                    contactListeners.ContactUpdated(response);
+                }
+                break;
+            case dBusiness.ACTION_MESSAGE_DELETE:
+                if (contactListeners != null) {
+                    contactListeners.ContactDeleted(response);
+                }
+                break;
+            case dBusiness.ACTION_MESSAGE_RETRIEVE_ALL:
+                if (contactListeners != null) {
+                    contactListeners.ContactGetAll(response);
+                }
+                break;
+            default:
+                Log.e(TAG, "notifyContactListeners: " + response.getActionCode() + "\nObjeto puede ser null: " + response);
+                break;
+        }
+    }
 
     private static class DatabaseHelperMessages extends SQLiteOpenHelper {
 
