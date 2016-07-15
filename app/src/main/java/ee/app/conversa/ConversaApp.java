@@ -29,6 +29,7 @@ import android.graphics.Typeface;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -69,6 +70,7 @@ public class ConversaApp extends Application {
 		super.onCreate();
         mDb = new MySQLiteHelper(this);
 		Fresco.initialize(this);
+		OneSignal.startInit(this).init();
 		setPreferences(new Preferences(this));
 		setLocalBroadcastManager(LocalBroadcastManager.getInstance(this));
 
