@@ -74,7 +74,7 @@ public class NewMessageService extends IntentService {
                     try {
                         customer = query.get(contactId);
                     } catch (ParseException e) {
-                        Log.e(TAG, "Error consiguiendo informacion de Customer " + e.getMessage());
+                        Log.e(TAG, "Error consiguiendo informacion de Business " + e.getMessage());
                         return;
                     }
 
@@ -85,15 +85,15 @@ public class NewMessageService extends IntentService {
                     dbcustomer.setAbout(customer.getAbout());
                     dbcustomer.setStatusMessage(customer.getStatus());
                     dbcustomer.setAvatarThumbFileId("");
-                    ConversaApp.getDB().saveContact(dbcustomer);
+                    dbcustomer = ConversaApp.getDB().saveContact(dbcustomer);
 
                     if (dbcustomer.getId() == -1) {
-                        Log.e(TAG, "Error guardando Contacto ");
+                        Log.e(TAG, "Error guardando Business ");
                     } else {
                         Intent broadcastIntent = new Intent();
                         broadcastIntent.setAction(FragmentUsersChat.UsersReceiver.ACTION_RESP);
                         broadcastIntent.putExtra(PARAM_OUT_MSG, dbcustomer);
-                        sendBroadcast(broadcastIntent);
+                        ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
                     }
                 }
 

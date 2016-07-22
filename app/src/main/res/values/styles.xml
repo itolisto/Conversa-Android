@@ -26,9 +26,6 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
-    <!-- <style name="Base.Theme.ConversaApp" parent="Theme.AppCompat.NoActionBar"> -->
-    <!-- </style> -->
-
     <style name="TransparentDialogTheme" parent="android:Theme.Dialog">
         <!-- No backgrounds, titles or window float -->
         <item name="android:windowIsTranslucent">true</item>

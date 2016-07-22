@@ -60,10 +60,10 @@ public class Message implements Parcelable {
 	// Error
 	public static final String statusParseError = "1";
 	public static final String statusPubNubError = "2";
+	public static final String statusReceivedError = "5";
 	// No error
 	public static final String statusAllDelivered = "3";
 	public static final String statusReceived = "4";
-	public static final String statusReceivedError = "5";
 	public static final String statusDownloading = "6";
 	public static final String statusUploading = "7";
 	// MESSAGE ACTIONS

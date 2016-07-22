@@ -122,9 +122,9 @@ public class ActivityMain extends ConversaActivity {
                         tab.setIcon(R.drawable.actuales_inactive);
                         break;
                     case 2:
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.regular_tabs)));
-                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.normal_background)));
+                        if (Build.VERSION.SDK_INT >= 23) {
+                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
+                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.normal_background, null)));
                         } else {
                             tabLayout.setBackgroundColor(getResources().getColor(R.color.regular_tabs));
                             mViewPager.setBackgroundColor(getResources().getColor(R.color.normal_background));

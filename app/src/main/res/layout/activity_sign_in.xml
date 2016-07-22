@@ -13,7 +13,7 @@
 		android:id="@+id/llSignBody"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:visibility="visible" >
+		android:visibility="gone" >
 
 		<ImageView
 			android:id="@+id/ivConversa"
@@ -200,7 +200,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:gravity="center_vertical"
-		android:visibility="gone" >
+		android:visibility="visible" >
 
 		<android.support.design.widget.TextInputLayout
 			android:id="@+id/tilNameSignUp"

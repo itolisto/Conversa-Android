@@ -476,8 +476,8 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
         public void afterTextChanged(Editable editable) {
-            if (editable.toString().isEmpty())
-                return;
+//            if (editable.toString().isEmpty())
+//                return;
 
             switch (view.getId()) {
                 case R.id.etSignInEmail:

@@ -48,14 +48,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import ee.app.conversa.management.GPSTracker;
 import ee.app.conversa.utils.Const;
 
-//import com.facebook.appevents.AppEventsLogger;
-
 /**
  * LocationActivity
  * 
  * Shows user current location or other user's previous sent location.
  */
-
 @SuppressLint("DefaultLocale")
 public class ActivityLocation extends FragmentActivity implements OnMapReadyCallback, OnClickListener {
 

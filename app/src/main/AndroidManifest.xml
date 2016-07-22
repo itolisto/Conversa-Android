@@ -73,22 +73,22 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTask" />
 
-        <activity android:name=".ActivityProfile"
+        <activity android:name="ee.app.conversa.ActivityProfile"
             android:screenOrientation="portrait"
             android:launchMode="singleTask" />
 
         <activity
-            android:name=".ActivityChatWall"
+            android:name="ee.app.conversa.ActivityChatWall"
             android:screenOrientation="portrait"
             android:launchMode="singleTask" />
 
         <activity
-            android:name=".ActivityLocation"
+            android:name="ee.app.conversa.ActivityLocation"
             android:screenOrientation="portrait"
             android:launchMode="singleTask" />
 
         <activity
-            android:name=".ActivityCameraCrop"
+            android:name="ee.app.conversa.ActivityCameraCrop"
             android:screenOrientation="portrait"
             android:launchMode="singleTask" />
 
@@ -125,8 +125,7 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".services.NewMessageService"
+        <service android:name=".services.NewMessageService"
             android:exported="false"/>
     </application>
 

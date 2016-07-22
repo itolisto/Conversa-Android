@@ -441,7 +441,6 @@ public class MySQLiteHelper {
         message.setCreated(cursor.getLong(9));
         message.setModified(cursor.getLong(10));
         message.setReadAt(cursor.getLong(11));
-
         return message;
     }
 
