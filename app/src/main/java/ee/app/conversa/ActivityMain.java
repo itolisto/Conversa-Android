@@ -11,13 +11,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.parse.ParsePush;
-
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
+import ee.app.conversa.utils.Utils;
 
 public class ActivityMain extends ConversaActivity {
 
@@ -139,14 +138,8 @@ public class ActivityMain extends ConversaActivity {
             public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-        if (ConversaApp.getPreferences().getCustomerId().isEmpty()) {
-            // Get Customer Id
-            Account.getCustomerId();
-        } else {
-            // 2. Subscribe to Customer channels
-            ParsePush.subscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "_pbc");
-            ParsePush.subscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "_pvt");
-        }
+        // 1. Subscribe to Customer channels
+        Utils.subscribeToTags(Account.getCurrentUser().getObjectId());
 	}
 	
 	@Override

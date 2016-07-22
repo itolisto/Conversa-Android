@@ -107,26 +107,17 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBrWJZuAiphXpuktc39E-VxJKe7VjYKeQo" />
 
-        <service android:name="com.parse.PushService" />
-        <receiver android:name="ee.app.conversa.notifications.CustomParseReceiver"
+        <service
+            android:name=".notifications.CustomNotificationExtenderService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.parse.push.intent.RECEIVE" />
-                <action android:name="com.parse.push.intent.DELETE" />
-                <action android:name="com.parse.push.intent.OPEN" />
+                <action android:name="com.onesignal.NotificationExtender" />
             </intent-filter>
-        </receiver>
-        <receiver android:name="com.parse.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <category android:name="ee.app.conversa" />
-            </intent-filter>
-        </receiver>
+        </service>
 
-        <service android:name=".services.NewMessageService"
-            android:exported="false"/>
+        <!-- By default OneSignal will open or resume your launcher Activity when
+            a notification is tapped on. Disable this behavior -->
+        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />
     </application>
 
 </manifest>

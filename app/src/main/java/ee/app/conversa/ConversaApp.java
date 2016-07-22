@@ -31,7 +31,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.onesignal.OneSignal;
 import com.parse.Parse;
-import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 
 import ee.app.conversa.database.MySQLiteHelper;
@@ -43,6 +42,7 @@ import ee.app.conversa.model.Parse.Customer;
 import ee.app.conversa.model.Parse.Options;
 import ee.app.conversa.model.Parse.bCategory;
 import ee.app.conversa.model.Parse.pMessage;
+import ee.app.conversa.notifications.CustomNotificationOpenedHandler;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Preferences;
 
@@ -70,10 +70,11 @@ public class ConversaApp extends Application {
 		super.onCreate();
         mDb = new MySQLiteHelper(this);
 		Fresco.initialize(this);
-		OneSignal.startInit(this).init();
+		OneSignal.startInit(this)
+				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(getApplicationContext()))
+				.init();
 		setPreferences(new Preferences(this));
 		setLocalBroadcastManager(LocalBroadcastManager.getInstance(this));
-
 		// Register subclassing for using as Parse objects
 		ParseObject.registerSubclass(Options.class);
 		ParseObject.registerSubclass(Account.class);
@@ -99,8 +100,6 @@ public class ConversaApp extends Application {
 //			.enableLocalDataStore()
 //			.build()
 //		);
-
-		ParseInstallation.getCurrentInstallation().saveEventually();
 
 		//Crea las tipografias
 		setTfRalewayThin( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf") );

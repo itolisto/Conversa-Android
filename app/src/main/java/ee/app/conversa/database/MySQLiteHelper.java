@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import ee.app.conversa.ConversaApp;
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
 import ee.app.conversa.model.Database.Message;
 import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.response.ContactResponse;
 import ee.app.conversa.response.MessageResponse;
 import ee.app.conversa.utils.Logger;
@@ -325,7 +325,7 @@ public class MySQLiteHelper {
     }
 
     public Message getLastMessage(String id) {
-        String fromId = ConversaApp.getPreferences().getCustomerId();
+        String fromId = Account.getCurrentUser().getObjectId();
         Message message = null;
         openMessagesTable();
         String query = "SELECT m.* FROM "
@@ -376,7 +376,7 @@ public class MySQLiteHelper {
         long currentTimestamp = now.getTimeInMillis() / 1000;
         contentValues.put("read_at", currentTimestamp);
         openMessagesTable();
-        String fromId = ConversaApp.getPreferences().getCustomerId();
+        String fromId = Account.getCurrentUser().getObjectId();
         int result1 = myDb.update(TABLE_MESSAGES, contentValues, sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
                 new String[] {id, fromId} );
         closeMessagesTable();
@@ -390,7 +390,7 @@ public class MySQLiteHelper {
 
     private int deleteAllMessagesById(String id) {
         openMessagesTable();
-        String fromId = ConversaApp.getPreferences().getCustomerId();
+        String fromId = Account.getCurrentUser().getObjectId();
         int result1 = myDb.delete(TABLE_MESSAGES, "" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
                 new String[] { id, fromId });
         int result2 = myDb.delete(TABLE_MESSAGES, "" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
@@ -402,7 +402,7 @@ public class MySQLiteHelper {
     }
 
     public List<Message> getMessagesByContact(String id, int count, int offset) throws SQLException {
-        String fromId = ConversaApp.getPreferences().getCustomerId();
+        String fromId = Account.getCurrentUser().getObjectId();
         ArrayList<Message> messages = new ArrayList<>();
         openMessagesTable();
         String query = "SELECT m.* FROM "

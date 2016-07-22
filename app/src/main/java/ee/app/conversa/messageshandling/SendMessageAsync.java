@@ -24,8 +24,8 @@
 
 package ee.app.conversa.messageshandling;
 
-import ee.app.conversa.ConversaApp;
 import ee.app.conversa.model.Database.Message;
+import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.utils.Const;
 
 /**
@@ -39,7 +39,7 @@ public class SendMessageAsync {
 	public static void sendTextMessage(String businessId, String text) {
 		// 1. Create local message
 		Message message = new Message();
-		message.setFromUserId(ConversaApp.getPreferences().getCustomerId());
+		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
 		message.setBody(text);
 		message.setMessageType(Const.kMessageTypeText);
@@ -51,7 +51,7 @@ public class SendMessageAsync {
 	public static void sendLocationMessage(String businessId, float lat, float lon) {
 		// 1. Create local message
 		Message message = new Message();
-		message.setFromUserId(ConversaApp.getPreferences().getCustomerId());
+		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
 		message.setLatitude(lat);
 		message.setLongitude(lon);

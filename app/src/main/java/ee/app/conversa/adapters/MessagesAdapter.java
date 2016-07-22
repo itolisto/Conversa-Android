@@ -42,9 +42,9 @@ import com.google.android.gms.maps.MapView;
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.model.Database.Message;
+import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.RegularTextView;
@@ -65,7 +65,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 	private static final Intent mPushBroadcast = new Intent(PUSH);
 
 	public MessagesAdapter(AppCompatActivity activity) {
-		this.fromUser = ConversaApp.getPreferences().getCustomerId();
+		this.fromUser = Account.getCurrentUser().getObjectId();
 		this.mActivity = activity;
 		this.mMessages = new ArrayList<>();
 	}

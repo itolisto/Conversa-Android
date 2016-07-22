@@ -38,7 +38,6 @@ public class Preferences {
 
     // Defining SharedPreferences entries
     private static final String CATEGORIES_LOAD = "CATEGORIES_LOAD";
-    private static final String CUSTOMER_ID = "customer_id";
     private static final String FIRST_USER_SERVER_CALL = "first_users_server_call";
 
     private SharedPreferences sharedPreferences;
@@ -56,10 +55,6 @@ public class Preferences {
 	/* ******************************************************************************** */
     public boolean getCategoriesLoad() {
         return sharedPreferences.getBoolean(CATEGORIES_LOAD, false);
-    }
-
-    public String getCustomerId() {
-        return sharedPreferences.getString(CUSTOMER_ID, "");
     }
 
     public boolean isFirstCallForUsers() {
@@ -82,12 +77,6 @@ public class Preferences {
         } else {
             editor.commit();
         }
-    }
-
-    public void setCustomerId(String id) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(CUSTOMER_ID, id);
-        editor.apply();
     }
 
     public void setIsFirstCallForUsers(boolean isFirst) {
