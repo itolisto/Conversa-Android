@@ -493,7 +493,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                     isEmailValid(editable.toString());
                     break;
                 case R.id.etSignUpPassword:
-                    isPasswordValid(editable.toString());
+                    //isPasswordValid(editable.toString());
                     break;
                 case R.id.etSendEmail:
                     isEmailValid(editable.toString());
