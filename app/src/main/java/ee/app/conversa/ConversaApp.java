@@ -44,6 +44,7 @@ import ee.app.conversa.model.Parse.bCategory;
 import ee.app.conversa.model.Parse.pMessage;
 import ee.app.conversa.notifications.CustomNotificationOpenedHandler;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Preferences;
 
 /**
@@ -68,6 +69,7 @@ public class ConversaApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Foreground.init(this);
         mDb = new MySQLiteHelper(this);
 		Fresco.initialize(this);
 		OneSignal.startInit(this)
@@ -102,11 +104,11 @@ public class ConversaApp extends Application {
 //		);
 
 		//Crea las tipografias
-		setTfRalewayThin( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf") );
-		setTfRalewayLight( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Light.ttf") );
-        setTfRalewayRegular( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf") );
-        setTfRalewayMedium( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf") );
-        setTfRalewayBold( Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf") );
+		setTfRalewayThin(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf"));
+		setTfRalewayLight(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Light.ttf"));
+		setTfRalewayRegular(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf"));
+		setTfRalewayMedium(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf"));
+		setTfRalewayBold(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf"));
 	}
 
 	/* ************************************************************************************************ */

@@ -1,7 +1,6 @@
 package ee.app.conversa.model.Parse;
 
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 /**
@@ -11,20 +10,12 @@ import com.parse.ParseUser;
 @ParseClassName("_User")
 public class Account extends ParseUser {
 
-    public String getDisplayName() {
-        return getString("displayName");
+    public void setEmail(String email) {
+        put("email", email);
     }
 
-    public void setDisplayName(String value) {
-        put("displayName", value);
-    }
-
-    public ParseFile getAvatar() {
-        return getParseFile("avatar");
-    }
-
-    public void setAvatar(ParseFile value) {
-        put("avatar", value);
+    public void setPassword(String password) {
+        put("password", password);
     }
 
 }

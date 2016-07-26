@@ -1,6 +1,5 @@
 package ee.app.conversa.adapters;
 
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,7 +15,6 @@ import java.util.List;
 
 import ee.app.conversa.R;
 import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.model.Parse.Business;
 
 public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder> {
@@ -55,8 +53,8 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
             holder.tvBusiness.setText(temp.getConversaID());
             holder.tvAbout.setText(temp.getAbout());
             try {
-                Uri uri = Uri.parse(((Account) temp.getBusinessInfo()).getAvatar().getUrl());
-                holder.sdvCategoryImage.setImageURI(uri);
+//                Uri uri = Uri.parse(((Account) temp.getBusinessInfo()).getAvatar().getUrl());
+//                holder.sdvCategoryImage.setImageURI(uri);
             } catch (NullPointerException e) {
                 Log.e(this.getClass().getSimpleName(), "Business " + temp.getObjectId() + " has no avatar");
             }

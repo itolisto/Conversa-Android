@@ -11,16 +11,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.onesignal.OneSignal;
+
+import org.json.JSONObject;
+
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.Parse.Account;
-import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.utils.Utils;
 
 public class ActivityMain extends ConversaActivity {
 
-    private boolean mPushHandledOnNewIntent = false;
     private ViewPager mViewPager;
     private TabLayout tabLayout;
     private String titles[];
@@ -138,38 +140,18 @@ public class ActivityMain extends ConversaActivity {
             public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-        // 1. Subscribe to Customer channels
-        Utils.subscribeToTags(Account.getCurrentUser().getObjectId());
-	}
-	
-	@Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        mPushHandledOnNewIntent = false;
-        if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
-            mPushHandledOnNewIntent = true;
-            getIntent().removeExtra(Const.PUSH_INTENT);
-            openWallFromNotification(intent);
-        }
-        super.onNewIntent(intent);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (!mPushHandledOnNewIntent) {
-            if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
-                mPushHandledOnNewIntent = false;
-                getIntent().removeExtra(Const.PUSH_INTENT);
-                new Thread(new Runnable() {
-                    public void run() {
-                        openWallFromNotification(getIntent());
-                    }
-                }).start();
+        // 1. Subscribe to Customer channels if not subscribed already
+        OneSignal.getTags(new OneSignal.GetTagsHandler() {
+            @Override
+            public void tagsAvailable(JSONObject tags) {
+                if (tags == null || tags.length() == 0) {
+                    Utils.subscribeToTags(Account.getCurrentUser().getObjectId());
+                }
             }
-        }
-    }
+        });
+
+        super.initialization();
+	}
 
     @Override
     public void onBackPressed() {
@@ -192,26 +174,9 @@ public class ActivityMain extends ConversaActivity {
         super.onBackPressed();
     }
 
-    private void openWallFromNotification(Intent intent) {
-        String fromUserId = intent.getStringExtra(Const.PUSH_FROM_USER_ID);
-//        User fromUser     = ConversaApp.getDB().isContact(fromUserId);
+    @Override
+    protected void openFromNotification(Intent intent) {
 
-//        if(fromUser == null) {
-//            try {
-//                fromUser = new ConversaAsyncTask<Void, Void, User>(
-//                        new CouchDB.FindBusinessById(fromUserId), null, getApplicationContext(), true
-//                ).execute().get();
-//            } catch (InterruptedException | ExecutionException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-            //UsersManagement.setBusiness(fromUser);
-            //SettingsManager.ResetSettings();
-//            if (ActivityChatWall.gCurrentMessages != null)
-//                ActivityChatWall.gCurrentMessages.clear();
-
-//            startActivity(new Intent(this, ActivityChatWall.class));
-//        }
     }
 
     @Override

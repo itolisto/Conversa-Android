@@ -3,6 +3,7 @@ package ee.app.conversa;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,8 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
     public static RecyclerView mRvUsers;
     public static RelativeLayout mRlNoUsers;
     public static ChatsAdapter mUserListAdapter;
+    protected UsersReceiver receiver = new UsersReceiver();
+    private final IntentFilter mUserFilter = new IntentFilter(UsersReceiver.ACTION_RESP);
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -48,7 +51,16 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
         ConversaApp.getDB().setContactListener(this);
         dBusiness.getAllContacts();
 
+        // Register receiver
+        ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, mUserFilter);
+
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ConversaApp.getLocalBroadcastManager().unregisterReceiver(receiver);
     }
 
     @Override

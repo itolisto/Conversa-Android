@@ -1,9 +1,6 @@
 package ee.app.conversa;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.ActionBar;
@@ -69,7 +66,6 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	private Button mBtnWallSend;
 
 	public static boolean gIsVisible = false;
-	private final IntentFilter mPushFilter = new IntentFilter(MessagesAdapter.PUSH);
 
 	public ActivityChatWall() {
 		this.mChatsAdapter = null;
@@ -101,35 +97,9 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		}
 
 		initialization();
-
 		Message.getAllMessageForChat(businessObject.getBusinessId(), previousTotal);
 
 		sInstance = this;
-	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
-			getIntent().removeExtra(Const.PUSH_INTENT);
-			openWallFromNotification(intent);
-		}
-
-		addAsContact = getIntent().getBooleanExtra(Const.kYapDatabaseName, true);
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		ConversaApp.getLocalBroadcastManager().registerReceiver(mPushReceiver, mPushFilter);
-		ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, newMessageFilter);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		ConversaApp.getLocalBroadcastManager().unregisterReceiver(mPushReceiver);
-		ConversaApp.getLocalBroadcastManager().unregisterReceiver(receiver);
 	}
 
 	@Override
@@ -165,28 +135,9 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		}
 	}
 
-	private void openWallFromNotification(Intent intent) {
-		String fromUserId = intent.getStringExtra(Const.PUSH_FROM_USER_ID);
-//		User fromUser     = ConversaApp.getDB().isContact(fromUserId);
-
-//		if(fromUser == null) {
-//			try {
-//				fromUser = new ConversaAsyncTask<Void, Void, User>(
-//						new CouchDB.FindBusinessById(fromUserId), null, getApplicationContext(), true
-//				).execute().get();
-//			} catch (InterruptedException | ExecutionException e) {
-//				e.printStackTrace();
-//			}
-//		}
-
-//		if(fromUser != null) {
-		//UsersManagement.setToUser(fromUser);
-		//SettingsManager.ResetSettings();
-//			if (ActivityChatWall.gCurrentMessages != null)
-//				ActivityChatWall.gCurrentMessages.clear();
-
-//			setWallMessages();
-//		}
+	@Override
+	protected void openFromNotification(Intent intent) {
+		// Get addAsContact, businessObject, clean list of current messages and get new messages
 	}
 
 	@Override
@@ -252,15 +203,13 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-				int visibleItemCount = recyclerView.getChildCount();
+				int lastVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
 				int totalItemCount = recyclerView.getLayoutManager().getItemCount();
-				int firstVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
-				// 1. Check if app isn't checking for new messages and first visible item is on the top
-				if (!loading && firstVisibleItem == 0) {
+				// 1. Check if app isn't checking for new messages and last visible item is on the top
+				if (!loading && lastVisibleItem == (totalItemCount - 1)) {
 					// 2. If total item count is equal to a multiply of 20, retrieve more messages
 					if (totalItemCount == (20 * previousTotal)) {
-						Log.e("...", "messages called" + visibleItemCount + "," + totalItemCount + "," + firstVisibleItem);
 						Message.getAllMessageForChat(businessObject.getBusinessId(), previousTotal);
 						loading = true;
 					}
@@ -306,13 +255,12 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		mBtnWallSend.setEnabled(true);
 	}
 
-	private BroadcastReceiver mPushReceiver = new BroadcastReceiver() {
-		public void onReceive(Context context, Intent intent) {
-			Bundle i = intent.getExtras();
-			Message m = (Message) i.get("message");
-			showImage(m);
-		}
-	};
+	@Override
+	protected void handlePushNotification(Intent intent) {
+		Bundle i = intent.getExtras();
+		Message m = (Message) i.get("message");
+		showImage(m);
+	}
 
 	public void showImage(final Message m){
 		Utils.hideKeyboard(this);
@@ -395,6 +343,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 			}
 		} else {
 			// No need to check visibility, only add messages to adapter
+			mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount() - 1);
 			gMessagesAdapter.addMessages(messages, 0);
 		}
 
@@ -407,6 +356,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	@Override
 	public void MessageSent(MessageResponse r) {
 		final Message response = r.getMessage();
+		Log.e("ActivityChatWall", "\n\nMessageSent method called\n\n");
 
 		// 1. Check visibility
 		if (mTvNoMessages.getVisibility() == View.VISIBLE) {
@@ -424,11 +374,30 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		gMessagesAdapter.addMessage(response);
 		mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount());
 		// 4. Save to Parse. Set parameters accordingly to message type
-		HashMap<String, String> params = new HashMap<>();
+		HashMap<String, Object> params = new HashMap<>();
 		params.put("user", response.getFromUserId());
 		params.put("business", response.getToUserId());
-		params.put("text", response.getBody());
 		params.put("fromUser", String.valueOf(true));
+		params.put("messageType", Integer.valueOf(response.getMessageType()));
+
+		switch (response.getMessageType()) {
+			case Const.kMessageTypeText:
+				params.put("text", response.getBody());
+				break;
+			case Const.kMessageTypeLocation: {
+				params.put("latitude", response.getLatitude());
+				params.put("longitude", response.getLongitude());
+				break;
+			}
+			case Const.kMessageTypeImage: {
+				params.put("size", response.getBytes());
+				params.put("width", response.getWidth());
+				params.put("height", response.getHeight());
+				params.put("file", null);
+				break;
+			}
+		}
+
 		ParseCloud.callFunctionInBackground("sendUserMessage", params, new FunctionCallback<Boolean>() {
 			@Override
 			public void done(Boolean result, ParseException e) {
@@ -449,20 +418,29 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 	@Override
 	public void MessageUpdated(MessageResponse r) {
-
+		// 1. Get visible items and first visible item position
+		int visibleItemCount = mRvWallMessages.getChildCount();
+		int firstVisibleItem = ((LinearLayoutManager)mRvWallMessages.getLayoutManager()).findFirstVisibleItemPosition();
+		// 2. Update message
+		gMessagesAdapter.updateMessage(r.getMessage(), firstVisibleItem, visibleItemCount);
 	}
 
 	@Override
 	public void MessageReceived(Message message) {
-		// 1. Check visibility
-		if (mTvNoMessages.getVisibility() == View.VISIBLE) {
-			mTvNoMessages.setVisibility(View.GONE);
-			mRvWallMessages.setVisibility(View.VISIBLE);
-		}
+		// 1. Check if this message belongs to this conversation
+		if (message.getFromUserId().equals(businessObject.getBusinessId())) {
+			// 2. Check visibility
+			if (mTvNoMessages.getVisibility() == View.VISIBLE) {
+				mTvNoMessages.setVisibility(View.GONE);
+				mRvWallMessages.setVisibility(View.VISIBLE);
+			}
 
-		// 2. Add to adapter
-		gMessagesAdapter.addMessage(message);
-		mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount());
+			// 3. Add to adapter
+			gMessagesAdapter.addMessage(message);
+			mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount());
+		} else {
+			super.MessageReceived(message);
+		}
 	}
 
 }

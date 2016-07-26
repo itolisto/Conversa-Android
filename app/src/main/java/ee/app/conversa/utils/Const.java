@@ -50,7 +50,7 @@ public class Const {
 		public static final String kMessageUserKey = "user";
 		public static final String kMessageBusinessKey = "business";
 		public static final String kMessageFromUserKey = "fromUser";
-		public static final String kMessageSizeInBytesKey = "sizeInBytes";
+		public static final String kMessageSizeInBytesKey = "size";
 		public static final String kMessageWidthKey    = "width";
 		public static final String kMessageHeightKey   = "height";
 		public static final String kMessageThumbKey    = "thumbnail";
@@ -60,11 +60,11 @@ public class Const {
 		public static final String kMessageLocationKey = "location";
 		public static final String kMessageReadAtKey = "reatAt";
 		// Message
-		public static final String kMessageTypeText = "t";
-		public static final String kMessageTypeAudio = "a";
-		public static final String kMessageTypeVideo = "v";
-		public static final String kMessageTypeImage = "i";
-		public static final String kMessageTypeLocation = "l";
+		public static final String kMessageTypeText = "1";
+		public static final String kMessageTypeAudio = "2";
+		public static final String kMessageTypeVideo = "3";
+		public static final String kMessageTypeImage = "4";
+		public static final String kMessageTypeLocation = "5";
 
 
 	// User class
@@ -110,7 +110,11 @@ public class Const {
 	// dBusiness class
 	public static final String kClassBusiness           = "dBusiness";
 	public static final String kBusinessBusinessInfoKey = "businessInfo";
+	public static final String kBusinessDisplayNameKey = "displayName";
 	public static final String kBusinessConversaIdKey   = "conversaID";
+	public static final String kBusinessAboutKey   = "about";
+	public static final String kBusinessStatusKey   = "status";
+	public static final String kBusinessAvatarKey   = "avatar";
 	public static final String kBusinessActiveKey       = "active";
 	public static final String kBusinessCountryKey      = "country";
 	public static final String kBusinessVerifiedKey     = "verified";

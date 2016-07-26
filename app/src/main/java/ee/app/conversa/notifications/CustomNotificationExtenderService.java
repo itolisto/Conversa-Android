@@ -13,6 +13,8 @@ import com.parse.ParseQuery;
 import org.json.JSONObject;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.FragmentUsersChat;
@@ -23,6 +25,7 @@ import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.model.Parse.Business;
 import ee.app.conversa.model.Parse.pMessage;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Foreground;
 
 /**
  * Created by edgargomez on 7/21/16.
@@ -34,9 +37,22 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
 
     @Override
     protected boolean onNotificationProcessing(OSNotificationPayload notification) {
-        JSONObject pushData = notification.additionalData;
+        Log.e(TAG, "\nId:" + notification.notificationId +
+                "\nTitle:" + notification.title +
+                "\nMessage:" + notification.message +
+                "\nAdditionalData:" + notification.additionalData.toString() +
+                "\nGroup:" + notification.group +
+                "\nGroupMessage:" + notification.groupMessage +
+                "\nBackgroundData:" + notification.backgroundData +
+                "\nfromProjectNumber:" + notification.fromProjectNumber +
+                "\nRestoring:" + notification.restoring);
 
-        Log.d("NotifExtenderService", "Full additionalData:\n" + pushData.toString());
+        if (notification.restoring) {
+            Log.e(TAG, "Returning as 'restoring' flag is true");
+            return true;
+        }
+
+        JSONObject pushData = notification.additionalData;
 
         switch (pushData.optInt("appAction", 0)) {
             case 1:
@@ -52,10 +68,15 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                 if(ConversaApp.getDB().isContact(contactId) == null) {
                     // 2. Call Parse for User information
                     ParseQuery<Business> query = ParseQuery.getQuery(Business.class);
+                    query.whereEqualTo(Const.kBusinessActiveKey, true);
 
-                    //Collection<String> collection = new ArrayList<>();
-                    //collection.add(Const.kUserUsernameKey);
-                    //query.selectKeys(collection);
+                    Collection<String> collection = new ArrayList<>();
+                    collection.add(Const.kBusinessDisplayNameKey);
+                    collection.add(Const.kBusinessConversaIdKey);
+                    collection.add(Const.kBusinessAboutKey);
+                    collection.add(Const.kBusinessStatusKey);
+                    collection.add(Const.kBusinessAvatarKey);
+                    query.selectKeys(collection);
 
                     Business customer;
 
@@ -69,15 +90,23 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     // 3. If Customer was found, save to Local Database
                     dBusiness dbcustomer = new dBusiness();
                     dbcustomer.setBusinessId(contactId);
-                    dbcustomer.setDisplayName(customer.getAbout());
+                    dbcustomer.setDisplayName(customer.getDisplayName());
                     dbcustomer.setConversaId(customer.getConversaID());
                     dbcustomer.setAbout(customer.getAbout());
                     dbcustomer.setStatusMessage(customer.getStatus());
-                    dbcustomer.setAvatarThumbFileId("");
+                    try {
+                        if (customer.getAvatar() != null) {
+                            dbcustomer.setAvatarThumbFileId(customer.getAvatar().getUrl());
+                        } else {
+                            dbcustomer.setAvatarThumbFileId("");
+                        }
+                    } catch (IllegalStateException e) {
+                        dbcustomer.setAvatarThumbFileId("");
+                    }
                     dbcustomer = ConversaApp.getDB().saveContact(dbcustomer);
 
                     if (dbcustomer.getId() == -1) {
-                        Log.e(TAG, "Error guardando Business ");
+                        Log.e(TAG, "Error guardando Business");
                         return true;
                     } else {
                         Intent broadcastIntent = new Intent();
@@ -88,32 +117,99 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                 }
 
                 // 2. Get message information
-                ParseQuery<pMessage> query = ParseQuery.getQuery(pMessage.class);
+                pMessage message = null;
 
-                //Collection<String> collection = new ArrayList<>();
-                //collection.add(Const.kUserUsernameKey);
-                //query.selectKeys(collection);
+                if (pushData.optBoolean("callParse", false)) {
+                    ParseQuery<pMessage> query = ParseQuery.getQuery(pMessage.class);
+                    Collection<String> collection = new ArrayList<>();
 
-                pMessage message;
+                    switch (messageType) {
+                        case Const.kMessageTypeText:
+                            collection.add(Const.kMessageTextKey);
+                            break;
+                        case Const.kMessageTypeAudio:
+                        case Const.kMessageTypeVideo:
+                        case Const.kMessageTypeImage:
+                            collection.add(Const.kMessageFileKey);
+                            break;
+                        case Const.kMessageTypeLocation:
+                            collection.add(Const.kMessageLocationKey);
+                            break;
+                    }
 
-                try {
-                    message = query.get(messageId);
-                } catch (ParseException e) {
-                    Log.e(TAG, "Error consiguiendo informacion de Message " + e.getMessage());
-                    return true;
+                    query.selectKeys(collection);
+
+                    try {
+                        message = query.get(messageId);
+                    } catch (ParseException e) {
+                        Log.e(TAG, "Error consiguiendo informacion de Message " + e.getMessage());
+                        return true;
+                    }
                 }
 
                 // 3. If message was found, save to Local Database
                 Message dbmessage = new Message();
-                dbmessage.setMessageType(Const.kMessageTypeText);
-                dbmessage.setBody(message.getText());
-                dbmessage.setDeliveryStatus(Message.statusAllDelivered);
-                dbmessage.setToUserId(Account.getCurrentUser().getObjectId());
                 dbmessage.setFromUserId(contactId);
+                dbmessage.setToUserId(Account.getCurrentUser().getObjectId());
+                dbmessage.setMessageType(messageType);
+                dbmessage.setDeliveryStatus(Message.statusAllDelivered);
+                dbmessage.setMessageId(messageId);
+
+                switch (messageType) {
+                    case Const.kMessageTypeText:
+                        if (message == null) {
+                            dbmessage.setBody(pushData.optString("message", ""));
+                        } else {
+                            dbmessage.setBody(message.getText());
+                        }
+                        break;
+                    case Const.kMessageTypeAudio:
+                    case Const.kMessageTypeVideo:
+                        dbmessage.setBytes(pushData.optInt("size", 0));
+                        dbmessage.setDuration(pushData.optInt("duration", 0));
+                        if (message == null) {
+                            dbmessage.setFileId(pushData.optString("file", ""));
+                        } else {
+                            try {
+                                if (message.getFile() != null) {
+                                    dbmessage.setFileId(message.getFile().getUrl());
+                                } else {
+                                    dbmessage.setFileId("");
+                                }
+                            } catch (IllegalStateException e) {
+                                dbmessage.setFileId("");
+                            }
+                        }
+                        break;
+                    case Const.kMessageTypeImage:
+                        dbmessage.setBytes(pushData.optInt("size", 0));
+                        dbmessage.setWidth(pushData.optInt("width", 0));
+                        dbmessage.setHeight(pushData.optInt("height", 0));
+                        if (message == null) {
+                            dbmessage.setFileId(pushData.optString("file", ""));
+                        } else {
+                            try {
+                                if (message.getFile() != null) {
+                                    dbmessage.setFileId(message.getFile().getUrl());
+                                } else {
+                                    dbmessage.setFileId("");
+                                }
+                            } catch (IllegalStateException e) {
+                                dbmessage.setFileId("");
+                            }
+                        }
+                        break;
+                    case Const.kMessageTypeLocation:
+                        dbmessage.setLatitude((float)pushData.optDouble("latitude", 0));
+                        dbmessage.setLongitude((float)pushData.optDouble("longitude", 0));
+                        break;
+                }
+
                 dbmessage = ConversaApp.getDB().saveMessage(dbmessage);
+
                 // 4. Broadcast result as from IntentService ain't possible to access ui thread
                 if (dbmessage.getId() == -1) {
-                    Log.e(TAG, "Error guardando Message ");
+                    Log.e(TAG, "Error guardando Message");
                     return true;
                 } else {
                     Intent broadcastIntent = new Intent();
@@ -121,25 +217,28 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     broadcastIntent.putExtra(PARAM_OUT_MSG, dbmessage);
                     ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
                 }
-
                 break;
             default:
                 return true;
         }
 
-        OverrideSettings overrideSettings = new OverrideSettings();
-        overrideSettings.extender = new NotificationCompat.Extender() {
-            @Override
-            public NotificationCompat.Builder extend(NotificationCompat.Builder builder) {
-                // Sets the background notification color to Green on Android 5.0+ devices.
-                return builder.setColor(new BigInteger("FF00FF00", 16).intValue());
-            }
-        };
+        if (Foreground.get().isBackground()) {
+            OverrideSettings overrideSettings = new OverrideSettings();
+            overrideSettings.extender = new NotificationCompat.Extender() {
+                @Override
+                public NotificationCompat.Builder extend(NotificationCompat.Builder builder) {
+                    builder.setGroupSummary(true);
+                    // Sets the background notification color to Green on Android 5.0+ devices.
+                    return builder.setColor(new BigInteger("FF00FF00", 16).intValue());
+                }
+            };
 
-        OSNotificationDisplayedResult result = displayNotification(overrideSettings);
-        Log.d("OneSignalExample", "Notification displayed with id: " + result.notificationId);
-
-        // Return true to stop the notifications from displaying.
-        return false;
+            OSNotificationDisplayedResult result = displayNotification(overrideSettings);
+            Log.e("OneSignalExample", "Notification displayed with id: " + result.notificationId);
+            return false;
+        } else {
+            // Return true to stop the notifications from displaying.
+            return true;
+        }
     }
 }

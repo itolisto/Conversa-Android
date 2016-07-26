@@ -40,32 +40,34 @@ import ee.app.conversa.response.MessageResponse;
  * 
  * Model class for messages.
  */
-
 public class Message implements Parcelable {
 
 	private long mId;
-	private String mMessageType;
-	private String mBody;
-	private String mDeliveryStatus;
 	private String mFromUserId;
 	private String mToUserId;
-	private float mLatitude;
+	private String mMessageType;
+	private String mDeliveryStatus;
+	private String mBody;
+	private String mFileId;
 	private float mLongitude;
-	private String mImageFileId;
-	private long mReadAt;
+	private float mLatitude;
 	private long mCreated;
 	private long mModified;
+	private long mReadAt;
+	private String mMessageId;
+	private int mWidth;
+	private int mHeight;
+	private int mDuration;
+	private int mBytes;
 
 	// MESSAGE STATUS
 	// Error
 	public static final String statusParseError = "1";
-	public static final String statusPubNubError = "2";
-	public static final String statusReceivedError = "5";
 	// No error
-	public static final String statusAllDelivered = "3";
-	public static final String statusReceived = "4";
-	public static final String statusDownloading = "6";
-	public static final String statusUploading = "7";
+	public static final String statusAllDelivered = "2";
+	public static final String statusReceived = "3";
+	public static final String statusDownloading = "4";
+	public static final String statusUploading = "5";
 	// MESSAGE ACTIONS
 	public static final int ACTION_MESSAGE_SAVE = 1;
 	public static final int ACTION_MESSAGE_NEW_MESSAGE = 2;
@@ -75,57 +77,59 @@ public class Message implements Parcelable {
 
 	public Message() {
 		this.mId = -1;
-		this.mReadAt = 0;
+		this.mFromUserId = null;
+		this.mToUserId = null;
+		this.mMessageType = null;
+		this.mDeliveryStatus = null;
+		this.mBody = null;
+		this.mFileId = null;
+		this.mLongitude = 0;
+		this.mLatitude = 0;
 		this.mCreated = System.currentTimeMillis();
 		this.mModified = 0;
-		this.mLatitude = 0;
-		this.mLongitude = 0;
-		this.mImageFileId = "";
-		this.mDeliveryStatus = statusUploading;
+		this.mReadAt = 0;
+		this.mMessageId = null;
+		this.mWidth = 0;
+		this.mHeight = 0;
+		this.mDuration = 0;
+		this.mBytes = 0;
 	}
 
 	public long getId() { return mId; }
-	public String getMessageType() { return mMessageType; }
-	public String getBody() { return mBody; }
-	public String getDeliveryStatus() { return mDeliveryStatus; }
 	public String getFromUserId() { return mFromUserId; }
 	public String getToUserId() { return mToUserId; }
+	public String getMessageType() { return mMessageType; }
+	public String getDeliveryStatus() { return mDeliveryStatus; }
+	public String getBody() { return mBody; }
+	public String getFileId() { return mFileId; }
+	public float getLongitude() { return mLongitude; }
+	public float getLatitude() { return mLatitude; }
 	public long getCreated() { return mCreated; }
 	public long getModified() { return mModified; }
-	public String getImageFileId() { return mImageFileId; }
 	public long getReadAt() { return mReadAt; }
-	public float getLatitude() { return mLatitude; }
-	public float getLongitude() { return mLongitude; }
+	public String getMessageId() { return  mMessageId; }
+	public int getWidth() { return mWidth; }
+	public int getHeight() { return mHeight; }
+	public int getDuration() { return mDuration; }
+	public int getBytes() { return mBytes; }
 
 	public void setId(long id) { this.mId = id; }
-	public void setMessageType(String type) { this.mMessageType = type; }
-	public void setBody(String body) { this.mBody = body; }
 	public void setFromUserId(String fromUserId) { this.mFromUserId = fromUserId; }
 	public void setToUserId(String toUserId) { this.mToUserId = toUserId; }
+	public void setMessageType(String type) { this.mMessageType = type; }
+	public void setDeliveryStatus(String status) { this.mDeliveryStatus = status; }
+	public void setBody(String body) { this.mBody = body; }
+	public void setFileId(String mFileId) { this.mFileId = mFileId; }
+	public void setLongitude(float longitude) { this.mLongitude = longitude; }
+	public void setLatitude(float latitude) { this.mLatitude = latitude; }
 	public void setCreated(long created) { this.mCreated = created; }
 	public void setModified(long modified) { this.mModified = modified; }
-	public void setImageFileId(String mImageFileId) { this.mImageFileId = mImageFileId; }
 	public void setReadAt(long mReadAt) { this.mReadAt = mReadAt; }
-	public void setLatitude(float latitude) { this.mLatitude = latitude; }
-	public void setLongitude(float longitude) { this.mLongitude = longitude; }
-	public void setDeliveryStatus(String status) { this.mDeliveryStatus = status; }
-
-	@Override
-	public String toString() {
-		return "Message ["
-				+ "mId= " + mId
-				+ ", mMessageType= " + mMessageType
-				+ ", mBody=" + mBody
-				+ ", mDeliveryStatus= " + mDeliveryStatus
-				+ ", mFromUserId=" + mFromUserId
-				+ ", mToUserId=" + mToUserId
-				+ ", mLatitude=" + mLatitude
-				+ ", mLongitude=" + mLongitude
-				+ ", mImageFileId=" + mImageFileId
-				+ ", mReadAt=" + mReadAt
-				+ ", mCreated=" + mCreated
-				+ ", mModified=" + mModified + "]";
-	}
+	public void setMessageId(String mMessageId) { this.mMessageId = mMessageId; }
+	public void setWidth(int mWidth) { this.mWidth = mWidth; }
+	public void setHeight(int mHeight) { this.mHeight = mHeight; }
+	public void setDuration(int mDuration) { this.mDuration = mDuration; }
+	public void setBytes(int mBytes) { this.mBytes = mBytes; }
 
 	/* ******************************************************************************************* */
 	/* ******************************************************************************************* */
@@ -141,7 +145,6 @@ public class Message implements Parcelable {
 	}
 
 	public void updateDelivery(String status) {
-		// 1. Update status on db on a background process
 		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
 		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_UPDATE, this, status);
 	}
@@ -160,8 +163,6 @@ public class Message implements Parcelable {
 			int actionCode = (int)params[0];
 
 			try {
-				Log.e("MessageAsyncTaskRunner", "INTENTANDO GUARDAR/ACTUALIZAR/ELIMINAR MENSAJE...");
-
 				switch (actionCode) {
 					case ACTION_MESSAGE_SAVE:
 						message = ConversaApp.getDB().saveMessage((Message) params[1]);
@@ -172,7 +173,10 @@ public class Message implements Parcelable {
 					case ACTION_MESSAGE_UPDATE:
 						message = (Message) params[1];
 						String status = (String)params[2];
-						ConversaApp.getDB().updateDeliveryStatus(message.getId(), status);
+						int result = ConversaApp.getDB().updateDeliveryStatus(message.getId(), status);
+						if (result > 0) {
+							message.setDeliveryStatus(status);
+						}
 						break;
 					case ACTION_MESSAGE_RETRIEVE_ALL:
 						String businessId = (String) params[1];
@@ -196,6 +200,7 @@ public class Message implements Parcelable {
 	/* ******************************************************************************************* */
 	/* ******************************************************************************************* */
 
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -204,32 +209,42 @@ public class Message implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(this.mId);
-		dest.writeString(this.mMessageType);
-		dest.writeString(this.mBody);
-		dest.writeString(this.mDeliveryStatus);
 		dest.writeString(this.mFromUserId);
 		dest.writeString(this.mToUserId);
-		dest.writeFloat(this.mLatitude);
+		dest.writeString(this.mMessageType);
+		dest.writeString(this.mDeliveryStatus);
+		dest.writeString(this.mBody);
+		dest.writeString(this.mFileId);
 		dest.writeFloat(this.mLongitude);
-		dest.writeString(this.mImageFileId);
-		dest.writeLong(this.mReadAt);
+		dest.writeFloat(this.mLatitude);
 		dest.writeLong(this.mCreated);
 		dest.writeLong(this.mModified);
+		dest.writeLong(this.mReadAt);
+		dest.writeString(this.mMessageId);
+		dest.writeInt(this.mWidth);
+		dest.writeInt(this.mHeight);
+		dest.writeInt(this.mDuration);
+		dest.writeInt(this.mBytes);
 	}
 
 	protected Message(Parcel in) {
 		this.mId = in.readLong();
-		this.mMessageType = in.readString();
-		this.mBody = in.readString();
-		this.mDeliveryStatus = in.readString();
 		this.mFromUserId = in.readString();
 		this.mToUserId = in.readString();
-		this.mLatitude = in.readFloat();
+		this.mMessageType = in.readString();
+		this.mDeliveryStatus = in.readString();
+		this.mBody = in.readString();
+		this.mFileId = in.readString();
 		this.mLongitude = in.readFloat();
-		this.mImageFileId = in.readString();
-		this.mReadAt = in.readLong();
+		this.mLatitude = in.readFloat();
 		this.mCreated = in.readLong();
 		this.mModified = in.readLong();
+		this.mReadAt = in.readLong();
+		this.mMessageId = in.readString();
+		this.mWidth = in.readInt();
+		this.mHeight = in.readInt();
+		this.mDuration = in.readInt();
+		this.mBytes = in.readInt();
 	}
 
 	public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>() {

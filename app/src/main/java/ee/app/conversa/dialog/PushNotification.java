@@ -25,17 +25,19 @@
 package ee.app.conversa.dialog;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
+
+import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.model.Database.dBusiness;
 
@@ -44,20 +46,15 @@ import ee.app.conversa.model.Database.dBusiness;
  * 
  * Animates push notification on the top of the screen.
  */
-
-public class PushNotification {
-
-	private static PushNotification sInstance = new PushNotification();
+public class PushNotification implements OnClickListener {
 
 	public static final int SHORT_ANIM_DURATION = 0;
 	public static final int MEDIUM_ANIM_DURATION = 1;
 	public static final int LONG_ANIM_DURATION = 2;
-
-	private int mShowingDuration = 4000;
+	private final String TAG = PushNotification.class.getSimpleName();
 	private int mAnimationDuration;
 
 	private RelativeLayout mPushLayout;
-	private dBusiness mFromUser;
 	private Context mContext;
 
 	private final TranslateAnimation mSlideFromTop = new TranslateAnimation(
@@ -78,27 +75,28 @@ public class PushNotification {
 			TranslateAnimation.RELATIVE_TO_SELF, (float) 0,
 			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0);
 
-	private PushNotification() {
+	public PushNotification(Context context, RelativeLayout layout) {
+		this.mContext = context;
+		this.mPushLayout = layout;
 	}
 
-	/**
-	 * 
-	 * @param context
-	 * @param layout
-	 * @param message
-	 * @param fromUser
-	 */
-	public static void show(Context context, RelativeLayout layout, String message, dBusiness fromUser) {
-		sInstance.mContext = context;
-		sInstance.mPushLayout = layout;
-        sInstance.mFromUser = fromUser;
-		sInstance.showNotification(message);
+	public void show(String message, String contactId) {
+		showNotification(message, contactId, MEDIUM_ANIM_DURATION, 4000);
 	}
 
-	private void showNotification(String message) {
-		addView(message);
-		setDuration(MEDIUM_ANIM_DURATION);
-		setTranslateAnimations();
+	public void show(String message, String contactId, int duration, int timeBeforeHiding) {
+		showNotification(message, contactId, duration, timeBeforeHiding);
+	}
+
+	private void showNotification(String message, String contactId, int duration, int timeBeforeHiding) {
+		if (contactId == null || contactId.isEmpty()) {
+			Log.e(TAG, "Contact id cannot be null nor empty");
+			return;
+		}
+
+		addView(message, contactId);
+		setDuration(duration);
+		setTranslateAnimations(timeBeforeHiding);
 		startTranslateAnimations();
 	}
 
@@ -123,52 +121,33 @@ public class PushNotification {
 		}
 	}
 
-	private void addView(String message) {
-
+	private void addView(String message, String contactId) {
 		mPushLayout.setVisibility(View.VISIBLE);
-		final TextView tvUserName = (TextView) mPushLayout
-				.findViewById(R.id.tvUserName);
-		tvUserName.setText(sInstance.mFromUser.getDisplayName());
-		final TextView tvNotification = (TextView) mPushLayout
-				.findViewById(R.id.tvNotification);
-		tvNotification.setText(message);
-		final ImageView ivUserImage = (ImageView) mPushLayout
-				.findViewById(R.id.ivUserImage);
-		final ProgressBar pbLoading = (ProgressBar) mPushLayout
-				.findViewById(R.id.pbLoadingForImage);
-		final ImageButton btnClose = (ImageButton) mPushLayout
-				.findViewById(R.id.btnClose);
-		btnClose.setOnClickListener(new OnClickListener() {
+		dBusiness fromUser = ConversaApp.getDB().isContact(contactId);
 
-			@Override
-			public void onClick(View v) {
-				hideNotification();
-			}
-		});
-		
-		String avatarId = "";//sInstance.mFromUser.getAvatarThumbFileId();
-		
-//		Utils.displayImage(avatarId, Const.BUSINESS_FOLDER, ivUserImage,
-//				pbLoading, ImageLoader.SMALL,
-//				R.drawable.business_default, false);
+		if (fromUser == null) {
+			Log.e(TAG, "Contact doesn't exits, notification can't be displayed");
+			return;
+		}
 
-		btnClose.setClickable(true);
-		btnClose.setFocusable(true);
-
+		final TextView mTvUserName = (TextView) mPushLayout.findViewById(R.id.tvUserName);
+		final TextView mTvNotification = (TextView) mPushLayout.findViewById(R.id.tvNotification);
+		final SimpleDraweeView mSdvAvatar = (SimpleDraweeView) mPushLayout.findViewById(R.id.sdvPushAvatar);
+		final ImageButton btnClose = (ImageButton) mPushLayout.findViewById(R.id.btnClose);
+		mTvUserName.setText(fromUser.getDisplayName());
+		mTvNotification.setText(message);
+		//mSdvAvatar.setImageURI();
+		btnClose.setOnClickListener(this);
 	}
 
 	private void hideNotification() {
-		if (!mSlideOutTopOnClose.hasStarted() || mSlideOutTopOnClose.hasEnded()){
-			if (mSlideFromTop.hasStarted()) {
-				mPushLayout.clearAnimation();
-				mPushLayout.startAnimation(mSlideOutTopOnClose);
-			} else {
-				return;
-			}
+		if (!mSlideOutTopOnClose.hasStarted() && !mSlideOutTop.hasEnded()){
+			mPushLayout.clearAnimation();
+			mPushLayout.startAnimation(mSlideOutTopOnClose);
 		}
 	}
 
-	private void setTranslateAnimations() {
+	private void setTranslateAnimations(int timeBeforeHiding) {
 		mSlideFromTop.setFillAfter(false);
 		mSlideFromTop.setFillEnabled(false);
 		mSlideFromTop.setDuration(mAnimationDuration);
@@ -185,7 +164,7 @@ public class PushNotification {
 				mPushLayout.startAnimation(mSlideOutTop);
 			}
 		});
-		mSlideOutTop.setStartOffset(mShowingDuration);
+		mSlideOutTop.setStartOffset(timeBeforeHiding);
 		mSlideOutTop.setDuration(mAnimationDuration);
 		mSlideOutTop.setAnimationListener(new AnimationListener() {
 
@@ -199,6 +178,7 @@ public class PushNotification {
 				mPushLayout.setVisibility(View.GONE);
 			}
 		});
+
 		mSlideOutTopOnClose.setStartOffset(0);
 		mSlideOutTopOnClose.setDuration(mAnimationDuration);
 		mSlideOutTopOnClose.setAnimationListener(new AnimationListener() {
@@ -219,4 +199,10 @@ public class PushNotification {
 		mPushLayout.startAnimation(mSlideFromTop);
 	}
 
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.btnClose) {
+			hideNotification();
+		}
+	}
 }

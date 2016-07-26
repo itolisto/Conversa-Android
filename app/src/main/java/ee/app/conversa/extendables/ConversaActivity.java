@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.RelativeLayout;
 
-import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.BaseActivity;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.adapters.MessagesAdapter;
+import ee.app.conversa.dialog.PushNotification;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
 import ee.app.conversa.model.Database.Message;
 import ee.app.conversa.notifications.CustomNotificationExtenderService;
@@ -22,12 +22,11 @@ import ee.app.conversa.utils.Const;
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
 
 	protected RelativeLayout mRlPushNotification;
-
+    private boolean mPushHandledOnNewIntent = false;
     public final static String PUSH = "ee.app.conversa.ConversaActivity.UPDATE";
     protected MessageReceiver receiver = new MessageReceiver();
     protected final IntentFilter newMessageFilter = new IntentFilter(MessageReceiver.ACTION_RESP);
     protected final IntentFilter mPushFilter = new IntentFilter(MessagesAdapter.PUSH);
-    protected final Intent mPushBroadcast = new Intent(PUSH);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,15 +36,45 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        mPushHandledOnNewIntent = false;
+        if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
+            mPushHandledOnNewIntent = true;
+            getIntent().removeExtra(Const.PUSH_INTENT);
+            openFromNotification(intent);
+        }
+        super.onNewIntent(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!mPushHandledOnNewIntent) {
+            if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
+                mPushHandledOnNewIntent = false;
+                getIntent().removeExtra(Const.PUSH_INTENT);
+                new Thread(new Runnable() {
+                    public void run() {
+                        openFromNotification(getIntent());
+                    }
+                }).start();
+            }
+        }
+    }
+
+    @Override
 	protected void onStart() {
 		super.onStart();
 		ConversaApp.getLocalBroadcastManager().registerReceiver(mPushReceiver, mPushFilter);
+        ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, newMessageFilter);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
 		ConversaApp.getLocalBroadcastManager().unregisterReceiver(mPushReceiver);
+        ConversaApp.getLocalBroadcastManager().unregisterReceiver(receiver);
 	}
 
     @Override
@@ -62,58 +91,12 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 		}
 	};
 
-	private void handlePushNotification(Intent intent) {
+    protected void openFromNotification(Intent intent) {
+        /* Child activities override this method */
+    }
 
-        String pushMessage  = intent.getStringExtra(Const.PUSH_MESSAGE);
-        String pushRead     = intent.getStringExtra(Const.PUSH_READ);
-        boolean userWallIsOpened = ActivityChatWall.gIsVisible;
-
-        if(pushMessage != null) {
-            String fromUserId = intent.getStringExtra(Const.PUSH_FROM_USER_ID);
-            String fromUserName = intent.getStringExtra(Const.PUSH_FROM_NAME);
-
-            // Actualizar mensajes
-            ConversaApp.getDB().updateReadMessages(fromUserId);
-
-//                if (UsersManagement.getToUser() != null && fromUser != null) {
-//                    boolean userIsValidId = fromUserId.equals(UsersManagement.getToUser().getId());
-//
-//                    if (userIsValidId && userWallIsOpened) {
-//                        MessageReceived(message);
-//                        MessageReceived(null);
-//                    } else {
-//                        if (sharedPrefs.getBoolean("in_app_checkbox_preference", true)) {
-//                            if (mRlPushNotification != null) {
-//                                String messageText = getPushNotificationBody(message);
-//                                PushNotification.show(getApplicationContext(), mRlPushNotification, messageText, fromUser);
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    if (sharedPrefs.getBoolean("in_app_checkbox_preference", true)) {
-//                        if (mRlPushNotification != null) {
-//                            String messageText = getPushNotificationBody(message);
-//                            PushNotification.show(getApplicationContext(), mRlPushNotification, messageText, fromUser);
-//                        }
-//                    }
-//                }
-
-            if(!userWallIsOpened) {
-                Intent id = new Intent();
-//                    id.putExtra(Const.ID, fromUser.getId());
-                mPushBroadcast.replaceExtras(id);
-                ConversaApp.getLocalBroadcastManager().sendBroadcast(mPushBroadcast);
-            }
-        } else {
-            if(pushRead != null) {
-                String fromId    = intent.getStringExtra(Const.PUSH_TO_USER_ID);
-                if(fromId != null) {
-                    ConversaApp.getDB().updateReadMessages(fromId);
-                    if(userWallIsOpened)
-                        MessageUpdated(null);
-                }
-            }
-        }
+	protected void handlePushNotification(Intent intent) {
+        /* Child activities override this method */
 	}
 
     @Override
@@ -137,7 +120,10 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     public void MessageReceived(Message message) {
-        /* Child activities override this method */
+        // Show in-app notification
+        if (mRlPushNotification != null) {
+            new PushNotification(getApplicationContext(), mRlPushNotification).show(message.getBody(), message.getFromUserId());
+        }
     }
 
     public class MessageReceiver extends BroadcastReceiver {

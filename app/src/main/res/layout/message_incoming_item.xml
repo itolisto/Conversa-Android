@@ -22,11 +22,9 @@
         android:id="@+id/rlBackground"
         android:layout_below="@id/tvDate"
         android:layout_marginTop="7dp"
-        android:background="@drawable/wall_msg_me"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" >
+        android:background="@drawable/wall_msg_you" >
 
         <ee.app.conversa.view.RegularTextView
             android:id="@+id/rtvMessageText"
@@ -44,8 +42,7 @@
             android:layout_below="@id/rtvMessageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:gravity="center" >
+            android:visibility="gone" >
 
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mvMessageMap"
@@ -85,7 +82,5 @@
         android:layout_marginTop="2dp"
         android:text="@string/test_string"
         android:textColor="@color/light_gray_subtext"
-        android:textSize="12sp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:textSize="12sp" />
 </RelativeLayout>

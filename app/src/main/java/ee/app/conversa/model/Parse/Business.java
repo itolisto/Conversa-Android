@@ -1,6 +1,7 @@
 package ee.app.conversa.model.Parse;
 
 import com.parse.ParseClassName;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 
 /**
@@ -8,6 +9,10 @@ import com.parse.ParseObject;
  */
 @ParseClassName("Business")
 public class Business extends ParseObject {
+
+    public String getDisplayName() {
+        return getString("displayName");
+    }
 
     public String getConversaID() {
         return getString("conversaID");
@@ -21,8 +26,8 @@ public class Business extends ParseObject {
         return getString("status");
     }
 
-    public Account getBusinessInfo() {
-        return (Account)getParseObject("businessInfo");
+    public ParseFile getAvatar() {
+        return getParseFile("avatar");
     }
 
 }

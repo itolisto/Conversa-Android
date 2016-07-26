@@ -41,8 +41,9 @@ public class SendMessageAsync {
 		Message message = new Message();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
-		message.setBody(text);
 		message.setMessageType(Const.kMessageTypeText);
+		message.setDeliveryStatus(Message.statusUploading);
+		message.setBody(text);
 
 		// 2. Save locally on background
 		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
@@ -53,9 +54,25 @@ public class SendMessageAsync {
 		Message message = new Message();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
+		message.setMessageType(Const.kMessageTypeLocation);
+		message.setDeliveryStatus(Message.statusUploading);
 		message.setLatitude(lat);
 		message.setLongitude(lon);
+
+		// 2. Save locally on background
+		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+	}
+
+	public static void sendImageMessage(String businessId, int width, int height, int size) {
+		// 1. Create local message
+		Message message = new Message();
+		message.setFromUserId(Account.getCurrentUser().getObjectId());
+		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeLocation);
+		message.setDeliveryStatus(Message.statusUploading);
+		message.setWidth(width);
+		message.setHeight(height);
+		message.setBytes(size);
 
 		// 2. Save locally on background
 		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
