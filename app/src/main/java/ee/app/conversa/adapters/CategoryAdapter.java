@@ -29,7 +29,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     public CategoryAdapter(Context activity, OnItemClickListener listener) {
         this.activity = activity;
-        this.mCategories = new ArrayList<>();
+        this.mCategories = new ArrayList<>(29);
         this.listener = listener;
     }
 
@@ -49,10 +49,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         final bCategory category = mCategories.get(i);
         holder.tvCategoryTitle.setText(category.getCategoryName(activity));
 
-        if(category.getThumbnail().getUrl().length() > 0) {
-            Uri uri = Uri.parse(category.getThumbnail().getUrl());
-            holder.sdvCategoryImage.setImageURI(uri);
-        } else {
+        try {
+            if(category.getThumbnail().getUrl().isEmpty()) {
+                Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+                holder.sdvCategoryImage.setImageURI(path);
+            } else {
+                Uri uri = Uri.parse(category.getThumbnail().getUrl());
+                holder.sdvCategoryImage.setImageURI(uri);
+            }
+        } catch (IllegalStateException e) {
             Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
             holder.sdvCategoryImage.setImageURI(path);
         }

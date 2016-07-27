@@ -30,7 +30,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
@@ -106,6 +105,11 @@ public class dBusiness implements Parcelable {
         runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_SAVE, this);
     }
 
+    public void removeContact() {
+        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
+        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_DELETE, this);
+    }
+
     public static void getAllContacts() {
         ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
         runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL);
@@ -118,15 +122,13 @@ public class dBusiness implements Parcelable {
         @Override
         protected ContactResponse doInBackground(Object... params) {
             if (params.length == 0)
-                return new ContactResponse(-1);
+                return null;
 
             int actionCode = (int)params[0];
-            dBusiness user = new dBusiness();
-            List<dBusiness> users = new ArrayList<>();
+            dBusiness user = null;
+            List<dBusiness> users = null;
 
             try {
-                Log.e("ContactAsyncTaskRunner", "INTENTANDO GUARDAR/ACTUALIZAR/ELIMINAR USUARIO...");
-
                 switch (actionCode) {
                     case ACTION_MESSAGE_SAVE:
                         user = ConversaApp.getDB().saveContact((dBusiness) params[1]);
@@ -134,6 +136,7 @@ public class dBusiness implements Parcelable {
                     case ACTION_MESSAGE_UPDATE:
                         break;
                     case ACTION_MESSAGE_DELETE:
+                        user = ConversaApp.getDB().deleteContactById((dBusiness) params[1]);
                         break;
                     case ACTION_MESSAGE_RETRIEVE_ALL:
                         users = ConversaApp.getDB().getAllContacts();

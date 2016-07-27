@@ -251,21 +251,21 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
             layout = mTilSignUpPassword;
         }
 
-        if (Utils.checkPassword(password)) {
-            layout.setErrorEnabled(false);
-            layout.setError("");
+        if (password.isEmpty()) {
+            layout.setErrorEnabled(true);
+            layout.setError(getString(R.string.signup_password_length_error));
         } else {
-            if (password.isEmpty()) {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.signup_password_length_error));
+            if (Utils.checkPassword(password)) {
+                //layout.setErrorEnabled(false);
+                //layout.setError("");
             } else {
                 if (mActiveScreen == Screen.SIGN_IN) {
                     // Not checking for error on password regex on sign in
                     layout.setErrorEnabled(false);
                     layout.setError("");
                 } else {
-                    layout.setErrorEnabled(true);
-                    layout.setError(getString(R.string.signup_password_regex_error));
+                    //layout.setErrorEnabled(true);
+                    //layout.setError(getString(R.string.signup_password_regex_error));
                 }
             }
         }
@@ -484,7 +484,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                     isEmailValid(editable.toString());
                     break;
                 case R.id.etSignInPassword:
-                    isPasswordValid(editable.toString());
+                    //isPasswordValid(editable.toString());
                     break;
                 case R.id.etSignUpName:
                     isNameValid(editable.toString());

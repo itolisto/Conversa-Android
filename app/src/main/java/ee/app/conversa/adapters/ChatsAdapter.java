@@ -1,6 +1,5 @@
 package ee.app.conversa.adapters;
 
-import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -8,14 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.model.Database.Message;
@@ -27,10 +26,22 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     private AppCompatActivity mActivity;
     private List<dBusiness> mUsers;
+    private OnItemClickListener listener;
+    private OnLongClickListener longlistener;
 
-    public ChatsAdapter(AppCompatActivity activity) {
+    public interface OnItemClickListener {
+        void onItemClick(dBusiness contact);
+    }
+
+    public interface OnLongClickListener {
+        void onItemLongClick(dBusiness contact);
+    }
+
+    public ChatsAdapter(AppCompatActivity activity, OnItemClickListener listener, OnLongClickListener longlistener) {
         this.mUsers = new ArrayList<>();
         this.mActivity = activity;
+        this.listener = listener;
+        this.longlistener = longlistener;
     }
 
     @Override
@@ -107,16 +118,25 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         notifyItemMoved(oldposition, newposition);
     }
 
-    public void removeContact(int position) {
-        mUsers.remove(position);
-        notifyItemRemoved(position);
+    public void removeContact(dBusiness user, int from, int count) {
+        int size = mUsers.size();
+
+        for (int i = 0; i < size; i++) {
+            dBusiness m = mUsers.get(i);
+            if (m.getId() == user.getId()) {
+                mUsers.remove(i);
+                if (i >= from && i <= (from + count)) {
+                    notifyItemChanged(i);
+                }
+                break;
+            }
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public RelativeLayout rlUserLayout;
-        public ImageView ivUserImage;
+        public SimpleDraweeView ivUserImage;
         public TextView tvUser;
-        public ProgressBar pbLoading;
         public TextView tvLastMessage;
         public ImageView ivUnread;
 
@@ -124,14 +144,12 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             super(itemView);
             this.rlUserLayout = (RelativeLayout) itemView
                     .findViewById(R.id.rlUserLayout);
-            this.ivUserImage = (ImageView) itemView
-                    .findViewById(R.id.ivUserImage);
+            this.ivUserImage = (SimpleDraweeView) itemView
+                    .findViewById(R.id.sdvContactAvatar);
             this.tvUser = (TextView) itemView
                     .findViewById(R.id.tvUser);
             this.tvLastMessage = (TextView) itemView
                     .findViewById(R.id.tvLastMessage);
-            this.pbLoading = (ProgressBar) itemView
-                    .findViewById(R.id.pbLoadingForImage);
             this.ivUnread = (ImageView) itemView
                     .findViewById(R.id.ivUnread);
 
@@ -144,17 +162,14 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            dBusiness user = mUsers.get(getAdapterPosition());
-            Intent intent = new Intent(mActivity, ActivityChatWall.class);
-            intent.putExtra(Const.kClassBusiness, user);
-            intent.putExtra(Const.kYapDatabaseName, false);
-            mActivity.startActivity(intent);
+            if (listener != null)
+                listener.onItemClick(mUsers.get(getAdapterPosition()));
         }
 
         @Override
         public boolean onLongClick(View v) {
-            dBusiness user = mUsers.get(getAdapterPosition());
-            //new DeleteUserDialog(adapter, mActivity, user.getId(), getPosition() ).show();
+            if (longlistener != null)
+                longlistener.onItemLongClick(mUsers.get(getAdapterPosition()));
             return true;
         }
     }

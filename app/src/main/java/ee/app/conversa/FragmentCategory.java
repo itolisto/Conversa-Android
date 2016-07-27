@@ -117,7 +117,7 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
         query.selectKeys(collection);
 
         if(ConversaApp.getPreferences().getCategoriesLoad()) {
-//            query.fromLocalDatastore();
+            //query.fromLocalDatastore();
         }
 
         query.findInBackground(new FindCallback<bCategory>() {
@@ -168,7 +168,7 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
             b.putString(Const.kObjectRowObjectIdKey, category.getObjectId());
             b.putString(Const.kClassCategory, category.getCategoryName(getActivity()));
             fragment.setArguments(b);
-            transaction.add(R.id.root_frame, fragment);
+            transaction.add(R.id.root_frame, fragment).hide(this);
             /*
              * IMPORTANT: The following lines allow us to add the fragment
              * to the stack and return to it later, by popBackStack

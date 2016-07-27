@@ -105,13 +105,27 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		}
 	}
 
+	public void setMessages(List<Message> messages) {
+		mMessages = messages;
+		notifyDataSetChanged();
+	}
+
 	public void addMessage(Message message) {
 		mMessages.add(0, message);
 		notifyItemInserted(0);
 	}
 
+	public void addMessages(List<Message> messages) {
+		int positionStart = mMessages.size();
+		addMessages(messages, positionStart);
+	}
+
 	public void addMessages(List<Message> messages, int positionStart) {
-		mMessages.addAll(messages);
+		if (positionStart == 0) {
+			mMessages.addAll(0, messages);
+		} else {
+			mMessages.addAll(messages);
+		}
 		notifyItemRangeInserted(positionStart, messages.size());
 	}
 

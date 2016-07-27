@@ -1,8 +1,8 @@
 package ee.app.conversa.adapters;
 
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,15 +53,28 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
             holder.tvBusiness.setText(temp.getConversaID());
             holder.tvAbout.setText(temp.getAbout());
             try {
-//                Uri uri = Uri.parse(((Account) temp.getBusinessInfo()).getAvatar().getUrl());
-//                holder.sdvCategoryImage.setImageURI(uri);
-            } catch (NullPointerException e) {
-                Log.e(this.getClass().getSimpleName(), "Business " + temp.getObjectId() + " has no avatar");
+                if(temp.getAvatar().getUrl().isEmpty()) {
+                    Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+                    holder.sdvCategoryImage.setImageURI(path);
+                } else {
+                    Uri uri = Uri.parse(temp.getAvatar().getUrl());
+                    holder.sdvCategoryImage.setImageURI(uri);
+                }
+            } catch (IllegalStateException e) {
+                Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+                holder.sdvCategoryImage.setImageURI(path);
             }
         } else if (object.getClass().equals(dBusiness.class)) {
             dBusiness business = (dBusiness) object;
             holder.tvBusiness.setText(business.getDisplayName());
             holder.tvAbout.setText(business.getBusinessId());
+            if(business.getAvatarThumbFileId().isEmpty()) {
+                Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+                holder.sdvCategoryImage.setImageURI(path);
+            } else {
+                Uri uri = Uri.parse(business.getAvatarThumbFileId());
+                holder.sdvCategoryImage.setImageURI(uri);
+            }
         }
     }
 

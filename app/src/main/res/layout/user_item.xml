@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlUserLayout"
     android:background="@android:color/white"
     android:layout_width="match_parent"
@@ -17,22 +18,22 @@
         android:layout_marginTop="5dp"
         android:gravity="center" >
 
-        <ee.app.conversa.view.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/ivUserImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:contentDescription="@null"
-            app:border_color="@android:color/transparent"/>
-
-        <ProgressBar
-            android:id="@+id/pbLoadingForImage"
-            style="@style/CustomProgressBar"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_centerInParent="true"
-            android:visibility="gone" />
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/sdvContactAvatar"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            fresco:fadeDuration="300"
+            fresco:actualImageScaleType="focusCrop"
+            fresco:placeholderImage="@drawable/business_default"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:failureImage="@drawable/username_icon"
+            fresco:failureImageScaleType="centerInside"
+            fresco:retryImage="@drawable/refresh_icon"
+            fresco:retryImageScaleType="centerCrop"
+            fresco:progressBarImage="@drawable/rotate_loading"
+            fresco:progressBarImageScaleType="centerInside"
+            fresco:progressBarAutoRotateInterval="1000"
+            fresco:roundAsCircle="true" />
     </RelativeLayout>
 
     <ImageView

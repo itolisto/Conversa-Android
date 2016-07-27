@@ -48,14 +48,12 @@ import ee.app.conversa.model.Database.Location;
 
 public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.ViewHolder>  {
 
-	//private MultiSelector mSelector;
 	private AppCompatActivity mActivity;
 	private List<Location> mLocations;
 
-	public LocationsAdapter(AppCompatActivity activity, List<Location> locations) {//}, MultiSelector selector) {
+	public LocationsAdapter(AppCompatActivity activity, List<Location> locations) {
 		this.mActivity  = activity;
 		this.mLocations = locations;
-		//this.mSelector  = selector;
 	}
 
 	@Override
@@ -66,8 +64,7 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
 		View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.location_item, parent, false);
-		ViewHolder mh = new ViewHolder(v);
-		return mh;
+		return new ViewHolder(v);
 	}
 
 	public void setLocations(List<Location> locations) {
@@ -78,43 +75,28 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		Location crime = mLocations.get(position);
-		if(position == 0) {
-			//ConversaApp.getPreferences().setBusLocation(crime.getLocationId());
-		}
-		holder.bindCrime(crime);
+		holder.mTitleTextView.setText(crime.getName());
+		holder.mDateTextView.setText(crime.getAddress());
+		holder.mSolvedCheckBox.setChecked(false);
 		Log.d("LocationsAdpater", "binding crime" + crime + "at position" + position);
-	}
-
-	private void selectCrime(Location c) {
-
 	}
 
 	class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 		private final TextView mTitleTextView;
 		private final TextView mDateTextView;
 		private final CheckBox mSolvedCheckBox;
-		private Location mCrime;
 
 		public ViewHolder(View itemView) {
-			super(itemView);//, mSelector);
+			super(itemView);
 			mTitleTextView = (TextView) itemView.findViewById(R.id.crime_list_item_titleTextView);
 			mDateTextView = (TextView) itemView.findViewById(R.id.crime_list_item_dateTextView);
 			mSolvedCheckBox = (CheckBox) itemView.findViewById(R.id.crime_list_item_solvedCheckBox);
 			itemView.setOnClickListener(this);
 		}
 
-		public void bindCrime(Location crime) {
-			mCrime = crime;
-			mTitleTextView.setText(crime.getName());
-			mDateTextView.setText(crime.getAddress());
-			mSolvedCheckBox.setChecked(false);//(crime.getId());
-		}
-
 		@Override
 		public void onClick(View v) {
-			if (mCrime != null) {
-				//ConversaApp.getPreferences().setBusLocation(mCrime.getLocationId());
-			}
+
 		}
 	}
 }

@@ -17,7 +17,6 @@ import ee.app.conversa.interfaces.OnMessageTaskCompleted;
 import ee.app.conversa.model.Database.Message;
 import ee.app.conversa.notifications.CustomNotificationExtenderService;
 import ee.app.conversa.response.MessageResponse;
-import ee.app.conversa.utils.Const;
 
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
 
@@ -38,27 +37,18 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
-        mPushHandledOnNewIntent = false;
-        if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
-            mPushHandledOnNewIntent = true;
-            getIntent().removeExtra(Const.PUSH_INTENT);
-            openFromNotification(intent);
-        }
+        mPushHandledOnNewIntent = true;
         super.onNewIntent(intent);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!mPushHandledOnNewIntent) {
-            if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
-                mPushHandledOnNewIntent = false;
-                getIntent().removeExtra(Const.PUSH_INTENT);
-                new Thread(new Runnable() {
-                    public void run() {
-                        openFromNotification(getIntent());
-                    }
-                }).start();
+        if (mPushHandledOnNewIntent) {
+            mPushHandledOnNewIntent = false;
+            final Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                openFromNotification(extras);
             }
         }
     }
@@ -91,7 +81,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 		}
 	};
 
-    protected void openFromNotification(Intent intent) {
+    protected void openFromNotification(Bundle extras) {
         /* Child activities override this method */
     }
 
@@ -122,7 +112,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     public void MessageReceived(Message message) {
         // Show in-app notification
         if (mRlPushNotification != null) {
-            new PushNotification(getApplicationContext(), mRlPushNotification).show(message.getBody(), message.getFromUserId());
+            PushNotification.make(getApplicationContext(), mRlPushNotification).show(message.getBody(), message.getFromUserId());
         }
     }
 

@@ -1,6 +1,7 @@
 package ee.app.conversa;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -32,8 +33,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
-                businessObject = null;
-                addAsContact = true;
+                finish();
             } else {
                 businessObject = extras.getParcelable(Const.kClassBusiness);
                 addAsContact = extras.getBoolean(Const.kYapDatabaseName);
@@ -51,6 +51,14 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         SimpleDraweeView mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvBusinessImage);
         final LikeButton mBtnFavorite = (LikeButton) findViewById(R.id.btnFavorite);
         Button mBtnStartChat = (Button) findViewById(R.id.btnStartChat);
+
+        if(businessObject.getAvatarThumbFileId().isEmpty()) {
+            Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+            mSdvBusinessImage.setImageURI(path);
+        } else {
+            Uri uri = Uri.parse(businessObject.getAvatarThumbFileId());
+            mSdvBusinessImage.setImageURI(uri);
+        }
 
         mBtnFavorite.setLiked(false);
         mBtnFavorite.setEnabled(false);

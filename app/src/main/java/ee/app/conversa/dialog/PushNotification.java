@@ -75,9 +75,11 @@ public class PushNotification implements OnClickListener {
 			TranslateAnimation.RELATIVE_TO_SELF, (float) 0,
 			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0);
 
-	public PushNotification(Context context, RelativeLayout layout) {
-		this.mContext = context;
-		this.mPushLayout = layout;
+	public static PushNotification make(Context context, RelativeLayout layout) {
+		PushNotification notification = new PushNotification();
+		notification.mContext = context;
+		notification.mPushLayout = layout;
+		return notification;
 	}
 
 	public void show(String message, String contactId) {

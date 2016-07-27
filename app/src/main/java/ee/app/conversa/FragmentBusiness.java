@@ -163,7 +163,7 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
                 @Override
                 public void done(List<BusinessCategory> objects, ParseException e) {
                     if (e == null && objects != null && objects.size() > 0) {
-                        List<Business> business = new ArrayList<>();
+                        List<Business> business = new ArrayList<>(objects.size());
                         for(BusinessCategory bsess : objects) {
                             business.add(bsess.getBusiness());
                         }
@@ -196,14 +196,23 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
         if (dbBusiness == null) {
             dbBusiness = new dBusiness();
             dbBusiness.setBusinessId(business.getObjectId());
-            dbBusiness.setDisplayName(business.getAbout());
+            dbBusiness.setDisplayName(business.getDisplayName());
             dbBusiness.setConversaId(business.getConversaID());
             dbBusiness.setAbout(business.getAbout());
             dbBusiness.setStatusMessage(business.getStatus());
-            dbBusiness.setAvatarThumbFileId("");
             intent.putExtra(Const.kYapDatabaseName, true);
         } else {
             intent.putExtra(Const.kYapDatabaseName, false);
+        }
+
+        try {
+            if(!business.getAvatar().getUrl().isEmpty()) {
+                dbBusiness.setAvatarThumbFileId(business.getAvatar().getUrl());
+            } else {
+                dbBusiness.setAvatarThumbFileId("");
+            }
+        } catch (IllegalStateException e) {
+            dbBusiness.setAvatarThumbFileId("");
         }
 
         intent.putExtra(Const.kClassBusiness, dbBusiness);

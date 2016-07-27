@@ -74,6 +74,7 @@ public class Message implements Parcelable {
 	public static final int ACTION_MESSAGE_UPDATE = 3;
 	public static final int ACTION_MESSAGE_DELETE = 4;
 	public static final int ACTION_MESSAGE_RETRIEVE_ALL = 5;
+	public static final int ACTION_MESSAGE_UPDATE_UNREAD = 6;
 
 	public Message() {
 		this.mId = -1;
@@ -139,14 +140,19 @@ public class Message implements Parcelable {
 		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, action, this);
 	}
 
-	public static void getAllMessageForChat(String businessId, int skip) {
-		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
-		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL, businessId, skip);
-	}
-
 	public void updateDelivery(String status) {
 		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
 		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_UPDATE, this, status);
+	}
+
+	public static void getAllMessageForChat(String businessId, int count, int skip) {
+		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
+		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL, businessId, count, skip);
+	}
+
+	public static void updateUnreadMessages(String businessId) {
+		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
+		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_UPDATE_UNREAD, businessId);
 	}
 
 	private static class MessageAsyncTaskRunner extends AsyncTask<Object, String, MessageResponse> {
@@ -156,9 +162,9 @@ public class Message implements Parcelable {
 		@Override
 		protected MessageResponse doInBackground(Object... params) {
 			if (params.length == 0)
-				return new MessageResponse(-1);
+				return null;
 
-			Message message = new Message();
+			Message message = null;
 			List<Message> messages = null;
 			int actionCode = (int)params[0];
 
@@ -178,10 +184,11 @@ public class Message implements Parcelable {
 							message.setDeliveryStatus(status);
 						}
 						break;
+					case ACTION_MESSAGE_UPDATE_UNREAD:
+						ConversaApp.getDB().updateReadMessages((String) params[1]);
+						break;
 					case ACTION_MESSAGE_RETRIEVE_ALL:
-						String businessId = (String) params[1];
-						int skip = (int) params[2];
-						messages = ConversaApp.getDB().getMessagesByContact(businessId, 20, skip);
+						messages = ConversaApp.getDB().getMessagesByContact((String) params[1], (int)params[2], (int)params[3]);
 						break;
 				}
 			} catch (SQLException e) {

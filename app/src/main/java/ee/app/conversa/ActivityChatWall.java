@@ -7,7 +7,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,7 +54,8 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	public ChatsAdapter mChatsAdapter;
 
 	private boolean loading;
-	private int previousTotal;
+	private boolean loadMore;
+	private boolean newMessagesFromNewIntent;
 
 	public static RecyclerView mRvWallMessages;
 	private static TouchImageView mTivPhotoImage;
@@ -70,8 +70,9 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	public ActivityChatWall() {
 		this.mChatsAdapter = null;
 		this.gLocations = new ArrayList<>();
-		this.previousTotal = 0;
 		this.loading = false;
+		this.loadMore = true;
+		this.newMessagesFromNewIntent = false;
 	}
 
 	@Override
@@ -97,7 +98,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		}
 
 		initialization();
-		Message.getAllMessageForChat(businessObject.getBusinessId(), previousTotal);
+		Message.getAllMessageForChat(businessObject.getBusinessId(), 20, 0);
 
 		sInstance = this;
 	}
@@ -136,8 +137,26 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
-	protected void openFromNotification(Intent intent) {
-		// Get addAsContact, businessObject, clean list of current messages and get new messages
+	protected void openFromNotification(Bundle extras) {
+		dBusiness business = extras.getParcelable(Const.kClassBusiness);
+
+		if (business == null) {
+			super.onBackPressed();
+		} else {
+			addAsContact = extras.getBoolean(Const.kYapDatabaseName);
+
+			if (business.getBusinessId().equals(businessObject.getBusinessId())) {
+				// Call for new messages
+				int count = extras.getInt(Const.kAppVersionKey, 1);
+				newMessagesFromNewIntent = true;
+				Message.getAllMessageForChat(businessObject.getBusinessId(), count, 0);
+			} else {
+				// Set new business reference
+				businessObject = business;
+				// Clean list of current messages and get new messages
+				Message.getAllMessageForChat(businessObject.getBusinessId(), 20, 0);
+			}
+		}
 	}
 
 	@Override
@@ -208,9 +227,9 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 				// 1. Check if app isn't checking for new messages and last visible item is on the top
 				if (!loading && lastVisibleItem == (totalItemCount - 1)) {
-					// 2. If total item count is equal to a multiply of 20, retrieve more messages
-					if (totalItemCount == (20 * previousTotal)) {
-						Message.getAllMessageForChat(businessObject.getBusinessId(), previousTotal);
+					// 2. If load more is true retrieve more messages otherwise skip
+					if (loadMore) {
+						Message.getAllMessageForChat(businessObject.getBusinessId(), 20, totalItemCount);
 						loading = true;
 					}
 				}
@@ -332,31 +351,46 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	public void MessagesGetAll(MessageResponse r) {
 		List<Message> messages = r.getMessages();
 		// 1. Add messages
-		if (previousTotal == 0) {
+		if (mRvWallMessages.getLayoutManager().getItemCount() == 0) {
 			// If messages size is zero there's no need to do anything
 			if (messages.size() > 0) {
-				gMessagesAdapter.addMessages(messages, 0);
+				// Update unread incoming messages
+				Message.updateUnreadMessages(businessObject.getBusinessId());
+				// Set messages
+				gMessagesAdapter.setMessages(messages);
 				mRvWallMessages.getLayoutManager().smoothScrollToPosition(mRvWallMessages, null, messages.size() - 1);
-				// Check visibility only if this is the first time we load messages
+				// As this is the first time we load messages, change visibility
 				mTvNoMessages.setVisibility(View.GONE);
 				mRvWallMessages.setVisibility(View.VISIBLE);
 			}
+
+			// Check if we need to load more messages
+			if (messages.size() < 20) {
+				loadMore = false;
+			}
 		} else {
-			// No need to check visibility, only add messages to adapter
-			mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount() - 1);
-			gMessagesAdapter.addMessages(messages, 0);
+			if (newMessagesFromNewIntent) {
+				newMessagesFromNewIntent = false;
+				gMessagesAdapter.addMessages(messages, 0);
+				mRvWallMessages.scrollToPosition(0);
+			} else {
+				// No need to check visibility, only add messages to adapter
+				mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount() - 1);
+				gMessagesAdapter.addMessages(messages);
+				// Check if we need to load more messages
+				if (messages.size() < 20) {
+					loadMore = false;
+				}
+			}
 		}
 
-		// 2. Increase number of page retrieve
-		previousTotal++;
-		// 3. Set loading as completed
+		// 2. Set loading as completed
 		loading = false;
 	}
 
 	@Override
 	public void MessageSent(MessageResponse r) {
 		final Message response = r.getMessage();
-		Log.e("ActivityChatWall", "\n\nMessageSent method called\n\n");
 
 		// 1. Check visibility
 		if (mTvNoMessages.getVisibility() == View.VISIBLE) {
@@ -372,7 +406,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 		// 3. Add message to adapter
 		gMessagesAdapter.addMessage(response);
-		mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount());
+		mRvWallMessages.scrollToPosition(0);
 		// 4. Save to Parse. Set parameters accordingly to message type
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("user", response.getFromUserId());
@@ -418,11 +452,13 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 	@Override
 	public void MessageUpdated(MessageResponse r) {
-		// 1. Get visible items and first visible item position
-		int visibleItemCount = mRvWallMessages.getChildCount();
-		int firstVisibleItem = ((LinearLayoutManager)mRvWallMessages.getLayoutManager()).findFirstVisibleItemPosition();
-		// 2. Update message
-		gMessagesAdapter.updateMessage(r.getMessage(), firstVisibleItem, visibleItemCount);
+		if (r.getActionCode() == Message.ACTION_MESSAGE_UPDATE) {
+			// 1. Get visible items and first visible item position
+			int visibleItemCount = mRvWallMessages.getChildCount();
+			int firstVisibleItem = ((LinearLayoutManager) mRvWallMessages.getLayoutManager()).findFirstVisibleItemPosition();
+			// 2. Update message
+			gMessagesAdapter.updateMessage(r.getMessage(), firstVisibleItem, visibleItemCount);
+		}
 	}
 
 	@Override
@@ -437,7 +473,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 			// 3. Add to adapter
 			gMessagesAdapter.addMessage(message);
-			mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount());
+			mRvWallMessages.scrollToPosition(0);
 		} else {
 			super.MessageReceived(message);
 		}

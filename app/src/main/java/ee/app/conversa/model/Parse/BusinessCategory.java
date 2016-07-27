@@ -13,8 +13,4 @@ public class BusinessCategory extends ParseObject {
         return (Business)getParseObject("business");
     }
 
-    public void setBusiness(ParseObject value) {
-        put("business", value);
-    }
-
 }
