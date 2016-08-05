@@ -43,6 +43,7 @@ public class ActivityMain extends ConversaActivity {
         titles = getResources().getStringArray(R.array.categories_titles);
         PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setOffscreenPageLimit(2);
 
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         if (tabLayout != null) {

@@ -11,10 +11,6 @@ buildscript {
     }
 }
 
-configurations {
-    all*.exclude group: 'com.google.firebase', module: 'firebase-common'
-}
-
 allprojects {
     repositories {
         jcenter()

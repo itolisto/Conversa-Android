@@ -32,6 +32,8 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.sinch.android.rtc.Sinch;
+import com.sinch.android.rtc.SinchClient;
 
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.model.Parse.Account;
@@ -103,6 +105,22 @@ public class ConversaApp extends Application {
 //			.enableLocalDataStore()
 //			.build()
 //		);
+
+		SinchClient sinchClient = Sinch.getSinchClientBuilder().context(getApplicationContext())
+				.applicationKey("b4311c0d-c311-4f44-98e4-3638426d0a6d")
+				.applicationSecret("jSs9SjV22kai1zZVyNkOnw==")
+				.environmentHost("sandbox.sinch.com")
+				.userId("<user id>")
+				.build();
+		// Specify the client capabilities.
+		// At least one of the messaging or calling capabilities should be enabled.
+		sinchClient.setSupportMessaging(true);
+		sinchClient.setSupportCalling(false);
+		sinchClient.setSupportManagedPush(true);
+		// or
+		sinchClient.setSupportActiveConnectionInBackground(true);
+		sinchClient.startListeningOnActiveConnection();
+		sinchClient.start();
 
 		//Crea las tipografias
 		setTfRalewayThin(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf"));

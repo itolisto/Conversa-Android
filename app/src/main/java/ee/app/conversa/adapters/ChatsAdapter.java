@@ -125,8 +125,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             dBusiness m = mUsers.get(i);
             if (m.getId() == user.getId()) {
                 mUsers.remove(i);
-                if (i >= from && i <= (from + count)) {
-                    notifyItemChanged(i);
+                if (i >= from && i < (from + count)) {
+                    notifyItemRemoved(i);
                 }
                 break;
             }

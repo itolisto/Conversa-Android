@@ -53,12 +53,12 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
             holder.tvBusiness.setText(temp.getConversaID());
             holder.tvAbout.setText(temp.getAbout());
             try {
-                if(temp.getAvatar().getUrl().isEmpty()) {
-                    Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-                    holder.sdvCategoryImage.setImageURI(path);
-                } else {
+                if(temp.getAvatar() != null && !temp.getAvatar().getUrl().isEmpty()) {
                     Uri uri = Uri.parse(temp.getAvatar().getUrl());
                     holder.sdvCategoryImage.setImageURI(uri);
+                } else {
+                    Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+                    holder.sdvCategoryImage.setImageURI(path);
                 }
             } catch (IllegalStateException e) {
                 Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
