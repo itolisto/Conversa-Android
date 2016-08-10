@@ -29,11 +29,8 @@ import android.graphics.Typeface;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
-import com.sinch.android.rtc.Sinch;
-import com.sinch.android.rtc.SinchClient;
 
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.model.Parse.Account;
@@ -44,7 +41,6 @@ import ee.app.conversa.model.Parse.Customer;
 import ee.app.conversa.model.Parse.Options;
 import ee.app.conversa.model.Parse.bCategory;
 import ee.app.conversa.model.Parse.pMessage;
-import ee.app.conversa.notifications.CustomNotificationOpenedHandler;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Preferences;
@@ -64,6 +60,7 @@ public class ConversaApp extends Application {
 	private static MySQLiteHelper mDb;
 	private static Preferences mPreferences;
 	private static LocalBroadcastManager mLocalBroadcastManager;
+	private static SendBirdManager mSendBirdManager;
 
 	/**
 	 * Called when the application is starting, before any other application objects have been created
@@ -72,16 +69,13 @@ public class ConversaApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		Foreground.init(this);
-        mDb = new MySQLiteHelper(this);
-		Fresco.initialize(this);
-		setPreferences(new Preferences(this));
-		setLocalBroadcastManager(LocalBroadcastManager.getInstance(this));
-		OneSignal.startInit(this)
-				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(getApplicationContext()))
-				.init();
+		setDB();
+		setPreferences();
+		setLocalBroadcastManager();
+		SendBirdManager.initSendBirdManager(this);
 
-		// [Optional] Power your app with Local Datastore. For more info, go to
-		// https://parse.com/docs/ios/guide#local-datastore
+		Fresco.initialize(this);
+
 		Parse.enableLocalDatastore(this);
 
 		// Register subclassing for using as Parse objects
@@ -106,22 +100,6 @@ public class ConversaApp extends Application {
 //			.build()
 //		);
 
-		SinchClient sinchClient = Sinch.getSinchClientBuilder().context(getApplicationContext())
-				.applicationKey("b4311c0d-c311-4f44-98e4-3638426d0a6d")
-				.applicationSecret("jSs9SjV22kai1zZVyNkOnw==")
-				.environmentHost("sandbox.sinch.com")
-				.userId("<user id>")
-				.build();
-		// Specify the client capabilities.
-		// At least one of the messaging or calling capabilities should be enabled.
-		sinchClient.setSupportMessaging(true);
-		sinchClient.setSupportCalling(false);
-		sinchClient.setSupportManagedPush(true);
-		// or
-		sinchClient.setSupportActiveConnectionInBackground(true);
-		sinchClient.startListeningOnActiveConnection();
-		sinchClient.start();
-
 		//Crea las tipografias
 		setTfRalewayThin(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf"));
 		setTfRalewayLight(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Light.ttf"));
@@ -131,18 +109,23 @@ public class ConversaApp extends Application {
 	}
 
 	/* ************************************************************************************************ */
-
 	public static Preferences getPreferences() { return mPreferences; }
-    public static LocalBroadcastManager getLocalBroadcastManager() { return mLocalBroadcastManager; }
-    public static MySQLiteHelper getDB(){ return mDb; }
+	public static LocalBroadcastManager getLocalBroadcastManager() { return mLocalBroadcastManager; }
+	public static MySQLiteHelper getDB() { return mDb; }
 
-    private void setPreferences(Preferences preferences) { mPreferences = preferences; }
-	private void setLocalBroadcastManager(LocalBroadcastManager localBroadcastManager) {
-		mLocalBroadcastManager = localBroadcastManager;
+    private void setPreferences() {
+		mPreferences = new Preferences(this);
+	}
+
+	private void setLocalBroadcastManager() {
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+	}
+
+	private void setDB() {
+		mDb = new MySQLiteHelper(this);
 	}
 
     /* ************************************************************************************************ */
-
 	public static Typeface getTfRalewayThin() { return mTfRalewayThin; }
     public static Typeface getTfRalewayLight() { return mTfRalewayLight; }
     public static Typeface getTfRalewayRegular() { return mTfRalewayRegular; }

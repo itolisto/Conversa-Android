@@ -10,9 +10,6 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
-                                onesignal_app_id: "a7c846a3-8f63-4200-8b24-15be48dcd6b2",
-                                onesignal_google_project_number: "362452554166"]
     }
     buildTypes {
         release {
@@ -26,9 +23,12 @@ android {
     }
 }
 
+repositories {
+    maven { url "https://raw.githubusercontent.com/smilefam/SendBird-SDK-Android/master/" }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile files('libs/sinch-android-rtc-3.9.8.jar')
     testCompile 'junit:junit:4.12'
 
     compile 'com.android.support:design:23.4.0'
@@ -39,13 +39,13 @@ dependencies {
     compile 'com.android.support:preference-v7:23.4.0'
     compile 'com.android.support:recyclerview-v7:23.4.0'
 
-    compile 'com.onesignal:OneSignal:2.+@aar'
-    compile 'com.google.android.gms:play-services-analytics:9.2.1'
-    compile 'com.google.android.gms:play-services-location:9.2.1'
+    compile 'com.sendbird.sdk:sendbird-android-sdk:2.2.11'
 
-    compile 'com.google.android.gms:play-services-gcm:9.2.1'
-    compile 'com.google.android.gms:play-services-maps:9.2.1'
-    compile 'com.google.android.gms:play-services-base:9.2.1'
+    compile 'com.google.android.gms:play-services-analytics:9.4.0'
+    compile 'com.google.android.gms:play-services-location:9.4.0'
+    compile 'com.google.android.gms:play-services-gcm:9.4.0'
+    compile 'com.google.android.gms:play-services-maps:9.4.0'
+    compile 'com.google.android.gms:play-services-base:9.4.0'
 
     compile 'com.github.jd-alexander:LikeButton:0.2.0'
 
@@ -58,3 +58,5 @@ dependencies {
     // For animated GIF support
     compile 'com.facebook.fresco:animated-gif:0.11.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

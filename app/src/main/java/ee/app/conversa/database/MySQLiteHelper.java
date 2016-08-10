@@ -18,7 +18,7 @@ import java.util.List;
 
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
-import ee.app.conversa.model.Database.Message;
+import ee.app.conversa.model.Database.dbMessage;
 import ee.app.conversa.model.Database.dBusiness;
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.response.ContactResponse;
@@ -279,7 +279,7 @@ public class MySQLiteHelper {
     /* ******************************************* */
     /* ******************************************* */
 
-    public Message saveMessage(Message newMessage) {
+    public dbMessage saveMessage(dbMessage newMessage) {
         ContentValues message = new ContentValues();
         message.put(sMessageFromUserId, newMessage.getFromUserId());
         message.put(sMessageToUserId, newMessage.getToUserId());
@@ -333,9 +333,9 @@ public class MySQLiteHelper {
         return count;
     }
 
-    public Message getLastMessage(String id) {
+    public dbMessage getLastMessage(String id) {
         String fromId = Account.getCurrentUser().getObjectId();
-        Message message = null;
+        dbMessage message = null;
         String query = "SELECT m.* FROM "
                 + TABLE_MESSAGES + " m"
                 + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
@@ -403,7 +403,7 @@ public class MySQLiteHelper {
         return result;
     }
 
-    public List<Message> getMessagesByContact(String id, int count, int offset) throws SQLException {
+    public List<dbMessage> getMessagesByContact(String id, int count, int offset) throws SQLException {
         String fromId = Account.getCurrentUser().getObjectId();
         String query = "SELECT m.* FROM "
                 + TABLE_MESSAGES + " m"
@@ -415,10 +415,10 @@ public class MySQLiteHelper {
                 + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT " + count + " OFFSET " + offset;
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
-        ArrayList<Message> messages = new ArrayList<>(cursor.getCount());
+        ArrayList<dbMessage> messages = new ArrayList<>(cursor.getCount());
 
         while (!cursor.isAfterLast()) {
-            Message contact = cursorToMessage(cursor);
+            dbMessage contact = cursorToMessage(cursor);
             messages.add(contact);
             cursor.moveToNext();
         }
@@ -428,8 +428,8 @@ public class MySQLiteHelper {
         return messages;
     }
 
-    private Message cursorToMessage(Cursor cursor) {
-        Message message = new Message();
+    private dbMessage cursorToMessage(Cursor cursor) {
+        dbMessage message = new dbMessage();
         message.setId(cursor.getLong(0));
         message.setFromUserId(cursor.getString(1));
         message.setToUserId(cursor.getString(2));
@@ -475,17 +475,17 @@ public class MySQLiteHelper {
         }
 
         switch (response.getActionCode()) {
-            case Message.ACTION_MESSAGE_SAVE:
+            case dbMessage.ACTION_MESSAGE_SAVE:
                 messageListeners.MessageSent(response);
                 break;
-            case Message.ACTION_MESSAGE_UPDATE:
-            case Message.ACTION_MESSAGE_UPDATE_UNREAD:
+            case dbMessage.ACTION_MESSAGE_UPDATE:
+            case dbMessage.ACTION_MESSAGE_UPDATE_UNREAD:
                 messageListeners.MessageUpdated(response);
                 break;
-            case Message.ACTION_MESSAGE_DELETE:
+            case dbMessage.ACTION_MESSAGE_DELETE:
                 messageListeners.MessageDeleted(response);
                 break;
-            case Message.ACTION_MESSAGE_RETRIEVE_ALL:
+            case dbMessage.ACTION_MESSAGE_RETRIEVE_ALL:
                 messageListeners.MessagesGetAll(response);
                 break;
             default:

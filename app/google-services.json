@@ -1,0 +1,61 @@
+{
+  "project_info": {
+    "project_number": "362452554166",
+    "project_id": "firebase-conversa"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362452554166:android:54b1566df0278f2b",
+        "android_client_info": {
+          "package_name": "ee.app.conversa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwg-G3VTF0jS_dyyTcfdZ6pDA2UK9rgYQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362452554166:android:15ed54d2274ee6af",
+        "android_client_info": {
+          "package_name": "ee.app.conversabusiness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwg-G3VTF0jS_dyyTcfdZ6pDA2UK9rgYQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

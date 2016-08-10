@@ -24,7 +24,6 @@ import ee.app.conversa.adapters.ChatsAdapter;
 import ee.app.conversa.dialog.CustomDeleteUserDialog;
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.notifications.CustomNotificationExtenderService;
 import ee.app.conversa.response.ContactResponse;
 import ee.app.conversa.utils.Const;
 
@@ -133,8 +132,8 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            dBusiness contact = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
-            ContactAddedFromBroadcast(contact);
+//            dBusiness contact = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
+//            ContactAddedFromBroadcast(contact);
         }
     }
 

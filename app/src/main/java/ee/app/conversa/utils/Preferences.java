@@ -37,7 +37,9 @@ import android.preference.PreferenceManager;
 public class Preferences {
 
     // Defining SharedPreferences entries
+    private static final String CUSTOMER_ID = "customer_id";
     private static final String CATEGORIES_LOAD = "CATEGORIES_LOAD";
+    private static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
 
     private SharedPreferences sharedPreferences;
 
@@ -52,8 +54,20 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ GETTERS *********************************** */
 	/* ******************************************************************************** */
+    public String getCustomerId() {
+        return sharedPreferences.getString(CUSTOMER_ID, "");
+    }
+
     public boolean getCategoriesLoad() {
         return sharedPreferences.getBoolean(CATEGORIES_LOAD, false);
+    }
+
+    public boolean getRegistrationToServer() {
+        return !(sharedPreferences.getString(SENT_TOKEN_TO_SERVER, "").isEmpty());
+    }
+
+    public String getRegistrationToken() {
+        return sharedPreferences.getString(SENT_TOKEN_TO_SERVER, "");
     }
 
     public boolean cleanSharedPreferences() {
@@ -64,6 +78,16 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
+    public void setCustomerId(String id, boolean onBackground) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(CUSTOMER_ID, id);
+        if (onBackground) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
+    }
+
     public void setCategoriesLoad(boolean value, boolean inBackground) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(CATEGORIES_LOAD, value);
@@ -72,6 +96,12 @@ public class Preferences {
         } else {
             editor.commit();
         }
+    }
+
+    public void setRegistrationToServer(String value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SENT_TOKEN_TO_SERVER, value);
+        editor.apply();
     }
 
 }

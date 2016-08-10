@@ -2,7 +2,7 @@ package ee.app.conversa.response;
 
 import java.util.List;
 
-import ee.app.conversa.model.Database.Message;
+import ee.app.conversa.model.Database.dbMessage;
 
 /**
  * Created by edgargomez on 7/8/16.
@@ -13,17 +13,17 @@ public class MessageResponse {
         return actionCode;
     }
 
-    public Message getMessage() {
+    public dbMessage getMessage() {
         return message;
     }
 
-    public List<Message> getMessages() {
+    public List<dbMessage> getMessages() {
         return messages;
     }
 
     private int actionCode;
-    private Message message;
-    private List<Message> messages;
+    private dbMessage message;
+    private List<dbMessage> messages;
 
     public MessageResponse(int actionCode) {
         this.actionCode = actionCode;
@@ -31,7 +31,7 @@ public class MessageResponse {
         this.messages = null;
     }
 
-    public MessageResponse(int actionCode, Message message, List<Message> messages) {
+    public MessageResponse(int actionCode, dbMessage message, List<dbMessage> messages) {
         this.actionCode = actionCode;
         this.message = message;
         this.messages = messages;

@@ -1,67 +1,69 @@
 package ee.app.conversa.notifications;
 
+import android.app.IntentService;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.onesignal.NotificationExtenderService;
-import com.onesignal.OSNotificationDisplayedResult;
-import com.onesignal.OSNotificationPayload;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.FragmentUsersChat;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.model.Database.Message;
 import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.model.Database.dbMessage;
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.model.Parse.Business;
 import ee.app.conversa.model.Parse.pMessage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
+import ee.app.conversa.utils.Logger;
 
 /**
  * Created by edgargomez on 7/21/16.
  */
-public class CustomNotificationExtenderService extends NotificationExtenderService {
+public class CustomNotificationExtenderService extends IntentService {
 
-    private final String TAG = CustomNotificationExtenderService.class.getSimpleName();
+    private final String TAG = getClass().getSimpleName();
     public static final String PARAM_OUT_MSG = "omsg";
 
-    @Override
-    protected boolean onNotificationProcessing(OSNotificationPayload notification) {
-        Log.e(TAG, "\nId:" + notification.notificationId +
-                "\nTitle:" + notification.title +
-                "\nMessage:" + notification.message +
-                "\nAdditionalData:" + notification.additionalData.toString() +
-                "\nGroup:" + notification.group +
-                "\nGroupMessage:" + notification.groupMessage +
-                "\nBackgroundData:" + notification.backgroundData +
-                "\nfromProjectNumber:" + notification.fromProjectNumber +
-                "\nRestoring:" + notification.restoring);
+    public CustomNotificationExtenderService() {
+        super("CustomNotificationExtenderService");
+    }
 
-        if (notification.restoring) {
-            Log.e(TAG, "Returning as 'restoring' flag is true");
-            return true;
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        if (intent.getExtras() == null) {
+            return;
         }
 
-        JSONObject pushData = notification.additionalData;
+        String json = intent.getExtras().getString("data", "");
 
-        switch (pushData.optInt("appAction", 0)) {
+        JSONObject additionalData;
+
+        try {
+            additionalData = new JSONObject(json);
+        } catch (JSONException e) {
+            Logger.error(TAG, "onMessageReceived payload fail to parse-> " + e.getMessage());
+            return;
+        }
+
+        Log.e("NotifOpenedHandler", "Full additionalData:\n" + additionalData.toString());
+
+        switch (additionalData.optInt("appAction", 0)) {
             case 1:
-                String messageId = pushData.optString("messageId", null);
-                String contactId = pushData.optString("contactId", null);
-                String messageType = pushData.optString("messageType", null);
+                String messageId = additionalData.optString("messageId", null);
+                String contactId = additionalData.optString("contactId", null);
+                String messageType = additionalData.optString("messageType", null);
 
                 if (messageId == null || contactId == null || messageType == null) {
-                    return true;
+                    return;
                 }
 
                 dBusiness dbcustomer = null;
@@ -86,7 +88,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                         customer = query.get(contactId);
                     } catch (ParseException e) {
                         Log.e(TAG, "Error consiguiendo informacion de Business " + e.getMessage());
-                        return true;
+                        return;
                     }
 
                     // 3. If Customer was found, save to Local Database
@@ -110,14 +112,14 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
 
                     if (dbcustomer.getId() == -1) {
                         Log.e(TAG, "Error guardando Business");
-                        return true;
+                        return;
                     }
                 }
 
                 // 2. Get message information
-                pMessage message = null;
+                pMessage parseMessage = null;
 
-                if (pushData.optBoolean("callParse", false)) {
+                if (additionalData.optBoolean("callParse", false)) {
                     ParseQuery<pMessage> query = ParseQuery.getQuery(pMessage.class);
                     Collection<String> collection = new ArrayList<>();
 
@@ -138,39 +140,39 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     query.selectKeys(collection);
 
                     try {
-                        message = query.get(messageId);
+                        parseMessage = query.get(messageId);
                     } catch (ParseException e) {
                         Log.e(TAG, "Error consiguiendo informacion de Message " + e.getMessage());
-                        return true;
+                        return;
                     }
                 }
 
                 // 3. If message was found, save to Local Database
-                Message dbmessage = new Message();
+                dbMessage dbmessage = new dbMessage();
                 dbmessage.setFromUserId(contactId);
                 dbmessage.setToUserId(Account.getCurrentUser().getObjectId());
                 dbmessage.setMessageType(messageType);
-                dbmessage.setDeliveryStatus(Message.statusAllDelivered);
+                dbmessage.setDeliveryStatus(dbMessage.statusAllDelivered);
                 dbmessage.setMessageId(messageId);
 
                 switch (messageType) {
                     case Const.kMessageTypeText:
-                        if (message == null) {
-                            dbmessage.setBody(pushData.optString("message", ""));
+                        if (parseMessage == null) {
+                            dbmessage.setBody(additionalData.optString("message", ""));
                         } else {
-                            dbmessage.setBody(message.getText());
+                            dbmessage.setBody(parseMessage.getText());
                         }
                         break;
                     case Const.kMessageTypeAudio:
                     case Const.kMessageTypeVideo:
-                        dbmessage.setBytes(pushData.optInt("size", 0));
-                        dbmessage.setDuration(pushData.optInt("duration", 0));
-                        if (message == null) {
-                            dbmessage.setFileId(pushData.optString("file", ""));
+                        dbmessage.setBytes(additionalData.optInt("size", 0));
+                        dbmessage.setDuration(additionalData.optInt("duration", 0));
+                        if (parseMessage == null) {
+                            dbmessage.setFileId(additionalData.optString("file", ""));
                         } else {
                             try {
-                                if (message.getFile() != null) {
-                                    dbmessage.setFileId(message.getFile().getUrl());
+                                if (parseMessage.getFile() != null) {
+                                    dbmessage.setFileId(parseMessage.getFile().getUrl());
                                 } else {
                                     dbmessage.setFileId("");
                                 }
@@ -180,15 +182,15 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                         }
                         break;
                     case Const.kMessageTypeImage:
-                        dbmessage.setBytes(pushData.optInt("size", 0));
-                        dbmessage.setWidth(pushData.optInt("width", 0));
-                        dbmessage.setHeight(pushData.optInt("height", 0));
-                        if (message == null) {
-                            dbmessage.setFileId(pushData.optString("file", ""));
+                        dbmessage.setBytes(additionalData.optInt("size", 0));
+                        dbmessage.setWidth(additionalData.optInt("width", 0));
+                        dbmessage.setHeight(additionalData.optInt("height", 0));
+                        if (parseMessage == null) {
+                            dbmessage.setFileId(additionalData.optString("file", ""));
                         } else {
                             try {
-                                if (message.getFile() != null) {
-                                    dbmessage.setFileId(message.getFile().getUrl());
+                                if (parseMessage.getFile() != null) {
+                                    dbmessage.setFileId(parseMessage.getFile().getUrl());
                                 } else {
                                     dbmessage.setFileId("");
                                 }
@@ -198,8 +200,8 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                         }
                         break;
                     case Const.kMessageTypeLocation:
-                        dbmessage.setLatitude((float)pushData.optDouble("latitude", 0));
-                        dbmessage.setLongitude((float)pushData.optDouble("longitude", 0));
+                        dbmessage.setLatitude((float)additionalData.optDouble("latitude", 0));
+                        dbmessage.setLongitude((float)additionalData.optDouble("longitude", 0));
                         break;
                 }
 
@@ -207,7 +209,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
 
                 if (dbmessage.getId() == -1) {
                     Log.e(TAG, "Error guardando Message");
-                    return true;
+                    return;
                 }
 
                 // 4. Broadcast results as from IntentService ain't possible to access ui thread
@@ -224,25 +226,15 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                 }
                 break;
             default:
-                return true;
+                return;
         }
 
         if (Foreground.get().isBackground()) {
-            OverrideSettings overrideSettings = new OverrideSettings();
-            overrideSettings.extender = new NotificationCompat.Extender() {
-                @Override
-                public NotificationCompat.Builder extend(NotificationCompat.Builder builder) {
-                    // Sets the background notification color to Green on Android 5.0+ devices.
-                    return builder.setColor(new BigInteger("FF00FF00", 16).intValue());
-                }
-            };
+            Log.e("OneSignalExample", "Notification displayed with id: " + 1);
 
-            OSNotificationDisplayedResult result = displayNotification(overrideSettings);
-            Log.e("OneSignalExample", "Notification displayed with id: " + result.notificationId);
-            return false;
         } else {
-            // Return true to stop the notifications from displaying.
-            return true;
+
         }
     }
+
 }

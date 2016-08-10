@@ -32,11 +32,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import com.onesignal.OneSignal;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.regex.Pattern;
 
 /**
@@ -82,18 +77,6 @@ public class Utils {
 	public static boolean checkPassword(String password) {
 		String pattern = "/^(?=.*[A-Za-z])(?=.*\\d)(?=.*\\W).{6,}$/";
 		return Pattern.compile(pattern).matcher(password).matches();
-	}
-
-	public static void subscribeToTags(String channelName) {
-		JSONObject tags = new JSONObject();
-		try {
-			tags.put("Public", channelName + "_pbc");
-			tags.put("Private", channelName + "_pvt");
-			tags.put("UserType", 1);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		OneSignal.sendTags(tags);
 	}
 
 }

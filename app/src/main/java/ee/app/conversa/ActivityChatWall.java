@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.sendbird.android.SendBird;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.messageshandling.SaveUserAsync;
 import ee.app.conversa.messageshandling.SendMessageAsync;
 import ee.app.conversa.model.Database.Location;
-import ee.app.conversa.model.Database.Message;
+import ee.app.conversa.model.Database.dbMessage;
 import ee.app.conversa.model.Database.dBusiness;
 import ee.app.conversa.response.MessageResponse;
 import ee.app.conversa.utils.Const;
@@ -98,7 +99,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		}
 
 		initialization();
-		Message.getAllMessageForChat(businessObject.getBusinessId(), 20, 0);
+		dbMessage.getAllMessageForChat(businessObject.getBusinessId(), 20, 0);
 
 		sInstance = this;
 	}
@@ -149,12 +150,12 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 				// Call for new messages
 				int count = extras.getInt(Const.kAppVersionKey, 1);
 				newMessagesFromNewIntent = true;
-				Message.getAllMessageForChat(businessObject.getBusinessId(), count, 0);
+				dbMessage.getAllMessageForChat(businessObject.getBusinessId(), count, 0);
 			} else {
 				// Set new business reference
 				businessObject = business;
 				// Clean list of current messages and get new messages
-				Message.getAllMessageForChat(businessObject.getBusinessId(), 20, 0);
+				dbMessage.getAllMessageForChat(businessObject.getBusinessId(), 20, 0);
 			}
 		}
 	}
@@ -229,7 +230,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 				if (!loading && lastVisibleItem == (totalItemCount - 1)) {
 					// 2. If load more is true retrieve more messages otherwise skip
 					if (loadMore) {
-						Message.getAllMessageForChat(businessObject.getBusinessId(), 20, totalItemCount);
+						dbMessage.getAllMessageForChat(businessObject.getBusinessId(), 20, totalItemCount);
 						loading = true;
 					}
 				}
@@ -277,11 +278,11 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	@Override
 	protected void handlePushNotification(Intent intent) {
 		Bundle i = intent.getExtras();
-		Message m = (Message) i.get("message");
+		dbMessage m = (dbMessage) i.get("message");
 		showImage(m);
 	}
 
-	public void showImage(final Message m){
+	public void showImage(final dbMessage m){
 		Utils.hideKeyboard(this);
 		final Animation slidein = AnimationUtils.loadAnimation(getApplicationContext(),
 				R.anim.slide_in);
@@ -349,13 +350,13 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 	@Override
 	public void MessagesGetAll(MessageResponse r) {
-		List<Message> messages = r.getMessages();
+		List<dbMessage> messages = r.getMessages();
 		// 1. Add messages
 		if (mRvWallMessages.getLayoutManager().getItemCount() == 0) {
 			// If messages size is zero there's no need to do anything
 			if (messages.size() > 0) {
 				// Update unread incoming messages
-				Message.updateUnreadMessages(businessObject.getBusinessId());
+				dbMessage.updateUnreadMessages(businessObject.getBusinessId());
 				// Set messages
 				gMessagesAdapter.setMessages(messages);
 				mRvWallMessages.getLayoutManager().smoothScrollToPosition(mRvWallMessages, null, messages.size() - 1);
@@ -390,7 +391,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 	@Override
 	public void MessageSent(MessageResponse r) {
-		final Message response = r.getMessage();
+		final dbMessage response = r.getMessage();
 
 		// 1. Check visibility
 		if (mTvNoMessages.getVisibility() == View.VISIBLE) {
@@ -413,6 +414,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		params.put("business", response.getToUserId());
 		params.put("fromUser", String.valueOf(true));
 		params.put("messageType", Integer.valueOf(response.getMessageType()));
+		params.put("userId", SendBird.getUserId());
 
 		switch (response.getMessageType()) {
 			case Const.kMessageTypeText:
@@ -432,14 +434,14 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 			}
 		}
 
-		ParseCloud.callFunctionInBackground("sendUserMessage", params, new FunctionCallback<Boolean>() {
+		ParseCloud.callFunctionInBackground("sendUserMessage", params, new FunctionCallback<Integer>() {
 			@Override
-			public void done(Boolean result, ParseException e) {
+			public void done(Integer result, ParseException e) {
 				// 4.1. Update local db delivery
 				if (e == null) {
-					response.updateDelivery(Message.statusAllDelivered);
+					response.updateDelivery(dbMessage.statusAllDelivered);
 				} else {
-					response.updateDelivery(Message.statusParseError);
+					response.updateDelivery(dbMessage.statusParseError);
 				}
 			}
 		});
@@ -452,7 +454,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 	@Override
 	public void MessageUpdated(MessageResponse r) {
-		if (r.getActionCode() == Message.ACTION_MESSAGE_UPDATE) {
+		if (r.getActionCode() == dbMessage.ACTION_MESSAGE_UPDATE) {
 			// 1. Get visible items and first visible item position
 			int visibleItemCount = mRvWallMessages.getChildCount();
 			int firstVisibleItem = ((LinearLayoutManager) mRvWallMessages.getLayoutManager()).findFirstVisibleItemPosition();
@@ -462,7 +464,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
-	public void MessageReceived(Message message) {
+	public void MessageReceived(dbMessage message) {
 		// 1. Check if this message belongs to this conversation
 		if (message.getFromUserId().equals(businessObject.getBusinessId())) {
 			// 2. Check visibility

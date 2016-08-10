@@ -24,7 +24,7 @@
 
 package ee.app.conversa.messageshandling;
 
-import ee.app.conversa.model.Database.Message;
+import ee.app.conversa.model.Database.dbMessage;
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.utils.Const;
 
@@ -38,44 +38,44 @@ public class SendMessageAsync {
 
 	public static void sendTextMessage(String businessId, String text) {
 		// 1. Create local message
-		Message message = new Message();
+		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeText);
-		message.setDeliveryStatus(Message.statusUploading);
+		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setBody(text);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
 	}
 
 	public static void sendLocationMessage(String businessId, float lat, float lon) {
 		// 1. Create local message
-		Message message = new Message();
+		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeLocation);
-		message.setDeliveryStatus(Message.statusUploading);
+		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setLatitude(lat);
 		message.setLongitude(lon);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
 	}
 
 	public static void sendImageMessage(String businessId, int width, int height, int size) {
 		// 1. Create local message
-		Message message = new Message();
+		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeLocation);
-		message.setDeliveryStatus(Message.statusUploading);
+		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setWidth(width);
 		message.setHeight(height);
 		message.setBytes(size);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
 	}
 
 }

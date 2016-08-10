@@ -49,7 +49,7 @@ import java.util.List;
 
 import ee.app.conversa.ActivityLocation;
 import ee.app.conversa.R;
-import ee.app.conversa.model.Database.Message;
+import ee.app.conversa.model.Database.dbMessage;
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.view.LightTextView;
@@ -66,7 +66,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 	private final int FROM_ME_VIEW_TYPE = 2;
 	private final String fromUser;
 	private final AppCompatActivity mActivity;
-	private List<Message> mMessages;
+	private List<dbMessage> mMessages;
 
 	public final static String PUSH = "ee.app.conversa.chatwallMessage.showImage";
 	private static final Intent mPushBroadcast = new Intent(PUSH);
@@ -105,22 +105,22 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		}
 	}
 
-	public void setMessages(List<Message> messages) {
+	public void setMessages(List<dbMessage> messages) {
 		mMessages = messages;
 		notifyDataSetChanged();
 	}
 
-	public void addMessage(Message message) {
+	public void addMessage(dbMessage message) {
 		mMessages.add(0, message);
 		notifyItemInserted(0);
 	}
 
-	public void addMessages(List<Message> messages) {
+	public void addMessages(List<dbMessage> messages) {
 		int positionStart = mMessages.size();
 		addMessages(messages, positionStart);
 	}
 
-	public void addMessages(List<Message> messages, int positionStart) {
+	public void addMessages(List<dbMessage> messages, int positionStart) {
 		if (positionStart == 0) {
 			mMessages.addAll(0, messages);
 		} else {
@@ -129,11 +129,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		notifyItemRangeInserted(positionStart, messages.size());
 	}
 
-	public void updateMessage(Message message, int from, int count) {
+	public void updateMessage(dbMessage message, int from, int count) {
 		int size = mMessages.size();
 
 		for (int i = 0; i < size; i++) {
-			Message m = mMessages.get(i);
+			dbMessage m = mMessages.get(i);
 			if (m.getId() == message.getId()) {
 				m.setDeliveryStatus(message.getDeliveryStatus());
 				mMessages.set(i, m);
@@ -145,7 +145,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		}
 	}
 
-	private void showMessage(final Message m, final ViewHolder holder, final int position) {
+	private void showMessage(final dbMessage m, final ViewHolder holder, final int position) {
 		// 1. Hide date. Will later check date text string and if it should be visible
 		holder.mTvDate.setVisibility(View.GONE);
 
@@ -206,7 +206,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		holder.mTvDate.setText(setDate(m));
 
 		// 5. Decide whether to show message status
-		if (m.getDeliveryStatus().equals(Message.statusParseError)) {
+		if (m.getDeliveryStatus().equals(dbMessage.statusParseError)) {
 			holder.mLtvSubText.setVisibility(View.VISIBLE);
 			holder.mLtvSubText.setText(mActivity.getString(R.string.app_name));
 		} else {
@@ -214,7 +214,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		}
 	}
 
-	private void showIncomingMessage(final Message m, final IncomingViewHolder holder, final int position) {
+	private void showIncomingMessage(final dbMessage m, final IncomingViewHolder holder, final int position) {
 		// 1. Hide date. Will later check date text string and if it should be visible
 		holder.mTvDate.setVisibility(View.GONE);
 
@@ -275,7 +275,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		holder.mTvDate.setText(setDate(m));
 
 		// 5. Decide whether to show message status
-		if (m.getDeliveryStatus().equals(Message.statusParseError)) {
+		if (m.getDeliveryStatus().equals(dbMessage.statusParseError)) {
 			holder.mLtvSubText.setVisibility(View.VISIBLE);
 			holder.mLtvSubText.setText(mActivity.getString(R.string.app_name));
 		} else {
@@ -288,7 +288,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 	 * @param message
 	 * @return
 	 */
-	private String setDate(Message message) {
+	private String setDate(dbMessage message) {
 		String subText;
 
 		long timeOfCreationOrUpdate = message.getCreated();
@@ -325,7 +325,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		return subText;
 	}
 
-	private OnClickListener getPhotoListener(final Message m, final ViewHolder holder) {
+	private OnClickListener getPhotoListener(final dbMessage m, final ViewHolder holder) {
 		return new OnClickListener() {
 
 			@Override
