@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:padding="5dp"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:clipToPadding="false" >
+
+    <RelativeLayout
+        android:id="@+id/rlImageBusiness"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:layout_width="80dp" >
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/sdvBusinessImage"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            fresco:fadeDuration="300"
+            fresco:actualImageScaleType="focusCrop"
+            fresco:placeholderImage="@drawable/business_default"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:failureImage="@drawable/username_icon"
+            fresco:failureImageScaleType="centerInside"
+            fresco:retryImage="@drawable/refresh_icon"
+            fresco:retryImageScaleType="centerCrop"
+            fresco:progressBarImage="@drawable/rotate_loading"
+            fresco:progressBarImageScaleType="centerInside"
+            fresco:progressBarAutoRotateInterval="1000"
+            fresco:roundAsCircle="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_toEndOf="@id/rlImageBusiness"
+        android:layout_toRightOf="@id/rlImageBusiness"
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
+        android:paddingRight="10dp"
+        android:paddingEnd="10dp"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent" >
+        <ee.app.conversa.view.MediumTextView
+            android:id="@+id/tvConversaId"
+            android:text="@string/test_string"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:textColor="#444444"
+            android:textSize="18sp" />
+
+        <ee.app.conversa.view.LightTextView
+            android:id="@+id/tvDisplayName"
+            android:layout_marginTop="7dp"
+            android:maxLines = "2"
+            android:text="@string/test_string"
+            android:layout_below="@id/tvConversaId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#444444"
+            android:textSize="14sp" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -24,16 +24,12 @@
 
 package ee.app.conversa.model.Database;
 
-import android.database.SQLException;
-import android.os.AsyncTask;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
-import java.util.List;
-
-import ee.app.conversa.ConversaApp;
-import ee.app.conversa.response.MessageResponse;
+import ee.app.conversa.management.message.MessageIntentService;
 
 /**
  * pMessage
@@ -68,13 +64,6 @@ public class dbMessage implements Parcelable {
 	public static final String statusReceived = "3";
 	public static final String statusDownloading = "4";
 	public static final String statusUploading = "5";
-	// MESSAGE ACTIONS
-	public static final int ACTION_MESSAGE_SAVE = 1;
-	public static final int ACTION_MESSAGE_NEW_MESSAGE = 2;
-	public static final int ACTION_MESSAGE_UPDATE = 3;
-	public static final int ACTION_MESSAGE_DELETE = 4;
-	public static final int ACTION_MESSAGE_RETRIEVE_ALL = 5;
-	public static final int ACTION_MESSAGE_UPDATE_UNREAD = 6;
 
 	public dbMessage() {
 		this.mId = -1;
@@ -134,80 +123,44 @@ public class dbMessage implements Parcelable {
 
 	/* ******************************************************************************************* */
 	/* ******************************************************************************************* */
-
-	public void saveToLocalDatabase(int action) {
-		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
-		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, action, this);
-	}
-
-	public void updateDelivery(String status) {
-		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
-		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_UPDATE, this, status);
-	}
-
-	public static void getAllMessageForChat(String businessId, int count, int skip) {
-		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
-		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL, businessId, count, skip);
-	}
-
-	public static void updateUnreadMessages(String businessId) {
-		MessageAsyncTaskRunner runner = new MessageAsyncTaskRunner();
-		runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_UPDATE_UNREAD, businessId);
-	}
-
-	private static class MessageAsyncTaskRunner extends AsyncTask<Object, String, MessageResponse> {
-
-		public MessageAsyncTaskRunner() { }
-
-		@Override
-		protected MessageResponse doInBackground(Object... params) {
-			if (params.length == 0)
-				return null;
-
-			dbMessage message = null;
-			List<dbMessage> messages = null;
-			int actionCode = (int)params[0];
-
-			try {
-				switch (actionCode) {
-					case ACTION_MESSAGE_SAVE:
-						message = ConversaApp.getDB().saveMessage((dbMessage) params[1]);
-						break;
-					case ACTION_MESSAGE_NEW_MESSAGE:
-						message = ConversaApp.getDB().saveMessage((dbMessage) params[1]);
-						break;
-					case ACTION_MESSAGE_UPDATE:
-						message = (dbMessage) params[1];
-						String status = (String)params[2];
-						int result = ConversaApp.getDB().updateDeliveryStatus(message.getId(), status);
-						if (result > 0) {
-							message.setDeliveryStatus(status);
-						}
-						break;
-					case ACTION_MESSAGE_UPDATE_UNREAD:
-						ConversaApp.getDB().updateReadMessages((String) params[1]);
-						break;
-					case ACTION_MESSAGE_RETRIEVE_ALL:
-						messages = ConversaApp.getDB().getMessagesByContact((String) params[1], (int)params[2], (int)params[3]);
-						break;
-				}
-			} catch (SQLException e) {
-				Log.e("MessageAsyncTaskRunner", "No se pudo guardar mensaje porque ocurrio el siguiente error: " + e.getMessage());
-			}
-
-			return new MessageResponse(actionCode, message, messages);
+    public void updateDelivery(Context context, String status) {
+		if (context == null) {
+			return;
 		}
 
-		@Override
-		protected void onPostExecute(MessageResponse response) {
-			ConversaApp.getDB().notifyMessageListeners(response);
+		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, this);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_UPDATE);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_UPDATE_STATUS, status);
+		context.startService(broadcastIntent);
+    }
+
+    public static void getAllMessageForChat(Context context, String businessId, int count, int skip) {
+		if (context == null) {
+			return;
 		}
-	}
+
+		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_RETRIEVE_ALL);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_CONTACT_ID, businessId);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE_COUNT, count);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE_SKIP, skip);
+		context.startService(broadcastIntent);
+    }
+
+    public static void updateUnreadMessages(Context context, String businessId) {
+		if (context == null) {
+			return;
+		}
+
+		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_UPDATE_UNREAD);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_CONTACT_ID, businessId);
+		context.startService(broadcastIntent);
+    }
 
 	/* ******************************************************************************************* */
 	/* ******************************************************************************************* */
-
-
 	@Override
 	public int describeContents() {
 		return 0;

@@ -24,12 +24,10 @@
 
 package ee.app.conversa;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -45,7 +43,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.management.GPSTracker;
+import ee.app.conversa.messageshandling.SendMessageAsync;
 import ee.app.conversa.utils.Const;
 
 /**
@@ -53,8 +53,7 @@ import ee.app.conversa.utils.Const;
  * 
  * Shows user current location or other user's previous sent location.
  */
-@SuppressLint("DefaultLocale")
-public class ActivityLocation extends FragmentActivity implements OnMapReadyCallback, OnClickListener {
+public class ActivityLocation extends ConversaActivity implements OnMapReadyCallback, OnClickListener {
 
 	private MapFragment mMap;
 	private GPSTracker mGpsTracker;
@@ -78,24 +77,23 @@ public class ActivityLocation extends FragmentActivity implements OnMapReadyCall
 			mGpsTracker.stopUsingGPS();
 	}
 
-	private void initialization() {
+	@Override
+	protected void initialization() {
+		super.initialization();
 		mExtras = getIntent().getExtras();
 		mTypeOfLocation = mExtras.getString(Const.LOCATION);
 		mLatitude = mExtras.getDouble(Const.LATITUDE);
 		mLongitude = mExtras.getDouble(Const.LONGITUDE);
 
-		Button mBtnBack = (Button) findViewById(R.id.btnBack);
 		Button mBtnSend = (Button) findViewById(R.id.btnSend);
-		mBtnBack.setTypeface(ConversaApp.getTfRalewayMedium());
 		mBtnSend.setTypeface(ConversaApp.getTfRalewayMedium());
-		mBtnBack.setOnClickListener(this);
 		mBtnSend.setOnClickListener(this);
 
 		mMap = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 		mMap.getMapAsync(this);
 
 		if (mTypeOfLocation.equals("userLocation")) {
-			mBtnSend.setVisibility(View.INVISIBLE);
+			mBtnSend.setVisibility(View.GONE);
 		}
 
 		mMapPinBlue = BitmapFactory.decodeResource(getResources(),
@@ -180,12 +178,11 @@ public class ActivityLocation extends FragmentActivity implements OnMapReadyCall
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-			case R.id.btnBack:
-				this.finish();
-				break;
 			case R.id.btnSend:
-
+				SendMessageAsync.sendLocationMessage(this, mTypeOfLocation, mLatitude, mLongitude);
+				finish();
 				break;
 		}
 	}
+
 }

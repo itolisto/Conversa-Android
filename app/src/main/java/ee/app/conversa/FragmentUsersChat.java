@@ -24,7 +24,7 @@ import ee.app.conversa.adapters.ChatsAdapter;
 import ee.app.conversa.dialog.CustomDeleteUserDialog;
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.response.ContactResponse;
+import ee.app.conversa.notifications.onesignal.CustomNotificationExtenderService;
 import ee.app.conversa.utils.Const;
 
 public class FragmentUsersChat extends Fragment implements OnContactTaskCompleted, ChatsAdapter.OnItemClickListener, ChatsAdapter.OnLongClickListener {
@@ -50,7 +50,7 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
 
         // Register Listener on Database
         ConversaApp.getDB().setContactListener(this);
-        dBusiness.getAllContacts();
+        dBusiness.getAllContacts(getContext());
 
         // Register receiver
         ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, mUserFilter);
@@ -71,59 +71,78 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
     }
 
     @Override
-    public void ContactGetAll(ContactResponse response) {
-        List<dBusiness> contacts = response.getBusinesss();
+    public void ContactGetAll(final List<dBusiness> contacts) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(contacts.size() == 0) {
+                        mRlNoUsers.setVisibility(View.VISIBLE);
+                        mRvUsers.setVisibility(View.GONE);
+                    } else {
+                        if (mRlNoUsers.getVisibility() == View.VISIBLE) {
+                            mRlNoUsers.setVisibility(View.GONE);
+                            mRvUsers.setVisibility(View.VISIBLE);
+                        }
 
-        if(contacts.size() == 0) {
-            mRlNoUsers.setVisibility(View.VISIBLE);
-            mRvUsers.setVisibility(View.GONE);
-        } else {
-            if (mRlNoUsers.getVisibility() == View.VISIBLE) {
-                mRlNoUsers.setVisibility(View.GONE);
-                mRvUsers.setVisibility(View.VISIBLE);
-            }
-
-            mUserListAdapter.addItems(contacts);
+                        mUserListAdapter.addItems(contacts);
+                    }
+                }
+            });
         }
     }
 
     @Override
-    public void ContactAdded(ContactResponse response) {
-        ContactAddedFromBroadcast(response.getBusiness());
+    public void ContactAdded(dBusiness response) {
+        ContactAddedFromBroadcast(response);
     }
 
     @Override
-    public void ContactDeleted(ContactResponse response) {
-        // 1. Get visible items and first visible item position
-        int visibleItemCount = mRvUsers.getChildCount();
-        int firstVisibleItem = ((LinearLayoutManager) mRvUsers.getLayoutManager()).findFirstVisibleItemPosition();
-        // 2. Update message
-        mUserListAdapter.removeContact(response.getBusiness(), firstVisibleItem, visibleItemCount);
-        // 3. Check visibility
-        if (mUserListAdapter.getItemCount() == 0) {
-            mRlNoUsers.setVisibility(View.VISIBLE);
-            mRvUsers.setVisibility(View.GONE);
+    public void ContactDeleted(final dBusiness response) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // 1. Get visible items and first visible item position
+                    int visibleItemCount = mRvUsers.getChildCount();
+                    int firstVisibleItem = ((LinearLayoutManager) mRvUsers.getLayoutManager()).findFirstVisibleItemPosition();
+                    // 2. Update message
+                    mUserListAdapter.removeContact(response, firstVisibleItem, visibleItemCount);
+                    // 3. Check visibility
+                    if (mUserListAdapter.getItemCount() == 0) {
+                        mRlNoUsers.setVisibility(View.VISIBLE);
+                        mRvUsers.setVisibility(View.GONE);
+                    }
+                }
+            });
         }
     }
 
     @Override
-    public void ContactUpdated(ContactResponse response) {
+    public void ContactUpdated(dBusiness response) {
 
     }
 
-    public void ContactAddedFromBroadcast(dBusiness business) {
-        // 0. Check business is defined
-        if (business == null)
-            return;
+    public void ContactAddedFromBroadcast(final dBusiness business) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // 0. Check business is defined
+                    if (business == null)
+                        return;
 
-        // 1. Check visibility
-        if (mRlNoUsers.getVisibility() == View.VISIBLE) {
-            mRlNoUsers.setVisibility(View.GONE);
-            mRvUsers.setVisibility(View.VISIBLE);
+                    // 1. Check visibility
+                    if (mRlNoUsers.getVisibility() == View.VISIBLE) {
+                        mRlNoUsers.setVisibility(View.GONE);
+                        mRvUsers.setVisibility(View.VISIBLE);
+                    }
+
+                    // 2. Add contact to adapter
+                    mUserListAdapter.newContactInserted(business);
+                }
+            });
         }
-
-        // 2. Add contact to adapter
-        mUserListAdapter.newContactInserted(business);
     }
 
     public class UsersReceiver extends BroadcastReceiver {
@@ -132,8 +151,8 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
 
         @Override
         public void onReceive(Context context, Intent intent) {
-//            dBusiness contact = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
-//            ContactAddedFromBroadcast(contact);
+            dBusiness contact = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
+            ContactAddedFromBroadcast(contact);
         }
     }
 
@@ -154,7 +173,7 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
                 .setupPositiveButton("Accept", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        contact.removeContact();
+                        //contact.removeContact();
                         dialog.dismiss();
                     }
                 })

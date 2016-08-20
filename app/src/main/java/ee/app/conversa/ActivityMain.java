@@ -1,7 +1,5 @@
 package ee.app.conversa;
 
-import android.content.BroadcastReceiver;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,13 +10,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+import com.onesignal.OneSignal;
+
+import org.json.JSONObject;
 
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.notifications.RegistrationIntentService;
+import ee.app.conversa.management.Ably.Connection;
+import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
+import ee.app.conversa.utils.Utils;
 
 public class ActivityMain extends ConversaActivity {
 
@@ -35,14 +36,7 @@ public class ActivityMain extends ConversaActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /* QUITAR CON EMULADOR DE ECLIPSE*/
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        } else {
-            Logger.error(TAG_GCM, "No valid Google Play Services APK found.");
-        }
+        Connection.getInstance().initAbly();
 
         // Remove internet connection check
         checkInternetConnection = false;
@@ -151,7 +145,17 @@ public class ActivityMain extends ConversaActivity {
             public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-        super.initialization();
+        // 1. Subscribe to Customer channels if not subscribed already
+        OneSignal.getTags(new OneSignal.GetTagsHandler() {
+            @Override
+            public void tagsAvailable(JSONObject tags) {
+                if (tags == null || tags.length() == 0) {
+                    Utils.subscribeToTags(Account.getCurrentUser().getObjectId());
+                }
+            }
+        });
+
+        initialization();
 	}
 
     @Override
@@ -198,35 +202,6 @@ public class ActivityMain extends ConversaActivity {
                 return true;
 
         }
-    }
-
-    /*********************************************************************************************/
-    /***********************************GOOGLE CLOUD MESSAGING************************************/
-    /********************************************* GCM *******************************************/
-    /*********************************************************************************************/
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final String TAG_GCM = "GCM Conversa";
-
-    /**
-     * Revisa el dispositivo para asegurarse que tiene la APK de Google Play Services.
-     * Si no lo tiene, despliega un dialogo que permite al usuario descargar la APK
-     * desde la Google Play Store o activarlo en los ajustes del sistema del dispositivo.
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Logger.error(TAG_GCM, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
     }
 
 }

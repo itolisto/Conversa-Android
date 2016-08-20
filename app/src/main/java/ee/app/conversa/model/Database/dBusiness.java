@@ -24,16 +24,12 @@
 
 package ee.app.conversa.model.Database;
 
-import android.database.SQLException;
-import android.os.AsyncTask;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
-import java.util.List;
-
-import ee.app.conversa.ConversaApp;
-import ee.app.conversa.response.ContactResponse;
+import ee.app.conversa.management.contact.ContactIntentService;
 
 /**
  * Emoticon
@@ -55,12 +51,6 @@ public class dBusiness implements Parcelable {
     private boolean mMuted;
     private long mRecent;
     private long mCreated;
-
-    // MESSAGE ACTIONS
-    public static final int ACTION_MESSAGE_SAVE = 1;
-    public static final int ACTION_MESSAGE_UPDATE = 2;
-    public static final int ACTION_MESSAGE_DELETE = 3;
-    public static final int ACTION_MESSAGE_RETRIEVE_ALL = 4;
 
     public dBusiness() {
         this.mId = -1;
@@ -99,66 +89,14 @@ public class dBusiness implements Parcelable {
 
     /* ******************************************************************************************* */
     /* ******************************************************************************************* */
-
-    public void saveToLocalDatabase() {
-        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
-        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_SAVE, this);
-    }
-
-    public void removeContact() {
-        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
-        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_DELETE, this);
-    }
-
-    public static void getAllContacts() {
-        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
-        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL);
-    }
-
-    private static class ContactAsyncTaskRunner extends AsyncTask<Object, String, ContactResponse> {
-
-        public ContactAsyncTaskRunner() { }
-
-        @Override
-        protected ContactResponse doInBackground(Object... params) {
-            if (params.length == 0)
-                return null;
-
-            int actionCode = (int)params[0];
-            dBusiness user = null;
-            List<dBusiness> users = null;
-
-            try {
-                switch (actionCode) {
-                    case ACTION_MESSAGE_SAVE:
-                        user = ConversaApp.getDB().saveContact((dBusiness) params[1]);
-                        break;
-                    case ACTION_MESSAGE_UPDATE:
-                        break;
-                    case ACTION_MESSAGE_DELETE:
-                        user = ConversaApp.getDB().deleteContactById((dBusiness) params[1]);
-                        break;
-                    case ACTION_MESSAGE_RETRIEVE_ALL:
-                        users = ConversaApp.getDB().getAllContacts();
-                        break;
-                }
-
-            } catch (SQLException e) {
-                Log.e("ContactAsyncTaskRunner", "No se pudo guardar usuario porque ocurrio el siguiente error: " + e.getMessage());
-            }
-
-            return new ContactResponse(actionCode, user, users);
-        }
-
-        @Override
-        protected void onPostExecute(ContactResponse contactResponse) {
-            ConversaApp.getDB().notifyContactListeners(contactResponse);
-        }
+    public static void getAllContacts(Context context) {
+        Intent broadcastIntent = new Intent(context, ContactIntentService.class);
+        broadcastIntent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactIntentService.ACTION_MESSAGE_RETRIEVE_ALL);
+        context.startService(broadcastIntent);
     }
 
     /* ******************************************************************************************* */
     /* ******************************************************************************************* */
-
     // In the vast majority of cases you can simply return 0 for this.
     // There are cases where you need to use the constant `CONTENTS_FILE_DESCRIPTOR`
     // But this is out of scope of this tutorial

@@ -25,6 +25,7 @@
 package ee.app.conversa.adapters;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -44,6 +45,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,10 +100,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 
 	@Override
 	public void onBindViewHolder(GenericViewHolder holder, int position) {
-		if (holder.tag.equals(ViewHolder.class.getSimpleName())) {
-			showMessage(mMessages.get(position), (ViewHolder)holder, position);
+		if (position > 0) {
+			holder.showMessage(mMessages.get(position), mMessages.get(position - 1), mActivity);
 		} else {
-			showIncomingMessage(mMessages.get(position), (IncomingViewHolder)holder, position);
+			holder.showMessage(mMessages.get(position), null, mActivity);
 		}
 	}
 
@@ -142,144 +144,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 				}
 				break;
 			}
-		}
-	}
-
-	private void showMessage(final dbMessage m, final ViewHolder holder, final int position) {
-		// 1. Hide date. Will later check date text string and if it should be visible
-		holder.mTvDate.setVisibility(View.GONE);
-
-		// 2. Hide message subtext and map/image relative layout
-		holder.mRlImageContainer.setVisibility(View.GONE);
-		holder.mLtvSubText.setVisibility(View.GONE);
-
-		switch (m.getMessageType()) {
-			case Const.kMessageTypeText:
-				// 3. Set messaget text
-				holder.mRtvMessageText.setText(m.getBody());
-				break;
-			case Const.kMessageTypeLocation:
-				// 3. Hide text and show image container relative layout
-				holder.mRtvMessageText.setVisibility(View.GONE);
-				holder.mRlImageContainer.setVisibility(View.VISIBLE);
-				// 3.1 Decide which view contained in image container should be visible
-				holder.mMvMessageMap.setVisibility(View.VISIBLE);
-				holder.mSdvMessageImage.setVisibility(View.GONE);
-				// 3.2 Start map view
-				holder.mMvMessageMap.onCreate(null);
-				holder.mMvMessageMap.onResume();
-				holder.mMvMessageMap.getMapAsync(new OnMapReadyCallback() {
-					@Override
-					public void onMapReady(GoogleMap map) {
-						MapsInitializer.initialize(mActivity.getApplicationContext());
-						map.getUiSettings().setMapToolbarEnabled(false);
-						map.getUiSettings().setAllGesturesEnabled(false);
-						map.getUiSettings().setMyLocationButtonEnabled(false);
-						LatLng sydney = new LatLng(
-								m.getLatitude(),
-								m.getLongitude());
-						map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-						map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-					}
-				});
-				// 3.4 Set map click listener
-				holder.mMvMessageMap.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(mActivity, ActivityLocation.class);
-						intent.putExtra(Const.LOCATION, "userLocation");
-						intent.putExtra(Const.LATITUDE, m.getLatitude());
-						intent.putExtra(Const.LONGITUDE, m.getLongitude());
-						mActivity.startActivity(intent);
-					}
-				});
-				break;
-			case Const.kMessageTypeImage:
-				break;
-			case Const.kMessageTypeVideo:
-				break;
-			case Const.kMessageTypeAudio:
-				break;
-		}
-
-		// 4. Decide if date should be visible
-		holder.mTvDate.setText(setDate(m));
-
-		// 5. Decide whether to show message status
-		if (m.getDeliveryStatus().equals(dbMessage.statusParseError)) {
-			holder.mLtvSubText.setVisibility(View.VISIBLE);
-			holder.mLtvSubText.setText(mActivity.getString(R.string.app_name));
-		} else {
-			holder.mLtvSubText.setVisibility(View.GONE);
-		}
-	}
-
-	private void showIncomingMessage(final dbMessage m, final IncomingViewHolder holder, final int position) {
-		// 1. Hide date. Will later check date text string and if it should be visible
-		holder.mTvDate.setVisibility(View.GONE);
-
-		// 2. Hide message subtext and map/image relative layout
-		holder.mRlImageContainer.setVisibility(View.GONE);
-		holder.mLtvSubText.setVisibility(View.GONE);
-
-		switch (m.getMessageType()) {
-			case Const.kMessageTypeText:
-				// 3. Set messaget text
-				holder.mRtvMessageText.setText(m.getBody());
-				break;
-			case Const.kMessageTypeLocation:
-				// 3. Hide text and show image container relative layout
-				holder.mRtvMessageText.setVisibility(View.GONE);
-				holder.mRlImageContainer.setVisibility(View.VISIBLE);
-				// 3.1 Decide which view contained in image container should be visible
-				holder.mMvMessageMap.setVisibility(View.VISIBLE);
-				holder.mSdvMessageImage.setVisibility(View.GONE);
-				// 3.2 Start map view
-				holder.mMvMessageMap.onCreate(null);
-				holder.mMvMessageMap.onResume();
-				holder.mMvMessageMap.getMapAsync(new OnMapReadyCallback() {
-					@Override
-					public void onMapReady(GoogleMap map) {
-						MapsInitializer.initialize(mActivity.getApplicationContext());
-						map.getUiSettings().setMapToolbarEnabled(false);
-						map.getUiSettings().setAllGesturesEnabled(false);
-						map.getUiSettings().setMyLocationButtonEnabled(false);
-						LatLng sydney = new LatLng(
-								m.getLatitude(),
-								m.getLongitude());
-						map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-						map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-					}
-				});
-				// 3.4 Set map click listener
-				holder.mMvMessageMap.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(mActivity, ActivityLocation.class);
-						intent.putExtra(Const.LOCATION, "userLocation");
-						intent.putExtra(Const.LATITUDE, m.getLatitude());
-						intent.putExtra(Const.LONGITUDE, m.getLongitude());
-						mActivity.startActivity(intent);
-					}
-				});
-				break;
-			case Const.kMessageTypeImage:
-				break;
-			case Const.kMessageTypeVideo:
-				break;
-			case Const.kMessageTypeAudio:
-				break;
-		}
-
-		// 4. Decide if date should be visible
-		holder.mTvDate.setText(setDate(m));
-
-		// 5. Decide whether to show message status
-		if (m.getDeliveryStatus().equals(dbMessage.statusParseError)) {
-			holder.mLtvSubText.setVisibility(View.VISIBLE);
-			holder.mLtvSubText.setText(mActivity.getString(R.string.app_name));
-		} else {
-			holder.mLtvSubText.setVisibility(View.GONE);
 		}
 	}
 
@@ -325,22 +189,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		return subText;
 	}
 
-	private OnClickListener getPhotoListener(final dbMessage m, final ViewHolder holder) {
-		return new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (m != null) {
-					Intent pushExtras = new Intent();
-					//pushExtras.putExtra("message", m);
-					mPushBroadcast.replaceExtras(pushExtras);
-					LocalBroadcastManager.getInstance(mActivity.getApplicationContext()).sendBroadcast(mPushBroadcast);
-				}
-			}
-		};
-	}
-
-	class ViewHolder extends GenericViewHolder {
+	class ViewHolder extends GenericViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
 		public TextView mTvDate;
 		public RelativeLayout mRlBackground;
 		public RegularTextView mRtvMessageText;
@@ -348,6 +197,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		public MapView mMvMessageMap;
 		public SimpleDraweeView mSdvMessageImage;
 		public LightTextView mLtvSubText;
+		private WeakReference<dbMessage> message;
+		private WeakReference<AppCompatActivity> activity;
 
 		public ViewHolder(View itemView) {
 			super(itemView, ViewHolder.class.getSimpleName());
@@ -360,10 +211,140 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			this.mLtvSubText = (LightTextView) itemView.findViewById(R.id.ltvSubText);
 
 			this.mMvMessageMap.setClickable(false);
+
+			itemView.setOnClickListener(this);
+			itemView.setOnLongClickListener(this);
+		}
+
+		@Override
+		public void onClick(View view) {
+			if (view.getId() == R.id.sdvMessageImage) {
+				if (activity.get() != null && message.get() != null) {
+					Intent pushExtras = new Intent();
+					pushExtras.putExtra("message", message.get());
+					mPushBroadcast.replaceExtras(pushExtras);
+					LocalBroadcastManager.getInstance(mActivity.getApplicationContext()).sendBroadcast(mPushBroadcast);
+				}
+			} else if (view.getId() == R.id.mvMessageMap) {
+				if (activity.get() != null && message.get() != null) {
+					Intent intent = new Intent(activity.get(), ActivityLocation.class);
+					intent.putExtra(Const.LOCATION, "userLocation");
+					intent.putExtra(Const.LATITUDE, message.get().getLatitude());
+					intent.putExtra(Const.LONGITUDE, message.get().getLongitude());
+					activity.get().startActivity(intent);
+				}
+			}
+		}
+
+		@Override
+		public boolean onLongClick(View view) {
+			return false;
+		}
+
+		@Override
+		public void onMapReady(GoogleMap googleMap) {
+			if (activity.get() != null && message.get() != null) {
+				double lat = message.get().getLatitude();
+				double lon = message.get().getLongitude();
+				MapsInitializer.initialize(mActivity.getApplicationContext());
+				googleMap.getUiSettings().setMapToolbarEnabled(false);
+				googleMap.getUiSettings().setAllGesturesEnabled(false);
+				googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+				LatLng sydney = new LatLng(lat, lon);
+				googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+				googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+			}
+		}
+
+		@Override
+		public void showMessage(dbMessage message, dbMessage previousMessage, AppCompatActivity activity) {
+			this.message = new WeakReference<>(message);
+			this.activity = new WeakReference<>(activity);
+
+			// 1. Hide date. Will later check date text string and if it should be visible
+			this.mTvDate.setVisibility(View.GONE);
+
+			// 2. Hide message subtext and map/image relative layout
+			this.mLtvSubText.setVisibility(View.GONE);
+
+			switch (message.getMessageType()) {
+				case Const.kMessageTypeText:
+					// 3. Show text and hide container
+					this.mRlImageContainer.setVisibility(View.GONE);
+					this.mRtvMessageText.setVisibility(View.VISIBLE);
+					// 4. Set messaget text
+					loadMessage();
+					break;
+				case Const.kMessageTypeLocation:
+					// 3. Show image container and hide text
+					this.mRtvMessageText.setVisibility(View.GONE);
+					this.mRlImageContainer.setVisibility(View.VISIBLE);
+					// 3.1 Decide which view contained in image container should be visible
+					this.mMvMessageMap.setVisibility(View.VISIBLE);
+					this.mSdvMessageImage.setVisibility(View.GONE);
+					// 4. Start map view
+					loadMap();
+					break;
+				case Const.kMessageTypeImage:
+					// 3. Show image container and hide text
+					this.mRtvMessageText.setVisibility(View.GONE);
+					this.mRlImageContainer.setVisibility(View.VISIBLE);
+					// 3.1 Decide which view contained in image container should be visible
+					this.mMvMessageMap.setVisibility(View.GONE);
+					this.mSdvMessageImage.setVisibility(View.VISIBLE);
+					// 4. Load image
+					loadImage();
+					break;
+				case Const.kMessageTypeVideo:
+					break;
+				case Const.kMessageTypeAudio:
+					break;
+			}
+
+			// 4. Decide if date should be visible
+			this.mTvDate.setText(setDate(message));
+
+			// 5. Decide whether to show message status
+			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
+				this.mLtvSubText.setVisibility(View.VISIBLE);
+				this.mLtvSubText.setText(mActivity.getString(R.string.app_name));
+			} else {
+				this.mLtvSubText.setVisibility(View.GONE);
+			}
+		}
+
+		public void loadMessage() {
+			if (message.get() != null) {
+				this.mRtvMessageText.setText(message.get().getBody());
+			}
+		}
+
+		public void loadMap() {
+			// 1. Create map
+			this.mMvMessageMap.onCreate(null);
+			this.mMvMessageMap.onResume();
+			// 2. Load map
+			this.mMvMessageMap.getMapAsync(this);
+		}
+
+		public void loadImage() {
+			// 1. Resize image to display
+			ViewGroup.LayoutParams params = this.mSdvMessageImage.getLayoutParams();
+			final float scale = mActivity.getResources().getDisplayMetrics().density;
+			// 1.1 Convert the DP into pixel
+			int pixel =  (int)(100 * scale + 0.5f);
+			params.height = pixel;
+			params.width  = pixel;
+			this.mSdvMessageImage.setLayoutParams(params);
+			// 2. Load image
+			if (activity.get() != null && message.get() != null) {
+				Uri uri = Uri.parse(message.get().getFileId());
+				this.mSdvMessageImage.setImageURI(uri);
+			}
 		}
 	}
 
-	class IncomingViewHolder extends GenericViewHolder {
+	class IncomingViewHolder extends GenericViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
 		public TextView mTvDate;
 		public RelativeLayout mRlBackground;
 		public RegularTextView mRtvMessageText;
@@ -371,9 +352,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		public MapView mMvMessageMap;
 		public SimpleDraweeView mSdvMessageImage;
 		public LightTextView mLtvSubText;
+		private WeakReference<dbMessage> message;
+		private WeakReference<AppCompatActivity> activity;
 
 		public IncomingViewHolder(View itemView) {
-			super(itemView, IncomingViewHolder.class.getSimpleName());
+			super(itemView, ViewHolder.class.getSimpleName());
 			this.mTvDate = (TextView) itemView.findViewById(R.id.tvDate);
 			this.mRlBackground = (RelativeLayout) itemView.findViewById(R.id.rlBackground);
 			this.mRtvMessageText = (RegularTextView) itemView.findViewById(R.id.rtvMessageText);
@@ -383,6 +366,136 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			this.mLtvSubText = (LightTextView) itemView.findViewById(R.id.ltvSubText);
 
 			this.mMvMessageMap.setClickable(false);
+
+			itemView.setOnClickListener(this);
+			itemView.setOnLongClickListener(this);
+		}
+
+		@Override
+		public void onClick(View view) {
+			if (view.getId() == R.id.sdvMessageImage) {
+				if (activity.get() != null && message.get() != null) {
+					Intent pushExtras = new Intent();
+					pushExtras.putExtra("message", message.get());
+					mPushBroadcast.replaceExtras(pushExtras);
+					LocalBroadcastManager.getInstance(mActivity.getApplicationContext()).sendBroadcast(mPushBroadcast);
+				}
+			} else if (view.getId() == R.id.mvMessageMap) {
+				if (activity.get() != null && message.get() != null) {
+					Intent intent = new Intent(activity.get(), ActivityLocation.class);
+					intent.putExtra(Const.LOCATION, "userLocation");
+					intent.putExtra(Const.LATITUDE, message.get().getLatitude());
+					intent.putExtra(Const.LONGITUDE, message.get().getLongitude());
+					activity.get().startActivity(intent);
+				}
+			}
+		}
+
+		@Override
+		public boolean onLongClick(View view) {
+			return false;
+		}
+
+		@Override
+		public void onMapReady(GoogleMap googleMap) {
+			if (activity.get() != null && message.get() != null) {
+				double lat = message.get().getLatitude();
+				double lon = message.get().getLongitude();
+				MapsInitializer.initialize(mActivity.getApplicationContext());
+				googleMap.getUiSettings().setMapToolbarEnabled(false);
+				googleMap.getUiSettings().setAllGesturesEnabled(false);
+				googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+				LatLng sydney = new LatLng(lat, lon);
+				googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+				googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+			}
+		}
+
+		@Override
+		public void showMessage(dbMessage message, dbMessage previousMessage, AppCompatActivity activity) {
+			this.message = new WeakReference<>(message);
+			this.activity = new WeakReference<>(activity);
+
+			// 1. Hide date. Will later check date text string and if it should be visible
+			this.mTvDate.setVisibility(View.GONE);
+
+			// 2. Hide message subtext and map/image relative layout
+			this.mLtvSubText.setVisibility(View.GONE);
+
+			switch (message.getMessageType()) {
+				case Const.kMessageTypeText:
+					// 3. Show text and hide container
+					this.mRlImageContainer.setVisibility(View.GONE);
+					this.mRtvMessageText.setVisibility(View.VISIBLE);
+					// 4. Set messaget text
+					loadMessage();
+					break;
+				case Const.kMessageTypeLocation:
+					// 3. Show image container and hide text
+					this.mRtvMessageText.setVisibility(View.GONE);
+					this.mRlImageContainer.setVisibility(View.VISIBLE);
+					// 3.1 Decide which view contained in image container should be visible
+					this.mMvMessageMap.setVisibility(View.VISIBLE);
+					this.mSdvMessageImage.setVisibility(View.GONE);
+					// 4. Start map view
+					loadMap();
+					break;
+				case Const.kMessageTypeImage:
+					// 3. Show image container and hide text
+					this.mRtvMessageText.setVisibility(View.GONE);
+					this.mRlImageContainer.setVisibility(View.VISIBLE);
+					// 3.1 Decide which view contained in image container should be visible
+					this.mMvMessageMap.setVisibility(View.GONE);
+					this.mSdvMessageImage.setVisibility(View.VISIBLE);
+					// 4. Load image
+					loadImage();
+					break;
+				case Const.kMessageTypeVideo:
+					break;
+				case Const.kMessageTypeAudio:
+					break;
+			}
+
+			// 4. Decide if date should be visible
+			this.mTvDate.setText(setDate(message));
+
+			// 5. Decide whether to show message status
+			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
+				this.mLtvSubText.setVisibility(View.VISIBLE);
+				this.mLtvSubText.setText(mActivity.getString(R.string.app_name));
+			} else {
+				this.mLtvSubText.setVisibility(View.GONE);
+			}
+		}
+
+		public void loadMessage() {
+			if (message.get() != null) {
+				this.mRtvMessageText.setText(message.get().getBody());
+			}
+		}
+
+		public void loadMap() {
+			// 1. Create map
+			this.mMvMessageMap.onCreate(null);
+			this.mMvMessageMap.onResume();
+			// 2. Load map
+			this.mMvMessageMap.getMapAsync(this);
+		}
+
+		public void loadImage() {
+			// 1. Resize image to display
+			ViewGroup.LayoutParams params = this.mSdvMessageImage.getLayoutParams();
+			final float scale = mActivity.getResources().getDisplayMetrics().density;
+			// 1.1 Convert the DP into pixel
+			int pixel =  (int)(100 * scale + 0.5f);
+			params.height = pixel;
+			params.width  = pixel;
+			this.mSdvMessageImage.setLayoutParams(params);
+			// 2. Load image
+			if (activity.get() != null && message.get() != null) {
+				Uri uri = Uri.parse(message.get().getFileId());
+				this.mSdvMessageImage.setImageURI(uri);
+			}
 		}
 	}
 
@@ -393,6 +506,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		public GenericViewHolder(View itemView, String tag) {
 			super(itemView);
 			this.tag = tag;
+		}
+
+		public void showMessage(dbMessage message, dbMessage previousMessage, AppCompatActivity activity) {
+			throw new RuntimeException("showMessage method must be override");
 		}
 	}
 

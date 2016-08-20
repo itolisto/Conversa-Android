@@ -26,13 +26,20 @@ package ee.app.conversa;
 
 import android.app.Application;
 import android.graphics.Typeface;
+import android.os.Environment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import java.io.File;
+
 import ee.app.conversa.database.MySQLiteHelper;
+import ee.app.conversa.management.Ably.Connection;
+import ee.app.conversa.management.FileManager;
 import ee.app.conversa.model.Parse.Account;
 import ee.app.conversa.model.Parse.Business;
 import ee.app.conversa.model.Parse.BusinessCategory;
@@ -41,6 +48,8 @@ import ee.app.conversa.model.Parse.Customer;
 import ee.app.conversa.model.Parse.Options;
 import ee.app.conversa.model.Parse.bCategory;
 import ee.app.conversa.model.Parse.pMessage;
+import ee.app.conversa.notifications.onesignal.CustomNotificationOpenedHandler;
+import ee.app.conversa.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Preferences;
@@ -60,7 +69,6 @@ public class ConversaApp extends Application {
 	private static MySQLiteHelper mDb;
 	private static Preferences mPreferences;
 	private static LocalBroadcastManager mLocalBroadcastManager;
-	private static SendBirdManager mSendBirdManager;
 
 	/**
 	 * Called when the application is starting, before any other application objects have been created
@@ -72,9 +80,27 @@ public class ConversaApp extends Application {
 		setDB();
 		setPreferences();
 		setLocalBroadcastManager();
-		SendBirdManager.initSendBirdManager(this);
 
 		Fresco.initialize(this);
+		OneSignal
+				// Initializes OneSignal to register the device for push notifications
+				.startInit(this)
+				// Prompts the user for location permissions. This allows for geotagging so you can
+				// send notifications to users based on location.
+				.autoPromptLocation(true)
+				// How OneSignal notifications will be shown when one is received while your app is
+				// in focus
+				.inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
+				// Sets a notification opened handler. The instance will be called when a notification
+				// is tapped on from the notification shade or when closing an Alert notification
+				// shown in the app.
+				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(this))
+				// Sets a notification received handler. The instance will be called when a
+				// notification is received whether it was displayed or not.
+				.setNotificationReceivedHandler(new CustomNotificationReceivedHandler(this))
+				// Initializes OneSignal to register the device for push notifications
+				.init();
+		Connection.initAblyManager(this);
 
 		Parse.enableLocalDatastore(this);
 
@@ -106,6 +132,10 @@ public class ConversaApp extends Application {
 		setTfRalewayRegular(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf"));
 		setTfRalewayMedium(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf"));
 		setTfRalewayBold(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf"));
+
+		File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "MyCache");
+		Log.d(this.getClass().getSimpleName(), FileManager.storageSize(file.getTotalSpace())); // dumps "12.9 GB" for me
+		Log.d(this.getClass().getSimpleName(), FileManager.storageSize(file.getFreeSpace())); // dumps "10.6 GB" for me
 	}
 
 	/* ************************************************************************************************ */

@@ -8,17 +8,23 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.RelativeLayout;
 
+import com.parse.ParseFile;
+
+import java.util.List;
+
 import ee.app.conversa.BaseActivity;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.dialog.PushNotification;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
+import ee.app.conversa.management.Ably.Connection;
 import ee.app.conversa.model.Database.dbMessage;
-import ee.app.conversa.response.MessageResponse;
+import ee.app.conversa.notifications.onesignal.CustomNotificationExtenderService;
 
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
 
+    private boolean activityPaused = false;
 	protected RelativeLayout mRlPushNotification;
     private boolean mPushHandledOnNewIntent = false;
     public final static String PUSH = "ee.app.conversa.ConversaActivity.UPDATE";
@@ -55,13 +61,21 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     @Override
 	protected void onStart() {
 		super.onStart();
+
+        if (activityPaused) {
+            Connection.getInstance().reconnectAbly();
+            activityPaused = false;
+        }
+
 		ConversaApp.getLocalBroadcastManager().registerReceiver(mPushReceiver, mPushFilter);
         ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, newMessageFilter);
 	}
 
-	@Override
+    @Override
 	protected void onStop() {
 		super.onStop();
+        activityPaused = true;
+        Connection.getInstance().disconnectAbly();
 		ConversaApp.getLocalBroadcastManager().unregisterReceiver(mPushReceiver);
         ConversaApp.getLocalBroadcastManager().unregisterReceiver(receiver);
 	}
@@ -89,22 +103,58 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 	}
 
     @Override
-    public void MessagesGetAll(MessageResponse response) {
+    public void MessagesGetAll(final List<dbMessage> response) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messagesGetAll(response);
+            }
+        });
+    }
+
+    public void messagesGetAll(final List<dbMessage> response) {
         /* Child activities override this method */
     }
 
     @Override
-    public void MessageSent(MessageResponse response) {
+    public void MessageSent(final dbMessage response, final ParseFile file) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messageSent(response, file);
+            }
+        });
+    }
+
+    public void messageSent(dbMessage response, ParseFile file) {
         /* Child activities override this method */
     }
 
     @Override
-    public void MessageDeleted(MessageResponse response) {
+    public void MessageDeleted(final dbMessage response) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messageDeleted(response);
+            }
+        });
+    }
+
+    public void messageDeleted(dbMessage response) {
         /* Child activities override this method */
     }
 
     @Override
-    public void MessageUpdated(MessageResponse response) {
+    public void MessageUpdated(final dbMessage response) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messageUpdated(response);
+            }
+        });
+    }
+
+    public void messageUpdated(dbMessage response) {
         /* Child activities override this method */
     }
 
@@ -121,8 +171,8 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 
         @Override
         public void onReceive(Context context, Intent intent) {
-//            Message message = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
-//            MessageReceived(message);
+            dbMessage message = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
+            MessageReceived(message);
         }
     }
 

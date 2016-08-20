@@ -1,0 +1,149 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".ActivityChatWall" >
+
+    <RelativeLayout
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:id="@+id/llTextOptions"
+            android:weightSum="10"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <RelativeLayout
+                android:layout_weight="1"
+                android:id="@+id/rlSlideOptions"
+                android:layout_width="0dp"
+                android:layout_marginRight="5dp"
+                android:layout_height="match_parent" >
+
+                <ImageButton
+                    android:id="@+id/btnSlideButton"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerInParent="true"
+                    android:background="@null"
+                    android:src="@drawable/more_btn_off"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@null" />
+            </RelativeLayout>
+
+            <EditText
+                android:layout_weight="7"
+                android:id="@+id/etWallMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@android:color/white"
+                android:textColor="@android:color/darker_gray"
+                android:maxLines="4"
+                android:gravity="top|start"
+                android:hint="@string/test_string"
+                android:inputType="textCapSentences|textMultiLine"
+                android:scrollHorizontally="false"
+                android:padding="5dp" />
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:background="@color/chat_bottom_bar" >
+
+                <Button
+                    android:id="@+id/btnWallSend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:text="@string/Send"
+                    android:textColor="@color/rounded_rect_send_selector"
+                    android:textStyle="bold"
+                    android:background="@null" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/llTextOptions" >
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvWallMessages"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:background="@android:color/transparent"
+                android:divider="@null"
+                android:clipToPadding="false"
+                android:dividerHeight="0dp"
+                android:overScrollMode="never"
+                android:cacheColorHint="@android:color/transparent"
+                android:listSelector="@android:color/transparent"
+                android:visibility="gone"
+                android:transcriptMode="disabled" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:id="@+id/tvNoMessages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/no_wall_messages"
+                android:textColor="@color/text_gray" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/default_green"
+        android:fitsSystemWindows="true">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" >
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/actionbar_chat" />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="true"
+        android:background="@android:color/holo_orange_light"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior" >
+
+        <include layout="@layout/menu_actionbar_chat" />
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <include layout="@layout/image_view_chat"
+        android:id="@+id/rlImageDisplay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <include layout="@layout/push_notification"
+        android:id="@+id/rlPushNotification"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+</android.support.design.widget.CoordinatorLayout>

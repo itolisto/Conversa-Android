@@ -2,9 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <!--<item name="android:windowActionBar">false</item>-->
-        <!--<item name="android:windowNoTitle">true</item>-->
         <item name="android:windowActionBarOverlay">true</item>
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
@@ -35,15 +32,11 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <!--<style name="Theme.Transparent" parent="android:Theme">-->
-        <!--<item name="android:windowIsTranslucent">true</item>-->
-        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
-        <!--<item name="android:windowContentOverlay">@null</item>-->
-        <!--<item name="android:windowNoTitle">true</item>-->
-        <!--<item name="android:windowIsFloating">true</item>-->
-        <!--<item name="android:backgroundDimEnabled">true</item>-->
-    <!--</style>-->
-
+    <style name="AppTheme.Dark.Dialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">@color/default_white</item>
+        <item name="android:textColorPrimary">@color/light_gray_subtext</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
 
     <style name="CustomProgressBar" parent="@android:style/Widget.ProgressBar.Large">
         <item name="android:indeterminate">true</item>

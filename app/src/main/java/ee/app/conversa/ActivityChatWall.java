@@ -2,6 +2,7 @@ package ee.app.conversa;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,13 +21,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-import com.sendbird.android.SendBird;
+import com.parse.ParseFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import ee.app.conversa.adapters.ChatsAdapter;
@@ -35,15 +32,15 @@ import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.messageshandling.SaveUserAsync;
 import ee.app.conversa.messageshandling.SendMessageAsync;
 import ee.app.conversa.model.Database.Location;
-import ee.app.conversa.model.Database.dbMessage;
 import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.response.MessageResponse;
+import ee.app.conversa.model.Database.dbMessage;
+import ee.app.conversa.receivers.FileUploadingReceiver;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.TouchImageView;
 
 
-public class ActivityChatWall extends ConversaActivity implements OnClickListener {
+public class ActivityChatWall extends ConversaActivity implements OnClickListener, FileUploadingReceiver.Receiver {
 
 	public static ActivityChatWall sInstance;
 
@@ -53,6 +50,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	public List<Location> gLocations;
 	public MessagesAdapter gMessagesAdapter;
 	public ChatsAdapter mChatsAdapter;
+	public FileUploadingReceiver mReceiver;
 
 	private boolean loading;
 	private boolean loadMore;
@@ -99,7 +97,9 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		}
 
 		initialization();
-		dbMessage.getAllMessageForChat(businessObject.getBusinessId(), 20, 0);
+		mReceiver = new FileUploadingReceiver(new Handler());
+		mReceiver.setReceiver(this);
+		dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), 20, 0);
 
 		sInstance = this;
 	}
@@ -150,12 +150,12 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 				// Call for new messages
 				int count = extras.getInt(Const.kAppVersionKey, 1);
 				newMessagesFromNewIntent = true;
-				dbMessage.getAllMessageForChat(businessObject.getBusinessId(), count, 0);
+				dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), count, 0);
 			} else {
 				// Set new business reference
 				businessObject = business;
 				// Clean list of current messages and get new messages
-				dbMessage.getAllMessageForChat(businessObject.getBusinessId(), 20, 0);
+				dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), 20, 0);
 			}
 		}
 	}
@@ -230,7 +230,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 				if (!loading && lastVisibleItem == (totalItemCount - 1)) {
 					// 2. If load more is true retrieve more messages otherwise skip
 					if (loadMore) {
-						dbMessage.getAllMessageForChat(businessObject.getBusinessId(), 20, totalItemCount);
+						dbMessage.getAllMessageForChat(getApplicationContext(), businessObject.getBusinessId(), 20, totalItemCount);
 						loading = true;
 					}
 				}
@@ -306,17 +306,17 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 				case R.id.btnCamera:
 					Intent intent = new Intent(getApplicationContext(), ActivityCameraCrop.class);
 					intent.putExtra("type", "camera");
-					ActivityChatWall.sInstance.startActivity(intent);
+					startActivity(intent);
 					break;
 				case R.id.btnGallery:
 					Intent intent1 = new Intent(getApplicationContext(), ActivityCameraCrop.class);
 					intent1.putExtra("type", "gallery");
-					ActivityChatWall.sInstance.startActivity(intent1);
+					startActivity(intent1);
 					break;
 				case R.id.btnLocation:
 					Intent intent2 = new Intent(getApplicationContext(), ActivityLocation.class);
-					intent2.putExtra(Const.LOCATION, "myLocation");
-					ActivityChatWall.sInstance.startActivity(intent2);
+					intent2.putExtra(Const.LOCATION, businessObject.getBusinessId());
+					startActivity(intent2);
 					break;
 				case R.id.btnMore:
 					// Definir si habrán más opciones
@@ -338,7 +338,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 					if (!body.isEmpty()) {
 						mEtMessageText.setText("");
-						SendMessageAsync.sendTextMessage(businessObject.getBusinessId(), body);
+						SendMessageAsync.sendTextMessage(this, businessObject.getBusinessId(), body);
 					}
 					break;
 				case R.id.btnCloseImage:
@@ -349,14 +349,13 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
-	public void MessagesGetAll(MessageResponse r) {
-		List<dbMessage> messages = r.getMessages();
+	public void messagesGetAll(List<dbMessage> messages) {
 		// 1. Add messages
 		if (mRvWallMessages.getLayoutManager().getItemCount() == 0) {
 			// If messages size is zero there's no need to do anything
 			if (messages.size() > 0) {
 				// Update unread incoming messages
-				dbMessage.updateUnreadMessages(businessObject.getBusinessId());
+				dbMessage.updateUnreadMessages(this, businessObject.getBusinessId());
 				// Set messages
 				gMessagesAdapter.setMessages(messages);
 				mRvWallMessages.getLayoutManager().smoothScrollToPosition(mRvWallMessages, null, messages.size() - 1);
@@ -390,9 +389,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
-	public void MessageSent(MessageResponse r) {
-		final dbMessage response = r.getMessage();
-
+	public void messageSent(final dbMessage response, ParseFile file) {
 		// 1. Check visibility
 		if (mTvNoMessages.getVisibility() == View.VISIBLE) {
 			mTvNoMessages.setVisibility(View.GONE);
@@ -401,66 +398,31 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 		// 2. Check if user needs to be added
 		if(addAsContact) {
-			SaveUserAsync.saveBusinessAsContact(businessObject);
+			SaveUserAsync.saveBusinessAsContact(this, businessObject);
 			addAsContact = false;
 		}
 
 		// 3. Add message to adapter
 		gMessagesAdapter.addMessage(response);
 		mRvWallMessages.scrollToPosition(0);
-		// 4. Save to Parse. Set parameters accordingly to message type
-		HashMap<String, Object> params = new HashMap<>();
-		params.put("user", response.getFromUserId());
-		params.put("business", response.getToUserId());
-		params.put("fromUser", String.valueOf(true));
-		params.put("messageType", Integer.valueOf(response.getMessageType()));
-		params.put("userId", SendBird.getUserId());
-
-		switch (response.getMessageType()) {
-			case Const.kMessageTypeText:
-				params.put("text", response.getBody());
-				break;
-			case Const.kMessageTypeLocation: {
-				params.put("latitude", response.getLatitude());
-				params.put("longitude", response.getLongitude());
-				break;
-			}
-			case Const.kMessageTypeImage: {
-				params.put("size", response.getBytes());
-				params.put("width", response.getWidth());
-				params.put("height", response.getHeight());
-				params.put("file", null);
-				break;
-			}
-		}
-
-		ParseCloud.callFunctionInBackground("sendUserMessage", params, new FunctionCallback<Integer>() {
-			@Override
-			public void done(Integer result, ParseException e) {
-				// 4.1. Update local db delivery
-				if (e == null) {
-					response.updateDelivery(dbMessage.statusAllDelivered);
-				} else {
-					response.updateDelivery(dbMessage.statusParseError);
-				}
-			}
-		});
 	}
 
 	@Override
-	public void MessageDeleted(MessageResponse r) {
+	public void messageDeleted(dbMessage r) {
 
 	}
 
 	@Override
-	public void MessageUpdated(MessageResponse r) {
-		if (r.getActionCode() == dbMessage.ACTION_MESSAGE_UPDATE) {
-			// 1. Get visible items and first visible item position
-			int visibleItemCount = mRvWallMessages.getChildCount();
-			int firstVisibleItem = ((LinearLayoutManager) mRvWallMessages.getLayoutManager()).findFirstVisibleItemPosition();
-			// 2. Update message
-			gMessagesAdapter.updateMessage(r.getMessage(), firstVisibleItem, visibleItemCount);
+	public void messageUpdated(dbMessage r) {
+		if (r == null) {
+			return;
 		}
+
+		// 1. Get visible items and first visible item position
+		int visibleItemCount = mRvWallMessages.getChildCount();
+		int firstVisibleItem = ((LinearLayoutManager) mRvWallMessages.getLayoutManager()).findFirstVisibleItemPosition();
+		// 2. Update message
+		gMessagesAdapter.updateMessage(r, firstVisibleItem, visibleItemCount);
 	}
 
 	@Override
@@ -479,6 +441,11 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		} else {
 			super.MessageReceived(message);
 		}
+	}
+
+	@Override
+	public void onReceiveResult(dbMessage message, int percentage) {
+
 	}
 
 }

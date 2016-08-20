@@ -24,8 +24,13 @@
 
 package ee.app.conversa.messageshandling;
 
+import android.content.Context;
+import android.content.Intent;
+
+import ee.app.conversa.management.message.MessageIntentService;
 import ee.app.conversa.model.Database.dbMessage;
 import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.receivers.FileUploadingReceiver;
 import ee.app.conversa.utils.Const;
 
 /**
@@ -36,7 +41,7 @@ import ee.app.conversa.utils.Const;
 
 public class SendMessageAsync {
 
-	public static void sendTextMessage(String businessId, String text) {
+	public static void sendTextMessage(Context context, String businessId, String text) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
@@ -46,24 +51,30 @@ public class SendMessageAsync {
 		message.setBody(text);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
+		Intent intent = new Intent(context, MessageIntentService.class);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
+		context.startService(intent);
 	}
 
-	public static void sendLocationMessage(String businessId, float lat, float lon) {
+	public static void sendLocationMessage(Context context, String businessId, double lat, double lon) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeLocation);
 		message.setDeliveryStatus(dbMessage.statusUploading);
-		message.setLatitude(lat);
-		message.setLongitude(lon);
+		message.setLatitude((float)lat);
+		message.setLongitude((float)lon);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
+		Intent intent = new Intent(context, MessageIntentService.class);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
+		context.startService(intent);
 	}
 
-	public static void sendImageMessage(String businessId, int width, int height, int size) {
+	public static void sendImageMessage(Context context, String businessId, int width, int height, int size, FileUploadingReceiver receiver) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
@@ -75,7 +86,11 @@ public class SendMessageAsync {
 		message.setBytes(size);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
+		Intent intent = new Intent(context, MessageIntentService.class);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_RECEIVER, receiver);
+		context.startService(intent);
 	}
 
 }

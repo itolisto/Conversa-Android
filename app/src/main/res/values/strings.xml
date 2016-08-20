@@ -14,8 +14,8 @@
 
     <string name="string_signin_title_one">Chat to any business</string>
     <string name="string_signin_title_two">Simple. Fast. Effective.</string>
-    <string name="string_signin_are_you_new">Are you new?</string>
-    <string name="string_signin_already_have_an_account">I already have an account</string>
+    <string name="string_signin_are_you_new">ARE YOU NEW?</string>
+    <string name="string_signin_already_have_an_account">I ALREADY HAVE AN ACCOUNT</string>
     <string name="string_signin_sign_up_business_one">Looking to sign up your</string>
     <string name="string_signin_sign_up_business_two">business click here</string>
 

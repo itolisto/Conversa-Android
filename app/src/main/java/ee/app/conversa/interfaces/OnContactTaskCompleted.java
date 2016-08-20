@@ -1,13 +1,18 @@
 package ee.app.conversa.interfaces;
 
-import ee.app.conversa.response.ContactResponse;
+import android.support.annotation.UiThread;
+
+import java.util.List;
+
+import ee.app.conversa.model.Database.dBusiness;
 
 /**
  * Created by edgargomez on 7/4/16.
  */
+@UiThread
 public interface OnContactTaskCompleted {
-    void ContactGetAll(ContactResponse response);
-    void ContactAdded(ContactResponse response);
-    void ContactDeleted(ContactResponse response);
-    void ContactUpdated(ContactResponse response);
+    void ContactGetAll(List<dBusiness> response);
+    void ContactAdded(dBusiness response);
+    void ContactDeleted(dBusiness response);
+    void ContactUpdated(dBusiness response);
 }

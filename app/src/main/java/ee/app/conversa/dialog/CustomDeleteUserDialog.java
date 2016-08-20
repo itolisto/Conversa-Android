@@ -77,7 +77,7 @@ public class CustomDeleteUserDialog extends AlertDialog {
             customView = inflater.inflate(customResId, null, false);
             mCustomContainer.addView(customView);
         }else if(customView == null && customResId == null){
-            mContent.setVisibility(View.GONE);
+            //mContent.setVisibility(View.GONE);
         }
 
         if(positiveText != null && mPositiveClickListener != null) {
