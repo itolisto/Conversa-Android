@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import ee.app.conversa.management.contact.ContactIntentService;
-import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.model.database.dBusiness;
 
 /**
  * Created by edgargomez on 7/4/16.

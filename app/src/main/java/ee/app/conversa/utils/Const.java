@@ -113,7 +113,6 @@ public class Const {
 	public static final String kBusinessDisplayNameKey = "displayName";
 	public static final String kBusinessConversaIdKey   = "conversaID";
 	public static final String kBusinessAboutKey   = "about";
-	public static final String kBusinessStatusKey   = "status";
 	public static final String kBusinessAvatarKey   = "avatar";
 	public static final String kBusinessActiveKey       = "active";
 	public static final String kBusinessCountryKey      = "country";

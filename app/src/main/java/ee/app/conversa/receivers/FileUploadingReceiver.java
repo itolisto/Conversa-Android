@@ -16,9 +16,9 @@ import java.io.File;
 import java.util.HashMap;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.management.Ably.Connection;
+import ee.app.conversa.management.ably.Connection;
 import ee.app.conversa.management.message.MessageIntentService;
-import ee.app.conversa.model.Database.dbMessage;
+import ee.app.conversa.model.database.dbMessage;
 
 /**
  * Created by edgargomez on 8/17/16.

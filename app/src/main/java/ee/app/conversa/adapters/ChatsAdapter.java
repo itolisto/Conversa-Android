@@ -17,9 +17,9 @@ import java.util.List;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.model.Database.dbMessage;
-import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
 
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> {

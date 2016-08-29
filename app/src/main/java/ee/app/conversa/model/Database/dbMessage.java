@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package ee.app.conversa.model.Database;
+package ee.app.conversa.model.database;
 
 import android.content.Context;
 import android.content.Intent;

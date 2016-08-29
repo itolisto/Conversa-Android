@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.management.Ably.Connection;
-import ee.app.conversa.model.Database.dbMessage;
+import ee.app.conversa.management.ably.Connection;
+import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.receivers.FileUploadingReceiver;
 import ee.app.conversa.utils.Const;
 

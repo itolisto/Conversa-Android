@@ -28,8 +28,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import ee.app.conversa.management.message.MessageIntentService;
-import ee.app.conversa.model.Database.dbMessage;
-import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.receivers.FileUploadingReceiver;
 import ee.app.conversa.utils.Const;
 

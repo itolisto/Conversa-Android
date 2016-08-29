@@ -19,10 +19,9 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import ee.app.conversa.dialog.CustomDeleteUserDialog;
-import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 
@@ -106,22 +105,14 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
                     final String mSignInEmail = mEtSignInEmail.getText().toString();
                     final String mSignInPassword = mEtSignInPassword.getText().toString();
 
-                    ParseQuery<Account> subQuery2 = ParseQuery.getQuery(Account.class);
-                    subQuery2.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
-                    subQuery2.whereEqualTo(Const.kUserTypeKey, 1);
+                    ParseQuery<Account> query = ParseQuery.getQuery(Account.class);
+                    query.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
+                    query.whereEqualTo(Const.kUserTypeKey, 1);
 
-                    ParseQuery<Account> subQuery1 = ParseQuery.getQuery(Account.class);
-                    subQuery1.whereEqualTo(Const.kUserUsernameKey, mSignInEmail);
-                    subQuery1.whereEqualTo(Const.kUserTypeKey, 1);
-
-                    List<ParseQuery<Account>> subList = new ArrayList<>();
-                    subList.add(subQuery1);
-                    subList.add(subQuery2);
-
-                    ParseQuery<Account> query = ParseQuery.or(subList);
                     Collection<String> collection = new ArrayList<>();
                     collection.add(Const.kUserUsernameKey);
                     query.selectKeys(collection);
+
                     query.getFirstInBackground(new GetCallback<Account>() {
                         @Override
                         public void done(Account object, ParseException e) {
@@ -207,6 +198,8 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
     public void AuthListener(boolean result, ParseException error) {
         if(result) {
             Intent intent = new Intent(this, ActivityMain.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         } else {

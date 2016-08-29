@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,8 +14,8 @@ import com.onesignal.OneSignal;
 import org.json.JSONObject;
 
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.management.Ably.Connection;
-import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.management.ably.Connection;
+import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.utils.Utils;
@@ -97,21 +96,21 @@ public class ActivityMain extends ConversaActivity {
                     default:
                         if (p == 1) {
                             tab.setIcon(R.drawable.actuales_active);
+
+                            if(getSupportFragmentManager().getBackStackEntryCount() <= 0) {
+                                String title = ConversaApp.getPreferences().getCurrentCategory();
+                                if (!title.isEmpty()) {
+                                    ConversaApp.getPreferences().setCurrentCategory("", false);
+                                }
+                            } else {
+                                String title = ConversaApp.getPreferences().getCurrentCategory();
+                                if (!title.isEmpty()) {
+                                    getSupportActionBar().setTitle(title);
+                                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                                }
+                            }
                         } else {
                             tab.setIcon(R.drawable.chats_active);
-                        }
-
-                        if (Build.VERSION.SDK_INT >= 23) {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
-                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
-                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.normal_background, null)));
-                        } else {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.regular_tabs))
-                            );
-                            tabLayout.setBackgroundColor(getResources().getColor(R.color.regular_tabs));
-                            mViewPager.setBackgroundColor(getResources().getColor(R.color.normal_background));
                         }
                         break;
                 }
@@ -129,9 +128,14 @@ public class ActivityMain extends ConversaActivity {
                         break;
                     case 2:
                         if (Build.VERSION.SDK_INT >= 23) {
+                            getSupportActionBar().setBackgroundDrawable(
+                                    new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
                             tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
                             mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.normal_background, null)));
                         } else {
+                            getSupportActionBar().setBackgroundDrawable(
+                                    new ColorDrawable(getResources().getColor(R.color.regular_tabs))
+                            );
                             tabLayout.setBackgroundColor(getResources().getColor(R.color.regular_tabs));
                             mViewPager.setBackgroundColor(getResources().getColor(R.color.normal_background));
                         }
@@ -150,6 +154,7 @@ public class ActivityMain extends ConversaActivity {
             @Override
             public void tagsAvailable(JSONObject tags) {
                 if (tags == null || tags.length() == 0) {
+                    OneSignal.setSubscription(true);
                     Utils.subscribeToTags(Account.getCurrentUser().getObjectId());
                 }
             }
@@ -161,27 +166,18 @@ public class ActivityMain extends ConversaActivity {
     @Override
     public void onBackPressed() {
         if(mViewPager.getCurrentItem() == 1) {
-            Log.e(this.getClass().getSimpleName(), "getBackStackEntryCount: " + getSupportFragmentManager().getBackStackEntryCount());
-            if(getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 if (getSupportActionBar() != null) {
                     getSupportActionBar().setTitle(getString(R.string.categories));
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 }
+                ConversaApp.getPreferences().setCurrentCategory("", false);
                 getSupportFragmentManager().popBackStack();
                 return;
-            } else {
-                // We need to pop immediate because root fragment is being pop when
-                // back is pressed. This way we exit application as expected.
-                getSupportFragmentManager().popBackStack();
             }
         }
 
         super.onBackPressed();
-    }
-
-    @Override
-    protected void openFromNotification(Bundle extras) {
-
     }
 
     @Override
@@ -200,7 +196,6 @@ public class ActivityMain extends ConversaActivity {
                     item.setVisible(false);
                 }
                 return true;
-
         }
     }
 

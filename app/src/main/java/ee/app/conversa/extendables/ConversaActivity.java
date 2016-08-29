@@ -16,18 +16,14 @@ import ee.app.conversa.BaseActivity;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.adapters.MessagesAdapter;
-import ee.app.conversa.dialog.PushNotification;
+import ee.app.conversa.dialog.InAppPushNotification;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
-import ee.app.conversa.management.Ably.Connection;
-import ee.app.conversa.model.Database.dbMessage;
+import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.notifications.onesignal.CustomNotificationExtenderService;
 
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
 
-    private boolean activityPaused = false;
 	protected RelativeLayout mRlPushNotification;
-    private boolean mPushHandledOnNewIntent = false;
-    public final static String PUSH = "ee.app.conversa.ConversaActivity.UPDATE";
     protected MessageReceiver receiver = new MessageReceiver();
     protected final IntentFilter newMessageFilter = new IntentFilter(MessageReceiver.ACTION_RESP);
     protected final IntentFilter mPushFilter = new IntentFilter(MessagesAdapter.PUSH);
@@ -41,32 +37,15 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 
     @Override
     protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        mPushHandledOnNewIntent = true;
         super.onNewIntent(intent);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mPushHandledOnNewIntent) {
-            mPushHandledOnNewIntent = false;
-            final Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                openFromNotification(extras);
-            }
+        if (intent != null) {
+            openFromNotification(intent);
         }
     }
 
     @Override
 	protected void onStart() {
 		super.onStart();
-
-        if (activityPaused) {
-            Connection.getInstance().reconnectAbly();
-            activityPaused = false;
-        }
-
 		ConversaApp.getLocalBroadcastManager().registerReceiver(mPushReceiver, mPushFilter);
         ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, newMessageFilter);
 	}
@@ -74,8 +53,6 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     @Override
 	protected void onStop() {
 		super.onStop();
-        activityPaused = true;
-        Connection.getInstance().disconnectAbly();
 		ConversaApp.getLocalBroadcastManager().unregisterReceiver(mPushReceiver);
         ConversaApp.getLocalBroadcastManager().unregisterReceiver(receiver);
 	}
@@ -94,7 +71,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 		}
 	};
 
-    protected void openFromNotification(Bundle extras) {
+    protected void openFromNotification(Intent intent) {
         /* Child activities override this method */
     }
 
@@ -161,7 +138,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     public void MessageReceived(dbMessage message) {
         // Show in-app notification
         if (mRlPushNotification != null) {
-            PushNotification.make(getApplicationContext(), mRlPushNotification).show(message.getBody(), message.getFromUserId());
+            InAppPushNotification.make(getApplicationContext(), mRlPushNotification).show(message.getBody(), message.getFromUserId());
         }
     }
 

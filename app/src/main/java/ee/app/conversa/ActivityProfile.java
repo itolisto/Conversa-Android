@@ -16,7 +16,7 @@ import com.parse.ParseException;
 import java.util.HashMap;
 
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.utils.Const;
 
 public class ActivityProfile extends ConversaActivity implements View.OnClickListener, OnLikeListener {

@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.View;
 
 import ee.app.conversa.adapters.BusinessAdapter;
-import ee.app.conversa.model.Parse.Business;
+import ee.app.conversa.model.parse.Business;
 
 public class FragmentPopular extends Fragment implements BusinessAdapter.OnItemClickListener {
 

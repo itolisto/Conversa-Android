@@ -37,8 +37,8 @@ import android.preference.PreferenceManager;
 public class Preferences {
 
     // Defining SharedPreferences entries
-    private static final String CATEGORIES_LOAD = "CATEGORIES_LOAD";
-    private static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+    private final String CATEGORIES_LOAD = "CATEGORIES_LOAD";
+    private final String CURRENT_CATEGORY = "CURRENT_CATEGORY";
 
     private SharedPreferences sharedPreferences;
 
@@ -57,18 +57,14 @@ public class Preferences {
         return sharedPreferences.getBoolean(CATEGORIES_LOAD, false);
     }
 
-    public boolean getRegistrationToServer() {
-        return !(sharedPreferences.getString(SENT_TOKEN_TO_SERVER, "").isEmpty());
+    public String getCurrentCategory() {
+        return sharedPreferences.getString(CURRENT_CATEGORY, "");
     }
 
-    public String getRegistrationToken() {
-        return sharedPreferences.getString(SENT_TOKEN_TO_SERVER, "");
-    }
-
-    public boolean cleanSharedPreferences() {
+    public void cleanSharedPreferences() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
-        return editor.commit();
+        editor.apply();
     }
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
@@ -83,10 +79,14 @@ public class Preferences {
         }
     }
 
-    public void setRegistrationToServer(String value) {
+    public void setCurrentCategory(String value, boolean inBackground) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SENT_TOKEN_TO_SERVER, value);
-        editor.apply();
+        editor.putString(CURRENT_CATEGORY, value);
+        if (inBackground) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
     }
 
 }

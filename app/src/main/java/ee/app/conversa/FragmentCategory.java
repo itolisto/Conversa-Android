@@ -34,7 +34,7 @@ import java.util.List;
 
 import ee.app.conversa.adapters.CategoryAdapter;
 import ee.app.conversa.decorations.SimpleDividerItemDecoration;
-import ee.app.conversa.model.Parse.bCategory;
+import ee.app.conversa.model.parse.bCategory;
 import ee.app.conversa.utils.Const;
 
 public class FragmentCategory extends Fragment implements CategoryAdapter.OnItemClickListener {
@@ -166,7 +166,9 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
             FragmentBusiness fragment = new FragmentBusiness();
             Bundle b = new Bundle();
             b.putString(Const.kObjectRowObjectIdKey, category.getObjectId());
-            b.putString(Const.kClassCategory, category.getCategoryName(getActivity()));
+            String categoryName = category.getCategoryName(getActivity());
+            b.putString(Const.kClassCategory, categoryName);
+            ConversaApp.getPreferences().setCurrentCategory(categoryName, true);
             fragment.setArguments(b);
             transaction.add(R.id.root_frame, fragment).hide(this);
             /*

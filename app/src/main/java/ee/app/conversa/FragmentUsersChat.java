@@ -23,7 +23,7 @@ import java.util.List;
 import ee.app.conversa.adapters.ChatsAdapter;
 import ee.app.conversa.dialog.CustomDeleteUserDialog;
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
-import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.notifications.onesignal.CustomNotificationExtenderService;
 import ee.app.conversa.utils.Const;
 

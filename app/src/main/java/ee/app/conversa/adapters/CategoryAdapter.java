@@ -15,7 +15,7 @@ import java.util.List;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.model.Parse.bCategory;
+import ee.app.conversa.model.parse.bCategory;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder>{
 

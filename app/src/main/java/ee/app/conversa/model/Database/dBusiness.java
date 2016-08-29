@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package ee.app.conversa.model.Database;
+package ee.app.conversa.model.database;
 
 import android.content.Context;
 import android.content.Intent;
@@ -44,7 +44,6 @@ public class dBusiness implements Parcelable {
     private String mDisplayName;
     private String mConversaId;
     private String mAbout;
-    private String mStatusMessage;
     private String mComposingMessageString;
     private String mAvatarThumbFileId;
     private boolean mBlocked;
@@ -66,7 +65,6 @@ public class dBusiness implements Parcelable {
     public String getDisplayName() { return mDisplayName; }
     public String getConversaId() { return mConversaId; }
     public String getAbout() { return mAbout; }
-    public String getStatusMessage() { return mStatusMessage; }
     public String getComposingMessage() { return mComposingMessageString; }
     public String getAvatarThumbFileId() { return mAvatarThumbFileId; }
     public boolean isBlocked() { return mBlocked; }
@@ -79,7 +77,6 @@ public class dBusiness implements Parcelable {
     public void setDisplayName(String mDisplayName) { this.mDisplayName = mDisplayName; }
     public void setConversaId(String mConversaId) { this.mConversaId = mConversaId; }
     public void setAbout(String about) { this.mAbout = about; }
-    public void setStatusMessage(String mStatusMessage) { this.mStatusMessage = mStatusMessage; }
     public void setComposingMessage(String mComposingMessageString) { this.mComposingMessageString = mComposingMessageString; }
     public void setAvatarThumbFileId(String mAvatarThumbFileId) { this.mAvatarThumbFileId = mAvatarThumbFileId; }
     public void setBlocked(boolean mBlocked) { this.mBlocked = mBlocked; }
@@ -116,7 +113,6 @@ public class dBusiness implements Parcelable {
         dest.writeString(this.mDisplayName);
         dest.writeString(this.mConversaId);
         dest.writeString(this.mAbout);
-        dest.writeString(this.mStatusMessage);
         dest.writeString(this.mComposingMessageString);
         dest.writeString(this.mAvatarThumbFileId);
         dest.writeByte(this.mBlocked ? (byte) 1 : (byte) 0);
@@ -134,7 +130,6 @@ public class dBusiness implements Parcelable {
         this.mDisplayName = in.readString();
         this.mConversaId = in.readString();
         this.mAbout = in.readString();
-        this.mStatusMessage = in.readString();
         this.mComposingMessageString = in.readString();
         this.mAvatarThumbFileId = in.readString();
         this.mBlocked = in.readByte() != 0;

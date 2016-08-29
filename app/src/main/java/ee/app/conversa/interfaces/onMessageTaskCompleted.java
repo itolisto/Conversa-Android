@@ -6,7 +6,7 @@ import com.parse.ParseFile;
 
 import java.util.List;
 
-import ee.app.conversa.model.Database.dbMessage;
+import ee.app.conversa.model.database.dbMessage;
 
 @UiThread
 public interface OnMessageTaskCompleted {

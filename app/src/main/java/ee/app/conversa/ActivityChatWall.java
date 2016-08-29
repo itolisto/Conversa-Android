@@ -31,9 +31,9 @@ import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.messageshandling.SaveUserAsync;
 import ee.app.conversa.messageshandling.SendMessageAsync;
-import ee.app.conversa.model.Database.Location;
-import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Database.dbMessage;
+import ee.app.conversa.model.database.Location;
+import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.receivers.FileUploadingReceiver;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
@@ -138,17 +138,17 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
-	protected void openFromNotification(Bundle extras) {
-		dBusiness business = extras.getParcelable(Const.kClassBusiness);
+	protected void openFromNotification(Intent intent) {
+		dBusiness business = intent.getParcelableExtra(Const.kClassBusiness);
 
 		if (business == null) {
 			super.onBackPressed();
 		} else {
-			addAsContact = extras.getBoolean(Const.kYapDatabaseName);
+			addAsContact = intent.getBooleanExtra(Const.kYapDatabaseName, false);
 
 			if (business.getBusinessId().equals(businessObject.getBusinessId())) {
 				// Call for new messages
-				int count = extras.getInt(Const.kAppVersionKey, 1);
+				int count = intent.getIntExtra(Const.kAppVersionKey, 1);
 				newMessagesFromNewIntent = true;
 				dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), count, 0);
 			} else {

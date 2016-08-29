@@ -15,7 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ee.app.conversa.model.Parse.Account;
+import com.onesignal.OneSignal;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import ee.app.conversa.management.ably.Connection;
+import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Logger;
 
 public class FragmentSettings extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
@@ -172,49 +178,22 @@ public class FragmentSettings extends PreferenceFragmentCompat implements Shared
         else
             Logger.error("Logout", getActivity().getString(R.string.settings_logout_error));
 
-//        try {
-//            GoogleCloudMessaging.getInstance((AppCompatActivity) getActivity()).unregister();
-//        } catch (IOException e) {
-//
-//        }
-        //ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pbc");
-        //ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pvt");
-        Account.logOut();
+        OneSignal.setSubscription(false);
+        Collection<String> tempList = new ArrayList<>();
+        tempList.add("upbc");
+        tempList.add("upvt");
+        OneSignal.deleteTags(tempList);
+        OneSignal.clearOneSignalNotifications();
+        Connection.getInstance().disconnectAbly();
 
+        Account.logOut();
         AppCompatActivity fromActivity = (AppCompatActivity)getActivity();
         Intent goToSignIn = new Intent(fromActivity, ActivitySignIn.class);
+        goToSignIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        goToSignIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ConversaApp.getPreferences().cleanSharedPreferences();
-        goToSignIn.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //ActivityMain.sInstance.logOut();
         fromActivity.startActivity(goToSignIn);
         fromActivity.finish();
-
-//        ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pbc", new SaveCallback() {
-//            @Override
-//            public void done(ParseException e) {
-//                if (e == null) {
-//                    ParsePush.unsubscribeInBackground(ConversaApp.getPreferences().getCustomerId() + "-pvt", new SaveCallback() {
-//                        @Override
-//                        public void done(ParseException e) {
-//                            if (e == null) {
-//                                Account.logOut();
-//                                AppCompatActivity fromActivity = ActivityMain.sInstance;
-//                                Intent goToSignIn = new Intent(fromActivity, ActivitySignIn.class);
-//                                ConversaApp.getPreferences().cleanSharedPreferences();
-//                                goToSignIn.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                                //ActivityMain.sInstance.logOut();
-//                                fromActivity.startActivity(goToSignIn);
-//                                fromActivity.finish();
-//                            } else {
-//
-//                            }
-//                        }
-//                    });
-//                } else {
-//
-//                }
-//            }
-//        });
     }
 
 

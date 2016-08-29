@@ -38,16 +38,16 @@ import com.parse.ParseObject;
 import java.io.File;
 
 import ee.app.conversa.database.MySQLiteHelper;
-import ee.app.conversa.management.Ably.Connection;
+import ee.app.conversa.management.ably.Connection;
 import ee.app.conversa.management.FileManager;
-import ee.app.conversa.model.Parse.Account;
-import ee.app.conversa.model.Parse.Business;
-import ee.app.conversa.model.Parse.BusinessCategory;
-import ee.app.conversa.model.Parse.BusinessOptions;
-import ee.app.conversa.model.Parse.Customer;
-import ee.app.conversa.model.Parse.Options;
-import ee.app.conversa.model.Parse.bCategory;
-import ee.app.conversa.model.Parse.pMessage;
+import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.model.parse.Business;
+import ee.app.conversa.model.parse.BusinessCategory;
+import ee.app.conversa.model.parse.BusinessOptions;
+import ee.app.conversa.model.parse.Customer;
+import ee.app.conversa.model.parse.Options;
+import ee.app.conversa.model.parse.bCategory;
+import ee.app.conversa.model.parse.pMessage;
 import ee.app.conversa.notifications.onesignal.CustomNotificationOpenedHandler;
 import ee.app.conversa.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversa.utils.Const;
@@ -82,6 +82,7 @@ public class ConversaApp extends Application {
 		setLocalBroadcastManager();
 
 		Fresco.initialize(this);
+		Connection.initAblyManager(this);
 		OneSignal
 				// Initializes OneSignal to register the device for push notifications
 				.startInit(this)
@@ -100,7 +101,6 @@ public class ConversaApp extends Application {
 				.setNotificationReceivedHandler(new CustomNotificationReceivedHandler(this))
 				// Initializes OneSignal to register the device for push notifications
 				.init();
-		Connection.initAblyManager(this);
 
 		Parse.enableLocalDatastore(this);
 

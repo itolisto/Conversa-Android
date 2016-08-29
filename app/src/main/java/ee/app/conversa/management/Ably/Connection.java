@@ -1,17 +1,24 @@
-package ee.app.conversa.management.Ably;
+package ee.app.conversa.management.ably;
 
 import android.content.Context;
+import android.content.Intent;
 import android.provider.Settings;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.security.MessageDigest;
 
-import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.management.message.CustomMessageService;
+import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.utils.Logger;
 import io.ably.lib.realtime.AblyRealtime;
 import io.ably.lib.realtime.Channel;
 import io.ably.lib.realtime.ChannelState;
 import io.ably.lib.realtime.ChannelStateListener;
 import io.ably.lib.realtime.CompletionListener;
+import io.ably.lib.realtime.ConnectionState;
 import io.ably.lib.realtime.ConnectionStateListener;
 import io.ably.lib.realtime.Presence;
 import io.ably.lib.types.AblyException;
@@ -35,7 +42,7 @@ public class Connection implements Channel.MessageListener, Presence.PresenceLis
 
     public static Connection getInstance() {
         if (instance == null) {
-            throw new RuntimeException("Connection class has not been initialized");
+            return null;
         }
 
         return instance;
@@ -62,6 +69,12 @@ public class Connection implements Channel.MessageListener, Presence.PresenceLis
         }
     }
 
+    public void disconnectAbly() {
+        if (ablyRealtime != null) {
+            ablyRealtime.close();
+        }
+    }
+
     /**
      *
      * MESSAGE LISTENER METHOD
@@ -69,28 +82,26 @@ public class Connection implements Channel.MessageListener, Presence.PresenceLis
      */
     @Override
     public void onMessage(Message messages) {
-        //adapter.addItem(message);
         Log.e("onMessage", "message received:  " + messages.toString());
 
-//        JSONObject additionalData;
-//
-//        try {
-//            additionalData = new JSONObject(message.getData());
-//            additionalData.put("message", message.getMessage());
-//        } catch (JSONException e) {
-//            Logger.error(TAG, "onMessageReceived additionalData fail to parse-> " + e.getMessage());
-//            return;
-//        }
-//
-//        Log.e("NotifOpenedHandler", "Full additionalData:\n" + additionalData.toString());
-//
-//        switch (additionalData.optInt("appAction", 0)) {
-//            case 1:
-//                Intent msgIntent = new Intent(context, CustomNotificationExtenderService.class);
-//                msgIntent.putExtra("data", additionalData.toString());
-//                context.startService(msgIntent);
-//                break;
-//        }
+        JSONObject additionalData;
+
+        try {
+            additionalData = new JSONObject(messages.data.toString());
+        } catch (JSONException e) {
+            Logger.error(TAG, "onMessageReceived additionalData fail to parse-> " + e.getMessage());
+            return;
+        }
+
+        Log.e("NotifOpenedHandler", "Full additionalData:\n" + additionalData.toString());
+
+        switch (additionalData.optInt("appAction", 0)) {
+            case 1:
+                Intent msgIntent = new Intent(context, CustomMessageService.class);
+                msgIntent.putExtra("data", additionalData.toString());
+                context.startService(msgIntent);
+                break;
+        }
     }
 
     /**
@@ -294,15 +305,11 @@ public class Connection implements Channel.MessageListener, Presence.PresenceLis
         return ablyRealtime.channels.get(channel).presence.get();
     }
 
-    public void reconnectAbly() {
-        if (ablyRealtime != null) {
-            ablyRealtime.connection.connect();
-        }
-    }
-
-    public void disconnectAbly() {
-        if (ablyRealtime != null) {
-            ablyRealtime.close();
+    public ConnectionState ablyConnectionStatus() {
+        if (ablyRealtime == null) {
+            return ConnectionState.disconnected;
+        } else {
+            return ablyRealtime.connection.state;
         }
     }
 

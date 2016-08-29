@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
-import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Parse.Business;
+import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.parse.Business;
 
 public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder> {
 

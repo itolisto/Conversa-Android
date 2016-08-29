@@ -32,7 +32,6 @@ public class FragmentRoot extends Fragment {
              * "real" fragment
              */
             transaction.replace(R.id.root_frame, new FragmentCategory());
-            transaction.addToBackStack(null);
             transaction.commit();
         } else {
             Log.e("toggleFragment", "fm is null");

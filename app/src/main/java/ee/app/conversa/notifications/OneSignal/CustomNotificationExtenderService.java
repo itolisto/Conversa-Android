@@ -1,11 +1,9 @@
 package ee.app.conversa.notifications.onesignal;
 
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.onesignal.NotificationExtenderService;
-import com.onesignal.OSNotificationDisplayedResult;
 import com.onesignal.OSNotificationPayload;
 import com.onesignal.OSNotificationReceivedResult;
 import com.parse.ParseException;
@@ -13,19 +11,22 @@ import com.parse.ParseQuery;
 
 import org.json.JSONObject;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.FragmentUsersChat;
+import ee.app.conversa.database.MySQLiteHelper;
+import ee.app.conversa.dialog.PushNotification;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Database.dbMessage;
-import ee.app.conversa.model.Parse.Account;
-import ee.app.conversa.model.Parse.Business;
-import ee.app.conversa.model.Parse.pMessage;
+import ee.app.conversa.management.ably.Connection;
+import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.model.parse.Business;
+import ee.app.conversa.model.parse.pMessage;
 import ee.app.conversa.utils.Const;
+import io.ably.lib.realtime.ConnectionState;
 
 /**
  * Created by edgargomez on 7/21/16.
@@ -37,14 +38,9 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
 
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult result) {
-        if (result.restoring || result.isAppInFocus) {
-            Log.e(TAG, "Returning as 'restoring' flag is true or app is in focus");
-            return true;
-        }
-
         OSNotificationPayload notification = result.payload;
 
-        Log.e(TAG, "\nId:" + notification.notificationId +
+        Log.e(TAG, "\nId:" + notification.notificationID +
                 "\nTitle:" + notification.title +
                 "\nBody:" + notification.body +
                 "\nAdditionalData:" + notification.additionalData.toString() +
@@ -56,7 +52,17 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
         JSONObject pushData = notification.additionalData;
 
         switch (pushData.optInt("appAction", 0)) {
-            case 1:
+            case 1: {
+                if (result.restoring) {
+                    Log.e(TAG, "Returning as 'restoring' is true");
+                    return true;
+                }
+
+                if (Connection.getInstance() != null && Connection.getInstance().ablyConnectionStatus() == ConnectionState.connected) {
+                    Log.e(TAG, "Returning as Ably client is connected");
+                    return true;
+                }
+
                 String messageId = pushData.optString("messageId", null);
                 String contactId = pushData.optString("contactId", null);
                 String messageType = pushData.optString("messageType", null);
@@ -65,10 +71,12 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     return true;
                 }
 
-                dBusiness dbcustomer = null;
+                dBusiness dbcustomer = ConversaApp.getDB().isContact(contactId);
+                boolean newContact = false;
 
                 // 1. Find if user is already a contact
-                if(ConversaApp.getDB().isContact(contactId) == null) {
+                if (dbcustomer == null) {
+                    newContact = true;
                     // 2. Call Parse for User information
                     ParseQuery<Business> query = ParseQuery.getQuery(Business.class);
                     query.whereEqualTo(Const.kBusinessActiveKey, true);
@@ -77,7 +85,6 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     collection.add(Const.kBusinessDisplayNameKey);
                     collection.add(Const.kBusinessConversaIdKey);
                     collection.add(Const.kBusinessAboutKey);
-                    collection.add(Const.kBusinessStatusKey);
                     collection.add(Const.kBusinessAvatarKey);
                     query.selectKeys(collection);
 
@@ -96,7 +103,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     dbcustomer.setDisplayName(customer.getDisplayName());
                     dbcustomer.setConversaId(customer.getConversaID());
                     dbcustomer.setAbout(customer.getAbout());
-                    dbcustomer.setStatusMessage(customer.getStatus());
+
                     try {
                         if (customer.getAvatar() != null) {
                             dbcustomer.setAvatarThumbFileId(customer.getAvatar().getUrl());
@@ -199,8 +206,8 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                         }
                         break;
                     case Const.kMessageTypeLocation:
-                        dbmessage.setLatitude((float)pushData.optDouble("latitude", 0));
-                        dbmessage.setLongitude((float)pushData.optDouble("longitude", 0));
+                        dbmessage.setLatitude((float) pushData.optDouble("latitude", 0));
+                        dbmessage.setLongitude((float) pushData.optDouble("longitude", 0));
                         break;
                 }
 
@@ -217,34 +224,35 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                 broadcastIntent.putExtra(PARAM_OUT_MSG, dbmessage);
                 ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
 
-                if (dbcustomer != null) {
+                if (newContact) {
                     broadcastIntent = new Intent();
                     broadcastIntent.setAction(FragmentUsersChat.UsersReceiver.ACTION_RESP);
                     broadcastIntent.putExtra(PARAM_OUT_MSG, dbcustomer);
                     ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
                 }
-                break;
-            default:
-                return true;
-        }
 
-        if (result.isAppInFocus) {
-            // Return true to stop the notifications from displaying.
-            return true;
-        } else {
-            OverrideSettings overrideSettings = new OverrideSettings();
-            overrideSettings.extender = new NotificationCompat.Extender() {
-                @Override
-                public NotificationCompat.Builder extend(NotificationCompat.Builder builder) {
-                    // Sets the background notification color to Green on Android 5.0+ devices.
-                    return builder.setColor(new BigInteger("FF00FF00", 16).intValue());
+                // Autoincrement count
+                MySQLiteHelper.NotificationInformation summary = ConversaApp.getDB().getGroupInformation(contactId);
+                if (summary.getNotificationId() == -1) {
+                    summary = ConversaApp.getDB().incrementGroupCount(summary, true);
+                } else {
+                    ConversaApp.getDB().incrementGroupCount(summary, false);
                 }
-            };
 
-            OSNotificationDisplayedResult displayedResult = displayNotification(overrideSettings);
-            Log.e("OneSignalExample", "Notification displayed with id: " + displayedResult.androidNotificationId);
-            return false;
+                PushNotification.showMessageNotification(
+                        getApplicationContext(),
+                        dbcustomer.getDisplayName(),
+                        pushData.toString(),
+                        dbmessage,
+                        summary
+                        );
+
+                return true;
+            }
         }
+
+        // Return true to stop the notifications from displaying.
+        return false;
     }
 
 }

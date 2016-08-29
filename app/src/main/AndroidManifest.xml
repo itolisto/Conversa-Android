@@ -108,6 +108,11 @@
             android:name="ee.app.conversa.ActivityCameraCrop"
             android:screenOrientation="portrait"
             android:launchMode="singleTask" />
+
+        <activity android:name=".notifications.NotificationPressed"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true" />
         <!-- **************************************************************************************** -->
         <receiver android:name=".management.ConnectionChangeReceiver">
             <intent-filter>
@@ -140,6 +145,9 @@
             android:exported="false" />
         <service
             android:name=".management.message.MessageIntentService"
+            android:exported="false" />
+        <service
+            android:name=".management.message.CustomMessageService"
             android:exported="false" />
     </application>
 </manifest>

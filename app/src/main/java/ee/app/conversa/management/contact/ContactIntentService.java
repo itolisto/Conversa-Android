@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.model.database.dBusiness;
 
 /**
  * Created by edgargomez on 8/10/16.

@@ -1,4 +1,4 @@
-package ee.app.conversa.model.Parse;
+package ee.app.conversa.model.parse;
 
 import android.content.Context;
 

@@ -29,10 +29,10 @@ import java.util.Collection;
 import java.util.List;
 
 import ee.app.conversa.adapters.BusinessAdapter;
-import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Parse.Business;
-import ee.app.conversa.model.Parse.BusinessCategory;
-import ee.app.conversa.model.Parse.bCategory;
+import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.parse.Business;
+import ee.app.conversa.model.parse.BusinessCategory;
+import ee.app.conversa.model.parse.bCategory;
 import ee.app.conversa.utils.Const;
 
 public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItemClickListener {
@@ -103,6 +103,7 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                ConversaApp.getPreferences().setCurrentCategory("", false);
                 FragmentManager fm = getFragmentManager();
 
                 if (fm != null) {
@@ -199,7 +200,6 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
             dbBusiness.setDisplayName(business.getDisplayName());
             dbBusiness.setConversaId(business.getConversaID());
             dbBusiness.setAbout(business.getAbout());
-            dbBusiness.setStatusMessage(business.getStatus());
             intent.putExtra(Const.kYapDatabaseName, true);
         } else {
             intent.putExtra(Const.kYapDatabaseName, false);

@@ -15,7 +15,7 @@ import com.parse.ParseException;
 import com.parse.SignUpCallback;
 
 import ee.app.conversa.dialog.CustomDeleteUserDialog;
-import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 
@@ -193,6 +193,8 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     public void AuthListener(boolean result, ParseException error) {
         if(result) {
             Intent intent = new Intent(this, ActivityMain.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         } else {

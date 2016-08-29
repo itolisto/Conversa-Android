@@ -16,14 +16,15 @@ import com.parse.ParseFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
 import ee.app.conversa.management.contact.ContactIntentService;
 import ee.app.conversa.management.message.MessageIntentService;
-import ee.app.conversa.model.Database.dBusiness;
-import ee.app.conversa.model.Database.dbMessage;
-import ee.app.conversa.model.Parse.Account;
+import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Logger;
 
 public class MySQLiteHelper {
@@ -90,7 +91,6 @@ public class MySQLiteHelper {
     private static final String sBusinessConversaId = "conversaId";
     private static final String sBusinessRecent = "recent";
     private static final String sBusinessAbout = "about";
-    private static final String sBusinessStatus = "statusMessage";
     private static final String sBusinessComposingMessage = "composingMessageString";
     private static final String sBusinessAvatarFile = "avatar_file_url";
     private static final String sBusinessBlocked = "blocked";
@@ -105,7 +105,6 @@ public class MySQLiteHelper {
             + "\"" + sBusinessConversaId + "\" VARCHAR(255) NOT NULL, "
             + "\"" + sBusinessRecent + "\" INTEGER, "
             + "\"" + sBusinessAbout + "\" VARCHAR(255), "
-            + "\"" + sBusinessStatus + "\" VARCHAR(255), "
             + "\"" + sBusinessComposingMessage + "\" VARCHAR(255), "
             + "\"" + sBusinessAvatarFile + "\" VARCHAR(355), "
             + "\"" + sBusinessBlocked + "\" CHAR(1) NOT NULL DEFAULT 'N', "
@@ -114,13 +113,15 @@ public class MySQLiteHelper {
     private static final String tcIndex1 = "CREATE UNIQUE INDEX IF NOT EXISTS C_businessId on "  + TABLE_CV_CONTACTS + "(" + sBusinessBusinessId + ");";
 
     // NOTIFICATIONS
+    public static final String sNotificationAndroidId = "android_id";
     public static final String sNotificationGroup = "group_id";
     public static final String sNotificationCount = "count";
 
     private static final String TABLE_NOTIFICATION_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NOTIFICATION + "("
             + "\"" + COLUMN_ID + "\" INTEGER PRIMARY KEY, "
-            + "\"" + sNotificationGroup + "\" CHAR(14) NOT NULL, "
+            + "\"" + sNotificationAndroidId + "\" INTEGER NOT NULL, "
+            + "\"" + sNotificationGroup + "\" TEXT NOT NULL, "
             + "\"" + sNotificationCount + "\" INTEGER NOT NULL DEFAULT 0);";
 
     // TRIGGERS
@@ -182,7 +183,6 @@ public class MySQLiteHelper {
         contact.put(sBusinessConversaId, user.getConversaId());
         contact.put(sBusinessRecent, user.getRecent());
         contact.put(sBusinessAbout, user.getAbout());
-        contact.put(sBusinessStatus, user.getStatusMessage());
         contact.put(sBusinessComposingMessage, "");
         contact.put(sBusinessAvatarFile, user.getAvatarThumbFileId());
         contact.put(sBusinessBlocked, "N");
@@ -276,14 +276,13 @@ public class MySQLiteHelper {
         contact.setConversaId(cursor.getString(3));
         contact.setRecent(cursor.getLong(4));
         contact.setAbout(cursor.getString(5));
-        contact.setStatusMessage(cursor.getString(6));
-        contact.setComposingMessage(cursor.getString(7));
-        contact.setAvatarThumbFileId(cursor.getString(8));
-        boolean b = cursor.getString(9).contentEquals("Y");
+        contact.setComposingMessage(cursor.getString(6));
+        contact.setAvatarThumbFileId(cursor.getString(7));
+        boolean b = cursor.getString(8).contentEquals("Y");
         contact.setBlocked(b);
-        b = cursor.getString(10).contentEquals("Y");
+        b = cursor.getString(9).contentEquals("Y");
         contact.setMuted(b);
-        contact.setCreated(cursor.getLong(11));
+        contact.setCreated(cursor.getLong(10));
         return contact;
     }
 
@@ -466,41 +465,103 @@ public class MySQLiteHelper {
     /* ******************************************* */
     /* ******************************************* */
 
-    public int getGroupCount(String group_id) {
-        String query = "SELECT " + sNotificationCount + " FROM " + TABLE_NOTIFICATION + " WHERE " + sNotificationGroup + " = \'" + group_id + "\'";
+    public static class NotificationInformation {
+
+        public NotificationInformation(String groupId) {
+            // Set default values
+            this.notification_id = -1;
+            this.android_notification_id = (int) System.currentTimeMillis() / 1000;
+            this.groupId = groupId;
+            this.count = 1;
+        }
+
+        public long getNotificationId() {
+            return notification_id;
+        }
+
+        public void setNotificationId(long notification_id) {
+            this.notification_id = notification_id;
+        }
+
+        public int getAndroidNotificationId() {
+            return android_notification_id;
+        }
+
+        public void setAndroidNotificationId(long android_notification_id) {
+            if (android_notification_id < Integer.MIN_VALUE || android_notification_id > Integer.MAX_VALUE) {
+                this.android_notification_id = -1;
+            }
+
+            this.android_notification_id = (int)android_notification_id;
+        }
+
+        public String getGroupId() {
+            return groupId;
+        }
+
+        public void setGroupId(String groupId) {
+            this.groupId = groupId;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        private long notification_id;
+        private int android_notification_id;
+        private String groupId;
+        private int count;
+    }
+
+    public NotificationInformation getGroupInformation(String group_id) {
+        String query = "SELECT " + COLUMN_ID + "," + sNotificationAndroidId + "," + sNotificationCount + " FROM " + TABLE_NOTIFICATION + " WHERE " + sNotificationGroup + " = \'" + group_id + "\'" + " LIMIT 1";
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
-        int count = -1;
+        NotificationInformation information = new NotificationInformation(group_id);
 
         while (!cursor.isAfterLast()) {
-            count = cursor.getInt(0);
+            information.setNotificationId(cursor.getInt(0));
+            information.setAndroidNotificationId(cursor.getLong(1));
+            information.setCount(cursor.getInt(2));
             cursor.moveToNext();
         }
 
         cursor.close();
         closeDatabase();
 
-        return count;
+        return information;
     }
 
-    public void incrementGroupCount(String group, boolean create) {
+    public NotificationInformation incrementGroupCount(NotificationInformation information, boolean create) {
         if (create) {
             // Create record
             ContentValues record = new ContentValues();
-            record.put(sNotificationGroup, group);
+            record.put(sNotificationAndroidId, information.getAndroidNotificationId());
+            record.put(sNotificationGroup, information.getGroupId());
             record.put(sNotificationCount, 1);
-            openDatabase().insert(TABLE_NOTIFICATION, null, record);
+            information.setNotificationId(openDatabase().insert(TABLE_NOTIFICATION, null, record));
         } else {
             // Update record
-            openDatabase().execSQL(String.format("UPDATE %s SET %s = (%s + 1) WHERE %s = \'%s\';",
-                    TABLE_NOTIFICATION, sNotificationCount, sNotificationCount, sNotificationGroup, group));
+            openDatabase().execSQL(String.format(Locale.US, "UPDATE %s SET %s = (%s + 1) WHERE %s = %d;",
+                    TABLE_NOTIFICATION, sNotificationCount, sNotificationCount, COLUMN_ID, information.getNotificationId()));
         }
+        closeDatabase();
+        return information;
+    }
+
+    public void resetGroupCount(long notificationId) {
+        openDatabase().execSQL(String.format(Locale.US, "UPDATE %s SET %s = 0 WHERE %s = %d;",
+                TABLE_NOTIFICATION, sNotificationCount, COLUMN_ID, notificationId));
         closeDatabase();
     }
 
-    public void resetGroupCount(String group) {
-        openDatabase().execSQL(String.format("UPDATE %s SET %s = 0 WHERE %s = \'%s\';",
-                TABLE_NOTIFICATION, sNotificationCount, sNotificationGroup, group));
+    public void resetAllCounts() {
+        openDatabase().execSQL(String.format("UPDATE %s SET %s = 0;",
+                TABLE_NOTIFICATION, sNotificationCount));
         closeDatabase();
     }
 
@@ -609,6 +670,7 @@ public class MySQLiteHelper {
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_CV_CONTACTS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATION);
             onCreate(db);
         }
     }

@@ -36,7 +36,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ee.app.conversa.R;
-import ee.app.conversa.model.Database.Location;
+import ee.app.conversa.model.database.Location;
 
 //import com.bignerdranch.android.multiselector.MultiSelector;
 

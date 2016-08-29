@@ -1,210 +1,88 @@
-/*
- * The MIT License (MIT)
- * 
- * Copyright � 2013 Clover Studio Ltd. All rights reserved.
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package ee.app.conversa.dialog;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.TranslateAnimation;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
-
-import ee.app.conversa.ConversaApp;
+import ee.app.conversa.ActivityMain;
 import ee.app.conversa.R;
-import ee.app.conversa.model.Database.dBusiness;
+import ee.app.conversa.database.MySQLiteHelper;
+import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.notifications.NotificationDeleted;
+import ee.app.conversa.notifications.NotificationPressed;
+import ee.app.conversa.utils.Const;
 
 /**
- * PushNotification
- * 
- * Animates push notification on the top of the screen.
+ * Created by edgargomez on 8/22/16.
  */
-public class PushNotification implements OnClickListener {
+public class PushNotification {
 
-	public static final int SHORT_ANIM_DURATION = 0;
-	public static final int MEDIUM_ANIM_DURATION = 1;
-	public static final int LONG_ANIM_DURATION = 2;
-	private final String TAG = PushNotification.class.getSimpleName();
-	private int mAnimationDuration;
+    public static void showMessageNotification(Context context, String from, String jsonData, dbMessage message, MySQLiteHelper.NotificationInformation summary) {
+        // Press intent
+        Intent intent = new Intent(context, NotificationPressed.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("notificationId", summary.getNotificationId());
+        intent.putExtra("data", jsonData);
+        // The stack builder object will contain an artificial back stack for `the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(ActivityMain.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(intent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-	private RelativeLayout mPushLayout;
-	private Context mContext;
+        // Delete intent
+        Intent delIntent = new Intent(context, NotificationDeleted.class);
+        delIntent.putExtra("notificationId", summary.getNotificationId());
+        PendingIntent delPendingIntent = PendingIntent.getBroadcast(context, 0 /* Request code */, delIntent,
+                PendingIntent.FLAG_ONE_SHOT);
 
-	private final TranslateAnimation mSlideFromTop = new TranslateAnimation(
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) 0);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.icon_notification)
+                .setGroup(summary.getGroupId())
+                .setContentTitle(from)
+                .setContentText(getMessage(context, message))
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setDeleteIntent(delPendingIntent)
+                .setContentIntent(pendingIntent);
 
-	private final TranslateAnimation mSlideOutTop = new TranslateAnimation(
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0);
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-	private final TranslateAnimation mSlideOutTopOnClose = new TranslateAnimation(
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0);
+        if (summary.getCount() > 1) {
+            notificationBuilder.setGroupSummary(true).setContentText("You have " + summary.getCount() + " new messages from " + from);
+        }
 
-	public static PushNotification make(Context context, RelativeLayout layout) {
-		PushNotification notification = new PushNotification();
-		notification.mContext = context;
-		notification.mPushLayout = layout;
-		return notification;
-	}
+        Log.e("PushNotification", "Notification displayed with id: " + summary.getAndroidNotificationId());
+        notificationManager.notify(summary.getAndroidNotificationId(), notificationBuilder.build());
+    }
 
-	public void show(String message, String contactId) {
-		showNotification(message, contactId, MEDIUM_ANIM_DURATION, 4000);
-	}
+    private static String getMessage(Context context, dbMessage message) {
+        switch (message.getMessageType()) {
+            case Const.kMessageTypeText:
+                return message.getBody();
+            case Const.kMessageTypeAudio:
+                return context.getString(R.string.google_app_id);
+            case Const.kMessageTypeVideo:
+                return context.getString(R.string.google_app_id);
+            case Const.kMessageTypeImage:
+                return context.getString(R.string.google_app_id);
+            case Const.kMessageTypeLocation:
+                return context.getString(R.string.google_app_id);
+            default:
+                return context.getString(R.string.google_app_id);
+        }
+    }
 
-	public void show(String message, String contactId, int duration, int timeBeforeHiding) {
-		showNotification(message, contactId, duration, timeBeforeHiding);
-	}
-
-	private void showNotification(String message, String contactId, int duration, int timeBeforeHiding) {
-		if (contactId == null || contactId.isEmpty()) {
-			Log.e(TAG, "Contact id cannot be null nor empty");
-			return;
-		}
-
-		addView(message, contactId);
-		setDuration(duration);
-		setTranslateAnimations(timeBeforeHiding);
-		startTranslateAnimations();
-	}
-
-	private void setDuration(int duration) {
-		switch (duration) {
-		case SHORT_ANIM_DURATION:
-			mAnimationDuration = mContext.getResources().getInteger(
-					android.R.integer.config_shortAnimTime);
-			break;
-		case MEDIUM_ANIM_DURATION:
-			mAnimationDuration = mContext.getResources().getInteger(
-					android.R.integer.config_mediumAnimTime);
-			break;
-		case LONG_ANIM_DURATION:
-			mAnimationDuration = mContext.getResources().getInteger(
-					android.R.integer.config_longAnimTime);
-			break;
-		default:
-			mAnimationDuration = mContext.getResources().getInteger(
-					android.R.integer.config_mediumAnimTime);
-			break;
-		}
-	}
-
-	private void addView(String message, String contactId) {
-		mPushLayout.setVisibility(View.VISIBLE);
-		dBusiness fromUser = ConversaApp.getDB().isContact(contactId);
-
-		if (fromUser == null) {
-			Log.e(TAG, "Contact doesn't exits, notification can't be displayed");
-			return;
-		}
-
-		final TextView mTvUserName = (TextView) mPushLayout.findViewById(R.id.tvUserName);
-		final TextView mTvNotification = (TextView) mPushLayout.findViewById(R.id.tvNotification);
-		final SimpleDraweeView mSdvAvatar = (SimpleDraweeView) mPushLayout.findViewById(R.id.sdvPushAvatar);
-		final ImageButton btnClose = (ImageButton) mPushLayout.findViewById(R.id.btnClose);
-		mTvUserName.setText(fromUser.getDisplayName());
-		mTvNotification.setText(message);
-		//mSdvAvatar.setImageURI();
-		btnClose.setOnClickListener(this);
-	}
-
-	private void hideNotification() {
-		if (!mSlideOutTopOnClose.hasStarted() && !mSlideOutTop.hasEnded()){
-			mPushLayout.clearAnimation();
-			mPushLayout.startAnimation(mSlideOutTopOnClose);
-		}
-	}
-
-	private void setTranslateAnimations(int timeBeforeHiding) {
-		mSlideFromTop.setFillAfter(false);
-		mSlideFromTop.setFillEnabled(false);
-		mSlideFromTop.setDuration(mAnimationDuration);
-		mSlideFromTop.setAnimationListener(new AnimationListener() {
-
-			public void onAnimationStart(Animation animation) {
-				mPushLayout.setVisibility(View.VISIBLE);
-			}
-
-			public void onAnimationRepeat(Animation animation) {
-			}
-
-			public void onAnimationEnd(Animation animation) {
-				mPushLayout.startAnimation(mSlideOutTop);
-			}
-		});
-		mSlideOutTop.setStartOffset(timeBeforeHiding);
-		mSlideOutTop.setDuration(mAnimationDuration);
-		mSlideOutTop.setAnimationListener(new AnimationListener() {
-
-			public void onAnimationStart(Animation animation) {
-			}
-
-			public void onAnimationRepeat(Animation animation) {
-			}
-
-			public void onAnimationEnd(Animation animation) {
-				mPushLayout.setVisibility(View.GONE);
-			}
-		});
-
-		mSlideOutTopOnClose.setStartOffset(0);
-		mSlideOutTopOnClose.setDuration(mAnimationDuration);
-		mSlideOutTopOnClose.setAnimationListener(new AnimationListener() {
-
-			public void onAnimationStart(Animation animation) {
-			}
-
-			public void onAnimationRepeat(Animation animation) {
-			}
-
-			public void onAnimationEnd(Animation animation) {
-				mPushLayout.setVisibility(View.GONE);
-			}
-		});
-	}
-
-	private void startTranslateAnimations() {
-		mPushLayout.startAnimation(mSlideFromTop);
-	}
-
-	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.btnClose) {
-			hideNotification();
-		}
-	}
 }
