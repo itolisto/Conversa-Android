@@ -1,0 +1,168 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".FragmentSettings" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/rlOption1"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:id="@+id/ivImage1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_launcher"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_centerVertical="true" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:maxLines="1"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:text="@string/test_string"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/ivImage1"
+                android:layout_toRightOf="@id/ivImage1" />
+
+        </RelativeLayout>
+
+        <View
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"/>
+
+        <RelativeLayout
+            android:id="@+id/rlOption2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:id="@+id/ivImage2"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_launcher"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_centerVertical="true" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:maxLines="1"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:text="@string/test_string"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/ivImage2"
+                android:layout_toRightOf="@id/ivImage2" />
+
+        </RelativeLayout>
+
+        <View
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"/>
+
+        <RelativeLayout
+            android:id="@+id/rlOption3"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:id="@+id/ivImage3"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_launcher"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_centerVertical="true" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:maxLines="1"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:text="@string/test_string"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/ivImage3"
+                android:layout_toRightOf="@id/ivImage3" />
+
+        </RelativeLayout>
+
+        <View
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"/>
+
+        <RelativeLayout
+            android:id="@+id/rlOption4"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:id="@+id/ivImage4"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_launcher"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_centerVertical="true" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:maxLines="1"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:text="@string/test_string"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/ivImage4"
+                android:layout_toRightOf="@id/ivImage4" />
+
+        </RelativeLayout>
+
+        <View
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"/>
+
+        <RelativeLayout
+            android:id="@+id/rlOption5"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:id="@+id/ivImage5"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_launcher"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_centerVertical="true" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:maxLines="1"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:text="@string/test_string"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/ivImage5"
+                android:layout_toRightOf="@id/ivImage5" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

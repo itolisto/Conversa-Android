@@ -52,15 +52,12 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout
+    <include layout="@layout/camera_crop_photo_footer_cam"
         android:id="@+id/llFooter"
+        android:layout_marginBottom="7dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="7dp"
-        android:layout_centerHorizontal="true" >
-
-        <include layout="@layout/camera_crop_photo_footer_cam" />
-    </LinearLayout>
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

@@ -16,8 +16,6 @@ import android.view.ViewGroup;
 
 public class FragmentRoot extends Fragment {
 
-    public FragmentRoot() {}
-
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

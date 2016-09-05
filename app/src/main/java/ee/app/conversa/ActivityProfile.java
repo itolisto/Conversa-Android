@@ -13,14 +13,20 @@ import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Logger;
 
 public class ActivityProfile extends ConversaActivity implements View.OnClickListener, OnLikeListener {
 
+    private LikeButton mBtnFavorite;
     private dBusiness businessObject;
     private boolean addAsContact;
 
@@ -49,7 +55,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     @Override
     protected void initialization() {
         SimpleDraweeView mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvBusinessImage);
-        final LikeButton mBtnFavorite = (LikeButton) findViewById(R.id.btnFavorite);
+        mBtnFavorite = (LikeButton) findViewById(R.id.btnFavorite);
         Button mBtnStartChat = (Button) findViewById(R.id.btnStartChat);
 
         if(businessObject.getAvatarThumbFileId().isEmpty()) {
@@ -65,20 +71,14 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         // Call Parse for registry
         HashMap<String, String> params = new HashMap<>();
         params.put("business", businessObject.getBusinessId());
-        ParseCloud.callFunctionInBackground("isFavorite", params, new FunctionCallback<Boolean>() {
+        ParseCloud.callFunctionInBackground("profileInfo", params, new FunctionCallback<String>() {
             @Override
-            public void done(Boolean result, ParseException e) {
+            public void done(String result, ParseException e) {
                 if(e == null) {
-                    if (result) {
-                        mBtnFavorite.setLiked(true);
-                    } else {
-                        mBtnFavorite.setLiked(false);
-                    }
+                    parseResult(result);
                 } else {
-                    mBtnFavorite.setLiked(false);
+                    parseResult("");
                 }
-
-                mBtnFavorite.setEnabled(true);
             }
         });
 
@@ -123,5 +123,31 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                 likeButton.setLiked(false);
             }
         });
+    }
+
+    private void parseResult(String result) {
+        try {
+            if (result.isEmpty()) {
+                mBtnFavorite.setLiked(false);
+            } else {
+                JSONObject jsonRootObject = new JSONObject(result);
+
+                JSONArray options = jsonRootObject.optJSONArray("options");
+                JSONArray tags = jsonRootObject.optJSONArray("tags");
+                int followers = jsonRootObject.optInt("followers", 0);
+                boolean verified = jsonRootObject.optBoolean("verified", false);
+                long since = jsonRootObject.optLong("since", 0);
+
+                if (jsonRootObject.optBoolean("favorite", false)) {
+                    mBtnFavorite.setLiked(true);
+                } else {
+                    mBtnFavorite.setLiked(false);
+                }
+            }
+        } catch (JSONException e) {
+            Logger.error("parseResult", e.getMessage());
+        } finally {
+            mBtnFavorite.setEnabled(true);
+        }
     }
 }

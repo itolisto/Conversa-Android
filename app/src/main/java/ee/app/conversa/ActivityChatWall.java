@@ -300,18 +300,36 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// Make sure the request was successful
+		if (resultCode == RESULT_OK) {
+			// Check which request we're responding to
+			switch (requestCode) {
+				case ActivityCameraCrop.PICK_CAMERA_REQUEST: {
+
+					break;
+				}
+				case ActivityCameraCrop.PICK_GALLERY_REQUEST: {
+
+					break;
+				}
+			}
+		}
+	}
+
+	@Override
 	public void onClick(View v) {
 		if(v instanceof ImageButton) {
 			switch (v.getId()) {
 				case R.id.btnCamera:
-					Intent intent = new Intent(getApplicationContext(), ActivityCameraCrop.class);
+					Intent intent = new Intent(this, ActivityCameraCrop.class);
 					intent.putExtra("type", "camera");
-					startActivity(intent);
+					startActivityForResult(intent, ActivityCameraCrop.PICK_CAMERA_REQUEST);
 					break;
 				case R.id.btnGallery:
-					Intent intent1 = new Intent(getApplicationContext(), ActivityCameraCrop.class);
+					Intent intent1 = new Intent(this, ActivityCameraCrop.class);
 					intent1.putExtra("type", "gallery");
-					startActivity(intent1);
+					startActivityForResult(intent1, ActivityCameraCrop.PICK_GALLERY_REQUEST);
 					break;
 				case R.id.btnLocation:
 					Intent intent2 = new Intent(getApplicationContext(), ActivityLocation.class);

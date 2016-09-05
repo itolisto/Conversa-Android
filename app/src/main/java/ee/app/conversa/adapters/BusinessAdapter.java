@@ -20,17 +20,28 @@ import ee.app.conversa.model.parse.Business;
 public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder> {
 
     private final AppCompatActivity mActivity;
-    private List<Business> mBusiness;
+    private List<Object> mBusiness;
     private OnItemClickListener listener;
+    private OnLocalItemClickListener localListener;
 
     public interface OnItemClickListener {
         void onItemClick(View itemView, int position, Business business);
+    }
+
+    public interface OnLocalItemClickListener {
+        void onItemClick(View itemView, int position, dBusiness business);
     }
 
     public BusinessAdapter(AppCompatActivity activity, OnItemClickListener listener) {
         this.mActivity = activity;
         this.mBusiness = new ArrayList<>();
         this.listener = listener;
+    }
+
+    public BusinessAdapter(AppCompatActivity activity, OnLocalItemClickListener localListener) {
+        this.mActivity = activity;
+        this.mBusiness = new ArrayList<>();
+        this.localListener = localListener;
     }
 
     @Override
@@ -67,7 +78,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         } else if (object.getClass().equals(dBusiness.class)) {
             dBusiness business = (dBusiness) object;
             holder.tvBusiness.setText(business.getDisplayName());
-            holder.tvAbout.setText(business.getBusinessId());
+            holder.tvAbout.setText(business.getConversaId());
             if(business.getAvatarThumbFileId().isEmpty()) {
                 Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
                 holder.sdvCategoryImage.setImageURI(path);
@@ -78,14 +89,20 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         }
     }
 
-    public void setItems(List<Business> business) {
-        mBusiness = business;
-        this.notifyDataSetChanged();
-    }
-
     public void addItems(List<Business> business, boolean addLoadMoreCell) {
         mBusiness.addAll(business);
         this.notifyItemRangeInserted(mBusiness.size(), business.size());
+    }
+
+    public void addLocalItems(List<dBusiness> business, boolean addLoadMoreCell) {
+        mBusiness.addAll(business);
+        this.notifyItemRangeInserted(mBusiness.size(), business.size());
+    }
+
+    public void clear() {
+        int size = mBusiness.size();
+        mBusiness.clear();
+        this.notifyItemRangeRemoved(0, size);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -106,8 +123,17 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
-            if (listener != null)
-                listener.onItemClick(itemView, getLayoutPosition(), mBusiness.get(getAdapterPosition()));
+            Object object = mBusiness.get(getAdapterPosition());
+
+            if (object.getClass().equals(Business.class)) {
+                if (listener != null) {
+                    listener.onItemClick(itemView, getLayoutPosition(), (Business)object);
+                }
+            } else if (object.getClass().equals(dBusiness.class)) {
+                if (localListener != null) {
+                    localListener.onItemClick(itemView, getLayoutPosition(), (dBusiness)object);
+                }
+            }
         }
     }
 }

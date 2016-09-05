@@ -244,30 +244,26 @@ public class CroppedImageView extends ImageView {
         width = MeasureSpec.getSize(widthMeasureSpec);
         height = MeasureSpec.getSize(heightMeasureSpec);
         // Fit to screen.
-        float scale = 1f;
-//        float scaleX = (float) width / (float) bmWidth;
-//        float scaleY = (float) height / (float) bmHeight;
+        float scale;
         float scaleX, scaleY;
-        if(bmWidth>=bmHeight)
-        {
-            scaleX = (float) height / (float) bmHeight;
-            scale = Math.min(scaleX, scaleX);
+
+        if(bmWidth >= bmHeight) {
+            scaleX = width / bmHeight;
+            scaleY = height / bmHeight;
+        } else {
+            scaleX = width / bmWidth;
+            scaleY = height / bmWidth;
         }
-        else
-        {
-            scaleY = (float) width / (float) bmWidth;
-            scale = Math.min(scaleY, scaleY);
-        }
-//        float scaleX = (float) width / (float) bmWidth;
-//        float scaleY = (float) height / (float) bmHeight;
-//        scale = Math.min(scaleX, scaleY);
+
+        scale = Math.min(scaleX, scaleY);
+
         matrix.setScale(scale, scale);
         setImageMatrix(matrix);
         saveScale = 1f;
 
         // Center the image
-        redundantYSpace = (float) height - (scale * (float) bmHeight);
-        redundantXSpace = (float) width - (scale * (float) bmWidth);
+        redundantYSpace = height - (scale * bmHeight);
+        redundantXSpace = width - (scale * bmWidth);
         redundantYSpace /= (float) 2;
         redundantXSpace /= (float) 2;
 

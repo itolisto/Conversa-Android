@@ -19,15 +19,6 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/default_gray"
             app:layout_scrollFlags="scroll|enterAlways" />
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabLayout"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/default_gray"
-            style="@style/MyCustomTabLayout" />
     </android.support.design.widget.AppBarLayout>
 
     <include android:id="@+id/rlPushNotification"
@@ -37,11 +28,39 @@
         android:visibility="gone"
         layout="@layout/push_notification" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
+    <RelativeLayout
+        android:background="@android:color/white"
         android:layout_below="@id/ablToolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/ivNoResults"
+            android:scaleType="centerCrop"
+            android:layout_centerInParent="true"
+            android:contentDescription="@null"
+            android:background="@drawable/no_commerce"
+            android:layout_width="160dp"
+            android:layout_height="160dp" />
+
+        <ProgressBar
+            android:id="@+id/pbLoadingResults"
+            android:layout_above="@id/ivNoResults"
+            android:layout_centerHorizontal="true"
+            style="@style/CustomProgressBar"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvSearchResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent"
+            android:visibility="gone"
+            android:overScrollMode="never" />
+    </RelativeLayout>
 
 </RelativeLayout>

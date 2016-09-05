@@ -31,12 +31,6 @@
         <item name="Settings">Settings</item>
     </string-array>
 
-    <string-array name="search_titles">
-        <item name="Top">Top</item>
-        <item name="Recent">Recent</item>
-        <item name="Popular">Popular</item>
-    </string-array>
-
     <string name="search_title_menu">Search</string>
 
     <string name="me">Me</string>

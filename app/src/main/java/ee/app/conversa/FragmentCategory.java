@@ -45,8 +45,6 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
     private CategoryAdapter mCategoryListAdapter;
     private ProgressBar mPbLoadingCategories;
 
-    public FragmentCategory() { }
-
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

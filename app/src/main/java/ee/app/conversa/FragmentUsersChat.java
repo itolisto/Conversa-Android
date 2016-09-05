@@ -29,10 +29,10 @@ import ee.app.conversa.utils.Const;
 
 public class FragmentUsersChat extends Fragment implements OnContactTaskCompleted, ChatsAdapter.OnItemClickListener, ChatsAdapter.OnLongClickListener {
 
-    public static RecyclerView mRvUsers;
-    public static RelativeLayout mRlNoUsers;
-    public static ChatsAdapter mUserListAdapter;
-    protected UsersReceiver receiver = new UsersReceiver();
+    private RecyclerView mRvUsers;
+    private RelativeLayout mRlNoUsers;
+    private ChatsAdapter mUserListAdapter;
+    private UsersReceiver receiver = new UsersReceiver();
     private final IntentFilter mUserFilter = new IntentFilter(UsersReceiver.ACTION_RESP);
 
     @Override
