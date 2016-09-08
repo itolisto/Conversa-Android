@@ -129,7 +129,7 @@ public class ActivityAccountSettings extends ConversaActivity implements View.On
     }
 
     private void appLogout() {
-        boolean result = ConversaApp.getDB().deleteDatabase();
+        boolean result = ConversaApp.getInstance(this).getDB().deleteDatabase();
         if(result)
             Logger.error("Logout", getString(R.string.settings_logout_succesful));
         else
@@ -147,7 +147,7 @@ public class ActivityAccountSettings extends ConversaActivity implements View.On
         Intent goToSignIn = new Intent(getApplicationContext(), ActivitySignIn.class);
         goToSignIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         goToSignIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        ConversaApp.getPreferences().cleanSharedPreferences();
+        ConversaApp.getInstance(this).getPreferences().cleanSharedPreferences();
         startActivity(goToSignIn);
         finish();
     }

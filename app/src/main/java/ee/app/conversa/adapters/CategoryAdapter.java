@@ -78,7 +78,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
             this.tvCategoryTitle = (TextView) itemView.findViewById(R.id.tvCategoryTitle);
             this.sdvCategoryImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvCategoryImage);
-            this.tvCategoryTitle.setTypeface(ConversaApp.getTfRalewayRegular());
+            this.tvCategoryTitle.setTypeface(ConversaApp.getInstance(activity).getTfRalewayRegular());
             itemView.setOnClickListener(this);
         }
 

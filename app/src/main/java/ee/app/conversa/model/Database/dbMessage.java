@@ -55,6 +55,7 @@ public class dbMessage implements Parcelable {
 	private int mHeight;
 	private int mDuration;
 	private int mBytes;
+	private int mProgress;
 
 	// MESSAGE STATUS
 	// Error
@@ -83,6 +84,7 @@ public class dbMessage implements Parcelable {
 		this.mHeight = 0;
 		this.mDuration = 0;
 		this.mBytes = 0;
+		this.mProgress = 0;
 	}
 
 	public long getId() { return mId; }
@@ -102,6 +104,7 @@ public class dbMessage implements Parcelable {
 	public int getHeight() { return mHeight; }
 	public int getDuration() { return mDuration; }
 	public int getBytes() { return mBytes; }
+	public int getProgress() { return mProgress; }
 
 	public void setId(long id) { this.mId = id; }
 	public void setFromUserId(String fromUserId) { this.mFromUserId = fromUserId; }
@@ -120,10 +123,11 @@ public class dbMessage implements Parcelable {
 	public void setHeight(int mHeight) { this.mHeight = mHeight; }
 	public void setDuration(int mDuration) { this.mDuration = mDuration; }
 	public void setBytes(int mBytes) { this.mBytes = mBytes; }
+	public void setProgress(int mProgress) { this.mProgress = mProgress; }
 
 	/* ******************************************************************************************* */
 	/* ******************************************************************************************* */
-    public void updateDelivery(Context context, String status) {
+    public void updateMessage(Context context, String status) {
 		if (context == null) {
 			return;
 		}
@@ -185,6 +189,7 @@ public class dbMessage implements Parcelable {
 		dest.writeInt(this.mHeight);
 		dest.writeInt(this.mDuration);
 		dest.writeInt(this.mBytes);
+		dest.writeInt(this.mProgress);
 	}
 
 	protected dbMessage(Parcel in) {
@@ -205,6 +210,7 @@ public class dbMessage implements Parcelable {
 		this.mHeight = in.readInt();
 		this.mDuration = in.readInt();
 		this.mBytes = in.readInt();
+		this.mProgress = in.readInt();
 	}
 
 	public static final Parcelable.Creator<dbMessage> CREATOR = new Parcelable.Creator<dbMessage>() {

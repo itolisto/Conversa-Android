@@ -3,7 +3,6 @@ package ee.app.conversa;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,7 +44,8 @@ import ee.app.conversa.utils.Utils;
 /**
  * Created by edgargomez on 7/12/16.
  */
-public class ActivitySearch extends ConversaActivity implements SearchView.OnQueryTextListener, BusinessAdapter.OnLocalItemClickListener {
+public class ActivitySearch extends ConversaActivity implements SearchView.OnQueryTextListener,
+        BusinessAdapter.OnLocalItemClickListener, View.OnTouchListener {
 
     private final ExecutorService tpe;
     private final ExecutorService callResults;
@@ -103,15 +103,7 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
         mRvSearchResults.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRvSearchResults.setAdapter(mBusinessListAdapter);
         mRvSearchResults.setItemAnimator(new DefaultItemAnimator());
-        mRvSearchResults.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Utils.hideKeyboard((AppCompatActivity)v.getContext());
-                return false;
-            }
-        });
-
-        mPbLoadingResults.setVisibility(View.INVISIBLE);
+        mRvSearchResults.setOnTouchListener(this);
     }
 
     public synchronized void searchBusiness(final String text, final int skip) {
@@ -265,7 +257,7 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
 
     @Override
     public void onItemClick(View itemView, int position, dBusiness business) {
-        dBusiness dbBusiness = ConversaApp.getDB().isContact(business.getBusinessId());
+        dBusiness dbBusiness = ConversaApp.getInstance(this).getDB().isContact(business.getBusinessId());
         Intent intent = new Intent(this, ActivityProfile.class);
 
         if (dbBusiness == null) {
@@ -278,4 +270,9 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
         startActivity(intent);
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Utils.hideKeyboard(this);
+        return false;
+    }
 }

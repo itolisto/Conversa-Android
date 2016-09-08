@@ -1,8 +1,12 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
+
+    def DEV_BUILD = "DEV_BUILD"
+    def JOB_LOGGER = "JOB_LOGGER"
 
     defaultConfig {
         applicationId "ee.app.conversa"
@@ -13,13 +17,47 @@ android {
         manifestPlaceholders = [manifestApplicationId: "${applicationId}",
                                 onesignal_app_id: "a7c846a3-8f63-4200-8b24-15be48dcd6b2",
                                 onesignal_google_project_number: "362452554166"]
+
+        buildConfigField "boolean", DEV_BUILD, "false"
+        buildConfigField "boolean", JOB_LOGGER, "false"
     }
+
     buildTypes {
-        release {
-            minifyEnabled false
+
+        // For developers
+        debug {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+//                    'proguard-google-play-services.pro',
+//                    'proguard-dagger.pro',
+//                    'proguard-jackson.pro',
+//                    'proguard-sqlite.pro',
+//                    'proguard-appcompat-v7.pro',
+//                    'proguard-square-okhttp.pro',
+//                    'proguard-square-okio.pro',
+//                    'proguard-spongycastle.pro',
+//                    'proguard-rounded-image-view.pro',
+//                    'proguard-glide.pro',
+//                    'proguard-shortcutbadger.pro',
+//                    'proguard-retrofit.pro',
+//                    'proguard.cfg'
+        }
+
+        release {
+            minifyEnabled true
+            proguardFiles = buildTypes.debug.proguardFiles
+        }
+
+        dev.initWith(buildTypes.debug)
+        dev {
+            minifyEnabled false
+            proguardFiles = buildTypes.debug.proguardFiles
+            buildConfigField "boolean", DEV_BUILD, "true"
+            buildConfigField "boolean", JOB_LOGGER, "true"
         }
     }
+
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
@@ -50,7 +88,10 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.android.gms:play-services-base:9.4.0'
 
+    compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.github.jd-alexander:LikeButton:0.2.0'
+    compile 'com.birbit:android-priority-jobqueue:2.0.0'
+    compile 'com.github.stkent:bugshaker:{latest-version}'
 
     compile 'com.parse:parse-android:1.13.1'
     compile 'com.parse.bolts:bolts-android:1.4.0'
@@ -60,6 +101,13 @@ dependencies {
     compile 'com.facebook.fresco:fresco:0.11.0'
     // For animated GIF support
     compile 'com.facebook.fresco:animated-gif:0.11.0'
+    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
+}
+
+apt {
+    arguments {
+        eventBusIndex "ee.app.conversa.events.MyEventBusIndex"
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

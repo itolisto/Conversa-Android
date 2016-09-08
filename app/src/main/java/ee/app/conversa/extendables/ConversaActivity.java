@@ -1,39 +1,26 @@
 package ee.app.conversa.extendables;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.RelativeLayout;
 
-import com.parse.ParseFile;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
 import ee.app.conversa.BaseActivity;
-import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.dialog.InAppPushNotification;
+import ee.app.conversa.events.MessageEvent;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
+import ee.app.conversa.management.message.MessageIntentService;
 import ee.app.conversa.model.database.dbMessage;
-import ee.app.conversa.notifications.onesignal.CustomNotificationExtenderService;
 
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
 
 	protected RelativeLayout mRlPushNotification;
-    protected MessageReceiver receiver = new MessageReceiver();
-    protected final IntentFilter newMessageFilter = new IntentFilter(MessageReceiver.ACTION_RESP);
-    protected final IntentFilter mPushFilter = new IntentFilter(MessagesAdapter.PUSH);
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Register Listener on Database
-        ConversaApp.getDB().setMessageListener(this);
-    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -46,16 +33,45 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     @Override
 	protected void onStart() {
 		super.onStart();
-		ConversaApp.getLocalBroadcastManager().registerReceiver(mPushReceiver, mPushFilter);
-        ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, newMessageFilter);
+        EventBus.getDefault().register(this);
 	}
 
     @Override
 	protected void onStop() {
+        EventBus.getDefault().unregister(this);
 		super.onStop();
-		ConversaApp.getLocalBroadcastManager().unregisterReceiver(mPushReceiver);
-        ConversaApp.getLocalBroadcastManager().unregisterReceiver(receiver);
 	}
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        int action_code = event.getActionCode();
+        dbMessage response = event.getResponse();
+        List<dbMessage> list_response = event.getListResponse();
+
+        if (response == null && list_response == null) {
+            Log.e("onMessageEvent", "MessageEvent parameters are null");
+            return;
+        }
+
+        switch (action_code) {
+            case MessageIntentService.ACTION_MESSAGE_SAVE:
+                MessageSent(response);
+                break;
+            case MessageIntentService.ACTION_MESSAGE_NEW_MESSAGE:
+                MessageReceived(response);
+                break;
+            case MessageIntentService.ACTION_MESSAGE_UPDATE:
+            case MessageIntentService.ACTION_MESSAGE_UPDATE_UNREAD:
+                MessageUpdated(response);
+                break;
+            case MessageIntentService.ACTION_MESSAGE_DELETE:
+                MessageDeleted(response);
+                break;
+            case MessageIntentService.ACTION_MESSAGE_RETRIEVE_ALL:
+                MessagesGetAll(list_response);
+                break;
+        }
+    }
 
     @Override
     protected void initialization() {
@@ -65,92 +81,36 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
         }
     }
 
-    private BroadcastReceiver mPushReceiver = new BroadcastReceiver() {
-		public void onReceive(Context context, Intent intent) {
-			handlePushNotification(intent);
-		}
-	};
-
     protected void openFromNotification(Intent intent) {
         /* Child activities override this method */
     }
 
-	protected void handlePushNotification(Intent intent) {
-        /* Child activities override this method */
-	}
-
     @Override
     public void MessagesGetAll(final List<dbMessage> response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messagesGetAll(response);
-            }
-        });
-    }
-
-    public void messagesGetAll(final List<dbMessage> response) {
         /* Child activities override this method */
     }
 
     @Override
-    public void MessageSent(final dbMessage response, final ParseFile file) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messageSent(response, file);
-            }
-        });
+    public void MessageSent(final dbMessage response) {
+        /* Child activities override this method */
     }
 
-    public void messageSent(dbMessage response, ParseFile file) {
-        /* Child activities override this method */
+    @Override
+    public void MessageReceived(dbMessage response) {
+        // Show in-app notification
+        if (mRlPushNotification != null) {
+            InAppPushNotification.make(getApplicationContext(), mRlPushNotification).show(response.getBody(), response.getFromUserId());
+        }
     }
 
     @Override
     public void MessageDeleted(final dbMessage response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messageDeleted(response);
-            }
-        });
-    }
-
-    public void messageDeleted(dbMessage response) {
         /* Child activities override this method */
     }
 
     @Override
     public void MessageUpdated(final dbMessage response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messageUpdated(response);
-            }
-        });
-    }
-
-    public void messageUpdated(dbMessage response) {
         /* Child activities override this method */
-    }
-
-    public void MessageReceived(dbMessage message) {
-        // Show in-app notification
-        if (mRlPushNotification != null) {
-            InAppPushNotification.make(getApplicationContext(), mRlPushNotification).show(message.getBody(), message.getFromUserId());
-        }
-    }
-
-    public class MessageReceiver extends BroadcastReceiver {
-        public static final String ACTION_RESP =
-                "conversa.conversaactivity.action.MESSAGE_RECEIVED";
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            dbMessage message = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
-            MessageReceived(message);
-        }
     }
 
 }

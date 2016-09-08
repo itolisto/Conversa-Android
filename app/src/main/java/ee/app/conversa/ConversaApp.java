@@ -25,21 +25,27 @@
 package ee.app.conversa;
 
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Typeface;
-import android.os.Environment;
+import android.os.StrictMode;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.birbit.android.jobqueue.JobManager;
+import com.birbit.android.jobqueue.config.Configuration;
+import com.birbit.android.jobqueue.log.CustomLogger;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.github.stkent.bugshaker.BugShaker;
+import com.github.stkent.bugshaker.flow.dialog.AlertDialogType;
 import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
-import java.io.File;
+import org.greenrobot.eventbus.EventBus;
 
 import ee.app.conversa.database.MySQLiteHelper;
+import ee.app.conversa.events.MyEventBusIndex;
 import ee.app.conversa.management.ably.Connection;
-import ee.app.conversa.management.FileManager;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.model.parse.BusinessCategory;
@@ -58,17 +64,21 @@ import ee.app.conversa.utils.Preferences;
  * Basic Application class, holds references to often used single instance
  * objects and methods related to application like application background check.
  */
-
 public class ConversaApp extends Application {
 
-	private static Typeface mTfRalewayThin;
-    private static Typeface mTfRalewayLight;
-    private static Typeface mTfRalewayRegular;
-    private static Typeface mTfRalewayMedium;
-	private static Typeface mTfRalewayBold;
-	private static MySQLiteHelper mDb;
-	private static Preferences mPreferences;
-	private static LocalBroadcastManager mLocalBroadcastManager;
+	private JobManager jobManager;
+	private Typeface mTfRalewayThin;
+    private Typeface mTfRalewayLight;
+    private Typeface mTfRalewayRegular;
+    private Typeface mTfRalewayMedium;
+	private Typeface mTfRalewayBold;
+	private MySQLiteHelper mDb;
+	private Preferences mPreferences;
+	private LocalBroadcastManager mLocalBroadcastManager;
+
+	public static ConversaApp getInstance(Context context) {
+		return (ConversaApp)context.getApplicationContext();
+	}
 
 	/**
 	 * Called when the application is starting, before any other application objects have been created
@@ -83,6 +93,17 @@ public class ConversaApp extends Application {
 
 		Fresco.initialize(this);
 		Connection.initAblyManager(this);
+
+		initializeOneSignal();
+		initializeParse();
+		initializeDeveloperBuild();
+		initializeJobManager();
+		initializeEventBus();
+		initializeBugShaker();
+		initializeTypefaces();
+	}
+
+	private void initializeOneSignal() {
 		OneSignal
 				// Initializes OneSignal to register the device for push notifications
 				.startInit(this)
@@ -101,7 +122,9 @@ public class ConversaApp extends Application {
 				.setNotificationReceivedHandler(new CustomNotificationReceivedHandler(this))
 				// Initializes OneSignal to register the device for push notifications
 				.init();
+	}
 
+	private void initializeParse() {
 		Parse.enableLocalDatastore(this);
 
 		// Register subclassing for using as Parse objects
@@ -125,28 +148,99 @@ public class ConversaApp extends Application {
 //			.enableLocalDataStore()
 //			.build()
 //		);
+	}
 
-		//Crea las tipografias
+	private void initializeDeveloperBuild() {
+		if (BuildConfig.DEV_BUILD) {
+			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+					.detectAll()
+					.penaltyLog()
+					.build());
+			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+					.detectAll()
+					.penaltyLog()
+					.build());
+		}
+	}
+
+	private void initializeJobManager() {
+		Configuration.Builder builder = new Configuration.Builder(this)
+				.customLogger(new CustomLogger() {
+					private static final String TAG = "JobManager";
+					@Override
+					public boolean isDebugEnabled() {
+						// Make sure your isDebugEnabled returns false on production
+						// to avoid unnecessary string generation.
+						return BuildConfig.JOB_LOGGER;
+					}
+
+					@Override
+					public void d(String text, Object... args) {
+						//Log.e(TAG, String.format(text, args));
+					}
+
+					@Override
+					public void e(Throwable t, String text, Object... args) {
+						Log.e(TAG, String.format(text, args), t);
+					}
+
+					@Override
+					public void e(String text, Object... args) {
+						Log.e(TAG, String.format(text, args));
+					}
+
+					@Override
+					public void v(String text, Object... args) {
+						//Log.e(TAG, String.format(text, args));
+					}
+				})
+				.id("ConversaAppJobs")
+				.minConsumerCount(1)//always keep at least one consumer alive
+				.maxConsumerCount(3)//up to 3 consumers at a time
+				.loadFactor(3)//3 jobs per consumer
+				.consumerKeepAlive(120);//wait 2 minute
+
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//			builder.scheduler(FrameworkJobSchedulerService.createSchedulerFor(this,
+//					MyJobService.class), true);
+//		} else {
+//			int enableGcm = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+//			if (enableGcm == ConnectionResult.SUCCESS) {
+//				builder.scheduler(GcmJobSchedulerService.createSchedulerFor(this,
+//						MyGcmJobService.class), true);
+//			}
+//		}
+
+		jobManager = new JobManager(builder.build());
+	}
+
+	private void initializeEventBus() {
+		EventBus
+				.builder()
+				.addIndex(new MyEventBusIndex())
+				.throwSubscriberException(BuildConfig.DEV_BUILD).installDefaultEventBus();
+	}
+
+	private void initializeBugShaker() {
+		BugShaker.get(this)
+				.setEmailAddresses("appconversa@gmail.com")   // required
+				.setEmailSubjectLine("Bug reported") // optional
+				.setAlertDialogType(AlertDialogType.NATIVE) // optional
+				.setLoggingEnabled(BuildConfig.DEV_BUILD)   // optional
+				.setIgnoreFlagSecure(true)                  // optional
+				.assemble()                                 // required
+				.start();                                   // required
+	}
+
+	private void initializeTypefaces() {
 		setTfRalewayThin(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf"));
 		setTfRalewayLight(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Light.ttf"));
 		setTfRalewayRegular(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf"));
 		setTfRalewayMedium(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf"));
 		setTfRalewayBold(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf"));
-
-		File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "MyCache");
-		Log.d(this.getClass().getSimpleName(), FileManager.storageSize(file.getTotalSpace())); // dumps "12.9 GB" for me
-		Log.d(this.getClass().getSimpleName(), FileManager.storageSize(file.getFreeSpace())); // dumps "10.6 GB" for me
 	}
 
 	/* ************************************************************************************************ */
-	public static Preferences getPreferences() { return mPreferences; }
-	public static LocalBroadcastManager getLocalBroadcastManager() { return mLocalBroadcastManager; }
-	public static MySQLiteHelper getDB() { return mDb; }
-
-    private void setPreferences() {
-		mPreferences = new Preferences(this);
-	}
-
 	private void setLocalBroadcastManager() {
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 	}
@@ -155,12 +249,47 @@ public class ConversaApp extends Application {
 		mDb = new MySQLiteHelper(this);
 	}
 
+	private void setPreferences() {
+		mPreferences = new Preferences(this);
+	}
+
+	public LocalBroadcastManager getLocalBroadcastManager() {
+		return mLocalBroadcastManager;
+	}
+
+	public synchronized MySQLiteHelper getDB() {
+		return mDb;
+	}
+
+	public synchronized JobManager getJobManager() {
+		return jobManager;
+	}
+
+	public synchronized Preferences getPreferences() {
+		return mPreferences;
+	}
+
+	public Typeface getTfRalewayThin() {
+		return mTfRalewayThin;
+	}
+
+	public Typeface getTfRalewayLight() {
+		return mTfRalewayLight;
+	}
+
+	public Typeface getTfRalewayRegular() {
+		return mTfRalewayRegular;
+	}
+
+	public Typeface getTfRalewayMedium() {
+		return mTfRalewayMedium;
+	}
+
+	public Typeface getTfRalewayBold() {
+		return mTfRalewayBold;
+	}
+
     /* ************************************************************************************************ */
-	public static Typeface getTfRalewayThin() { return mTfRalewayThin; }
-    public static Typeface getTfRalewayLight() { return mTfRalewayLight; }
-    public static Typeface getTfRalewayRegular() { return mTfRalewayRegular; }
-    public static Typeface getTfRalewayMedium() { return mTfRalewayMedium; }
-    public static Typeface getTfRalewayBold() { return mTfRalewayBold; }
 
 	private void setTfRalewayThin(Typeface tfRaleway) { mTfRalewayThin = tfRaleway; }
     private void setTfRalewayLight(Typeface tfRaleway) { mTfRalewayLight = tfRaleway; }

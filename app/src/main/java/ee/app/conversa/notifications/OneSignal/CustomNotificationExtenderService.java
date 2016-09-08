@@ -1,6 +1,5 @@
 package ee.app.conversa.notifications.onesignal;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.onesignal.NotificationExtenderService;
@@ -9,17 +8,20 @@ import com.onesignal.OSNotificationReceivedResult;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.FragmentUsersChat;
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.dialog.PushNotification;
-import ee.app.conversa.extendables.ConversaActivity;
+import ee.app.conversa.events.ContactEvent;
+import ee.app.conversa.events.MessageEvent;
 import ee.app.conversa.management.ably.Connection;
+import ee.app.conversa.management.contact.ContactIntentService;
+import ee.app.conversa.management.message.MessageIntentService;
 import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Account;
@@ -71,7 +73,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     return true;
                 }
 
-                dBusiness dbcustomer = ConversaApp.getDB().isContact(contactId);
+                dBusiness dbcustomer = ConversaApp.getInstance(this).getDB().isContact(contactId);
                 boolean newContact = false;
 
                 // 1. Find if user is already a contact
@@ -114,7 +116,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                         dbcustomer.setAvatarThumbFileId("");
                     }
 
-                    dbcustomer = ConversaApp.getDB().saveContact(dbcustomer);
+                    dbcustomer = ConversaApp.getInstance(this).getDB().saveContact(dbcustomer);
 
                     if (dbcustomer.getId() == -1) {
                         Log.e(TAG, "Error guardando Business");
@@ -211,7 +213,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                         break;
                 }
 
-                dbmessage = ConversaApp.getDB().saveMessage(dbmessage);
+                dbmessage = ConversaApp.getInstance(this).getDB().saveMessage(dbmessage);
 
                 if (dbmessage.getId() == -1) {
                     Log.e(TAG, "Error guardando Message");
@@ -219,24 +221,24 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                 }
 
                 // 4. Broadcast results as from IntentService ain't possible to access ui thread
-                Intent broadcastIntent = new Intent();
-                broadcastIntent.setAction(ConversaActivity.MessageReceiver.ACTION_RESP);
-                broadcastIntent.putExtra(PARAM_OUT_MSG, dbmessage);
-                ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
+                EventBus.getDefault().post(new MessageEvent(
+                        MessageIntentService.ACTION_MESSAGE_NEW_MESSAGE,
+                        dbmessage,
+                        null));
 
                 if (newContact) {
-                    broadcastIntent = new Intent();
-                    broadcastIntent.setAction(FragmentUsersChat.UsersReceiver.ACTION_RESP);
-                    broadcastIntent.putExtra(PARAM_OUT_MSG, dbcustomer);
-                    ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
+                    EventBus.getDefault().post(new ContactEvent(
+                            ContactIntentService.ACTION_MESSAGE_SAVE,
+                            dbcustomer,
+                            null));
                 }
 
                 // Autoincrement count
-                MySQLiteHelper.NotificationInformation summary = ConversaApp.getDB().getGroupInformation(contactId);
+                MySQLiteHelper.NotificationInformation summary = ConversaApp.getInstance(this).getDB().getGroupInformation(contactId);
                 if (summary.getNotificationId() == -1) {
-                    summary = ConversaApp.getDB().incrementGroupCount(summary, true);
+                    summary = ConversaApp.getInstance(this).getDB().incrementGroupCount(summary, true);
                 } else {
-                    ConversaApp.getDB().incrementGroupCount(summary, false);
+                    ConversaApp.getInstance(this).getDB().incrementGroupCount(summary, false);
                 }
 
                 PushNotification.showMessageNotification(

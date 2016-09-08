@@ -27,8 +27,8 @@ package ee.app.conversa.management;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 
+import ee.app.conversa.ConversaApp;
 import ee.app.conversa.utils.Utils;
 
 /**
@@ -54,6 +54,6 @@ public class ConnectionChangeReceiver extends BroadcastReceiver {
 			mConnectionChangeBroadcast.putExtra(HAS_INTERNET_CONNECTION, false);
 		}
 
-		LocalBroadcastManager.getInstance(context).sendBroadcast(mConnectionChangeBroadcast);
+		ConversaApp.getInstance(context).getLocalBroadcastManager().sendBroadcast(mConnectionChangeBroadcast);
 	}
 }

@@ -69,7 +69,7 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
             @Override
             public void onRefresh() {
                 bCategory.unpinAllInBackground();
-                ConversaApp.getPreferences().setCategoriesLoad(false, false);
+                //ConversaApp.getPreferences().setCategoriesLoad(false, false);
                 getCategoriesAsync();
             }
         });
@@ -114,9 +114,9 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
         collection.add(Const.kCategoryPosition);
         query.selectKeys(collection);
 
-        if(ConversaApp.getPreferences().getCategoriesLoad()) {
+        //if(ConversaApp.getPreferences().getCategoriesLoad()) {
             //query.fromLocalDatastore();
-        }
+        //}
 
         query.findInBackground(new FindCallback<bCategory>() {
 
@@ -129,10 +129,10 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
                 if (e == null && objects != null) {
                     // Save to local datastore and change future searches
                     // to be direct to local datastore
-                    if(!ConversaApp.getPreferences().getCategoriesLoad()) {
-                        bCategory.pinAllInBackground(objects);
-                        ConversaApp.getPreferences().setCategoriesLoad(true, true);
-                    }
+                    //if(!ConversaApp.getPreferences().getCategoriesLoad()) {
+                    //    bCategory.pinAllInBackground(objects);
+                    //    ConversaApp.getPreferences().setCategoriesLoad(true, true);
+                    //}
 
                     // Add to adapter and refresh
                     if(objects.size() > 0) {
@@ -166,7 +166,7 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
             b.putString(Const.kObjectRowObjectIdKey, category.getObjectId());
             String categoryName = category.getCategoryName(getActivity());
             b.putString(Const.kClassCategory, categoryName);
-            ConversaApp.getPreferences().setCurrentCategory(categoryName, true);
+            ConversaApp.getInstance(getActivity()).getPreferences().setCurrentCategory(categoryName, true);
             fragment.setArguments(b);
             transaction.add(R.id.root_frame, fragment).hide(this);
             /*

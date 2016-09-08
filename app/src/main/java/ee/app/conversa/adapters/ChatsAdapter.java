@@ -17,8 +17,8 @@ import java.util.List;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
 
@@ -59,7 +59,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         dBusiness user = mUsers.get(position);
 
-        if (ConversaApp.getDB().hasUnreadMessagesOrNewMessages(user.getBusinessId())) {
+        if (ConversaApp.getInstance(mActivity).getDB().hasUnreadMessagesOrNewMessages(user.getBusinessId())) {
             holder.ivUnread.setVisibility(View.VISIBLE);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification, null));
@@ -72,7 +72,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         holder.tvUser.setText(user.getDisplayName());
 
-        dbMessage lastMessage = ConversaApp.getDB().getLastMessage(user.getBusinessId());
+        dbMessage lastMessage = ConversaApp.getInstance(mActivity).getDB().getLastMessage(user.getBusinessId());
 
         if(lastMessage == null) {
             holder.tvLastMessage.setText("");
@@ -99,6 +99,11 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
                     break;
             }
         }
+    }
+
+    public void clearItems() {
+        mUsers.clear();
+        notifyDataSetChanged();
     }
 
     public void addItems(List<dBusiness> users) {
@@ -153,8 +158,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             this.ivUnread = (ImageView) itemView
                     .findViewById(R.id.ivUnread);
 
-            this.tvUser.setTypeface(ConversaApp.getTfRalewayMedium());
-            this.tvLastMessage.setTypeface(ConversaApp.getTfRalewayRegular());
+            this.tvUser.setTypeface(ConversaApp.getInstance(mActivity).getTfRalewayMedium());
+            this.tvLastMessage.setTypeface(ConversaApp.getInstance(mActivity).getTfRalewayRegular());
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

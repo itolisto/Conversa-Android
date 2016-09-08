@@ -24,6 +24,8 @@
 
 package ee.app.conversa;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -45,7 +47,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.management.GPSTracker;
-import ee.app.conversa.messageshandling.SendMessageAsync;
 import ee.app.conversa.utils.Const;
 
 /**
@@ -54,6 +55,9 @@ import ee.app.conversa.utils.Const;
  * Shows user current location or other user's previous sent location.
  */
 public class ActivityLocation extends ConversaActivity implements OnMapReadyCallback, OnClickListener {
+
+	// Public constants when calling this Activity for request codes
+	public static final int PICK_LOCATION_REQUEST = 1003;
 
 	private MapFragment mMap;
 	private GPSTracker mGpsTracker;
@@ -86,7 +90,7 @@ public class ActivityLocation extends ConversaActivity implements OnMapReadyCall
 		mLongitude = mExtras.getDouble(Const.LONGITUDE);
 
 		Button mBtnSend = (Button) findViewById(R.id.btnSend);
-		mBtnSend.setTypeface(ConversaApp.getTfRalewayMedium());
+		mBtnSend.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
 		mBtnSend.setOnClickListener(this);
 
 		mMap = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
@@ -179,7 +183,10 @@ public class ActivityLocation extends ConversaActivity implements OnMapReadyCall
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.btnSend:
-				SendMessageAsync.sendLocationMessage(this, mTypeOfLocation, mLatitude, mLongitude);
+				Intent returnIntent = new Intent();
+				returnIntent.putExtra("lat", mLatitude);
+				returnIntent.putExtra("lon", mLongitude);
+				setResult(Activity.RESULT_OK, returnIntent);
 				finish();
 				break;
 		}

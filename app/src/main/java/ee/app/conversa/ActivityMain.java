@@ -1,7 +1,5 @@
 package ee.app.conversa;
 
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -78,40 +76,27 @@ public class ActivityMain extends ConversaActivity {
                 }
 
                 switch (p) {
-                    case 2:
-                        tab.setIcon(R.drawable.settings_active);
-
-                        if (Build.VERSION.SDK_INT >= 23) {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.settings_tab, null)));
-                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.settings_tab, null)));
-                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.settings_background, null)));
-                        } else {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.settings_tab)));
-                            tabLayout.setBackgroundColor(getResources().getColor(R.color.settings_tab));
-                            mViewPager.setBackgroundColor(getResources().getColor(R.color.settings_background));
-                        }
+                    case 0:
+                        tab.setIcon(R.drawable.chats_active);
                         break;
-                    default:
-                        if (p == 1) {
-                            tab.setIcon(R.drawable.actuales_active);
+                    case 1:
+                        tab.setIcon(R.drawable.actuales_active);
 
-                            if(getSupportFragmentManager().getBackStackEntryCount() <= 0) {
-                                String title = ConversaApp.getPreferences().getCurrentCategory();
-                                if (!title.isEmpty()) {
-                                    ConversaApp.getPreferences().setCurrentCategory("", false);
-                                }
-                            } else {
-                                String title = ConversaApp.getPreferences().getCurrentCategory();
-                                if (!title.isEmpty()) {
-                                    getSupportActionBar().setTitle(title);
-                                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                                }
+                        if(getSupportFragmentManager().getBackStackEntryCount() <= 0) {
+                            String title = ConversaApp.getInstance(getApplicationContext()).getPreferences().getCurrentCategory();
+                            if (!title.isEmpty()) {
+                                ConversaApp.getInstance(getApplicationContext()).getPreferences().setCurrentCategory("", false);
                             }
                         } else {
-                            tab.setIcon(R.drawable.chats_active);
+                            String title = ConversaApp.getInstance(getApplicationContext()).getPreferences().getCurrentCategory();
+                            if (!title.isEmpty()) {
+                                getSupportActionBar().setTitle(title);
+                                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                            }
                         }
+                        break;
+                    case 2:
+                        tab.setIcon(R.drawable.settings_active);
                         break;
                 }
             }
@@ -127,20 +112,7 @@ public class ActivityMain extends ConversaActivity {
                         tab.setIcon(R.drawable.actuales_inactive);
                         break;
                     case 2:
-                        if (Build.VERSION.SDK_INT >= 23) {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
-                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
-                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.normal_background, null)));
-                        } else {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.regular_tabs))
-                            );
-                            tabLayout.setBackgroundColor(getResources().getColor(R.color.regular_tabs));
-                            mViewPager.setBackgroundColor(getResources().getColor(R.color.normal_background));
-                        }
                         tab.setIcon(R.drawable.settings_inactive);
-
                         break;
                 }
             }
@@ -171,7 +143,7 @@ public class ActivityMain extends ConversaActivity {
                     getSupportActionBar().setTitle(getString(R.string.categories));
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 }
-                ConversaApp.getPreferences().setCurrentCategory("", false);
+                ConversaApp.getInstance(this).getPreferences().setCurrentCategory("", false);
                 getSupportFragmentManager().popBackStack();
                 return;
             }

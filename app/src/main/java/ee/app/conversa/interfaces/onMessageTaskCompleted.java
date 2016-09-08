@@ -11,7 +11,8 @@ import ee.app.conversa.model.database.dbMessage;
 @UiThread
 public interface OnMessageTaskCompleted {
     void MessagesGetAll(List<dbMessage> response);
-    void MessageSent(dbMessage response, ParseFile file);
+    void MessageSent(dbMessage response);
+    void MessageReceived(dbMessage response);
     void MessageDeleted(dbMessage response);
     void MessageUpdated(dbMessage response);
 }

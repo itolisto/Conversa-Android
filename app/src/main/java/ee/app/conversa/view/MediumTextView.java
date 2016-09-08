@@ -14,7 +14,7 @@ public class MediumTextView extends TextView {
     public MediumTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (!this.isInEditMode())
-            this.setTypeface(ConversaApp.getTfRalewayMedium());
+            this.setTypeface(ConversaApp.getInstance(context).getTfRalewayMedium());
     }
 
 }

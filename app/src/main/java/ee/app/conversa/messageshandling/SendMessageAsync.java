@@ -28,9 +28,9 @@ import android.content.Context;
 import android.content.Intent;
 
 import ee.app.conversa.management.message.MessageIntentService;
+import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Account;
-import ee.app.conversa.receivers.FileUploadingReceiver;
 import ee.app.conversa.utils.Const;
 
 /**
@@ -41,11 +41,11 @@ import ee.app.conversa.utils.Const;
 
 public class SendMessageAsync {
 
-	public static void sendTextMessage(Context context, String businessId, String text) {
+	public static void sendTextMessage(Context context, String text, boolean addContact, dBusiness business) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
-		message.setToUserId(businessId);
+		message.setToUserId(business.getBusinessId());
 		message.setMessageType(Const.kMessageTypeText);
 		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setBody(text);
@@ -55,13 +55,17 @@ public class SendMessageAsync {
 		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
 		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
 		context.startService(intent);
+
+		if (addContact) {
+			SaveUserAsync.saveBusinessAsContact(context, business);
+		}
 	}
 
-	public static void sendLocationMessage(Context context, String businessId, double lat, double lon) {
+	public static void sendLocationMessage(Context context, double lat, double lon, boolean addContact, dBusiness business) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
-		message.setToUserId(businessId);
+		message.setToUserId(business.getBusinessId());
 		message.setMessageType(Const.kMessageTypeLocation);
 		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setLatitude((float)lat);
@@ -72,15 +76,20 @@ public class SendMessageAsync {
 		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
 		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
 		context.startService(intent);
+
+		if (addContact) {
+			SaveUserAsync.saveBusinessAsContact(context, business);
+		}
 	}
 
-	public static void sendImageMessage(Context context, String businessId, int width, int height, int size, FileUploadingReceiver receiver) {
+	public static void sendImageMessage(Context context, String path, int width, int height, int size, boolean addContact, dBusiness business) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
-		message.setToUserId(businessId);
-		message.setMessageType(Const.kMessageTypeLocation);
+		message.setToUserId(business.getBusinessId());
+		message.setMessageType(Const.kMessageTypeImage);
 		message.setDeliveryStatus(dbMessage.statusUploading);
+		message.setFileId(path);
 		message.setWidth(width);
 		message.setHeight(height);
 		message.setBytes(size);
@@ -89,8 +98,11 @@ public class SendMessageAsync {
 		Intent intent = new Intent(context, MessageIntentService.class);
 		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
 		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
-		intent.putExtra(MessageIntentService.INTENT_EXTRA_RECEIVER, receiver);
 		context.startService(intent);
+
+		if (addContact) {
+			SaveUserAsync.saveBusinessAsContact(context, business);
+		}
 	}
 
 }

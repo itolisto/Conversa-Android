@@ -1,17 +1,20 @@
 package ee.app.conversa;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -21,28 +24,27 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.parse.ParseFile;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.adapters.ChatsAdapter;
 import ee.app.conversa.adapters.MessagesAdapter;
+import ee.app.conversa.events.MessagePressedEvent;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.messageshandling.SaveUserAsync;
 import ee.app.conversa.messageshandling.SendMessageAsync;
 import ee.app.conversa.model.database.Location;
 import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.model.database.dbMessage;
-import ee.app.conversa.receivers.FileUploadingReceiver;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.TouchImageView;
 
 
-public class ActivityChatWall extends ConversaActivity implements OnClickListener, FileUploadingReceiver.Receiver {
-
-	public static ActivityChatWall sInstance;
+public class ActivityChatWall extends ConversaActivity implements View.OnClickListener,
+		View.OnTouchListener, TextWatcher {
 
 	private dBusiness businessObject;
 	private boolean addAsContact;
@@ -50,7 +52,6 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	public List<Location> gLocations;
 	public MessagesAdapter gMessagesAdapter;
 	public ChatsAdapter mChatsAdapter;
-	public FileUploadingReceiver mReceiver;
 
 	private boolean loading;
 	private boolean loadMore;
@@ -63,8 +64,6 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	private BottomSheetBehavior mBottomSheetBehavior;
 	private RelativeLayout rlImageDisplay;
 	private Button mBtnWallSend;
-
-	public static boolean gIsVisible = false;
 
 	public ActivityChatWall() {
 		this.mChatsAdapter = null;
@@ -97,11 +96,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		}
 
 		initialization();
-		mReceiver = new FileUploadingReceiver(new Handler());
-		mReceiver.setReceiver(this);
 		dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), 20, 0);
-
-		sInstance = this;
 	}
 
 	@Override
@@ -121,51 +116,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		return false;
 	}
 
-	private boolean closeThisFirst() {
-		if(rlImageDisplay.getVisibility() == View.VISIBLE) {
-			closeImage();
-			return false;
-		} else {
-			return true;
-		}
-	}
-
 	@Override
-	public void onBackPressed() {
-		if(closeThisFirst()) {
-			super.onBackPressed();
-		}
-	}
-
-	@Override
-	protected void openFromNotification(Intent intent) {
-		dBusiness business = intent.getParcelableExtra(Const.kClassBusiness);
-
-		if (business == null) {
-			super.onBackPressed();
-		} else {
-			addAsContact = intent.getBooleanExtra(Const.kYapDatabaseName, false);
-
-			if (business.getBusinessId().equals(businessObject.getBusinessId())) {
-				// Call for new messages
-				int count = intent.getIntExtra(Const.kAppVersionKey, 1);
-				newMessagesFromNewIntent = true;
-				dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), count, 0);
-			} else {
-				// Set new business reference
-				businessObject = business;
-				// Clean list of current messages and get new messages
-				dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), 20, 0);
-			}
-		}
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		gIsVisible = hasFocus;
-	}
-
 	protected void initialization() {
 		super.initialization();
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -196,31 +147,23 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 //		Button mBtnReloadLocts = (Button) findViewById(R.id.btnReloadLocation);
 		ImageButton mBtnCamera = (ImageButton) findViewById(R.id.btnCamera);
 		ImageButton mBtnGallery = (ImageButton) findViewById(R.id.btnGallery);
-		ImageButton mBtnMore = (ImageButton) findViewById(R.id.btnMore);
 		ImageButton mBtnLocation = (ImageButton) findViewById(R.id.btnLocation);
 		ImageButton mBtnOpenSlidingDrawer = (ImageButton) findViewById(R.id.btnSlideButton);
 
-		mEtMessageText.setTypeface( ConversaApp.getTfRalewayRegular());
+		mEtMessageText.setTypeface( ConversaApp.getInstance(this).getTfRalewayRegular());
 //		mBtnBlockUser.setTypeface(ConversaApp.getTfRalewayRegular());
 //		mBtnProfile.setTypeface(    ConversaApp.getTfRalewayRegular());
-		mBtnWallSend.setTypeface(ConversaApp.getTfRalewayMedium());
-//		mBtnBack.setTypeface(ConversaApp.getTfRalewayMedium());
+		mBtnWallSend.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
+		mBtnBack.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
 
-		gMessagesAdapter = new MessagesAdapter(this);
+		mEtMessageText.addTextChangedListener(this);
+
+		gMessagesAdapter = new MessagesAdapter(this, businessObject.getBusinessId());
 		LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 		manager.setReverseLayout(true);
 		mRvWallMessages.setLayoutManager(manager);
-		mRvWallMessages.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				Utils.hideKeyboard(sInstance);
-				closeThisFirst();
-				return false;
-			}
-		});
-
+		mRvWallMessages.setOnTouchListener(this);
 		mRvWallMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 				int lastVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
@@ -236,14 +179,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 				}
 			}
 		});
-
 		mRvWallMessages.setAdapter(gMessagesAdapter);
-
-//		mRvLocation.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-		//MultiSelector mMultiSelector = new SingleSelector();
-//		gLocationsAdapter = new LocationsAdapter(this, gLocations);//, mMultiSelector);
-//		mRvLocation.setAdapter(gLocationsAdapter);
 
 		mBtnWallSend.setOnClickListener(this);
 		mBtnOpenSlidingDrawer.setOnClickListener(this);
@@ -251,8 +187,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		mBtnCamera.setOnClickListener(this);
 		mBtnGallery.setOnClickListener(this);
 		mBtnLocation.setOnClickListener(this);
-		mBtnMore.setOnClickListener(this);
-//		mBtnBack.setOnClickListener(this);
+		mBtnBack.setOnClickListener(this);
 //		mBtnBlockUser.setOnClickListener(this);
 //		mBtnLocations.setOnClickListener(this);
 //		mBtnCloseLocts.setOnClickListener(this);
@@ -260,43 +195,47 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 //		mBtnProfile.setOnClickListener(this);
 	}
 
-	/* ****************************************************************************************** */
-	/* ****************************************************************************************** */
-
 	@Override
-	public void noInternetConnection() {
-		super.noInternetConnection();
-		mBtnWallSend.setEnabled(false);
+	public void onBackPressed() {
+		if(closeThisFirst()) {
+			super.onBackPressed();
+		}
 	}
 
 	@Override
-	public void yesInternetConnection() {
-		super.yesInternetConnection();
-		mBtnWallSend.setEnabled(true);
+	protected void openFromNotification(Intent intent) {
+		Log.e("openFromNotification", "New intent with flags " + intent.getFlags());
+		dBusiness business = intent.getParcelableExtra(Const.kClassBusiness);
+
+		if (business == null) {
+			super.onBackPressed();
+		} else {
+			addAsContact = intent.getBooleanExtra(Const.kYapDatabaseName, false);
+
+			if (business.getBusinessId().equals(businessObject.getBusinessId())) {
+				// Call for new messages
+				int count = intent.getIntExtra(Const.kAppVersionKey, 1);
+				newMessagesFromNewIntent = true;
+				dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), count, 0);
+			} else {
+				// Set new business reference
+				businessObject = business;
+				// Clean list of current messages and get new messages
+				dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), 20, 0);
+			}
+		}
 	}
 
 	@Override
-	protected void handlePushNotification(Intent intent) {
-		Bundle i = intent.getExtras();
-		dbMessage m = (dbMessage) i.get("message");
-		showImage(m);
-	}
+	public boolean onTouch(View v, MotionEvent event) {
+		switch (v.getId()) {
+			case R.id.rvWallMessages:
+				Utils.hideKeyboard(this);
+				closeThisFirst();
+				return false;
+		}
 
-	public void showImage(final dbMessage m){
-		Utils.hideKeyboard(this);
-		final Animation slidein = AnimationUtils.loadAnimation(getApplicationContext(),
-				R.anim.slide_in);
-		rlImageDisplay.startAnimation(slidein);
-		rlImageDisplay.setVisibility(View.VISIBLE);
-	}
-
-	public void closeImage() {
-		final Animation slideout = AnimationUtils.loadAnimation(getApplicationContext(),
-				R.anim.slide_out);
-		rlImageDisplay.startAnimation(slideout);
-		rlImageDisplay.setVisibility(View.GONE);
-		mTivPhotoImage.setImageBitmap(null);
-		mTivPhotoImage.resetZoom();
+		return true;
 	}
 
 	@Override
@@ -305,14 +244,57 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		if (resultCode == RESULT_OK) {
 			// Check which request we're responding to
 			switch (requestCode) {
-				case ActivityCameraCrop.PICK_CAMERA_REQUEST: {
-
-					break;
-				}
+				case ActivityCameraCrop.PICK_CAMERA_REQUEST:
 				case ActivityCameraCrop.PICK_GALLERY_REQUEST: {
-
+					SendMessageAsync.sendImageMessage(
+							this,
+							data.getStringExtra("result"),
+							data.getIntExtra("width", 0),
+							data.getIntExtra("height", 0),
+							data.getIntExtra("bytes", 0),
+							addAsContact,
+							businessObject);
 					break;
 				}
+				case ActivityLocation.PICK_LOCATION_REQUEST: {
+					SendMessageAsync.sendLocationMessage(
+							this,
+							data.getDoubleExtra("lat", 0),
+							data.getDoubleExtra("lon", 0),
+							addAsContact,
+							businessObject);
+					break;
+				}
+			}
+		}
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void onMessagePressedEvent(MessagePressedEvent event) {
+		dbMessage message = event.getMessage();
+
+		switch (message.getMessageType()) {
+			case Const.kMessageTypeText: {
+
+				break;
+			}
+			case Const.kMessageTypeLocation: {
+				Intent intent = new Intent(this, ActivityLocation.class);
+				intent.putExtra(Const.LOCATION, "userLocation");
+				intent.putExtra(Const.LATITUDE, message.getLatitude());
+				intent.putExtra(Const.LONGITUDE, message.getLongitude());
+				startActivity(intent);
+				break;
+			}
+			case Const.kMessageTypeImage: {
+				showImage(message);
+				break;
+			}
+			case Const.kMessageTypeVideo: {
+				break;
+			}
+			case Const.kMessageTypeAudio: {
+				break;
 			}
 		}
 	}
@@ -321,24 +303,27 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	public void onClick(View v) {
 		if(v instanceof ImageButton) {
 			switch (v.getId()) {
-				case R.id.btnCamera:
+				case R.id.btnCamera: {
 					Intent intent = new Intent(this, ActivityCameraCrop.class);
 					intent.putExtra("type", "camera");
 					startActivityForResult(intent, ActivityCameraCrop.PICK_CAMERA_REQUEST);
+					mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 					break;
-				case R.id.btnGallery:
-					Intent intent1 = new Intent(this, ActivityCameraCrop.class);
-					intent1.putExtra("type", "gallery");
-					startActivityForResult(intent1, ActivityCameraCrop.PICK_GALLERY_REQUEST);
+				}
+				case R.id.btnGallery: {
+					Intent intent = new Intent(this, ActivityCameraCrop.class);
+					intent.putExtra("type", "gallery");
+					startActivityForResult(intent, ActivityCameraCrop.PICK_GALLERY_REQUEST);
+					mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 					break;
-				case R.id.btnLocation:
-					Intent intent2 = new Intent(getApplicationContext(), ActivityLocation.class);
-					intent2.putExtra(Const.LOCATION, businessObject.getBusinessId());
-					startActivity(intent2);
+				}
+				case R.id.btnLocation: {
+					Intent intent = new Intent(getApplicationContext(), ActivityLocation.class);
+					intent.putExtra(Const.LOCATION, businessObject.getBusinessId());
+					startActivityForResult(intent, ActivityLocation.PICK_LOCATION_REQUEST);
+					mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 					break;
-				case R.id.btnMore:
-					// Definir si habrán más opciones
-					break;
+				}
 				case R.id.btnSlideButton:
 					mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 					break;
@@ -354,9 +339,13 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 				case R.id.btnWallSend:
 					String body = mEtMessageText.getText().toString().trim();
 
-					if (!body.isEmpty()) {
+					if (body.length() > 0) {
 						mEtMessageText.setText("");
-						SendMessageAsync.sendTextMessage(this, businessObject.getBusinessId(), body);
+						SendMessageAsync.sendTextMessage(
+								this,
+								body,
+								addAsContact,
+								businessObject);
 					}
 					break;
 				case R.id.btnCloseImage:
@@ -366,8 +355,61 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 		}
 	}
 
+	/* ****************************************************************************************** */
+
 	@Override
-	public void messagesGetAll(List<dbMessage> messages) {
+	public void noInternetConnection() {
+		super.noInternetConnection();
+		mBtnWallSend.setEnabled(false);
+	}
+
+	@Override
+	public void yesInternetConnection() {
+		super.yesInternetConnection();
+		mBtnWallSend.setEnabled(true);
+	}
+
+	private boolean closeThisFirst() {
+		if(rlImageDisplay.getVisibility() == View.VISIBLE) {
+			closeImage();
+			return false;
+		} if(mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+			mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void showImage(final dbMessage m) {
+		//Utils.hideKeyboard(this);
+
+		try {
+			//File image = new File(m.getFileId());
+			BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+			Bitmap bitmap = BitmapFactory.decodeFile(m.getFileId(), bmOptions);
+			bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
+			mTivPhotoImage.setImageBitmap(bitmap);
+			final Animation slidein = AnimationUtils.loadAnimation(getApplicationContext(),
+					R.anim.slide_in);
+			rlImageDisplay.startAnimation(slidein);
+			rlImageDisplay.setVisibility(View.VISIBLE);
+		} catch (Exception e) {
+			// Couldn't open image, get default image
+		}
+	}
+
+	public void closeImage() {
+		final Animation slideout = AnimationUtils.loadAnimation(getApplicationContext(),
+				R.anim.slide_out);
+		rlImageDisplay.startAnimation(slideout);
+		rlImageDisplay.setVisibility(View.GONE);
+		mTivPhotoImage.setImageBitmap(null);
+		mTivPhotoImage.resetZoom();
+	}
+
+	@Override
+	public void MessagesGetAll(List<dbMessage> messages) {
 		// 1. Add messages
 		if (mRvWallMessages.getLayoutManager().getItemCount() == 0) {
 			// If messages size is zero there's no need to do anything
@@ -407,7 +449,7 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
-	public void messageSent(final dbMessage response, ParseFile file) {
+	public void MessageSent(final dbMessage response) {
 		// 1. Check visibility
 		if (mTvNoMessages.getVisibility() == View.VISIBLE) {
 			mTvNoMessages.setVisibility(View.GONE);
@@ -416,7 +458,6 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 
 		// 2. Check if user needs to be added
 		if(addAsContact) {
-			SaveUserAsync.saveBusinessAsContact(this, businessObject);
 			addAsContact = false;
 		}
 
@@ -426,12 +467,12 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
-	public void messageDeleted(dbMessage r) {
+	public void MessageDeleted(dbMessage r) {
 
 	}
 
 	@Override
-	public void messageUpdated(dbMessage r) {
+	public void MessageUpdated(dbMessage r) {
 		if (r == null) {
 			return;
 		}
@@ -462,8 +503,17 @@ public class ActivityChatWall extends ConversaActivity implements OnClickListene
 	}
 
 	@Override
-	public void onReceiveResult(dbMessage message, int percentage) {
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		if (s.toString().isEmpty()) {
+			mBtnWallSend.setEnabled(false);
+		} else {
+			mBtnWallSend.setEnabled(true);
+		}
 	}
-
 }

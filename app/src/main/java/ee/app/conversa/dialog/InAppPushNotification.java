@@ -125,7 +125,7 @@ public class InAppPushNotification implements OnClickListener {
 
 	private void addView(String message, String contactId) {
 		mPushLayout.setVisibility(View.VISIBLE);
-		dBusiness fromUser = ConversaApp.getDB().isContact(contactId);
+		dBusiness fromUser = ConversaApp.getInstance(mContext).getDB().isContact(contactId);
 
 		if (fromUser == null) {
 			Log.e(TAG, "Contact doesn't exits, notification can't be displayed");

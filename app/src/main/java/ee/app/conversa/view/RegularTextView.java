@@ -14,7 +14,7 @@ public class RegularTextView extends TextView {
     public RegularTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (!this.isInEditMode())
-            this.setTypeface(ConversaApp.getTfRalewayRegular());
+            this.setTypeface(ConversaApp.getInstance(context).getTfRalewayRegular());
     }
 
 }

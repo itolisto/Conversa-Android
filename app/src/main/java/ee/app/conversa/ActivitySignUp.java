@@ -1,5 +1,6 @@
 package ee.app.conversa;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -68,7 +69,7 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
 
         if(mBtnSignUpUp != null) {
             mBtnSignUpUp.setOnClickListener(this);
-            mBtnSignUpUp.setTypeface(ConversaApp.getTfRalewayMedium());
+            mBtnSignUpUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
         }
     }
 
@@ -103,9 +104,12 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
                     user.setUsername(mEtSignUpName.getText().toString());
                     user.setPassword(mEtSignUpPassword.getText().toString());
                     user.put(Const.kUserTypeKey, 1);
+                    final ProgressDialog progress = new ProgressDialog(this);
+                    progress.show();
 
                     user.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
+                            progress.dismiss();
                             if (e == null) {
                                 // Hooray! Let them use the app now.
                                 AuthListener(true, null);

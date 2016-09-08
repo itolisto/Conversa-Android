@@ -14,7 +14,7 @@ public class BoldTextView extends TextView {
     public BoldTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (!this.isInEditMode())
-            this.setTypeface(ConversaApp.getTfRalewayBold());
+            this.setTypeface(ConversaApp.getInstance(context).getTfRalewayBold());
     }
 
 }

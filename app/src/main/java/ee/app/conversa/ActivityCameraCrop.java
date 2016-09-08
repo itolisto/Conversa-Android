@@ -80,45 +80,15 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 	private Matrix savedMatrix = new Matrix();
 	private States state;
 
-	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.btnCameraOk) {
-			Bitmap resizedBitmap = getBitmapFromView(mCropImageView);
-			ByteArrayOutputStream bs = new ByteArrayOutputStream();
-			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 85, bs);
-			Intent returnIntent = new Intent();
-
-			if (saveBitmapToFile(resizedBitmap, _path)) {
-				returnIntent.putExtra("result", _path);
-				setResult(Activity.RESULT_OK, returnIntent);
-			} else {
-				Toast.makeText(ActivityCameraCrop.this,
-						"Failed to send photo", Toast.LENGTH_LONG)
-						.show();
-				setResult(Activity.RESULT_CANCELED, returnIntent);
-			}
-
-			finish();
-		}
-	}
-
 	// We can be in one of these 3 states
 	private enum States {
 		NONE, DRAG, ZOOM
 	}
 
-//	private static final int NONE = 0;
-//	private static final int DRAG = 1;
-//	private static final int ZOOM = 2;
-//	private int mode = NONE;
-
 	// Remember some things for zooming
 	private PointF start = new PointF();
 	private PointF mid = new PointF();
 	private float oldDist = 1f;
-
-	private CroppedImageView mCropImageView;
-
 	public int crop_container_size;
 
 	// Private request codes used in this Activity
@@ -130,6 +100,7 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	// Uri for captured image so we can get image path
 	private String _path;
+	private CroppedImageView mCropImageView;
 
 	// directory name to store captured images and videos
 	private static final String IMAGE_DIRECTORY_NAME = "images";
@@ -141,7 +112,7 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 		mCropImageView = (CroppedImageView) findViewById(R.id.ivCameraCropPhoto);
 		mCropImageView.setDrawingCacheEnabled(true);
 		Button ok = (Button) findViewById(R.id.btnCameraOk);
-		ok.setTypeface(ConversaApp.getTfRalewayRegular());
+		ok.setTypeface(ConversaApp.getInstance(this).getTfRalewayRegular());
 		ok.setOnClickListener(this);
 
 		getImageIntents();
@@ -200,8 +171,42 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 					finish();
 					break;
 			}
-		} else {
-			finish();
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.btnCameraOk: {
+				Bitmap resizedBitmap = getBitmapFromView(mCropImageView);
+				ByteArrayOutputStream bs = new ByteArrayOutputStream();
+				resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 85, bs);
+				Intent returnIntent = new Intent();
+
+				if (getIntent().getStringExtra("type").equals("gallery")) {
+					returnIntent.putExtra("result", _path);
+					returnIntent.putExtra("width", resizedBitmap.getWidth());
+					returnIntent.putExtra("height", resizedBitmap.getHeight());
+					returnIntent.putExtra("bytes", resizedBitmap.getByteCount());
+					setResult(Activity.RESULT_OK, returnIntent);
+				} else {
+					if (saveBitmapToFile(resizedBitmap, _path)) {
+						returnIntent.putExtra("result", _path);
+						returnIntent.putExtra("width", resizedBitmap.getWidth());
+						returnIntent.putExtra("height", resizedBitmap.getHeight());
+						returnIntent.putExtra("bytes", resizedBitmap.getByteCount());
+						setResult(Activity.RESULT_OK, returnIntent);
+					} else {
+						Toast.makeText(ActivityCameraCrop.this,
+								"Failed to send photo", Toast.LENGTH_LONG)
+								.show();
+						setResult(Activity.RESULT_CANCELED, returnIntent);
+					}
+				}
+
+				finish();
+				break;
+			}
 		}
 	}
 
@@ -251,6 +256,7 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 		} else {
 			Uri selected_image = data.getData();
 			path = getImagePath(selected_image);
+			_path = path;
 		}
 
 		new AsyncTask<String, Void, Bitmap>() {
@@ -294,25 +300,24 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 			protected void onPostExecute(Bitmap result) {
 				if (result != null) {
 					scaleView(result);
-					//mCropImageView.setImageBitmap(result);
 					mCropImageView.setScaleType(ImageView.ScaleType.MATRIX);
-					matrix = new Matrix();//translateMatrix;
+					matrix = new Matrix();
 				}
 			}
 		}.execute(path);
 	}
 
 	private boolean saveBitmapToFile(Bitmap bitmap, String path) {
-		File file = new File(path);
-		FileOutputStream fOut;
 		try {
+			File file = new File(path);
+			FileOutputStream fOut;
 			fOut = new FileOutputStream(file);
 			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
 			fOut.flush();
 			fOut.close();
 			return true;
-		} catch (IOException e) {
-			Logger.error("saveBitmapToFile", e.getMessage());
+		} catch (IOException|NullPointerException e) {
+			Logger.error("saveBitmapToFile", "Error: " + e.getMessage());
 		}
 
 		return false;

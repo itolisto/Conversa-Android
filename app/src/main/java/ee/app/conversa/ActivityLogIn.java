@@ -1,5 +1,6 @@
 package ee.app.conversa;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -66,12 +67,12 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
 
         if(mBtnSignInIn != null) {
             mBtnSignInIn.setOnClickListener(this);
-            mBtnSignInIn.setTypeface(ConversaApp.getTfRalewayMedium());
+            mBtnSignInIn.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
         }
 
         if(mBtnForgotPassword != null) {
             mBtnForgotPassword.setOnClickListener(this);
-            mBtnForgotPassword.setTypeface(ConversaApp.getTfRalewayLight());
+            mBtnForgotPassword.setTypeface(ConversaApp.getInstance(this).getTfRalewayLight());
         }
     }
 
@@ -113,9 +114,14 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
                     collection.add(Const.kUserUsernameKey);
                     query.selectKeys(collection);
 
+                    final ProgressDialog progress = new ProgressDialog(this);
+                    progress.show();
+
                     query.getFirstInBackground(new GetCallback<Account>() {
                         @Override
                         public void done(Account object, ParseException e) {
+                            progress.dismiss();
+
                             if (e == null) {
                                 String username = object.getUsername();
                                 ParseUser.logInInBackground(username, mSignInPassword, new LogInCallback() {

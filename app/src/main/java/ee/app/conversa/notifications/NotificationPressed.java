@@ -41,7 +41,7 @@ public class NotificationPressed extends AppCompatActivity {
 
         long notificationId = intent.getExtras().getLong("notificationId", -1);
         if (notificationId != -1) {
-            ConversaApp.getDB().resetGroupCount(notificationId);
+            ConversaApp.getInstance(this).getDB().resetGroupCount(notificationId);
         }
 
         JSONObject additionalData;
@@ -60,7 +60,7 @@ public class NotificationPressed extends AppCompatActivity {
                     break;
                 }
 
-                dBusiness user = ConversaApp.getDB().isContact(contactId);
+                dBusiness user = ConversaApp.getInstance(this).getDB().isContact(contactId);
                 if (user != null) {
                     // Set extras
                     intent = new Intent(this, ActivityChatWall.class);

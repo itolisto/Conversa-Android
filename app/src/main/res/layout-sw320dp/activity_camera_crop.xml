@@ -14,8 +14,8 @@
 
         <ee.app.conversa.view.CroppedImageView
             android:id="@+id/ivCameraCropPhoto"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_vertical|center_horizontal"
             android:scaleType="matrix" />

@@ -23,7 +23,7 @@ public class NotificationDeleted extends BroadcastReceiver {
 
         long notificationId = intent.getExtras().getLong("notificationId", -1);
         if (notificationId != -1) {
-            ConversaApp.getDB().resetGroupCount(notificationId);
+            ConversaApp.getInstance(context).getDB().resetGroupCount(notificationId);
         }
     }
 

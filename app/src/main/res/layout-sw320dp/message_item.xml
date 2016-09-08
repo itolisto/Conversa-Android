@@ -67,7 +67,7 @@
                 fresco:actualImageScaleType="focusCrop"
                 fresco:placeholderImage="@drawable/business_default"
                 fresco:placeholderImageScaleType="fitCenter"
-                fresco:failureImage="@drawable/username_icon"
+                fresco:failureImage="@drawable/business_default"
                 fresco:failureImageScaleType="centerInside"
                 fresco:retryImage="@drawable/refresh_icon"
                 fresco:retryImageScaleType="centerCrop"

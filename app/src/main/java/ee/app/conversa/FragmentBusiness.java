@@ -103,7 +103,7 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                ConversaApp.getPreferences().setCurrentCategory("", false);
+                ConversaApp.getInstance(getActivity()).getPreferences().setCurrentCategory("", false);
                 FragmentManager fm = getFragmentManager();
 
                 if (fm != null) {
@@ -191,7 +191,7 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
 
     @Override
     public void onItemClick(View itemView, int position, Business business) {
-        dBusiness dbBusiness = ConversaApp.getDB().isContact(business.getObjectId());
+        dBusiness dbBusiness = ConversaApp.getInstance(getActivity()).getDB().isContact(business.getObjectId());
         Intent intent = new Intent(getActivity(), ActivityProfile.class);
 
         if (dbBusiness == null) {

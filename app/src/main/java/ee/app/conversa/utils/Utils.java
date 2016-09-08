@@ -25,6 +25,7 @@
 package ee.app.conversa.utils;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -94,6 +95,14 @@ public class Utils {
 			e.printStackTrace();
 		}
 		OneSignal.sendTags(tags);
+	}
+
+	public static int getCurrentApkReleaseVersion(Context context) {
+		try {
+			return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+		} catch (PackageManager.NameNotFoundException e) {
+			throw new AssertionError(e);
+		}
 	}
 
 }

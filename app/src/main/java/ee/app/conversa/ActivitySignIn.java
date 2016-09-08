@@ -59,12 +59,12 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
 
         if(mBtnSignIn != null) {
             mBtnSignIn.setOnClickListener(this);
-            mBtnSignIn.setTypeface(ConversaApp.getTfRalewayMedium());
+            mBtnSignIn.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
         }
 
         if(mBtnSignUp != null) {
             mBtnSignUp.setOnClickListener(this);
-            mBtnSignUp.setTypeface(ConversaApp.getTfRalewayMedium());
+            mBtnSignUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
         }
 	}
 

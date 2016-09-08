@@ -24,9 +24,7 @@
 
 package ee.app.conversa.adapters;
 
-import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,14 +43,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.app.conversa.ActivityLocation;
 import ee.app.conversa.R;
+import ee.app.conversa.events.MessagePressedEvent;
 import ee.app.conversa.model.database.dbMessage;
-import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.RegularTextView;
@@ -65,23 +65,19 @@ import ee.app.conversa.view.RegularTextView;
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.GenericViewHolder> {
 
 	private final int TO_ME_VIEW_TYPE = 1;
-	private final int FROM_ME_VIEW_TYPE = 2;
-	private final String fromUser;
-	private final AppCompatActivity mActivity;
+	private final String toUser;
+	private final WeakReference<AppCompatActivity> mActivity;
 	private List<dbMessage> mMessages;
 
-	public final static String PUSH = "ee.app.conversa.chatwallMessage.showImage";
-	private static final Intent mPushBroadcast = new Intent(PUSH);
-
-	public MessagesAdapter(AppCompatActivity activity) {
-		this.fromUser = Account.getCurrentUser().getObjectId();
-		this.mActivity = activity;
+	public MessagesAdapter(AppCompatActivity activity, String toUser) {
+		this.toUser = toUser;
+		this.mActivity = new WeakReference<>(activity);
 		this.mMessages = new ArrayList<>(20);
 	}
 
 	@Override
 	public int getItemViewType(int position) {
-		return (mMessages.get(position).getFromUserId().equals(fromUser)) ? FROM_ME_VIEW_TYPE : TO_ME_VIEW_TYPE;
+		return (mMessages.get(position).getFromUserId().equals(toUser)) ? TO_ME_VIEW_TYPE : 0;
 	}
 
 	@Override
@@ -91,19 +87,23 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 
 	@Override
 	public GenericViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		if (viewType == FROM_ME_VIEW_TYPE) {
-			return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, parent, false));
+		if (viewType == TO_ME_VIEW_TYPE) {
+			return new IncomingViewHolder(
+					LayoutInflater.from(parent.getContext()).inflate(R.layout.message_incoming_item, parent, false),
+					this.mActivity);
 		} else {
-			return new IncomingViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.message_incoming_item, parent, false));
+			return new ViewHolder(
+					LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, parent, false),
+					this.mActivity);
 		}
 	}
 
 	@Override
 	public void onBindViewHolder(GenericViewHolder holder, int position) {
 		if (position > 0) {
-			holder.showMessage(mMessages.get(position), mMessages.get(position - 1), mActivity);
+			holder.showMessage(mMessages.get(position), mMessages.get(position - 1));
 		} else {
-			holder.showMessage(mMessages.get(position), null, mActivity);
+			holder.showMessage(mMessages.get(position), null);
 		}
 	}
 
@@ -147,12 +147,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		}
 	}
 
-	/**
-	 * Sets time that has past since message was sent.
-	 * @param message
-	 * @return
-	 */
-	private String setDate(dbMessage message) {
+	private String setDate(dbMessage message, AppCompatActivity activity) {
+		if (activity == null) {
+			return "";
+		}
+
 		String subText;
 
 		long timeOfCreationOrUpdate = message.getCreated();
@@ -167,99 +166,38 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		long diffw  = diff / (1000 * 60 * 60 * 24 * 7);
 
 		if (diffw >= 2) {
-			subText = diffw + " " + mActivity.getString(R.string.weeks_ago);
+			subText = diffw + " " + activity.getString(R.string.weeks_ago);
 		} else if (diffw >= 1 && diffw < 2) {
-			subText = diffw + " " + mActivity.getString(R.string.week_ago);
+			subText = diffw + " " + activity.getString(R.string.week_ago);
 		} else if (diffh >= 48 && diffh < 168) {
-			subText = diffd + " " + mActivity.getString(R.string.days_ago);
+			subText = diffd + " " + activity.getString(R.string.days_ago);
 		} else if (diffh >= 24 && diffh < 48) {
-			subText = diffd + " " + mActivity.getString(R.string.day_ago);
+			subText = diffd + " " + activity.getString(R.string.day_ago);
 		} else if (diffh >= 2 && diffh < 24) {
-			subText = diffh + " " + mActivity.getString(R.string.hours_ago);
+			subText = diffh + " " + activity.getString(R.string.hours_ago);
 		} else if (diffm >= 60 && diffm < 120) {
-			subText = diffh + " " + mActivity.getString(R.string.hour_ago);
+			subText = diffh + " " + activity.getString(R.string.hour_ago);
 		} else if (diffm > 1 && diffm < 60) {
-			subText = diffm + " " + mActivity.getString(R.string.minutes_ago);
+			subText = diffm + " " + activity.getString(R.string.minutes_ago);
 		} else if (diffm == 1) {
-			subText = diffm + " " + mActivity.getString(R.string.minute_ago);
+			subText = diffm + " " + activity.getString(R.string.minute_ago);
 		} else {
-			subText = mActivity.getString(R.string.posted_less_than_a_minute_ago);
+			subText = activity.getString(R.string.posted_less_than_a_minute_ago);
 		}
 
 		return subText;
 	}
 
-	class ViewHolder extends GenericViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
-		public TextView mTvDate;
-		public RelativeLayout mRlBackground;
-		public RegularTextView mRtvMessageText;
-		public RelativeLayout mRlImageContainer;
-		public MapView mMvMessageMap;
-		public SimpleDraweeView mSdvMessageImage;
-		public LightTextView mLtvSubText;
-		private WeakReference<dbMessage> message;
-		private WeakReference<AppCompatActivity> activity;
+	class ViewHolder extends GenericViewHolder {
 
-		public ViewHolder(View itemView) {
-			super(itemView, ViewHolder.class.getSimpleName());
-			this.mTvDate = (TextView) itemView.findViewById(R.id.tvDate);
-			this.mRlBackground = (RelativeLayout) itemView.findViewById(R.id.rlBackground);
-			this.mRtvMessageText = (RegularTextView) itemView.findViewById(R.id.rtvMessageText);
-			this.mRlImageContainer = (RelativeLayout) itemView.findViewById(R.id.rlImageContainer);
-			this.mMvMessageMap = (MapView) itemView.findViewById(R.id.mvMessageMap);
-			this.mSdvMessageImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvMessageImage);
-			this.mLtvSubText = (LightTextView) itemView.findViewById(R.id.ltvSubText);
-
-			this.mMvMessageMap.setClickable(false);
-
-			itemView.setOnClickListener(this);
-			itemView.setOnLongClickListener(this);
+		public ViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+			super(itemView, activity);
 		}
 
 		@Override
-		public void onClick(View view) {
-			if (view.getId() == R.id.sdvMessageImage) {
-				if (activity.get() != null && message.get() != null) {
-					Intent pushExtras = new Intent();
-					pushExtras.putExtra("message", message.get());
-					mPushBroadcast.replaceExtras(pushExtras);
-					LocalBroadcastManager.getInstance(mActivity.getApplicationContext()).sendBroadcast(mPushBroadcast);
-				}
-			} else if (view.getId() == R.id.mvMessageMap) {
-				if (activity.get() != null && message.get() != null) {
-					Intent intent = new Intent(activity.get(), ActivityLocation.class);
-					intent.putExtra(Const.LOCATION, "userLocation");
-					intent.putExtra(Const.LATITUDE, message.get().getLatitude());
-					intent.putExtra(Const.LONGITUDE, message.get().getLongitude());
-					activity.get().startActivity(intent);
-				}
-			}
-		}
-
-		@Override
-		public boolean onLongClick(View view) {
-			return false;
-		}
-
-		@Override
-		public void onMapReady(GoogleMap googleMap) {
-			if (activity.get() != null && message.get() != null) {
-				double lat = message.get().getLatitude();
-				double lon = message.get().getLongitude();
-				MapsInitializer.initialize(mActivity.getApplicationContext());
-				googleMap.getUiSettings().setMapToolbarEnabled(false);
-				googleMap.getUiSettings().setAllGesturesEnabled(false);
-				googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-				LatLng sydney = new LatLng(lat, lon);
-				googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-				googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-			}
-		}
-
-		@Override
-		public void showMessage(dbMessage message, dbMessage previousMessage, AppCompatActivity activity) {
+		public void showMessage(dbMessage message, dbMessage previousMessage) {
+			super.showMessage(message, previousMessage);
 			this.message = new WeakReference<>(message);
-			this.activity = new WeakReference<>(activity);
 
 			// 1. Hide date. Will later check date text string and if it should be visible
 			this.mTvDate.setVisibility(View.GONE);
@@ -302,119 +240,31 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			}
 
 			// 4. Decide if date should be visible
-			this.mTvDate.setText(setDate(message));
+			this.mTvDate.setText(setDate(message, this.activity.get()));
 
 			// 5. Decide whether to show message status
 			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
 				this.mLtvSubText.setVisibility(View.VISIBLE);
-				this.mLtvSubText.setText(mActivity.getString(R.string.app_name));
+				if (this.activity.get() != null) {
+					this.mLtvSubText.setText(activity.get().getString(R.string.app_name));
+				}
 			} else {
 				this.mLtvSubText.setVisibility(View.GONE);
 			}
 		}
 
-		public void loadMessage() {
-			if (message.get() != null) {
-				this.mRtvMessageText.setText(message.get().getBody());
-			}
-		}
-
-		public void loadMap() {
-			// 1. Create map
-			this.mMvMessageMap.onCreate(null);
-			this.mMvMessageMap.onResume();
-			// 2. Load map
-			this.mMvMessageMap.getMapAsync(this);
-		}
-
-		public void loadImage() {
-			// 1. Resize image to display
-			ViewGroup.LayoutParams params = this.mSdvMessageImage.getLayoutParams();
-			final float scale = mActivity.getResources().getDisplayMetrics().density;
-			// 1.1 Convert the DP into pixel
-			int pixel =  (int)(100 * scale + 0.5f);
-			params.height = pixel;
-			params.width  = pixel;
-			this.mSdvMessageImage.setLayoutParams(params);
-			// 2. Load image
-			if (activity.get() != null && message.get() != null) {
-				Uri uri = Uri.parse(message.get().getFileId());
-				this.mSdvMessageImage.setImageURI(uri);
-			}
-		}
 	}
 
-	class IncomingViewHolder extends GenericViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
-		public TextView mTvDate;
-		public RelativeLayout mRlBackground;
-		public RegularTextView mRtvMessageText;
-		public RelativeLayout mRlImageContainer;
-		public MapView mMvMessageMap;
-		public SimpleDraweeView mSdvMessageImage;
-		public LightTextView mLtvSubText;
-		private WeakReference<dbMessage> message;
-		private WeakReference<AppCompatActivity> activity;
+	class IncomingViewHolder extends GenericViewHolder {
 
-		public IncomingViewHolder(View itemView) {
-			super(itemView, ViewHolder.class.getSimpleName());
-			this.mTvDate = (TextView) itemView.findViewById(R.id.tvDate);
-			this.mRlBackground = (RelativeLayout) itemView.findViewById(R.id.rlBackground);
-			this.mRtvMessageText = (RegularTextView) itemView.findViewById(R.id.rtvMessageText);
-			this.mRlImageContainer = (RelativeLayout) itemView.findViewById(R.id.rlImageContainer);
-			this.mMvMessageMap = (MapView) itemView.findViewById(R.id.mvMessageMap);
-			this.mSdvMessageImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvMessageImage);
-			this.mLtvSubText = (LightTextView) itemView.findViewById(R.id.ltvSubText);
-
-			this.mMvMessageMap.setClickable(false);
-
-			itemView.setOnClickListener(this);
-			itemView.setOnLongClickListener(this);
+		public IncomingViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+			super(itemView, activity);
 		}
 
 		@Override
-		public void onClick(View view) {
-			if (view.getId() == R.id.sdvMessageImage) {
-				if (activity.get() != null && message.get() != null) {
-					Intent pushExtras = new Intent();
-					pushExtras.putExtra("message", message.get());
-					mPushBroadcast.replaceExtras(pushExtras);
-					LocalBroadcastManager.getInstance(mActivity.getApplicationContext()).sendBroadcast(mPushBroadcast);
-				}
-			} else if (view.getId() == R.id.mvMessageMap) {
-				if (activity.get() != null && message.get() != null) {
-					Intent intent = new Intent(activity.get(), ActivityLocation.class);
-					intent.putExtra(Const.LOCATION, "userLocation");
-					intent.putExtra(Const.LATITUDE, message.get().getLatitude());
-					intent.putExtra(Const.LONGITUDE, message.get().getLongitude());
-					activity.get().startActivity(intent);
-				}
-			}
-		}
-
-		@Override
-		public boolean onLongClick(View view) {
-			return false;
-		}
-
-		@Override
-		public void onMapReady(GoogleMap googleMap) {
-			if (activity.get() != null && message.get() != null) {
-				double lat = message.get().getLatitude();
-				double lon = message.get().getLongitude();
-				MapsInitializer.initialize(mActivity.getApplicationContext());
-				googleMap.getUiSettings().setMapToolbarEnabled(false);
-				googleMap.getUiSettings().setAllGesturesEnabled(false);
-				googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-				LatLng sydney = new LatLng(lat, lon);
-				googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-				googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-			}
-		}
-
-		@Override
-		public void showMessage(dbMessage message, dbMessage previousMessage, AppCompatActivity activity) {
+		public void showMessage(dbMessage message, dbMessage previousMessage) {
+			super.showMessage(message, previousMessage);
 			this.message = new WeakReference<>(message);
-			this.activity = new WeakReference<>(activity);
 
 			// 1. Hide date. Will later check date text string and if it should be visible
 			this.mTvDate.setVisibility(View.GONE);
@@ -457,60 +307,115 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			}
 
 			// 4. Decide if date should be visible
-			this.mTvDate.setText(setDate(message));
+			this.mTvDate.setText(setDate(message, this.activity.get()));
 
 			// 5. Decide whether to show message status
 			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
 				this.mLtvSubText.setVisibility(View.VISIBLE);
-				this.mLtvSubText.setText(mActivity.getString(R.string.app_name));
+				if (this.activity.get() != null) {
+					this.mLtvSubText.setText(activity.get().getString(R.string.app_name));
+				}
 			} else {
 				this.mLtvSubText.setVisibility(View.GONE);
 			}
 		}
 
-		public void loadMessage() {
-			if (message.get() != null) {
-				this.mRtvMessageText.setText(message.get().getBody());
-			}
-		}
-
-		public void loadMap() {
-			// 1. Create map
-			this.mMvMessageMap.onCreate(null);
-			this.mMvMessageMap.onResume();
-			// 2. Load map
-			this.mMvMessageMap.getMapAsync(this);
-		}
-
-		public void loadImage() {
-			// 1. Resize image to display
-			ViewGroup.LayoutParams params = this.mSdvMessageImage.getLayoutParams();
-			final float scale = mActivity.getResources().getDisplayMetrics().density;
-			// 1.1 Convert the DP into pixel
-			int pixel =  (int)(100 * scale + 0.5f);
-			params.height = pixel;
-			params.width  = pixel;
-			this.mSdvMessageImage.setLayoutParams(params);
-			// 2. Load image
-			if (activity.get() != null && message.get() != null) {
-				Uri uri = Uri.parse(message.get().getFileId());
-				this.mSdvMessageImage.setImageURI(uri);
-			}
-		}
 	}
 
 	// Taken from http://stackoverflow.com/questions/26245139/how-to-create-recyclerview-with-multiple-view-type
-	public class GenericViewHolder extends RecyclerView.ViewHolder {
-		protected final String tag;
+	public class GenericViewHolder extends RecyclerView.ViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
+		protected final TextView mTvDate;
+		protected final RelativeLayout mRlBackground;
+		protected final RegularTextView mRtvMessageText;
+		protected final RelativeLayout mRlImageContainer;
+		protected final MapView mMvMessageMap;
+		protected final SimpleDraweeView mSdvMessageImage;
+		protected final LightTextView mLtvSubText;
+		protected final WeakReference<AppCompatActivity> activity;
+		protected WeakReference<dbMessage> message;
 
-		public GenericViewHolder(View itemView, String tag) {
+		public GenericViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
 			super(itemView);
-			this.tag = tag;
+			this.activity = activity;
+
+			this.mTvDate = (TextView) itemView.findViewById(R.id.tvDate);
+			this.mRlBackground = (RelativeLayout) itemView.findViewById(R.id.rlBackground);
+			this.mRtvMessageText = (RegularTextView) itemView.findViewById(R.id.rtvMessageText);
+			this.mRlImageContainer = (RelativeLayout) itemView.findViewById(R.id.rlImageContainer);
+			this.mMvMessageMap = (MapView) itemView.findViewById(R.id.mvMessageMap);
+			this.mSdvMessageImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvMessageImage);
+			this.mLtvSubText = (LightTextView) itemView.findViewById(R.id.ltvSubText);
+
+			this.mMvMessageMap.setClickable(false);
+
+			this.mRlBackground.setOnClickListener(this);
+			this.mRlBackground.setOnLongClickListener(this);
 		}
 
-		public void showMessage(dbMessage message, dbMessage previousMessage, AppCompatActivity activity) {
-			throw new RuntimeException("showMessage method must be override");
+		public void showMessage(dbMessage message, dbMessage previousMessage) {
+
 		}
+
+		public void loadMessage() {
+			if (message.get() != null) {
+				this.mRtvMessageText.setText(message.get().getBody());
+			}
+		}
+
+		public void loadMap() {
+			// 1. Create map
+			this.mMvMessageMap.onCreate(null);
+			this.mMvMessageMap.onResume();
+			// 2. Load map
+			this.mMvMessageMap.getMapAsync(this);
+		}
+
+		public void loadImage() {
+			if (activity.get() != null && message.get() != null) {
+				final float density = activity.get().getResources().getDisplayMetrics().density;
+				// 1. Resize image to display
+				final int width = (message.get().getWidth() < 1) ? 210 : message.get().getWidth();
+				final int height = (message.get().getHeight() < 1) ? 100 : message.get().getHeight();
+				// 2.1 Convert the DP into pixel
+				ViewGroup.LayoutParams params = this.mSdvMessageImage.getLayoutParams();
+				params.height = (int) (height / density);
+				params.width = (int) (width / density);
+				// 2.2 Set image
+				this.mSdvMessageImage.setLayoutParams(params);
+				this.mSdvMessageImage.setImageURI(Uri.fromFile(new File(message.get().getFileId())));
+				this.mSdvMessageImage.refreshDrawableState();
+			}
+		}
+
+		@Override
+		public void onClick(View view) {
+			if (message.get() != null) {
+				if (!message.get().getMessageType().equals(Const.kMessageTypeText)) {
+					EventBus.getDefault().post(new MessagePressedEvent(message.get()));
+				}
+			}
+		}
+
+		@Override
+		public boolean onLongClick(View v) {
+			return false;
+		}
+
+		@Override
+		public void onMapReady(GoogleMap googleMap) {
+			if (activity.get() != null && message.get() != null) {
+				double lat = message.get().getLatitude();
+				double lon = message.get().getLongitude();
+				MapsInitializer.initialize(activity.get().getApplicationContext());
+				googleMap.getUiSettings().setMapToolbarEnabled(false);
+				googleMap.getUiSettings().setAllGesturesEnabled(false);
+				googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+				LatLng sydney = new LatLng(lat, lon);
+				googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+				googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+			}
+		}
+
 	}
 
 }

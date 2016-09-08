@@ -7,6 +7,7 @@ import android.util.Log;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,10 +15,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.FragmentUsersChat;
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.dialog.PushNotification;
-import ee.app.conversa.extendables.ConversaActivity;
+import ee.app.conversa.events.ContactEvent;
+import ee.app.conversa.events.MessageEvent;
+import ee.app.conversa.management.contact.ContactIntentService;
 import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Account;
@@ -73,7 +75,7 @@ public class CustomMessageService extends IntentService {
                  }
 
                  boolean notifyUserAdded = false;
-                 dBusiness dbcustomer = ConversaApp.getDB().isContact(contactId);
+                 dBusiness dbcustomer = ConversaApp.getInstance(this).getDB().isContact(contactId);
 
                  // 1. Find if user is already a contact
                  if (dbcustomer == null) {
@@ -115,7 +117,7 @@ public class CustomMessageService extends IntentService {
                          dbcustomer.setAvatarThumbFileId("");
                      }
 
-                     dbcustomer = ConversaApp.getDB().saveContact(dbcustomer);
+                     dbcustomer = ConversaApp.getInstance(this).getDB().saveContact(dbcustomer);
 
                      if (dbcustomer.getId() == -1) {
                          Log.e(TAG, "Error guardando Contacto");
@@ -212,7 +214,7 @@ public class CustomMessageService extends IntentService {
                          break;
                  }
 
-                 dbmessage = ConversaApp.getDB().saveMessage(dbmessage);
+                 dbmessage = ConversaApp.getInstance(this).getDB().saveMessage(dbmessage);
 
                  if (dbmessage.getId() == -1) {
                      Log.e(TAG, "Error guardando Message");
@@ -223,11 +225,11 @@ public class CustomMessageService extends IntentService {
                  if (Foreground.get().isBackground()) {
                      // 5. Show notification
                      // Autoincrement count
-                     MySQLiteHelper.NotificationInformation summary = ConversaApp.getDB().getGroupInformation(contactId);
+                     MySQLiteHelper.NotificationInformation summary = ConversaApp.getInstance(this).getDB().getGroupInformation(contactId);
                      if (summary.getNotificationId() == -1) {
-                         summary = ConversaApp.getDB().incrementGroupCount(summary, true);
+                         summary = ConversaApp.getInstance(this).getDB().incrementGroupCount(summary, true);
                      } else {
-                         ConversaApp.getDB().incrementGroupCount(summary, false);
+                         ConversaApp.getInstance(this).getDB().incrementGroupCount(summary, false);
                      }
 
                      PushNotification.showMessageNotification(
@@ -239,17 +241,16 @@ public class CustomMessageService extends IntentService {
                      );
                  } else {
                      // 5. Show in-app notification
-                     // Broadcast results as from IntentService ain't possible to access ui thread
-                     Intent broadcastIntent = new Intent();
-                     broadcastIntent.setAction(ConversaActivity.MessageReceiver.ACTION_RESP);
-                     broadcastIntent.putExtra(PARAM_OUT_MSG, dbmessage);
-                     ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
+                     EventBus.getDefault().post(new MessageEvent(
+                             MessageIntentService.ACTION_MESSAGE_NEW_MESSAGE,
+                             dbmessage,
+                             null));
 
                      if (notifyUserAdded) {
-                         broadcastIntent = new Intent();
-                         broadcastIntent.setAction(FragmentUsersChat.UsersReceiver.ACTION_RESP);
-                         broadcastIntent.putExtra(PARAM_OUT_MSG, dbcustomer);
-                         ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
+                         EventBus.getDefault().post(new ContactEvent(
+                                 ContactIntentService.ACTION_MESSAGE_SAVE,
+                                 dbcustomer,
+                                 null));
                      }
                  }
                  break;

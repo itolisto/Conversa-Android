@@ -48,7 +48,7 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
 
         if(mBtnSendPassword != null) {
             mBtnSendPassword.setOnClickListener(this);
-            mBtnSendPassword.setTypeface(ConversaApp.getTfRalewayMedium());
+            mBtnSendPassword.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
         }
     }
 

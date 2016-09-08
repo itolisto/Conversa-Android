@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Conversa</string>
+    <string name="app_name" translatable="false">Conversa</string>
     <string name="test_string">Test string test string</string>
 
     <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
         send downstream messages to this app.</string>
-    <string name="registering_message">Generating InstanceID token...</string>
+    <string name="registering_message" translatable="false">Generating InstanceID token...</string>
     <string name="token_error_message">An error occurred while either fetching the InstanceID token,
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
@@ -71,58 +71,58 @@
     <!-- FOR CHAT WALL -->
     <string name="action_location">Locations</string>
     <string name="select_location">Select the location your message will be delivered</string>
-    <string name="no_wall_messages">No wall messages</string>
+    <string name="no_wall_messages">No messages</string>
     <string name="SEND">SEND</string>
     <string name="Send">Send</string>
 
     <!-- FOR HOOKUP DIALOGS -->
-    <string name="Ok">@android:string/ok</string>
-    <string name="Cancel">@android:string/cancel</string>
+    <string name="Ok" translatable="false">@android:string/ok</string>
+    <string name="Cancel" translatable="false">@android:string/cancel</string>
     <string name="delete_user">Delete conversation?</string>
 
     <!-- FOR NO INTERNET CONNECTION -->
     <string name="NO_INTERNET_CONNECTION">NO INTERNET CONNECTION</string>
 
     <!-- FOR SETTINGS LAYOUT -->
-    <string name="notification_preferences">Notifications</string>
-    <string name="in_app_checkbox_preference_key">in_app_checkbox_preference_key</string>
-    <string name="in_app_checkbox_preference">In-App</string>
+    <string name="notification_preferences" translatable="false">Notifications</string>
+    <string name="in_app_checkbox_preference_key" translatable="false">in_app_checkbox_preference_key</string>
+    <string name="in_app_checkbox_preference" translatable="false">In-App</string>
     <string name="summary_in_app_checkbox_preference">In-App Notifications</string>
-    <string name="notification_checkbox_preference_key">notification_checkbox_preference_key</string>
-    <string name="notification_checkbox_preference">Notification</string>
+    <string name="notification_checkbox_preference_key" translatable="false">notification_checkbox_preference_key</string>
+    <string name="notification_checkbox_preference" translatable="false">Notification</string>
     <string name="summary_notification_checkbox_preference">In Notification Center</string>
 
     <string name="account_preferences">Account</string>
-    <string name="email_edittext_preference_key">email_edittext_preference_key</string>
-    <string name="email_edittext_preference">e-mail</string>
+    <string name="email_edittext_preference_key" translatable="false">email_edittext_preference_key</string>
+    <string name="email_edittext_preference" translatable="false">e-mail</string>
     <string name="dialog_email_edittext_preference">Change e-mail</string>
 
-    <string name="name_edittext_preference_key">name_edittext_preference_key</string>
-    <string name="name_edittext_preference">Username</string>
-    <string name="dialog_name_edittext_preference">Change username</string>
+    <string name="name_edittext_preference_key" translatable="false">name_edittext_preference_key</string>
+    <string name="name_edittext_preference" translatable="false">Username</string>
+    <string name="dialog_name_edittext_preference" translatable="false">Change username</string>
 
-    <string name="password_edittext_preference_key">password_edittext_preference_key</string>
-    <string name="password_edittext_preference">Password</string>
-    <string name="dialog_password_edittext_preference">Change password</string>
+    <string name="password_edittext_preference_key" translatable="false">password_edittext_preference_key</string>
+    <string name="password_edittext_preference" translatable="false">Password</string>
+    <string name="dialog_password_edittext_preference" translatable="false">Change password</string>
 
-    <string name="logout_preference_key">logout_preference_key</string>
-    <string name="logout_preference">Log Out</string>
+    <string name="logout_preference_key" translatable="false">logout_preference_key</string>
+    <string name="logout_preference" translatable="false">Log Out</string>
 
-    <string name="about_attributes">Conversa</string>
-    <string name="share_preference_key">share_preference_key</string>
+    <string name="about_attributes" translatable="false">Conversa</string>
+    <string name="share_preference_key" translatable="false">share_preference_key</string>
     <string name="share_preference">Share</string>
     <string name="summary_share_preference">Do you love Conversa? Share it! (:</string>
-    <string name="go_intent_preference">Conversa</string>
+    <string name="go_intent_preference" translatable="false">Conversa</string>
     <string name="summary_go_intent_preference">Conversa Official Site</string>
     <string name="terms_of_use_preference">Terms &amp; Conditions</string>
-    <string name="privacy_politics_preference">Privacy Policy</string>
+    <string name="privacy_politics_preference" translatable="false">Privacy Policy</string>
 
     <!-- ******* FOR CLASSES  ******* -->
 
     <!-- FOR ConversaAsyncTask/ConversaAsync -->
     <string name="token_expired_error">Token expired!</string>
     <string name="no_internet_connection">No internet connection</string>
-    <string name="hookup_date_time_format">MMM dd, HH:mm</string>
+    <string name="hookup_date_time_format" translatable="false">MMM dd, HH:mm</string>
     <string name="can_not_connect_to_server">Can\'t connect to server</string>
     <string name="an_internal_error_has_occurred">An internal error has occurred</string>
     <string name="an_server_error_has_occurred">An server error has occurred</string>
@@ -218,7 +218,7 @@
     <string name="settings_password_error">We\'re sorry, password couldn\'t be changed. Please try again later</string>
     <string name="settings_name_succesful">Username changed</string>
     <string name="settings_name_error">We\'re sorry, username couldn\'t be changed. Please try again later</string>
-    <string name="settings_logout_succesful">Database removed</string>
-    <string name="settings_logout_error">An error has ocurred while removing databased. Database not removed</string>
+    <string name="settings_logout_succesful" translatable="false">Database removed</string>
+    <string name="settings_logout_error" translatable="false">An error has ocurred while removing databased. Database not removed</string>
 
 </resources>

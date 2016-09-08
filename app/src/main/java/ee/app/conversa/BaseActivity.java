@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
 import ee.app.conversa.management.ConnectionChangeReceiver;
+import ee.app.conversa.settings.language.DynamicLanguage;
 
 /**
  * Created by edgargomez on 6/3/16.
@@ -22,27 +23,33 @@ public class BaseActivity extends AppCompatActivity {
     protected RelativeLayout mRlNoInternetNotification;
     protected boolean checkInternetConnection;
     protected boolean hasInternetConnection;
-
+    private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
     private final IntentFilter mConnectionChangeFilter = new IntentFilter(ConnectionChangeReceiver.INTERNET_CONNECTION_CHANGE);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        onPreCreate();
         super.onCreate(savedInstanceState);
         checkInternetConnection = true;
         hasInternetConnection = true;
+    }
+
+    protected void onPreCreate() {
+        dynamicLanguage.onCreate(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (checkInternetConnection) {
-            ConversaApp.getLocalBroadcastManager().registerReceiver(mConnectionChangeReceiver, mConnectionChangeFilter);
+            ConversaApp.getInstance(this).getLocalBroadcastManager().registerReceiver(mConnectionChangeReceiver, mConnectionChangeFilter);
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        dynamicLanguage.onResume(this);
         if (checkInternetConnection) {
             if (hasInternetConnection) {
                 yesInternetConnection();
@@ -56,7 +63,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (checkInternetConnection) {
-            ConversaApp.getLocalBroadcastManager().unregisterReceiver(mConnectionChangeReceiver);
+            ConversaApp.getInstance(this).getLocalBroadcastManager().unregisterReceiver(mConnectionChangeReceiver);
         }
     }
 

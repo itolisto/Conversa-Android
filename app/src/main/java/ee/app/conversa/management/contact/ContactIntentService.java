@@ -5,10 +5,14 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
+import ee.app.conversa.events.ContactEvent;
+import ee.app.conversa.events.RefreshEvent;
 import ee.app.conversa.model.database.dBusiness;
 
 /**
@@ -45,23 +49,25 @@ public class ContactIntentService extends IntentService {
         int actionCode = intent.getExtras().getInt(INTENT_EXTRA_ACTION_CODE, 0);
         dBusiness user = intent.getExtras().getParcelable(INTENT_EXTRA_CUSTOMER);
         List<dBusiness> users = new ArrayList<>(20);
+        boolean refresh = true;
 
         try {
             switch (actionCode) {
                 case ACTION_MESSAGE_SAVE:
                     if (user != null) {
-                        user = ConversaApp.getDB().saveContact(user);
+                        user = ConversaApp.getInstance(this).getDB().saveContact(user);
                     }
                     break;
                 case ACTION_MESSAGE_UPDATE:
                     break;
                 case ACTION_MESSAGE_DELETE:
                     if (user != null) {
-                        user = ConversaApp.getDB().deleteContactById(user);
+                        user = ConversaApp.getInstance(this).getDB().deleteContactById(user);
                     }
                     break;
                 case ACTION_MESSAGE_RETRIEVE_ALL:
-                    users = ConversaApp.getDB().getAllContacts();
+                    users = ConversaApp.getInstance(this).getDB().getAllContacts();
+                    refresh = false;
                     break;
                 default:
                     return;
@@ -72,26 +78,11 @@ public class ContactIntentService extends IntentService {
         }
 
         // 5. Notify listeners
-        ConversaApp.getDB().notifyContactListeners(actionCode, user, users);
+        EventBus.getDefault().post(new ContactEvent(actionCode, user, users));
+
+        if (refresh) {
+            EventBus.getDefault().postSticky(new RefreshEvent(true));
+        }
     }
-
-
-    /* ******************************************************************************************* */
-    /* ******************************************************************************************* */
-
-//    public void saveToLocalDatabase() {
-//        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
-//        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_SAVE, this);
-//    }
-//
-//    public void removeContact() {
-//        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
-//        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_DELETE, this);
-//    }
-//
-//    public static void getAllContacts() {
-//        ContactAsyncTaskRunner runner = new ContactAsyncTaskRunner();
-//        runner.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, ACTION_MESSAGE_RETRIEVE_ALL);
-//    }
 
 }
