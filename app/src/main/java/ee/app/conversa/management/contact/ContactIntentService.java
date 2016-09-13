@@ -25,7 +25,6 @@ public class ContactIntentService extends IntentService {
     // Intent constants
     public static final String INTENT_EXTRA_ACTION_CODE = "action_code";
     public static final String INTENT_EXTRA_CUSTOMER = "customer_single";
-    public static final String INTENT_EXTRA_CUSTOMER_LIST = "customer_list";
 
     // MESSAGE ACTIONS
     public static final int ACTION_MESSAGE_SAVE = 1;
@@ -54,16 +53,13 @@ public class ContactIntentService extends IntentService {
         try {
             switch (actionCode) {
                 case ACTION_MESSAGE_SAVE:
-                    if (user != null) {
-                        user = ConversaApp.getInstance(this).getDB().saveContact(user);
-                    }
+                    user = ConversaApp.getInstance(this).getDB().saveContact(user);
                     break;
                 case ACTION_MESSAGE_UPDATE:
                     break;
                 case ACTION_MESSAGE_DELETE:
-                    if (user != null) {
-                        user = ConversaApp.getInstance(this).getDB().deleteContactById(user);
-                    }
+                    user = ConversaApp.getInstance(this).getDB().deleteContactById(user);
+                    refresh = false;
                     break;
                 case ACTION_MESSAGE_RETRIEVE_ALL:
                     users = ConversaApp.getInstance(this).getDB().getAllContacts();

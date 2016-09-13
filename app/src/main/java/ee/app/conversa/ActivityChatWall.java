@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
+import android.os.Handler;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,50 +26,46 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
+
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import ee.app.conversa.adapters.ChatsAdapter;
 import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.events.MessagePressedEvent;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.messageshandling.SendMessageAsync;
-import ee.app.conversa.model.database.Location;
 import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
+import ee.app.conversa.view.LightTextView;
+import ee.app.conversa.view.MediumTextView;
+import ee.app.conversa.view.MyBottomSheetDialogFragment;
 import ee.app.conversa.view.TouchImageView;
-
 
 public class ActivityChatWall extends ConversaActivity implements View.OnClickListener,
 		View.OnTouchListener, TextWatcher {
 
 	private dBusiness businessObject;
+	private MessagesAdapter gMessagesAdapter;
+
 	private boolean addAsContact;
-
-	public List<Location> gLocations;
-	public MessagesAdapter gMessagesAdapter;
-	public ChatsAdapter mChatsAdapter;
-
 	private boolean loading;
 	private boolean loadMore;
 	private boolean newMessagesFromNewIntent;
 
-	public static RecyclerView mRvWallMessages;
-	private static TouchImageView mTivPhotoImage;
-	public static TextView mTvNoMessages;
+	private RecyclerView mRvWallMessages;
+	private TouchImageView mTivPhotoImage;
+	private TextView mTvNoMessages;
 	private EditText mEtMessageText;
-	private BottomSheetBehavior mBottomSheetBehavior;
+	private BottomSheetDialogFragment myBottomSheet;
 	private RelativeLayout rlImageDisplay;
-	private Button mBtnWallSend;
+	private FloatingActionButton mBtnWallSend;
 
 	public ActivityChatWall() {
-		this.mChatsAdapter = null;
-		this.gLocations = new ArrayList<>();
 		this.loading = false;
 		this.loadMore = true;
 		this.newMessagesFromNewIntent = false;
@@ -84,8 +82,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		if (savedInstanceState == null) {
 			Bundle extras = getIntent().getExtras();
 			if(extras == null) {
-				businessObject = null;
-				addAsContact = true;
+				finish();
 			} else {
 				businessObject = extras.getParcelable(Const.kClassBusiness);
 				addAsContact = extras.getBoolean(Const.kYapDatabaseName);
@@ -117,14 +114,17 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	}
 
 	@Override
+	@SuppressWarnings("ConstantConditions")
 	protected void initialization() {
 		super.initialization();
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		TextView mTitleTextView = (TextView) toolbar.findViewById(R.id.tvChatName);
-		ImageView imageButton = (ImageView) toolbar.findViewById(R.id.ivAvatarChat);
+		MediumTextView mTitleTextView = (MediumTextView) toolbar.findViewById(R.id.tvChatName);
+		LightTextView mSubTitleTextView = (LightTextView) toolbar.findViewById(R.id.tvChatStatus);
+		SimpleDraweeView imageButton = (SimpleDraweeView) toolbar.findViewById(R.id.ivAvatarChat);
 		imageButton.setOnClickListener(this);
+		mTitleTextView.setText(businessObject.getDisplayName());
 
+		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
@@ -133,27 +133,16 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		mRvWallMessages = (RecyclerView) findViewById(R.id.rvWallMessages);
 		mTvNoMessages = (TextView) findViewById(R.id.tvNoMessages);
 		mEtMessageText = (EditText) findViewById(R.id.etWallMessage);
-		mBtnWallSend = (Button) findViewById(R.id.btnWallSend);
+		mBtnWallSend = (FloatingActionButton) findViewById(R.id.btnWallSend);
 		rlImageDisplay = (RelativeLayout) findViewById(R.id.rlImageDisplay);
 		mTivPhotoImage = (TouchImageView) findViewById(R.id.tivPhotoImage);
 
-		View bottomSheet = findViewById(R.id.bottom_sheet);
-		mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+		myBottomSheet = MyBottomSheetDialogFragment.newInstance(businessObject.getBusinessId(), this);
 
 		Button mBtnBack	= (Button) findViewById(R.id.btnCloseImage);
-//		Button mBtnProfile = (Button) findViewById(R.id.btnProfile);
-//		Button mBtnLocations = (Button) findViewById(R.id.btnLocations);
-//		Button mBtnCloseLocts = (Button) findViewById(R.id.btnCloseLocation);
-//		Button mBtnReloadLocts = (Button) findViewById(R.id.btnReloadLocation);
-		ImageButton mBtnCamera = (ImageButton) findViewById(R.id.btnCamera);
-		ImageButton mBtnGallery = (ImageButton) findViewById(R.id.btnGallery);
-		ImageButton mBtnLocation = (ImageButton) findViewById(R.id.btnLocation);
 		ImageButton mBtnOpenSlidingDrawer = (ImageButton) findViewById(R.id.btnSlideButton);
 
-		mEtMessageText.setTypeface( ConversaApp.getInstance(this).getTfRalewayRegular());
-//		mBtnBlockUser.setTypeface(ConversaApp.getTfRalewayRegular());
-//		mBtnProfile.setTypeface(    ConversaApp.getTfRalewayRegular());
-		mBtnWallSend.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
+		mEtMessageText.setTypeface(ConversaApp.getInstance(this).getTfRalewayRegular());
 		mBtnBack.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
 
 		mEtMessageText.addTextChangedListener(this);
@@ -166,14 +155,20 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		mRvWallMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-				int lastVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-				int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+				final int lastVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+				final int totalItemCount = recyclerView.getLayoutManager().getItemCount();
 
 				// 1. Check if app isn't checking for new messages and last visible item is on the top
 				if (!loading && lastVisibleItem == (totalItemCount - 1)) {
 					// 2. If load more is true retrieve more messages otherwise skip
 					if (loadMore) {
-						dbMessage.getAllMessageForChat(getApplicationContext(), businessObject.getBusinessId(), 20, totalItemCount);
+						gMessagesAdapter.addLoad(true);
+						new Handler().postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								dbMessage.getAllMessageForChat(getApplicationContext(), businessObject.getBusinessId(), 20, totalItemCount);
+							}
+						}, 1800);
 						loading = true;
 					}
 				}
@@ -183,16 +178,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		mBtnWallSend.setOnClickListener(this);
 		mBtnOpenSlidingDrawer.setOnClickListener(this);
-
-		mBtnCamera.setOnClickListener(this);
-		mBtnGallery.setOnClickListener(this);
-		mBtnLocation.setOnClickListener(this);
 		mBtnBack.setOnClickListener(this);
-//		mBtnBlockUser.setOnClickListener(this);
-//		mBtnLocations.setOnClickListener(this);
-//		mBtnCloseLocts.setOnClickListener(this);
-//		mBtnReloadLocts.setOnClickListener(this);
-//		mBtnProfile.setOnClickListener(this);
 	}
 
 	@Override
@@ -301,40 +287,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 	@Override
 	public void onClick(View v) {
-		if(v instanceof ImageButton) {
-			switch (v.getId()) {
-				case R.id.btnCamera: {
-					Intent intent = new Intent(this, ActivityCameraCrop.class);
-					intent.putExtra("type", "camera");
-					startActivityForResult(intent, ActivityCameraCrop.PICK_CAMERA_REQUEST);
-					mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-					break;
-				}
-				case R.id.btnGallery: {
-					Intent intent = new Intent(this, ActivityCameraCrop.class);
-					intent.putExtra("type", "gallery");
-					startActivityForResult(intent, ActivityCameraCrop.PICK_GALLERY_REQUEST);
-					mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-					break;
-				}
-				case R.id.btnLocation: {
-					Intent intent = new Intent(getApplicationContext(), ActivityLocation.class);
-					intent.putExtra(Const.LOCATION, businessObject.getBusinessId());
-					startActivityForResult(intent, ActivityLocation.PICK_LOCATION_REQUEST);
-					mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-					break;
-				}
-				case R.id.btnSlideButton:
-					mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-					break;
-			}
-		} else if (v instanceof ImageView) {
-			switch (v.getId()) {
-				case R.id.ivAvatarChat:
-					// Llamar a Servidor por foto y actualizar
-					break;
-			}
-		} else if (v instanceof Button) {
+		if (v instanceof FloatingActionButton) {
 			switch (v.getId()) {
 				case R.id.btnWallSend:
 					String body = mEtMessageText.getText().toString().trim();
@@ -348,6 +301,21 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 								businessObject);
 					}
 					break;
+			}
+		} else if(v instanceof ImageButton) {
+			switch (v.getId()) {
+				case R.id.btnSlideButton:
+					myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
+					break;
+			}
+		} else if (v instanceof ImageView) {
+			switch (v.getId()) {
+				case R.id.ivAvatarChat:
+					// Llamar a Servidor por foto y actualizar
+					break;
+			}
+		} else if (v instanceof Button) {
+			switch (v.getId()) {
 				case R.id.btnCloseImage:
 					closeImage();
 					break;
@@ -373,19 +341,14 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		if(rlImageDisplay.getVisibility() == View.VISIBLE) {
 			closeImage();
 			return false;
-		} if(mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-			mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-			return false;
 		} else {
 			return true;
 		}
 	}
 
 	public void showImage(final dbMessage m) {
-		//Utils.hideKeyboard(this);
-
 		try {
-			//File image = new File(m.getFileId());
+			Utils.hideKeyboard(this);
 			BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 			Bitmap bitmap = BitmapFactory.decodeFile(m.getFileId(), bmOptions);
 			bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
@@ -434,8 +397,9 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				gMessagesAdapter.addMessages(messages, 0);
 				mRvWallMessages.scrollToPosition(0);
 			} else {
+				gMessagesAdapter.addLoad(false);
+
 				// No need to check visibility, only add messages to adapter
-				mRvWallMessages.scrollToPosition(mRvWallMessages.getLayoutManager().getChildCount() - 1);
 				gMessagesAdapter.addMessages(messages);
 				// Check if we need to load more messages
 				if (messages.size() < 20) {

@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.management.ably.Connection;
 import ee.app.conversa.model.parse.Account;
-import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.utils.Utils;
 
@@ -23,10 +22,17 @@ public class ActivityMain extends ConversaActivity {
     private ViewPager mViewPager;
     private TabLayout tabLayout;
     private String titles[];
-    private int[] tabIcons = {
-            R.drawable.chats_active,
-            R.drawable.actuales_inactive,
-            R.drawable.settings_inactive
+
+    private final int[] tabIcons = {
+            R.drawable.tab_chat_inactive,
+            R.drawable.tab_explore_inactive,
+            R.drawable.tab_settings_inactive
+    };
+
+    private final int[] tabSelectedIcons = {
+            R.drawable.tab_chat_active,
+            R.drawable.tab_explore_active,
+            R.drawable.tab_settings_active
     };
 
     public void onCreate(Bundle savedInstanceState) {
@@ -57,68 +63,50 @@ public class ActivityMain extends ConversaActivity {
             getSupportActionBar().setTitle(titles[0]);
         }
 
-        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        ConversaApp.getInstance(getApplicationContext()).getPreferences().setCurrentCategory("", false);
+
+        tabLayout.getTabAt(0).setIcon(tabSelectedIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
 
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                mViewPager.setCurrentItem(tab.getPosition());
-                int p = tab.getPosition();
-
-                try {
-                    getSupportActionBar().setTitle(titles[p]);
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                    supportInvalidateOptionsMenu();
-                } catch (NullPointerException e) {
-                    Logger.error(this.toString(), e.getMessage());
-                }
+                final int p = tab.getPosition();
+                mViewPager.setCurrentItem(p);
+                tab.setIcon(tabSelectedIcons[p]);
 
                 switch (p) {
-                    case 0:
-                        tab.setIcon(R.drawable.chats_active);
-                        break;
-                    case 1:
-                        tab.setIcon(R.drawable.actuales_active);
-
-                        if(getSupportFragmentManager().getBackStackEntryCount() <= 0) {
-                            String title = ConversaApp.getInstance(getApplicationContext()).getPreferences().getCurrentCategory();
-                            if (!title.isEmpty()) {
-                                ConversaApp.getInstance(getApplicationContext()).getPreferences().setCurrentCategory("", false);
-                            }
+                    case 1: {
+                        final String title = ConversaApp.getInstance(getApplicationContext()).getPreferences().getCurrentCategory();
+                        if (title.isEmpty()) {
+                            getSupportActionBar().setTitle(titles[1]);
+                            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                         } else {
-                            String title = ConversaApp.getInstance(getApplicationContext()).getPreferences().getCurrentCategory();
-                            if (!title.isEmpty()) {
-                                getSupportActionBar().setTitle(title);
-                                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                            }
+                            getSupportActionBar().setTitle(title);
+                            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                         }
                         break;
-                    case 2:
-                        tab.setIcon(R.drawable.settings_active);
+                    }
+                    default: {
+                        getSupportActionBar().setTitle(titles[p]);
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                         break;
+                    }
                 }
+
+                supportInvalidateOptionsMenu();
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                int position = tab.getPosition();
-                switch (position) {
-                    case 0:
-                        tab.setIcon(R.drawable.chats_inactive);
-                        break;
-                    case 1:
-                        tab.setIcon(R.drawable.actuales_inactive);
-                        break;
-                    case 2:
-                        tab.setIcon(R.drawable.settings_inactive);
-                        break;
-                }
+                tab.setIcon(tabIcons[tab.getPosition()]);
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
         });
 
         // 1. Subscribe to Customer channels if not subscribed already
@@ -171,4 +159,11 @@ public class ActivityMain extends ConversaActivity {
         }
     }
 
+    public void selectViewPagerTab(int tab) {
+        if (tab > 2 || tab < 0) {
+            return;
+        }
+
+        mViewPager.setCurrentItem(tab);
+    }
 }

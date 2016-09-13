@@ -14,7 +14,7 @@ import ee.app.conversa.settings.ActivityChatSettings;
 import ee.app.conversa.settings.ActivityNotificationSettings;
 import ee.app.conversa.settings.ActivitySupportSettings;
 
-public class FragmentSettings extends Fragment implements View.OnClickListener{
+public class FragmentSettings extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater,

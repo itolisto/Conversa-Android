@@ -203,13 +203,8 @@ public class MySQLiteHelper {
     }
 
     public dBusiness deleteContactById(dBusiness customer) {
-        String id = Long.toString(customer.getId());
-        int result = openDatabase().delete(TABLE_CV_CONTACTS, COLUMN_ID + " = ? ", new String[]{id});
-
-        if(result > 0) {
-            customer.setId(-1);
-        }
-
+        openDatabase().delete(TABLE_CV_CONTACTS, COLUMN_ID + " = ? ",
+                new String[]{Long.toString(customer.getId())});
         return customer;
     }
 
@@ -303,8 +298,7 @@ public class MySQLiteHelper {
     public int updateDeliveryStatus(long messageId, String status) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(sMessageDeliveryStatus, status);
-        int result = openDatabase().update(TABLE_MESSAGES, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(messageId)});
-        return result;
+        return openDatabase().update(TABLE_MESSAGES, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(messageId)});
     }
 
     public int messageCountForContact(String id) {

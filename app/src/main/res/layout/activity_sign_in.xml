@@ -12,7 +12,7 @@
 		android:layout_marginTop="5dp"
 		android:contentDescription="@null"
 		android:scaleType="fitCenter"
-		android:src="@drawable/ic_launcher" />
+		android:src="@mipmap/ic_launcher" />
 
 	<ee.app.conversa.view.LightTextView
 		android:id="@+id/ltvFirstUnderTitle"

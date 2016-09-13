@@ -26,6 +26,8 @@ package ee.app.conversa.utils;
 
 import android.util.Log;
 
+import ee.app.conversa.BuildConfig;
+
 /**
  * Logger
  * 
@@ -37,7 +39,7 @@ public class Logger {
     @SuppressWarnings("unused")
 	public static void debug(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.d(tag, value);
 		}
 	}
@@ -45,28 +47,28 @@ public class Logger {
     @SuppressWarnings("unused")
 	public static void info(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.i(tag, value);
 		}
 	}
 
 	public static void error(String tag, String value, Exception e) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.e(tag, value, e);
 		}
 	}
 
 	public static void error(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.e(tag, value);
 		}
 	}
 
 	public static void error(String tag, Exception e) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.e(tag, "", e);
 		}
 	}
@@ -74,7 +76,7 @@ public class Logger {
     @SuppressWarnings("unused")
 	public static void warning(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.w(tag, value);
 		}
 	}
@@ -82,7 +84,7 @@ public class Logger {
     @SuppressWarnings("unused")
 	public static void view(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.v(tag, value);
 		}
 	}

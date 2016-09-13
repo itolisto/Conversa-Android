@@ -1,27 +1,3 @@
-/*
- * The MIT License (MIT)
- * 
- * Copyright � 2013 Clover Studio Ltd. All rights reserved.
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package ee.app.conversa.adapters;
 
 import android.net.Uri;
@@ -65,9 +41,11 @@ import ee.app.conversa.view.RegularTextView;
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.GenericViewHolder> {
 
 	private final int TO_ME_VIEW_TYPE = 1;
+	private final int FROM_ME_VIEW_TYPE = 2;
+	private final int LOADER_TYPE = 3;
 	private final String toUser;
 	private final WeakReference<AppCompatActivity> mActivity;
-	private List<dbMessage> mMessages;
+	private List<Object> mMessages;
 
 	public MessagesAdapter(AppCompatActivity activity, String toUser) {
 		this.toUser = toUser;
@@ -77,7 +55,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 
 	@Override
 	public int getItemViewType(int position) {
-		return (mMessages.get(position).getFromUserId().equals(toUser)) ? TO_ME_VIEW_TYPE : 0;
+		Object object = mMessages.get(position);
+		if (object instanceof LoadItem) {
+			return LOADER_TYPE;
+		} else {
+			return (((dbMessage)object).getFromUserId().equals(toUser)) ? TO_ME_VIEW_TYPE : FROM_ME_VIEW_TYPE;
+		}
 	}
 
 	@Override
@@ -91,25 +74,47 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			return new IncomingViewHolder(
 					LayoutInflater.from(parent.getContext()).inflate(R.layout.message_incoming_item, parent, false),
 					this.mActivity);
-		} else {
+		} else if (viewType == FROM_ME_VIEW_TYPE) {
 			return new ViewHolder(
 					LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, parent, false),
+					this.mActivity);
+		} else {
+			return new LoaderViewHolder(
+					LayoutInflater.from(parent.getContext()).inflate(R.layout.loader_item, parent, false),
 					this.mActivity);
 		}
 	}
 
 	@Override
 	public void onBindViewHolder(GenericViewHolder holder, int position) {
-		if (position > 0) {
-			holder.showMessage(mMessages.get(position), mMessages.get(position - 1));
-		} else {
-			holder.showMessage(mMessages.get(position), null);
+		if (holder instanceof MessageViewHolder) {
+			if (position > 0) {
+				((MessageViewHolder)holder).showMessage(
+						(dbMessage)mMessages.get(position),
+						(dbMessage)mMessages.get(position - 1));
+			} else {
+				((MessageViewHolder)holder).showMessage(
+						(dbMessage)mMessages.get(position),
+						null);
+			}
 		}
 	}
 
 	public void setMessages(List<dbMessage> messages) {
-		mMessages = messages;
+		mMessages.clear();
+		mMessages.addAll(messages);
 		notifyDataSetChanged();
+	}
+
+	public void addLoad(boolean show) {
+		int position = mMessages.size();
+		if (show) {
+			mMessages.add(position, new LoadItem());
+			notifyItemInserted(position);
+		} else {
+			mMessages.remove(position - 1);
+			notifyItemRemoved(position - 1);
+		}
 	}
 
 	public void addMessage(dbMessage message) {
@@ -135,7 +140,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		int size = mMessages.size();
 
 		for (int i = 0; i < size; i++) {
-			dbMessage m = mMessages.get(i);
+			dbMessage m = (dbMessage) mMessages.get(i);
 			if (m.getId() == message.getId()) {
 				m.setDeliveryStatus(message.getDeliveryStatus());
 				mMessages.set(i, m);
@@ -188,142 +193,38 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		return subText;
 	}
 
-	class ViewHolder extends GenericViewHolder {
+	class ViewHolder extends MessageViewHolder {
 
 		public ViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
 			super(itemView, activity);
 		}
 
-		@Override
-		public void showMessage(dbMessage message, dbMessage previousMessage) {
-			super.showMessage(message, previousMessage);
-			this.message = new WeakReference<>(message);
-
-			// 1. Hide date. Will later check date text string and if it should be visible
-			this.mTvDate.setVisibility(View.GONE);
-
-			// 2. Hide message subtext and map/image relative layout
-			this.mLtvSubText.setVisibility(View.GONE);
-
-			switch (message.getMessageType()) {
-				case Const.kMessageTypeText:
-					// 3. Show text and hide container
-					this.mRlImageContainer.setVisibility(View.GONE);
-					this.mRtvMessageText.setVisibility(View.VISIBLE);
-					// 4. Set messaget text
-					loadMessage();
-					break;
-				case Const.kMessageTypeLocation:
-					// 3. Show image container and hide text
-					this.mRtvMessageText.setVisibility(View.GONE);
-					this.mRlImageContainer.setVisibility(View.VISIBLE);
-					// 3.1 Decide which view contained in image container should be visible
-					this.mMvMessageMap.setVisibility(View.VISIBLE);
-					this.mSdvMessageImage.setVisibility(View.GONE);
-					// 4. Start map view
-					loadMap();
-					break;
-				case Const.kMessageTypeImage:
-					// 3. Show image container and hide text
-					this.mRtvMessageText.setVisibility(View.GONE);
-					this.mRlImageContainer.setVisibility(View.VISIBLE);
-					// 3.1 Decide which view contained in image container should be visible
-					this.mMvMessageMap.setVisibility(View.GONE);
-					this.mSdvMessageImage.setVisibility(View.VISIBLE);
-					// 4. Load image
-					loadImage();
-					break;
-				case Const.kMessageTypeVideo:
-					break;
-				case Const.kMessageTypeAudio:
-					break;
-			}
-
-			// 4. Decide if date should be visible
-			this.mTvDate.setText(setDate(message, this.activity.get()));
-
-			// 5. Decide whether to show message status
-			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
-				this.mLtvSubText.setVisibility(View.VISIBLE);
-				if (this.activity.get() != null) {
-					this.mLtvSubText.setText(activity.get().getString(R.string.app_name));
-				}
-			} else {
-				this.mLtvSubText.setVisibility(View.GONE);
-			}
-		}
-
 	}
 
-	class IncomingViewHolder extends GenericViewHolder {
+	class IncomingViewHolder extends MessageViewHolder {
 
 		public IncomingViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
 			super(itemView, activity);
 		}
 
-		@Override
-		public void showMessage(dbMessage message, dbMessage previousMessage) {
-			super.showMessage(message, previousMessage);
-			this.message = new WeakReference<>(message);
+	}
 
-			// 1. Hide date. Will later check date text string and if it should be visible
-			this.mTvDate.setVisibility(View.GONE);
+	class LoaderViewHolder extends GenericViewHolder {
 
-			// 2. Hide message subtext and map/image relative layout
-			this.mLtvSubText.setVisibility(View.GONE);
-
-			switch (message.getMessageType()) {
-				case Const.kMessageTypeText:
-					// 3. Show text and hide container
-					this.mRlImageContainer.setVisibility(View.GONE);
-					this.mRtvMessageText.setVisibility(View.VISIBLE);
-					// 4. Set messaget text
-					loadMessage();
-					break;
-				case Const.kMessageTypeLocation:
-					// 3. Show image container and hide text
-					this.mRtvMessageText.setVisibility(View.GONE);
-					this.mRlImageContainer.setVisibility(View.VISIBLE);
-					// 3.1 Decide which view contained in image container should be visible
-					this.mMvMessageMap.setVisibility(View.VISIBLE);
-					this.mSdvMessageImage.setVisibility(View.GONE);
-					// 4. Start map view
-					loadMap();
-					break;
-				case Const.kMessageTypeImage:
-					// 3. Show image container and hide text
-					this.mRtvMessageText.setVisibility(View.GONE);
-					this.mRlImageContainer.setVisibility(View.VISIBLE);
-					// 3.1 Decide which view contained in image container should be visible
-					this.mMvMessageMap.setVisibility(View.GONE);
-					this.mSdvMessageImage.setVisibility(View.VISIBLE);
-					// 4. Load image
-					loadImage();
-					break;
-				case Const.kMessageTypeVideo:
-					break;
-				case Const.kMessageTypeAudio:
-					break;
-			}
-
-			// 4. Decide if date should be visible
-			this.mTvDate.setText(setDate(message, this.activity.get()));
-
-			// 5. Decide whether to show message status
-			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
-				this.mLtvSubText.setVisibility(View.VISIBLE);
-				if (this.activity.get() != null) {
-					this.mLtvSubText.setText(activity.get().getString(R.string.app_name));
-				}
-			} else {
-				this.mLtvSubText.setVisibility(View.GONE);
-			}
+		public LoaderViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+			super(itemView, activity);
 		}
 
 	}
 
+	class LoadItem {
+
+		public LoadItem(){}
+
+	}
+
 	// Taken from http://stackoverflow.com/questions/26245139/how-to-create-recyclerview-with-multiple-view-type
-	public class GenericViewHolder extends RecyclerView.ViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
+	public class MessageViewHolder extends GenericViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
 		protected final TextView mTvDate;
 		protected final RelativeLayout mRlBackground;
 		protected final RegularTextView mRtvMessageText;
@@ -331,12 +232,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		protected final MapView mMvMessageMap;
 		protected final SimpleDraweeView mSdvMessageImage;
 		protected final LightTextView mLtvSubText;
-		protected final WeakReference<AppCompatActivity> activity;
 		protected WeakReference<dbMessage> message;
 
-		public GenericViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
-			super(itemView);
-			this.activity = activity;
+		public MessageViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+			super(itemView, activity);
 
 			this.mTvDate = (TextView) itemView.findViewById(R.id.tvDate);
 			this.mRlBackground = (RelativeLayout) itemView.findViewById(R.id.rlBackground);
@@ -353,7 +252,60 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		}
 
 		public void showMessage(dbMessage message, dbMessage previousMessage) {
+			this.message = new WeakReference<>(message);
 
+			// 1. Hide date. Will later check date text string and if it should be visible
+			this.mTvDate.setVisibility(View.GONE);
+
+			// 2. Hide message subtext and map/image relative layout
+			this.mLtvSubText.setVisibility(View.GONE);
+
+			switch (message.getMessageType()) {
+				case Const.kMessageTypeText:
+					// 3. Show text and hide container
+					this.mRlImageContainer.setVisibility(View.GONE);
+					this.mRtvMessageText.setVisibility(View.VISIBLE);
+					// 4. Set messaget text
+					loadMessage();
+					break;
+				case Const.kMessageTypeLocation:
+					// 3. Show image container and hide text
+					this.mRtvMessageText.setVisibility(View.GONE);
+					this.mRlImageContainer.setVisibility(View.VISIBLE);
+					// 3.1 Decide which view contained in image container should be visible
+					this.mMvMessageMap.setVisibility(View.VISIBLE);
+					this.mSdvMessageImage.setVisibility(View.GONE);
+					// 4. Start map view
+					loadMap();
+					break;
+				case Const.kMessageTypeImage:
+					// 3. Show image container and hide text
+					this.mRtvMessageText.setVisibility(View.GONE);
+					this.mRlImageContainer.setVisibility(View.VISIBLE);
+					// 3.1 Decide which view contained in image container should be visible
+					this.mMvMessageMap.setVisibility(View.GONE);
+					this.mSdvMessageImage.setVisibility(View.VISIBLE);
+					// 4. Load image
+					loadImage();
+					break;
+				case Const.kMessageTypeVideo:
+					break;
+				case Const.kMessageTypeAudio:
+					break;
+			}
+
+			// 4. Decide if date should be visible
+			this.mTvDate.setText(setDate(message, this.activity.get()));
+
+			// 5. Decide whether to show message status
+			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
+				this.mLtvSubText.setVisibility(View.VISIBLE);
+				if (this.activity.get() != null) {
+					this.mLtvSubText.setText(activity.get().getString(R.string.app_name));
+				}
+			} else {
+				this.mLtvSubText.setVisibility(View.GONE);
+			}
 		}
 
 		public void loadMessage() {
@@ -414,6 +366,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 				googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 				googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 			}
+		}
+
+	}
+
+	public class GenericViewHolder extends RecyclerView.ViewHolder {
+
+		protected final WeakReference<AppCompatActivity> activity;
+
+		public GenericViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+			super(itemView);
+			this.activity = activity;
 		}
 
 	}

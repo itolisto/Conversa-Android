@@ -1,5 +1,6 @@
 package ee.app.conversa.adapters;
 
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -7,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -71,6 +71,15 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         }
 
         holder.tvUser.setText(user.getDisplayName());
+
+        Uri uri;
+        if(user.getAvatarThumbFileId().isEmpty()) {
+            uri = Uri.parse(user.getAvatarThumbFileId());
+        } else {
+            uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+        }
+
+        holder.ivUserImage.setImageURI(uri);
 
         dbMessage lastMessage = ConversaApp.getInstance(mActivity).getDB().getLastMessage(user.getBusinessId());
 
@@ -139,7 +148,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-        public RelativeLayout rlUserLayout;
         public SimpleDraweeView ivUserImage;
         public TextView tvUser;
         public TextView tvLastMessage;
@@ -147,8 +155,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         public ViewHolder(View itemView) {
             super(itemView);
-            this.rlUserLayout = (RelativeLayout) itemView
-                    .findViewById(R.id.rlUserLayout);
             this.ivUserImage = (SimpleDraweeView) itemView
                     .findViewById(R.id.sdvContactAvatar);
             this.tvUser = (TextView) itemView

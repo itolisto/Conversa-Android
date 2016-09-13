@@ -92,6 +92,13 @@ public class dBusiness implements Parcelable {
         context.startService(broadcastIntent);
     }
 
+    public void removeContact(Context context) {
+        Intent broadcastIntent = new Intent(context, ContactIntentService.class);
+        broadcastIntent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactIntentService.ACTION_MESSAGE_DELETE);
+        broadcastIntent.putExtra(ContactIntentService.INTENT_EXTRA_CUSTOMER, this);
+        context.startService(broadcastIntent);
+    }
+
     /* ******************************************************************************************* */
     /* ******************************************************************************************* */
     // In the vast majority of cases you can simply return 0 for this.

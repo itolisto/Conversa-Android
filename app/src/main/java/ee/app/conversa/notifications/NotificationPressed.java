@@ -70,7 +70,7 @@ public class NotificationPressed extends AppCompatActivity {
                 }
                 break;
             default:
-                intent = new Intent(this.getApplicationContext(), ActivityMain.class);
+                intent = new Intent(this, ActivityMain.class);
                 break;
         }
 

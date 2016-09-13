@@ -7,32 +7,27 @@
     android:layout_height="90dp"
     android:clipToPadding="false" >
 
-    <RelativeLayout
-        android:id="@+id/rlImageBusiness"
-        android:gravity="center"
-        android:layout_height="match_parent"
-        android:layout_width="80dp" >
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/sdvBusinessImage"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            fresco:fadeDuration="300"
-            fresco:actualImageScaleType="focusCrop"
-            fresco:placeholderImage="@drawable/business_default"
-            fresco:placeholderImageScaleType="fitCenter"
-            fresco:failureImage="@drawable/username_icon"
-            fresco:failureImageScaleType="centerInside"
-            fresco:retryImage="@drawable/refresh_icon"
-            fresco:retryImageScaleType="centerCrop"
-            fresco:progressBarImage="@drawable/rotate_loading"
-            fresco:progressBarImageScaleType="centerInside"
-            fresco:progressBarAutoRotateInterval="1000"
-            fresco:roundAsCircle="true" />
-    </RelativeLayout>
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/sdvBusinessImage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_centerVertical="true"
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/business_default"
+        fresco:placeholderImageScaleType="centerInside"
+        fresco:failureImage="@drawable/business_default"
+        fresco:failureImageScaleType="centerInside"
+        fresco:retryImage="@drawable/business_default"
+        fresco:retryImageScaleType="centerInside"
+        fresco:progressBarImage="@drawable/rotate_loading"
+        fresco:progressBarImageScaleType="centerInside"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:roundAsCircle="true" />
 
     <RelativeLayout
-        android:layout_toEndOf="@id/rlImageBusiness"
-        android:layout_toRightOf="@id/rlImageBusiness"
+        android:layout_toEndOf="@id/sdvBusinessImage"
+        android:layout_toRightOf="@id/sdvBusinessImage"
         android:paddingLeft="10dp"
         android:paddingStart="10dp"
         android:paddingRight="10dp"

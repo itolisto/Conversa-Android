@@ -23,12 +23,17 @@ import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.Utils;
+import ee.app.conversa.view.LightTextView;
+import ee.app.conversa.view.RegularTextView;
 
 public class ActivityProfile extends ConversaActivity implements View.OnClickListener, OnLikeListener {
 
     private LikeButton mBtnFavorite;
     private dBusiness businessObject;
     private boolean addAsContact;
+    private RegularTextView mRtvFollowers;
+    private LightTextView mLtvMemberSince;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,20 +59,25 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
 
     @Override
     protected void initialization() {
+        super.initialization();
         SimpleDraweeView mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvBusinessImage);
         mBtnFavorite = (LikeButton) findViewById(R.id.btnFavorite);
         Button mBtnStartChat = (Button) findViewById(R.id.btnStartChat);
+        mRtvFollowers = (RegularTextView) findViewById(R.id.rtvFollowers);
+        mLtvMemberSince = (LightTextView) findViewById(R.id.ltvMemberSince);
 
+        Uri uri;
         if(businessObject.getAvatarThumbFileId().isEmpty()) {
-            Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-            mSdvBusinessImage.setImageURI(path);
+            uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
         } else {
-            Uri uri = Uri.parse(businessObject.getAvatarThumbFileId());
-            mSdvBusinessImage.setImageURI(uri);
+            uri = Uri.parse(businessObject.getAvatarThumbFileId());
         }
 
-        mBtnFavorite.setLiked(false);
+        mSdvBusinessImage.setImageURI(uri);
+        mBtnFavorite.setOnLikeListener(this);
+        mBtnStartChat.setOnClickListener(this);
         mBtnFavorite.setEnabled(false);
+
         // Call Parse for registry
         HashMap<String, String> params = new HashMap<>();
         params.put("business", businessObject.getBusinessId());
@@ -81,9 +91,6 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                 }
             }
         });
-
-        mBtnFavorite.setOnLikeListener(this);
-        mBtnStartChat.setOnClickListener(this);
     }
 
     @Override
@@ -137,12 +144,12 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                 int followers = jsonRootObject.optInt("followers", 0);
                 boolean verified = jsonRootObject.optBoolean("verified", false);
                 long since = jsonRootObject.optLong("since", 0);
+                boolean favorite = jsonRootObject.optBoolean("favorite", false);
 
-                if (jsonRootObject.optBoolean("favorite", false)) {
-                    mBtnFavorite.setLiked(true);
-                } else {
-                    mBtnFavorite.setLiked(false);
-                }
+
+                mBtnFavorite.setLiked(favorite);
+                mRtvFollowers.setText(getString(R.string.number_of_followers, followers));
+                mLtvMemberSince.setText(Utils.getDate(this, since));
             }
         } catch (JSONException e) {
             Logger.error("parseResult", e.getMessage());

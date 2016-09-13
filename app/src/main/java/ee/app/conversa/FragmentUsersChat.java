@@ -22,8 +22,10 @@ import ee.app.conversa.events.RefreshEvent;
 import ee.app.conversa.extendables.ConversaFragment;
 import ee.app.conversa.model.database.dBusiness;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.view.RegularTextView;
 
-public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.OnItemClickListener, ChatsAdapter.OnLongClickListener {
+public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.OnItemClickListener,
+        ChatsAdapter.OnLongClickListener, View.OnClickListener {
 
     private RecyclerView mRvUsers;
     private RelativeLayout mRlNoUsers;
@@ -43,6 +45,9 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
         mRvUsers.setItemAnimator(new DefaultItemAnimator());
         mRvUsers.setAdapter(mUserListAdapter);
         refresh = false;
+
+        RegularTextView mRtvStartBrowsing = (RegularTextView) rootView.findViewById(R.id.rtvStartBrowsing);
+        mRtvStartBrowsing.setOnClickListener(this);
 
         return rootView;
     }
@@ -139,16 +144,25 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
                 .setupPositiveButton("Accept", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //contact.removeContact();
+                        contact.removeContact(getContext());
                         dialog.dismiss();
                     }
                 })
                 .setupNegativeButton("Decline", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        dialog.dismiss();
                 }
                 });
         dialog.show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.rtvStartBrowsing:
+                ((ActivityMain)getActivity()).selectViewPagerTab(1);
+                break;
+        }
     }
 }

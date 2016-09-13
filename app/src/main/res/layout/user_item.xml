@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/rlUserLayout"
     android:background="@android:color/white"
     android:layout_width="match_parent"
     android:layout_height="85dp">
 
-    <RelativeLayout
-        android:id="@+id/rlImage"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/sdvContactAvatar"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_centerVertical="true"
@@ -16,25 +15,18 @@
         android:layout_marginRight="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginTop="5dp"
-        android:gravity="center" >
-
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/sdvContactAvatar"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            fresco:fadeDuration="300"
-            fresco:actualImageScaleType="focusCrop"
-            fresco:placeholderImage="@drawable/business_default"
-            fresco:placeholderImageScaleType="fitCenter"
-            fresco:failureImage="@drawable/username_icon"
-            fresco:failureImageScaleType="centerInside"
-            fresco:retryImage="@drawable/refresh_icon"
-            fresco:retryImageScaleType="centerCrop"
-            fresco:progressBarImage="@drawable/rotate_loading"
-            fresco:progressBarImageScaleType="centerInside"
-            fresco:progressBarAutoRotateInterval="1000"
-            fresco:roundAsCircle="true" />
-    </RelativeLayout>
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/business_default"
+        fresco:placeholderImageScaleType="centerInside"
+        fresco:failureImage="@drawable/business_default"
+        fresco:failureImageScaleType="centerInside"
+        fresco:retryImage="@drawable/business_default"
+        fresco:retryImageScaleType="centerInside"
+        fresco:progressBarImage="@drawable/rotate_loading"
+        fresco:progressBarImageScaleType="centerInside"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:roundAsCircle="true" />
 
     <ImageView
         android:id="@+id/ivUnread"
@@ -59,8 +51,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textColor="#444444"
-        android:layout_toRightOf="@id/rlImage"
-        android:layout_toEndOf="@id/rlImage"
+        android:layout_toRightOf="@id/sdvContactAvatar"
+        android:layout_toEndOf="@id/sdvContactAvatar"
         android:layout_toLeftOf="@id/ivUnread"
         android:layout_toStartOf="@id/ivUnread"
         android:layout_marginRight="5dp"
@@ -75,8 +67,8 @@
         android:layout_marginTop="5dp"
         android:textColor="@color/light_gray_subtext"
         android:maxLines="2"
-        android:layout_toRightOf="@id/rlImage"
-        android:layout_toEndOf="@id/rlImage"
+        android:layout_toRightOf="@id/sdvContactAvatar"
+        android:layout_toEndOf="@id/sdvContactAvatar"
         android:layout_toLeftOf="@id/ivUnread"
         android:layout_toStartOf="@id/ivUnread"
         android:layout_marginRight="5dp"

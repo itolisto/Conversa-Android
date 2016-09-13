@@ -41,8 +41,10 @@
     <string name="contacts_last_message_location">%1s: Location</string>
     <string name="contacts_last_message_default">%1s: Message</string>
 
-
-
+    <string name="start_browsing"><u>Start browsing</u></string>
+    <string name="chat_wall_message_hint">Type a message</string>
+    <string name="member_since">Since %1s</string>
+    <string name="number_of_followers">%1d Followers</string>
 
 
     <!-- ******* FOR LAYOUTS  ******* -->
@@ -220,5 +222,8 @@
     <string name="settings_name_error">We\'re sorry, username couldn\'t be changed. Please try again later</string>
     <string name="settings_logout_succesful" translatable="false">Database removed</string>
     <string name="settings_logout_error" translatable="false">An error has ocurred while removing databased. Database not removed</string>
+    <string name="no_messages">No Messages</string>
+    <string name="no_messages_description_one">When you have messages, you\'ll</string>
+    <string name="no_messages_description_two">see them here.</string>
 
 </resources>

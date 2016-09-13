@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@android:color/transparent"
-    android:padding="7dp"
-    android:gravity="center_vertical" >
+    android:background="@color/default_green" >
 
-    <ee.app.conversa.view.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/ivAvatarChat"
-        android:src="@drawable/no_commerce"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="7dp"
         android:layout_marginEnd="7dp"
-        app:border_color="@android:color/transparent"/>
+        android:layout_centerVertical="true"
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="fitCenter"
+        fresco:placeholderImage="@drawable/business_default"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:failureImage="@drawable/business_default"
+        fresco:failureImageScaleType="fitCenter"
+        fresco:retryImage="@drawable/business_default"
+        fresco:retryImageScaleType="fitCenter"
+        fresco:progressBarImage="@drawable/rotate_loading"
+        fresco:progressBarImageScaleType="centerInside"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:roundAsCircle="true" />
 
     <LinearLayout
         android:weightSum="3"
@@ -35,6 +44,7 @@
             android:textColor="@android:color/black"
             android:textSize="15sp"
             android:text="@string/test_string"
+            android:ellipsize="end"
             android:maxLines="1" />
 
         <ee.app.conversa.view.LightTextView

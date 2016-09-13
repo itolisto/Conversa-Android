@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:weightSum="3"
+    android:background="@color/default_white"
     android:layout_width="match_parent"
     android:layout_height="140dp">
 
@@ -11,7 +12,6 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:layout_weight="1"
-        android:background="@drawable/more_square_bg"
         android:src="@drawable/camera_more_icon"
         style="?android:attr/buttonBarButtonStyle" />
 
@@ -21,7 +21,6 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:layout_weight="1"
-        android:background="@drawable/more_square_bg"
         android:src="@drawable/albums_more_icon"
         style="?android:attr/buttonBarButtonStyle" />
 
@@ -31,7 +30,6 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:layout_weight="1"
-        android:background="@drawable/more_square_bg"
         android:src="@drawable/location_more_icon"
         style="?android:attr/buttonBarButtonStyle" />
 

@@ -35,7 +35,6 @@ import ee.app.conversa.utils.Logger;
 public class CustomMessageService extends IntentService {
 
     private final String TAG = getClass().getSimpleName();
-    public static final String PARAM_OUT_MSG = "omsg";
 
     public CustomMessageService() {
         super("CustomMessageService");

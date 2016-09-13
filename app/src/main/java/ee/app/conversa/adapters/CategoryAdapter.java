@@ -48,19 +48,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     public void onBindViewHolder(final ViewHolder holder, int i) {
         final bCategory category = mCategories.get(i);
         holder.tvCategoryTitle.setText(category.getCategoryName(activity));
-
-        try {
-            if(category.getThumbnail().getUrl().isEmpty()) {
-                Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-                holder.sdvCategoryImage.setImageURI(path);
-            } else {
-                Uri uri = Uri.parse(category.getThumbnail().getUrl());
-                holder.sdvCategoryImage.setImageURI(uri);
-            }
-        } catch (IllegalStateException e) {
-            Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-            holder.sdvCategoryImage.setImageURI(path);
+        Uri uri;
+        if(category.getThumbnail() != null && !category.getThumbnail().getUrl().isEmpty()) {
+            uri = Uri.parse(category.getThumbnail().getUrl());
+        } else {
+            uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
         }
+        holder.sdvCategoryImage.setImageURI(uri);
     }
 
     public void setItems(List<bCategory> categories) {

@@ -1,72 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/tools"
     android:background="@android:color/white"
-    android:weightSum="4"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:layout_weight="3"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content" >
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/sdvBusinessImage"
-            android:layout_width="110dp"
-            android:layout_height="110dp"
-            android:layout_centerInParent="true"
-            fresco:fadeDuration="300"
-            fresco:actualImageScaleType="focusCrop"
-            fresco:placeholderImage="@drawable/business_default"
-            fresco:placeholderImageScaleType="fitCenter"
-            fresco:failureImage="@drawable/username_icon"
-            fresco:failureImageScaleType="centerInside"
-            fresco:retryImage="@drawable/refresh_icon"
-            fresco:retryImageScaleType="centerCrop"
-            fresco:progressBarImage="@drawable/rotate_loading"
-            fresco:progressBarImageScaleType="centerInside"
-            fresco:progressBarAutoRotateInterval="1000"
-            fresco:roundAsCircle="true" />
+        <RelativeLayout
+            android:id="@+id/rlProfileHeader"
+            android:layout_width="match_parent"
+            android:layout_height="130dp">
 
-        <com.like.LikeButton
-            app:icon_type="heart"
-            app:circle_start_color="@color/colorPrimary"
-            app:like_drawable="@drawable/thumb_on"
-            app:unlike_drawable="@drawable/thumb_off"
-            app:dots_primary_color="@color/colorAccent"
-            app:dots_secondary_color="@color/colorPrimary"
-            app:circle_end_color="@color/colorAccent"
-            app:icon_size="55dp"
-            app:liked="true"
-            app:anim_scale_factor="2"
-            android:id="@+id/btnFavorite"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/sdvBusinessImage"
-            android:layout_toStartOf="@id/sdvBusinessImage"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp" />
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/sdvBusinessImage"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:layout_centerInParent="true"
+                fresco:fadeDuration="300"
+                fresco:actualImageScaleType="fitCenter"
+                fresco:placeholderImage="@drawable/business_default"
+                fresco:placeholderImageScaleType="fitCenter"
+                fresco:failureImage="@drawable/business_default"
+                fresco:failureImageScaleType="fitCenter"
+                fresco:retryImage="@drawable/business_default"
+                fresco:retryImageScaleType="fitCenter"
+                fresco:progressBarImage="@drawable/rotate_loading"
+                fresco:progressBarImageScaleType="centerInside"
+                fresco:progressBarAutoRotateInterval="1000"
+                fresco:roundAsCircle="true" />
 
-        <Button
-            android:id="@+id/btnStartChat"
-            android:layout_toRightOf="@id/sdvBusinessImage"
-            android:layout_toEndOf="@id/sdvBusinessImage"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/start_chat"
-            android:layout_width="35dp"
-            android:layout_height="35dp" />
-    </RelativeLayout>
+            <com.like.LikeButton
+                app:circle_start_color="@color/colorPrimary"
+                app:like_drawable="@drawable/thumb_on"
+                app:unlike_drawable="@drawable/thumb_off"
+                app:dots_primary_color="@color/colorAccent"
+                app:dots_secondary_color="@color/colorPrimary"
+                app:circle_end_color="@color/colorAccent"
+                app:icon_size="25dp"
+                app:liked="false"
+                app:anim_scale_factor="1"
+                android:id="@+id/btnFavorite"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_toLeftOf="@id/sdvBusinessImage"
+                android:layout_toStartOf="@id/sdvBusinessImage"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp" />
 
-    <RelativeLayout
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+            <Button
+                android:id="@+id/btnStartChat"
+                android:layout_toRightOf="@id/sdvBusinessImage"
+                android:layout_toEndOf="@id/sdvBusinessImage"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_centerVertical="true"
+                android:scaleX="0.6"
+                android:scaleY="0.6"
+                android:background="@drawable/start_chat"
+                android:layout_width="45dp"
+                android:layout_height="45dp" />
+
+        </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvBusinessOptions"
@@ -75,6 +75,7 @@
             android:cacheColorHint="@android:color/transparent"
             android:divider="@null"
             android:listSelector="@android:color/transparent"
-            android:overScrollMode="never" />
+            android:overScrollMode="never"
+            android:layout_below="@id/rlProfileHeader"/>
     </RelativeLayout>
-</LinearLayout>
+</ScrollView>

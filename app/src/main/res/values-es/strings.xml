@@ -108,4 +108,14 @@
     <string name="name_already_taken">Nombre está ocupado</string>
     <string name="logout_message">¿En realidad quieres salir?</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="no_messages">Sin mensajes</string>
+    <string name="no_messages_description_one">Cuando tengas mensajes, los</string>
+    <string name="no_messages_description_two">veras aquí.</string>
+    <string name="start_browsing"><u>Empieza a navegar</u></string>
+
+    <string-array name="categories_titles">
+        <item name="Conversas">Chats</item>
+        <item name="Categories">Categorías</item>
+        <item name="Settings">Ajustes</item>
+    </string-array>
 </resources>

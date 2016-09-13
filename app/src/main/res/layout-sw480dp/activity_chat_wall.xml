@@ -1,15 +1,13 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@drawable/background_chat"
     tools:context=".ActivityChatWall" >
 
     <RelativeLayout
         android:layout_marginTop="?attr/actionBarSize"
-        android:background="@android:color/transparent"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
@@ -47,11 +45,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:layout_marginEnd="5dp"
-                android:background="@android:color/white"
                 android:textColor="@android:color/darker_gray"
                 android:maxLines="4"
                 android:gravity="top|start"
-                android:hint="@string/test_string"
+                android:textSize="15sp"
+                android:hint="@string/chat_wall_message_hint"
+                android:background="@drawable/sent_bubble"
                 android:inputType="textCapSentences|textMultiLine"
                 android:scrollHorizontally="false"
                 android:padding="5dp" />
@@ -63,14 +62,19 @@
                 android:gravity="center"
                 android:background="@color/chat_bottom_bar" >
 
-                <Button
-                    android:id="@+id/btnWallSend"
+                <ImageButton
+                    android:src="@android:drawable/ic_menu_send"
                     android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:text="@string/Send"
-                    android:textColor="@color/rounded_rect_send_selector"
-                    android:textStyle="bold"
-                    android:background="@null" />
+                    android:layout_height="wrap_content" />
+
+                <!--<Button-->
+                <!--android:id="@+id/btnWallSend"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="35dp"-->
+                <!--android:text="@string/Send"-->
+                <!--android:textColor="@color/rounded_rect_send_selector"-->
+                <!--android:textStyle="bold"-->
+                <!--android:background="@null" />-->
             </RelativeLayout>
         </LinearLayout>
 
@@ -122,28 +126,16 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/bottom_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="true"
-        android:background="@android:color/holo_orange_light"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior" >
-
-        <include layout="@layout/menu_actionbar_chat" />
-
-    </android.support.v4.widget.NestedScrollView>
-
     <include layout="@layout/image_view_chat"
-        android:id="@+id/rlImageDisplay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
+    android:id="@+id/rlImageDisplay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone"/>
 
     <include layout="@layout/push_notification"
-        android:id="@+id/rlPushNotification"
-        android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
+    android:id="@+id/rlPushNotification"
+    android:layout_alignParentTop="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone" />
 </android.support.design.widget.CoordinatorLayout>

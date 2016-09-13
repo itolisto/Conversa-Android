@@ -36,7 +36,6 @@ import io.ably.lib.realtime.ConnectionState;
 public class CustomNotificationExtenderService extends NotificationExtenderService {
 
     private final String TAG = CustomNotificationExtenderService.class.getSimpleName();
-    public static final String PARAM_OUT_MSG = "omsg";
 
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult result) {

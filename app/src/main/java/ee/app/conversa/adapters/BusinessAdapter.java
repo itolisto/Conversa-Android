@@ -63,29 +63,25 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
             Business temp = (Business) object;
             holder.tvBusiness.setText(temp.getConversaID());
             holder.tvAbout.setText(temp.getAbout());
-            try {
-                if(temp.getAvatar() != null && !temp.getAvatar().getUrl().isEmpty()) {
-                    Uri uri = Uri.parse(temp.getAvatar().getUrl());
-                    holder.sdvCategoryImage.setImageURI(uri);
-                } else {
-                    Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-                    holder.sdvCategoryImage.setImageURI(path);
-                }
-            } catch (IllegalStateException e) {
-                Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-                holder.sdvCategoryImage.setImageURI(path);
+            Uri uri;
+            if(temp.getAvatar() != null && !temp.getAvatar().getUrl().isEmpty()) {
+                uri = Uri.parse(temp.getAvatar().getUrl());
+            } else {
+                uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
             }
+
+            holder.sdvCategoryImage.setImageURI(uri);
         } else if (object.getClass().equals(dBusiness.class)) {
             dBusiness business = (dBusiness) object;
             holder.tvBusiness.setText(business.getDisplayName());
             holder.tvAbout.setText(business.getConversaId());
+            Uri uri;
             if(business.getAvatarThumbFileId().isEmpty()) {
-                Uri path = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-                holder.sdvCategoryImage.setImageURI(path);
+                uri = Uri.parse(business.getAvatarThumbFileId());
             } else {
-                Uri uri = Uri.parse(business.getAvatarThumbFileId());
-                holder.sdvCategoryImage.setImageURI(uri);
+                uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
             }
+            holder.sdvCategoryImage.setImageURI(uri);
         }
     }
 

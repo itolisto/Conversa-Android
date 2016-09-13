@@ -2,6 +2,8 @@ package ee.app.conversa.management.message;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.SQLException;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -55,35 +57,43 @@ public class MessageIntentService extends IntentService {
         dbMessage message = intent.getExtras().getParcelable(INTENT_EXTRA_MESSAGE);
         List<dbMessage> messages = null;
 
-        switch (actionCode) {
-            case ACTION_MESSAGE_SAVE: {
-                message = ConversaApp.getInstance(this).getDB().saveMessage(message);
-                break;
-            }
-            case ACTION_MESSAGE_NEW_MESSAGE: {
-                message = ConversaApp.getInstance(this).getDB().saveMessage(message);
-                break;
-            }
-            case ACTION_MESSAGE_UPDATE: {
-                String status = intent.getExtras().getString(INTENT_EXTRA_UPDATE_STATUS, dbMessage.statusParseError);
-                int result = ConversaApp.getInstance(this).getDB().updateDeliveryStatus(message.getId(), status);
-                if (result > 0) {
-                    message.setDeliveryStatus(status);
+        try {
+            switch (actionCode) {
+                case ACTION_MESSAGE_SAVE: {
+                    message = ConversaApp.getInstance(this).getDB().saveMessage(message);
+                    break;
                 }
-                break;
+                case ACTION_MESSAGE_NEW_MESSAGE: {
+                    message = ConversaApp.getInstance(this).getDB().saveMessage(message);
+                    break;
+                }
+                case ACTION_MESSAGE_UPDATE: {
+                    String status = intent.getExtras().getString(INTENT_EXTRA_UPDATE_STATUS, dbMessage.statusParseError);
+                    int result = ConversaApp.getInstance(this).getDB().updateDeliveryStatus(message.getId(), status);
+                    if (result > 0) {
+                        message.setDeliveryStatus(status);
+                    }
+                    break;
+                }
+                case ACTION_MESSAGE_UPDATE_UNREAD: {
+                    String contact_id = intent.getExtras().getString(INTENT_EXTRA_CONTACT_ID);
+                    ConversaApp.getInstance(this).getDB().updateReadMessages(contact_id);
+                    return;
+                }
+                case ACTION_MESSAGE_RETRIEVE_ALL: {
+                    String contact_id = intent.getExtras().getString(INTENT_EXTRA_CONTACT_ID);
+                    int count = intent.getExtras().getInt(INTENT_EXTRA_MESSAGE_COUNT, 0);
+                    int skip = intent.getExtras().getInt(INTENT_EXTRA_MESSAGE_SKIP, 0);
+                    messages = ConversaApp.getInstance(this).getDB().getMessagesByContact(contact_id, count, skip);
+                    break;
+                }
+                default: {
+                    return;
+                }
             }
-            case ACTION_MESSAGE_UPDATE_UNREAD: {
-                String contact_id = intent.getExtras().getString(INTENT_EXTRA_CONTACT_ID);
-                ConversaApp.getInstance(this).getDB().updateReadMessages(contact_id);
-                return;
-            }
-            case ACTION_MESSAGE_RETRIEVE_ALL: {
-                String contact_id = intent.getExtras().getString(INTENT_EXTRA_CONTACT_ID);
-                int count = intent.getExtras().getInt(INTENT_EXTRA_MESSAGE_COUNT, 0);
-                int skip = intent.getExtras().getInt(INTENT_EXTRA_MESSAGE_SKIP, 0);
-                messages = ConversaApp.getInstance(this).getDB().getMessagesByContact(contact_id, count, skip);
-                break;
-            }
+        } catch (SQLException e) {
+            Log.e("MessageAsyncTaskRunner", "No se pudo guardar mensaje porque ocurrio el siguiente error: " + e.getMessage());
+            return;
         }
 
         if (actionCode == ACTION_MESSAGE_SAVE) {
