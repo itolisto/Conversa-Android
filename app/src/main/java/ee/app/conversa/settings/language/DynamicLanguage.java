@@ -27,6 +27,10 @@ public class DynamicLanguage {
     }
 
     public void onResume(Activity activity) {
+        if (currentLocale == null) {
+            return;
+        }
+
         if (!currentLocale.equals(getSelectedLocale(activity))) {
             Intent intent = activity.getIntent();
             activity.finish();

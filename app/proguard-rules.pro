@@ -16,7 +16,9 @@
 #   public *;
 #}
 
-# EventBus ProGuard
+#
+# EventBus
+#
 -keepattributes *Annotation*
 -keepclassmembers class ** {
     @org.greenrobot.eventbus.Subscribe <methods>;
@@ -27,3 +29,9 @@
 -keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
     <init>(java.lang.Throwable);
 }
+
+#
+#AVLoadingIndicatorView
+#
+-keep class com.wang.avi.** { *; }
+-keep class com.wang.avi.indicators.** { *; }

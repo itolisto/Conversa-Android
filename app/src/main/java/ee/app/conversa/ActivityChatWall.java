@@ -1,5 +1,6 @@
 package ee.app.conversa;
 
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -101,12 +103,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		switch (item.getItemId()) {
 			// Respond to the action bar's Up/Home button
 			case android.R.id.home:
-				ActionBar actionBar = getSupportActionBar();
-				if (actionBar != null) {
-					actionBar.setDisplayHomeAsUpEnabled(false);
-				}
-
-				super.onBackPressed();
+				navigateUp();
 				return true;
 		}
 
@@ -184,7 +181,29 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	@Override
 	public void onBackPressed() {
 		if(closeThisFirst()) {
-			super.onBackPressed();
+			navigateUp();
+		}
+	}
+
+	private void navigateUp() {
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setDisplayHomeAsUpEnabled(false);
+		}
+
+		Intent upIntent = NavUtils.getParentActivityIntent(this);
+		if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+			// This activity is NOT part of this app's task, so create a new task
+			// when navigating up, with a synthesized back stack.
+			TaskStackBuilder.create(this)
+					// Add all of this activity's parents to the back stack
+					.addNextIntentWithParentStack(upIntent)
+					// Navigate up to the closest parent
+					.startActivities();
+		} else {
+			// This activity is part of this app's task, so simply
+			// navigate up to the logical parent activity.
+			NavUtils.navigateUpTo(this, upIntent);
 		}
 	}
 

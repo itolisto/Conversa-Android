@@ -72,15 +72,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 	public GenericViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		if (viewType == TO_ME_VIEW_TYPE) {
 			return new IncomingViewHolder(
-					LayoutInflater.from(parent.getContext()).inflate(R.layout.message_incoming_item, parent, false),
+					LayoutInflater.from(parent.getContext())
+							.inflate(R.layout.message_incoming_item, parent, false),
 					this.mActivity);
 		} else if (viewType == FROM_ME_VIEW_TYPE) {
 			return new ViewHolder(
-					LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, parent, false),
+					LayoutInflater.from(parent.getContext())
+							.inflate(R.layout.message_item, parent, false),
 					this.mActivity);
 		} else {
 			return new LoaderViewHolder(
-					LayoutInflater.from(parent.getContext()).inflate(R.layout.loader_item, parent, false),
+					LayoutInflater.from(parent.getContext())
+							.inflate(R.layout.loader_item, parent, false),
 					this.mActivity);
 		}
 	}

@@ -116,6 +116,5 @@
     <string-array name="categories_titles">
         <item name="Conversas">Chats</item>
         <item name="Categories">Categorías</item>
-        <item name="Settings">Ajustes</item>
     </string-array>
 </resources>

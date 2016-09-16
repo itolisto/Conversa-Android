@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -21,6 +22,7 @@ import ee.app.conversa.dialog.CustomDeleteUserDialog;
 import ee.app.conversa.events.RefreshEvent;
 import ee.app.conversa.extendables.ConversaFragment;
 import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.settings.ActivityPreferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.view.RegularTextView;
 
@@ -55,13 +57,25 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
         dBusiness.getAllContacts(getContext());
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
+        inflater.inflate(R.menu.menu_main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            Intent preferencesIntent = new Intent(getActivity(), ActivityPreferences.class);
+            startActivity(preferencesIntent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

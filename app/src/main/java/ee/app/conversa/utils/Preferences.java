@@ -54,7 +54,7 @@ public class Preferences {
     private final String CATEGORIES_LOAD = "CATEGORIES_LOAD";
     private final String CURRENT_CATEGORY = "CURRENT_CATEGORY";
 
-    public final String LANGUAGE_PREF                    = "pref_language";
+    public final static String LANGUAGE_PREF                    = "pref_language";
 
     private final String LAST_VERSION_CODE_PREF           = "last_version_code";
     private final String LAST_EXPERIENCE_VERSION_PREF     = "last_experience_version_code";

@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import ee.app.conversa.FragmentRoot;
-import ee.app.conversa.FragmentSettings;
 import ee.app.conversa.FragmentUsersChat;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
@@ -30,9 +29,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 	        case 1:
                 fragment = new FragmentRoot();
 	        	break;
-	        case 2:
-	        	fragment = new FragmentSettings();
-	        	break;
             default:
                 fragment = new FragmentUsersChat();
                 break;
@@ -43,7 +39,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 
     @Override

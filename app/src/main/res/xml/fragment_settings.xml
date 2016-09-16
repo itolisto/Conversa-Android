@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference android:key="preferences__account"
+        android:title="@string/preferences__account" />
+
+    <Preference android:key="preferences__chats"
+        android:title="@string/preferences__chats" />
+
+    <Preference android:key="preferences__notifications"
+        android:title="@string/preferences__notifications" />
+
+    <Preference android:key="preferences__share"
+        android:title="@string/preferences__share" />
+
+    <Preference android:key="preferences__help"
+        android:title="@string/preferences__help" />
+
+</PreferenceScreen>

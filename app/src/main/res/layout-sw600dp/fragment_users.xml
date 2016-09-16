@@ -17,15 +17,16 @@
             android:textColor="@color/default_gray"
             android:layout_centerInParent="true"
             android:textSize="24sp"
+            android:layout_marginTop="-7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/tvNoUsers"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:src="@drawable/no_chats"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="27dp"
             android:layout_centerHorizontal="true"
             android:layout_above="@id/tvNoMessages"
             android:scaleType="fitCenter" />
@@ -60,7 +61,7 @@
             android:layout_height="wrap_content"
             android:text="@string/start_browsing"
             android:layout_centerHorizontal="true"
-            android:textColor="@android:color/holo_blue_dark"
+            android:textColor="@color/default_green"
             android:layout_below="@id/tvNoMessagesDescriptionTwo" />
     </RelativeLayout>
 

@@ -4,25 +4,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,16 +37,15 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
 
     private RelativeLayout mRlNoBusiness;
     private RecyclerView mRvBusiness;
-    private ProgressBar mPbLoadingCategory;
+    private ImageView mIvNoBusiness;
+    private AVLoadingIndicatorView mPbLoadingCategory;
 
-    private List<Business> mBusiness;
     private BusinessAdapter mBusinessListAdapter;
 
     private String categoryId;
     private int page;
 
     public FragmentBusiness() {
-        mBusiness = new ArrayList<>();
         page = 0;
     }
 
@@ -79,7 +76,8 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
 
         mRlNoBusiness = (RelativeLayout) rootView.findViewById(R.id.rlNoBusiness);
         mRvBusiness = (RecyclerView) rootView.findViewById(R.id.rvBusiness);
-        mPbLoadingCategory = (ProgressBar) rootView.findViewById(R.id.pbLoadingCategory);
+        mIvNoBusiness = (ImageView) rootView.findViewById(R.id.ivNoBusiness);
+        mPbLoadingCategory = (AVLoadingIndicatorView) rootView.findViewById(R.id.pbLoadingCategory);
 
         mBusinessListAdapter= new BusinessAdapter((AppCompatActivity)getActivity(), this);
         mRvBusiness.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -103,28 +101,7 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                ConversaApp.getInstance(getActivity()).getPreferences().setCurrentCategory("", false);
-                FragmentManager fm = getFragmentManager();
-
-                if (fm != null) {
-                    ActionBar actionBar = ((ActivityMain) getActivity()).getSupportActionBar();
-                    if (actionBar != null) {
-                        actionBar.setTitle(getActivity().getString(R.string.categories));
-                        actionBar.setDisplayHomeAsUpEnabled(false);
-                    }
-
-                    if(fm.getBackStackEntryCount() > 0) {
-                        fm.popBackStack();
-                    } else {
-                        FragmentTransaction transaction = fm.beginTransaction();
-                        transaction.replace(R.id.root_frame, new FragmentCategory());
-                        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                        transaction.commit();
-                    }
-                } else {
-                    Log.e(this.getClass().getSimpleName(), "Fragmento no se pudo reemplazar");
-                }
-
+                ((ActivityMain) getActivity()).onBackPressedFromCategory();
                 return true;
         }
 
@@ -133,10 +110,11 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
 
     private void getBusinessByCategoryAsync() {
         if(categoryId.isEmpty()) {
-            mBusiness.clear();
+            // Some error while getting category id
             mRvBusiness.setVisibility(View.GONE);
             mRlNoBusiness.setVisibility(View.VISIBLE);
-            mPbLoadingCategory.setVisibility(View.GONE);
+            mPbLoadingCategory.smoothToHide();
+            mIvNoBusiness.setVisibility(View.VISIBLE);
         } else {
             ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
             Collection<String> collection = new ArrayList<>();
@@ -159,19 +137,24 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
             query.setLimit(15);
             query.setSkip(page * 15);
 
+            mPbLoadingCategory.smoothToShow();
+
             query.findInBackground(new FindCallback<BusinessCategory>() {
 
                 @Override
                 public void done(List<BusinessCategory> objects, ParseException e) {
-                    if (e == null && objects != null && objects.size() > 0) {
+                    if (objects != null && objects.size() > 0) {
                         List<Business> business = new ArrayList<>(objects.size());
-                        for(BusinessCategory bsess : objects) {
-                            business.add(bsess.getBusiness());
+                        final int size = objects.size();
+
+                        for (int i = 0; i < size; i++) {
+                            business.add(objects.get(i).getBusiness());
                         }
 
-                        boolean add = (objects.size() == 15);
-                        mBusiness.addAll(business);
-                        mBusinessListAdapter.addItems(mBusiness, add);
+                        boolean add = (size == 15);
+                        mBusinessListAdapter.addItems(business, add);
+
+                        mPbLoadingCategory.smoothToHide();
 
                         if(page == 0) {
                             mRvBusiness.setVisibility(View.VISIBLE);
@@ -182,7 +165,13 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
                     } else {
                         mRvBusiness.setVisibility(View.GONE);
                         mRlNoBusiness.setVisibility(View.VISIBLE);
-                        mPbLoadingCategory.setVisibility(View.GONE);
+                        mPbLoadingCategory.smoothToHide();
+
+                        if (e == null) {
+                            mIvNoBusiness.setVisibility(View.GONE);
+                        } else {
+                            mIvNoBusiness.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             });

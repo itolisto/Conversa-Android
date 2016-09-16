@@ -21,21 +21,28 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
+import com.wang.avi.AVLoadingIndicatorView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import ee.app.conversa.adapters.CategoryAdapter;
 import ee.app.conversa.decorations.SimpleDividerItemDecoration;
+import ee.app.conversa.model.nCategory;
+import ee.app.conversa.model.nHeaderTitle;
 import ee.app.conversa.model.parse.bCategory;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Logger;
 
 public class FragmentCategory extends Fragment implements CategoryAdapter.OnItemClickListener {
 
@@ -43,7 +50,7 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
     private RecyclerView mRvCategory;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private CategoryAdapter mCategoryListAdapter;
-    private ProgressBar mPbLoadingCategories;
+    private AVLoadingIndicatorView mPbLoadingCategories;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -55,9 +62,9 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
         mRlCategoriesNoCategories = (RelativeLayout) rootView.findViewById(R.id.rlNoCategories);
         mRvCategory = (RecyclerView) rootView.findViewById(R.id.rvCategories);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.srlCategories);
-        mPbLoadingCategories = (ProgressBar) rootView.findViewById(R.id.pbLoadingCategories);
+        mPbLoadingCategories = (AVLoadingIndicatorView) rootView.findViewById(R.id.pbLoadingCategories);
 
-        mCategoryListAdapter = new CategoryAdapter(getActivity(), this);
+        mCategoryListAdapter = new CategoryAdapter((ActivityMain)getActivity(), this);
         mRvCategory.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvCategory.setAdapter(mCategoryListAdapter);
         mRvCategory.setHasFixedSize(true);
@@ -69,7 +76,6 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
             @Override
             public void onRefresh() {
                 bCategory.unpinAllInBackground();
-                //ConversaApp.getPreferences().setCategoriesLoad(false, false);
                 getCategoriesAsync();
             }
         });
@@ -101,58 +107,25 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
 
     private void getCategoriesAsync() {
         mSwipeRefreshLayout.setEnabled(false);
-        mPbLoadingCategories.setVisibility(View.VISIBLE);
+        mPbLoadingCategories.smoothToShow();
 
-        ParseQuery<bCategory> query = ParseQuery.getQuery(bCategory.class);
-        query.orderByDescending(Const.kCategoryRelevance);
-        query.addDescendingOrder(Const.kCategoryPosition);
-        query.setLimit(30);
-
-        Collection<String> collection = new ArrayList<>();
-        collection.add(Const.kCategoryThumbnail);
-        collection.add(Const.kCategoryRelevance);
-        collection.add(Const.kCategoryPosition);
-        query.selectKeys(collection);
-
-        //if(ConversaApp.getPreferences().getCategoriesLoad()) {
-            //query.fromLocalDatastore();
-        //}
-
-        query.findInBackground(new FindCallback<bCategory>() {
-
+        // Call Parse for registry
+        HashMap<String, Object> params = new HashMap<>(1);
+        params.put("skip", 0);
+        ParseCloud.callFunctionInBackground("getCategories", params, new FunctionCallback<String>() {
             @Override
-            public void done(List<bCategory> objects, ParseException e) {
-                if (mSwipeRefreshLayout.isRefreshing()) {
-                    mSwipeRefreshLayout.setRefreshing(false);
+            public void done(String result, ParseException e) {
+                if(e == null) {
+                    parseResult(result);
+                } else {
+                    parseResult("");
                 }
-
-                if (e == null && objects != null) {
-                    // Save to local datastore and change future searches
-                    // to be direct to local datastore
-                    //if(!ConversaApp.getPreferences().getCategoriesLoad()) {
-                    //    bCategory.pinAllInBackground(objects);
-                    //    ConversaApp.getPreferences().setCategoriesLoad(true, true);
-                    //}
-
-                    // Add to adapter and refresh
-                    if(objects.size() > 0) {
-                        mCategoryListAdapter.setItems(objects);
-                        mRlCategoriesNoCategories.setVisibility(View.GONE);
-                        mRvCategory.setVisibility(View.VISIBLE);
-                    } else {
-                        mRlCategoriesNoCategories.setVisibility(View.VISIBLE);
-                        mRvCategory.setVisibility(View.GONE);
-                        mPbLoadingCategories.setVisibility(View.GONE);
-                    }
-                }
-
-                mSwipeRefreshLayout.setEnabled(true);
             }
         });
     }
 
     @Override
-    public void onItemClick(View itemView, int position, bCategory category) {
+    public void onItemClick(View itemView, int position, nCategory category) {
         FragmentManager fm = getFragmentManager();
 
         if (fm != null) {
@@ -176,8 +149,54 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.addToBackStack("FragmentCategory");
             transaction.commit();
+            ((ActivityMain) getActivity()).toggleTabLayoutVisibility();
         } else {
             Log.e("onItemClick", "Fragmento no se pudo reemplazar");
+        }
+    }
+
+    private void parseResult(String result) {
+        if (mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+
+        try {
+            if (result.isEmpty()) {
+                mRlCategoriesNoCategories.setVisibility(View.VISIBLE);
+                mRvCategory.setVisibility(View.GONE);
+            } else {
+                JSONObject jsonRootObject = new JSONObject(result);
+
+                JSONArray categories = jsonRootObject.optJSONArray("results");
+                int size = categories.length();
+                List<nCategory> categoryList = new ArrayList<>(30);
+                List<nHeaderTitle> headerList = new ArrayList<>(2);
+
+                for (int i = 0; i < size; i++) {
+                    JSONObject jsonCategory = categories.getJSONObject(i);
+                    String headerTitle = jsonCategory.optString("tn", "");
+
+                    if (headerTitle.isEmpty()) {
+                        String objectId = jsonCategory.optString("oj", "");
+                        int relevance = jsonCategory.optInt("re", 0);
+                        int position = jsonCategory.optInt("po", 0);
+                        String avatarUrl = jsonCategory.optString("th", "");
+                        categoryList.add(new nCategory(objectId, relevance, position, avatarUrl));
+                    } else {
+                        int relevance = jsonCategory.optInt("re", 0);
+                        headerList.add(new nHeaderTitle(headerTitle, relevance));
+                    }
+                }
+
+                mCategoryListAdapter.addItems(categoryList, headerList);
+                mRlCategoriesNoCategories.setVisibility(View.GONE);
+                mRvCategory.setVisibility(View.VISIBLE);
+            }
+        } catch (JSONException e) {
+            Logger.error("parseResult", e.getMessage());
+        } finally {
+            mPbLoadingCategories.smoothToHide();
+            mSwipeRefreshLayout.setEnabled(true);
         }
     }
 }

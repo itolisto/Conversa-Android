@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/sett_account_account_title">
+
+        <ee.app.conversa.view.InLinePreference
+            android:defaultValue="afsdfa"
+            android:key="erwewrweewrwe"
+            android:title="fadsfadsf"/>
+
+        <ee.app.conversa.view.InLinePreference
+            android:defaultValue="afsdfa"
+            android:key="erwewrvzxcvcxw"
+            android:title="fadsfadsf"/>
+
+        <ee.app.conversa.view.InLinePreference
+            android:defaultValue="afsdfa"
+            android:key="erwewrgkjhjhkw"
+            android:title="fadsfadsf"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/sett_account_privacy_title">
+
+        <Preference
+            android:title="Clean"
+            android:key="fadfadsf"
+            android:icon="@drawable/username_icon" />
+
+        <ee.app.conversa.view.SwitchCompatPreference
+            android:key="ewtretwremkm"
+            android:title="@string/sett_chat_message_received_sound"
+            android:defaultValue="true" />
+
+        <Preference
+            android:title="Logout"
+            android:key="fadfadsfadsfadsf"
+            android:icon="@drawable/username_icon" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

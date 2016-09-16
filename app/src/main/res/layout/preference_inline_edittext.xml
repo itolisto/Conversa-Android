@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+    <LinearLayout
+        android:weightSum="10"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ee.app.conversa.view.RegularTextView
+            android:id="@+id/ptvTitle"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:id="@+id/petValue"
+            android:layout_width="0dp"
+            android:layout_weight="6"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:weightSum="10"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_weight="4"
+            android:id="@+id/pflTouchInterceptor"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+</RelativeLayout>

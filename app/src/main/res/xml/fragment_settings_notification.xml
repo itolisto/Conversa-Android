@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/sett_notification_push_title">
+        <ee.app.conversa.view.SwitchCompatPreference
+            android:key="sett_notification_sound_key"
+            android:title="@string/sett_notification_sound_title"
+            android:summary="@string/sett_notification_sound_summary"
+            android:defaultValue="true" />
+        <ee.app.conversa.view.SwitchCompatPreference
+            android:key="sett_notification_preview_key"
+            android:title="@string/sett_notification_preview_title"
+            android:summary="@string/sett_notification_preview_summary"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/sett_notification_inapp_title">
+        <ee.app.conversa.view.SwitchCompatPreference
+            android:key="sett_notification_inapp_sound_key"
+            android:title="@string/sett_notification_sound_title"
+            android:summary="@string/sett_notification_inapp_sound_summary"
+            android:defaultValue="true" />
+        <ee.app.conversa.view.SwitchCompatPreference
+            android:key="sett_notification_inapp_preview_key"
+            android:title="@string/sett_notification_preview_title"
+            android:summary="@string/sett_notification_inapp_preview_summary"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+</PreferenceScreen>

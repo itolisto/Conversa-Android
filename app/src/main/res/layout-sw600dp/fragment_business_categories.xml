@@ -14,20 +14,22 @@
 
         <ImageView
             android:id="@+id/ivNoBusiness"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:layout_centerInParent="true"
             android:contentDescription="@null"
             android:background="@drawable/no_commerce"
+            android:visibility="gone"
             android:layout_width="160dp"
             android:layout_height="160dp" />
 
-        <ProgressBar
+        <com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/pbLoadingCategory"
-            android:layout_above="@id/ivNoBusiness"
-            android:layout_centerHorizontal="true"
-            style="@style/CustomProgressBar"
             android:layout_width="50dp"
-            android:layout_height="50dp" />
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            style="@style/AVLoadingIndicatorView"
+            app:indicatorName="BallPulseIndicator"
+            app:indicatorColor="@color/no_connection_background" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView

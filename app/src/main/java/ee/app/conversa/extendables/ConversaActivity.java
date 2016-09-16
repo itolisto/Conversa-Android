@@ -17,6 +17,7 @@ import ee.app.conversa.events.MessageEvent;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
 import ee.app.conversa.management.message.MessageIntentService;
 import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.utils.Logger;
 
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
 
@@ -24,6 +25,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 
     @Override
     protected void onNewIntent(Intent intent) {
+        Logger.error("onNewIntent", "\nIntent: " + intent);
         super.onNewIntent(intent);
         if (intent != null) {
             openFromNotification(intent);

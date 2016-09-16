@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.like.LikeButton;
@@ -34,6 +36,27 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     private boolean addAsContact;
     private RegularTextView mRtvFollowers;
     private LightTextView mLtvMemberSince;
+
+    private RelativeLayout mRlProfileHeader;
+    private RelativeLayout mRlSpecialPromoContainer;
+    private LinearLayout mLlClosedOnContainer;
+    private RelativeLayout mRlAddressContainer;
+
+    private LightTextView mLtvMonday;
+    private LightTextView mLtvTuesday;
+    private LightTextView mLtvWednesday;
+    private LightTextView mLtvThursday;
+    private LightTextView mLtvFriday;
+    private LightTextView mLtvSaturday;
+    private LightTextView mLtvSunday;
+
+    private LightTextView mltvSchedule;
+    private LightTextView mltvDelivery;
+    private LightTextView mltvLink;
+    private LightTextView mltvContactNumber;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +102,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         mBtnFavorite.setEnabled(false);
 
         // Call Parse for registry
-        HashMap<String, String> params = new HashMap<>();
+        HashMap<String, String> params = new HashMap<>(1);
         params.put("business", businessObject.getBusinessId());
         ParseCloud.callFunctionInBackground("profileInfo", params, new FunctionCallback<String>() {
             @Override
