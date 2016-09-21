@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,21 +19,22 @@ import android.widget.RelativeLayout;
 import java.util.List;
 
 import ee.app.conversa.adapters.ChatsAdapter;
-import ee.app.conversa.dialog.CustomDeleteUserDialog;
 import ee.app.conversa.events.RefreshEvent;
 import ee.app.conversa.extendables.ConversaFragment;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.management.contact.ContactIntentService;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.settings.ActivityPreferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.view.RegularTextView;
 
 public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.OnItemClickListener,
-        ChatsAdapter.OnLongClickListener, View.OnClickListener {
+        ChatsAdapter.OnLongClickListener, View.OnClickListener, ActionMode.Callback {
 
     private RecyclerView mRvUsers;
     private RelativeLayout mRlNoUsers;
     private ChatsAdapter mUserListAdapter;
     private boolean refresh;
+    private ActionMode actionMode;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -46,6 +48,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
         mRvUsers.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvUsers.setItemAnimator(new DefaultItemAnimator());
         mRvUsers.setAdapter(mUserListAdapter);
+        mRvUsers.setHasFixedSize(true);
         refresh = false;
 
         RegularTextView mRtvStartBrowsing = (RegularTextView) rootView.findViewById(R.id.rtvStartBrowsing);
@@ -58,7 +61,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        dBusiness.getAllContacts(getContext());
+        dbBusiness.getAllContacts(getContext());
     }
 
     @Override
@@ -82,12 +85,12 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     protected void refresh(RefreshEvent event) {
         if (event.isRefresh()) {
             refresh = true;
-            dBusiness.getAllContacts(getContext());
+            dbBusiness.getAllContacts(getContext());
         }
     }
 
     @Override
-    public void ContactGetAll(final List<dBusiness> contacts) {
+    public void ContactGetAll(final List<dbBusiness> contacts) {
         if (refresh) {
             mUserListAdapter.clearItems();
             refresh = false;
@@ -107,7 +110,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void ContactAdded(dBusiness response) {
+    public void ContactAdded(dbBusiness response) {
         // 0. Check business is defined
         if (response == null)
             return;
@@ -123,13 +126,15 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void ContactDeleted(final dBusiness response) {
-        // 1. Get visible items and first visible item position
-        int visibleItemCount = mRvUsers.getChildCount();
-        int firstVisibleItem = ((LinearLayoutManager) mRvUsers.getLayoutManager()).findFirstVisibleItemPosition();
-        // 2. Update message
-        mUserListAdapter.removeContact(response, firstVisibleItem, visibleItemCount);
-        // 3. Check visibility
+    public void ContactDeleted(List<String> contacts) {
+        // 1. Update chats
+        mUserListAdapter.removeContacts();
+
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+
+        // 2. Check visibility
         if (mUserListAdapter.getItemCount() == 0) {
             mRlNoUsers.setVisibility(View.VISIBLE);
             mRvUsers.setVisibility(View.GONE);
@@ -137,38 +142,27 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void ContactUpdated(dBusiness response) {
+    public void ContactUpdated(dbBusiness response) {
 
     }
 
     @Override
-    public void onItemClick(dBusiness contact) {
-        Intent intent = new Intent(getActivity(), ActivityChatWall.class);
-        intent.putExtra(Const.kClassBusiness, contact);
-        intent.putExtra(Const.kYapDatabaseName, false);
-        startActivity(intent);
+    public void onItemClick(dbBusiness contact, int position) {
+        if (actionMode == null) {
+            Intent intent = new Intent(getActivity(), ActivityChatWall.class);
+            intent.putExtra(Const.kClassBusiness, contact);
+            intent.putExtra(Const.kYapDatabaseName, false);
+            startActivity(intent);
+        } else {
+            myToggleSelection(position);
+        }
     }
 
     @Override
-    public void onItemLongClick(final dBusiness contact) {
-        final CustomDeleteUserDialog dialog = new CustomDeleteUserDialog(getContext());
-        dialog.setTitle("Test")
-                .setMessage("Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test")
-                //.dismissOnTouchOutside(false)
-                .setupPositiveButton("Accept", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        contact.removeContact(getContext());
-                        dialog.dismiss();
-                    }
-                })
-                .setupNegativeButton("Decline", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                }
-                });
-        dialog.show();
+    public void onItemLongClick(final dbBusiness contact, int position) {
+        if (actionMode == null) {
+            myToggleSelection(position);
+        }
     }
 
     @Override
@@ -179,4 +173,65 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
                 break;
         }
     }
+
+    private void myToggleSelection(int position) {
+        // 1. First add/remove the position to the selected items list
+        mUserListAdapter.toggleSelection(position);
+        // 2. Check selected items list count
+        boolean hasCheckedItems = mUserListAdapter.getSelectedItemCount() > 0;
+
+        if (hasCheckedItems && actionMode == null) {
+            getActivity().startActionMode(this);
+        } else if (!hasCheckedItems && actionMode != null) {
+            actionMode.finish();
+        }
+
+        if (actionMode != null) {
+            actionMode.setTitle(getString(R.string.selected_count, mUserListAdapter.getSelectedItemCount()));
+        }
+    }
+
+    public void finishActionMode() {
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        actionMode = mode;
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.menu_items_selected, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.menu_delete:
+                Intent intent = new Intent(getActivity(), ContactIntentService.class);
+                intent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactIntentService.ACTION_MESSAGE_DELETE);
+                intent.putStringArrayListExtra(ContactIntentService.INTENT_EXTRA_CUSTOMER_LIST,
+                        mUserListAdapter.getSelectedItems());
+                getActivity().startService(intent);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        if (actionMode != null) {
+            actionMode = null;
+        }
+
+        mUserListAdapter.clearSelections(true);
+    }
+
 }

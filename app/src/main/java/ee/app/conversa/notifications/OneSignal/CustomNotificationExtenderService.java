@@ -15,14 +15,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.dialog.PushNotification;
 import ee.app.conversa.events.ContactEvent;
 import ee.app.conversa.events.MessageEvent;
 import ee.app.conversa.management.ably.Connection;
 import ee.app.conversa.management.contact.ContactIntentService;
 import ee.app.conversa.management.message.MessageIntentService;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.NotificationInformation;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
@@ -72,7 +72,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     return true;
                 }
 
-                dBusiness dbcustomer = ConversaApp.getInstance(this).getDB().isContact(contactId);
+                dbBusiness dbcustomer = ConversaApp.getInstance(this).getDB().isContact(contactId);
                 boolean newContact = false;
 
                 // 1. Find if user is already a contact
@@ -99,7 +99,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     }
 
                     // 3. If Customer was found, save to Local Database
-                    dbcustomer = new dBusiness();
+                    dbcustomer = new dbBusiness();
                     dbcustomer.setBusinessId(contactId);
                     dbcustomer.setDisplayName(customer.getDisplayName());
                     dbcustomer.setConversaId(customer.getConversaID());
@@ -229,11 +229,12 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     EventBus.getDefault().post(new ContactEvent(
                             ContactIntentService.ACTION_MESSAGE_SAVE,
                             dbcustomer,
+                            null,
                             null));
                 }
 
                 // Autoincrement count
-                MySQLiteHelper.NotificationInformation summary = ConversaApp.getInstance(this).getDB().getGroupInformation(contactId);
+                NotificationInformation summary = ConversaApp.getInstance(this).getDB().getGroupInformation(contactId);
                 if (summary.getNotificationId() == -1) {
                     summary = ConversaApp.getInstance(this).getDB().incrementGroupCount(summary, true);
                 } else {

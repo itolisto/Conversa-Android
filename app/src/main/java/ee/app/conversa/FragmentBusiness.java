@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ee.app.conversa.adapters.BusinessAdapter;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.model.parse.BusinessCategory;
 import ee.app.conversa.model.parse.bCategory;
@@ -180,11 +180,11 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
 
     @Override
     public void onItemClick(View itemView, int position, Business business) {
-        dBusiness dbBusiness = ConversaApp.getInstance(getActivity()).getDB().isContact(business.getObjectId());
+        dbBusiness dbBusiness = ConversaApp.getInstance(getActivity()).getDB().isContact(business.getObjectId());
         Intent intent = new Intent(getActivity(), ActivityProfile.class);
 
         if (dbBusiness == null) {
-            dbBusiness = new dBusiness();
+            dbBusiness = new dbBusiness();
             dbBusiness.setBusinessId(business.getObjectId());
             dbBusiness.setDisplayName(business.getDisplayName());
             dbBusiness.setConversaId(business.getConversaID());

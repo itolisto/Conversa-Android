@@ -39,7 +39,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 
 /**
  * InAppPushNotification
@@ -125,7 +125,7 @@ public class InAppPushNotification implements OnClickListener {
 
 	private void addView(String message, String contactId) {
 		mPushLayout.setVisibility(View.VISIBLE);
-		dBusiness fromUser = ConversaApp.getInstance(mContext).getDB().isContact(contactId);
+		dbBusiness fromUser = ConversaApp.getInstance(mContext).getDB().isContact(contactId);
 
 		if (fromUser == null) {
 			Log.e(TAG, "Contact doesn't exits, notification can't be displayed");

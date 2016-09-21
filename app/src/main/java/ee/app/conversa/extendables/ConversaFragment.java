@@ -1,7 +1,6 @@
 package ee.app.conversa.extendables;
 
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -13,7 +12,7 @@ import ee.app.conversa.events.ContactEvent;
 import ee.app.conversa.events.RefreshEvent;
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.management.contact.ContactIntentService;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 
 /**
  * Created by edgargomez on 9/6/16.
@@ -41,47 +40,40 @@ public class ConversaFragment extends Fragment implements OnContactTaskCompleted
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onContactEvent(ContactEvent event) {
         int action_code = event.getActionCode();
-        dBusiness response = event.getResponse();
-        List<dBusiness> list_response = event.getListResponse();
-
-        if (response == null && list_response == null) {
-            Log.e("onMessageEvent", "MessageEvent parameters are null");
-            return;
-        }
 
         switch (action_code) {
             case ContactIntentService.ACTION_MESSAGE_SAVE:
-                ContactAdded(response);
+                ContactAdded(event.getResponse());
                 break;
             case ContactIntentService.ACTION_MESSAGE_UPDATE:
-                ContactUpdated(response);
+                ContactUpdated(event.getResponse());
                 break;
             case ContactIntentService.ACTION_MESSAGE_DELETE:
-                ContactDeleted(response);
+                ContactDeleted(event.getContactList());
                 break;
             case ContactIntentService.ACTION_MESSAGE_RETRIEVE_ALL:
-                ContactGetAll(list_response);
+                ContactGetAll(event.getListResponse());
                 break;
         }
     }
 
     @Override
-    public void ContactGetAll(List<dBusiness> response) {
+    public void ContactGetAll(List<dbBusiness> response) {
         /* Child activities override this method */
     }
 
     @Override
-    public void ContactAdded(dBusiness response) {
+    public void ContactAdded(dbBusiness response) {
         /* Child activities override this method */
     }
 
     @Override
-    public void ContactDeleted(dBusiness response) {
+    public void ContactDeleted(List<String> contacts) {
         /* Child activities override this method */
     }
 
     @Override
-    public void ContactUpdated(dBusiness response) {
+    public void ContactUpdated(dbBusiness response) {
         /* Child activities override this method */
     }
 

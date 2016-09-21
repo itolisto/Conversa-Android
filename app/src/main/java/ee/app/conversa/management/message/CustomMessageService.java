@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.dialog.PushNotification;
 import ee.app.conversa.events.ContactEvent;
 import ee.app.conversa.events.MessageEvent;
 import ee.app.conversa.management.contact.ContactIntentService;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.NotificationInformation;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
@@ -74,7 +74,7 @@ public class CustomMessageService extends IntentService {
                  }
 
                  boolean notifyUserAdded = false;
-                 dBusiness dbcustomer = ConversaApp.getInstance(this).getDB().isContact(contactId);
+                 dbBusiness dbcustomer = ConversaApp.getInstance(this).getDB().isContact(contactId);
 
                  // 1. Find if user is already a contact
                  if (dbcustomer == null) {
@@ -100,7 +100,7 @@ public class CustomMessageService extends IntentService {
                      }
 
                      // 3. If Customer was found, save to Local Database
-                     dbcustomer = new dBusiness();
+                     dbcustomer = new dbBusiness();
                      dbcustomer.setBusinessId(contactId);
                      dbcustomer.setDisplayName(customer.getDisplayName());
                      dbcustomer.setConversaId(customer.getConversaID());
@@ -224,7 +224,7 @@ public class CustomMessageService extends IntentService {
                  if (Foreground.get().isBackground()) {
                      // 5. Show notification
                      // Autoincrement count
-                     MySQLiteHelper.NotificationInformation summary = ConversaApp.getInstance(this).getDB().getGroupInformation(contactId);
+                     NotificationInformation summary = ConversaApp.getInstance(this).getDB().getGroupInformation(contactId);
                      if (summary.getNotificationId() == -1) {
                          summary = ConversaApp.getInstance(this).getDB().incrementGroupCount(summary, true);
                      } else {
@@ -249,6 +249,7 @@ public class CustomMessageService extends IntentService {
                          EventBus.getDefault().post(new ContactEvent(
                                  ContactIntentService.ACTION_MESSAGE_SAVE,
                                  dbcustomer,
+                                 null,
                                  null));
                      }
                  }

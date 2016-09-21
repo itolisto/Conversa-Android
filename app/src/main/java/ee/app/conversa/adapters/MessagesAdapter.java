@@ -337,7 +337,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 				params.width = (int) (width / density);
 				// 2.2 Set image
 				this.mSdvMessageImage.setLayoutParams(params);
-				this.mSdvMessageImage.setImageURI(Uri.fromFile(new File(message.get().getFileId())));
+				if (message.get().getFileId() != null) {
+					this.mSdvMessageImage.setImageURI(Uri.fromFile(new File(message.get().getFileId())));
+				}
 				this.mSdvMessageImage.refreshDrawableState();
 			}
 		}

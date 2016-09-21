@@ -7,13 +7,12 @@ import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.events.ContactEvent;
 import ee.app.conversa.events.RefreshEvent;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 
 /**
  * Created by edgargomez on 8/10/16.
@@ -25,6 +24,7 @@ public class ContactIntentService extends IntentService {
     // Intent constants
     public static final String INTENT_EXTRA_ACTION_CODE = "action_code";
     public static final String INTENT_EXTRA_CUSTOMER = "customer_single";
+    public static final String INTENT_EXTRA_CUSTOMER_LIST = "customer_list";
 
     // MESSAGE ACTIONS
     public static final int ACTION_MESSAGE_SAVE = 1;
@@ -46,8 +46,10 @@ public class ContactIntentService extends IntentService {
         }
 
         int actionCode = intent.getExtras().getInt(INTENT_EXTRA_ACTION_CODE, 0);
-        dBusiness user = intent.getExtras().getParcelable(INTENT_EXTRA_CUSTOMER);
-        List<dBusiness> users = new ArrayList<>(20);
+        dbBusiness user = intent.getExtras().getParcelable(INTENT_EXTRA_CUSTOMER);
+        List<String> list = intent.getExtras().getStringArrayList(INTENT_EXTRA_CUSTOMER_LIST);
+        List<dbBusiness> users = null;
+
         boolean refresh = true;
 
         try {
@@ -58,7 +60,7 @@ public class ContactIntentService extends IntentService {
                 case ACTION_MESSAGE_UPDATE:
                     break;
                 case ACTION_MESSAGE_DELETE:
-                    user = ConversaApp.getInstance(this).getDB().deleteContactById(user);
+                    ConversaApp.getInstance(this).getDB().deleteContactsById(list);
                     refresh = false;
                     break;
                 case ACTION_MESSAGE_RETRIEVE_ALL:
@@ -74,7 +76,7 @@ public class ContactIntentService extends IntentService {
         }
 
         // 5. Notify listeners
-        EventBus.getDefault().post(new ContactEvent(actionCode, user, users));
+        EventBus.getDefault().post(new ContactEvent(actionCode, user, users, list));
 
         if (refresh) {
             EventBus.getDefault().postSticky(new RefreshEvent(true));

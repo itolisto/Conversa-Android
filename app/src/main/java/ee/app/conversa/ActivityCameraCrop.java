@@ -24,7 +24,6 @@
 
 package ee.app.conversa;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -46,8 +45,6 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -60,8 +57,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import ee.app.conversa.utils.ImageFilePath;
@@ -73,7 +70,7 @@ import ee.app.conversa.view.CroppedImageView;
  *
  * Creates cropped image from a gallery photo using a square frame.
  */
-public class ActivityCameraCrop extends AppCompatActivity implements OnTouchListener, OnClickListener {
+public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener {
 
 	// These matrices will be used to move and zoom image
 	private Matrix matrix = new Matrix();
@@ -171,6 +168,8 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 					finish();
 					break;
 			}
+		} else {
+			finish();
 		}
 	}
 
@@ -232,7 +231,7 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 
 		// Create a media file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
-				Locale.getDefault()).format(new Date());
+				Locale.getDefault()).format(new Date(System.currentTimeMillis()));
 
 		File mediaFile;
 
@@ -274,18 +273,18 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 					optionsMeta.inJustDecodeBounds = true;
 					BitmapFactory.decodeFile(f.getAbsolutePath(), optionsMeta);
 					Bitmap mBitmap;
+					FileInputStream fis = new FileInputStream(f);
 
 					if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 						BitmapFactory.Options options = new BitmapFactory.Options();
 						options.inPurgeable = true;
 						options.inInputShareable = true;
-						mBitmap = BitmapFactory.decodeStream(
-								new FileInputStream(f), null, options);
+						mBitmap = BitmapFactory.decodeStream(fis, null, options);
 					} else {
-						mBitmap = BitmapFactory.decodeStream(
-								new FileInputStream(f));
+						mBitmap = BitmapFactory.decodeStream(fis);
 					}
 
+					fis.close();
 					mBitmap = Bitmap.createBitmap(mBitmap, 0, 0,
 							mBitmap.getWidth(), mBitmap.getHeight());
 
@@ -410,7 +409,7 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
         view.invalidate();
         return true;
     }
-//
+
 	/**
 	 * Get the image from container - it is already cropped and zoomed If the
 	 * image is smaller than container it will be black color set aside
@@ -430,7 +429,6 @@ public class ActivityCameraCrop extends AppCompatActivity implements OnTouchList
 	}
 
     /** Determine the space between the first two fingers */
-    @SuppressLint("FloatMath")
     private float spacing(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);

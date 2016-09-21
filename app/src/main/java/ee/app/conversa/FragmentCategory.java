@@ -37,10 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import ee.app.conversa.adapters.CategoryAdapter;
-import ee.app.conversa.decorations.SimpleDividerItemDecoration;
 import ee.app.conversa.model.nCategory;
 import ee.app.conversa.model.nHeaderTitle;
-import ee.app.conversa.model.parse.bCategory;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 
@@ -69,13 +67,11 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
         mRvCategory.setAdapter(mCategoryListAdapter);
         mRvCategory.setHasFixedSize(true);
         mRvCategory.setItemAnimator(new DefaultItemAnimator());
-        mRvCategory.addItemDecoration(new SimpleDividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.orange, R.color.blue);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                bCategory.unpinAllInBackground();
                 getCategoriesAsync();
             }
         });
@@ -166,8 +162,8 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
                 mRvCategory.setVisibility(View.GONE);
             } else {
                 JSONObject jsonRootObject = new JSONObject(result);
-
                 JSONArray categories = jsonRootObject.optJSONArray("results");
+
                 int size = categories.length();
                 List<nCategory> categoryList = new ArrayList<>(30);
                 List<nHeaderTitle> headerList = new ArrayList<>(2);

@@ -31,12 +31,6 @@ package ee.app.conversa.utils;
  */
 public class Const {
 
-	/* SendBird */
-	public static final String sbAppId = "17FB6C41-7B2E-41C2-B481-C2B168633616";
-
-	/* Debug/Production variables */
-	public static final boolean IS_DEBUG = true;
-
     /* Parse */
 	// Category class
 	public static final String kClassCategory = "Category";
@@ -78,6 +72,16 @@ public class Const {
 	public static final String kUserGender = "gender";
 
 
+	// Options constants
+	public static final String kOptionsContactNumber = "02";
+	public static final String kOptionsAddress = "03";
+	public static final String kOptionsClosedOn = "04";
+	public static final String kOptionsDelivery = "05";
+	public static final String kOptionsLink = "06";
+	public static final String kOptionsSpecialPromo = "07";
+	public static final String kOptionsDaySpecial = "08";
+
+
 
 
 
@@ -107,8 +111,8 @@ public class Const {
 	public static final String kClassCustomer       = "Customer";
 	public static final String kCustomerUserInfoKey = "userInfo";
 
-	// dBusiness class
-	public static final String kClassBusiness           = "dBusiness";
+	// dbBusiness class
+	public static final String kClassBusiness           = "dbBusiness";
 	public static final String kBusinessBusinessInfoKey = "businessInfo";
 	public static final String kBusinessDisplayNameKey = "displayName";
 	public static final String kBusinessConversaIdKey   = "conversaID";

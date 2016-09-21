@@ -49,9 +49,7 @@ import ee.app.conversa.management.ably.Connection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.model.parse.BusinessCategory;
-import ee.app.conversa.model.parse.BusinessOptions;
 import ee.app.conversa.model.parse.Customer;
-import ee.app.conversa.model.parse.Options;
 import ee.app.conversa.model.parse.bCategory;
 import ee.app.conversa.model.parse.pMessage;
 import ee.app.conversa.notifications.onesignal.CustomNotificationOpenedHandler;
@@ -125,17 +123,13 @@ public class ConversaApp extends Application {
 	}
 
 	private void initializeParse() {
-		Parse.enableLocalDatastore(this);
-
 		// Register subclassing for using as Parse objects
-		ParseObject.registerSubclass(Options.class);
 		ParseObject.registerSubclass(Account.class);
 		ParseObject.registerSubclass(bCategory.class);
 		ParseObject.registerSubclass(Business.class);
 		ParseObject.registerSubclass(Customer.class);
 		ParseObject.registerSubclass(pMessage.class);
 		ParseObject.registerSubclass(BusinessCategory.class);
-		ParseObject.registerSubclass(BusinessOptions.class);
 
 		// Initialize Parse.
 		Parse.initialize(this, "39H1RFC1jalMV3cv8pmDGPRh93Bga1mB4dyxbLwl", "YC3vORNGt6I4f8yEsO6TyGF97XbmitofOrrS5PCC");

@@ -16,4 +16,10 @@
         <item name="Conversas">Chats</item>
         <item name="Explore">Explore</item>
     </string-array>
+
+    <string-array name="gender_array">
+        <item>Select gender</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>

@@ -37,7 +37,7 @@ import ee.app.conversa.management.contact.ContactIntentService;
  * Model class for business.
  */
 
-public class dBusiness implements Parcelable {
+public class dbBusiness implements Parcelable {
 
     private long mId;
     private String mBusinessId;
@@ -51,7 +51,7 @@ public class dBusiness implements Parcelable {
     private long mRecent;
     private long mCreated;
 
-    public dBusiness() {
+    public dbBusiness() {
         this.mId = -1;
         this.mComposingMessageString = "";
         this.mBlocked = false;
@@ -92,13 +92,6 @@ public class dBusiness implements Parcelable {
         context.startService(broadcastIntent);
     }
 
-    public void removeContact(Context context) {
-        Intent broadcastIntent = new Intent(context, ContactIntentService.class);
-        broadcastIntent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactIntentService.ACTION_MESSAGE_DELETE);
-        broadcastIntent.putExtra(ContactIntentService.INTENT_EXTRA_CUSTOMER, this);
-        context.startService(broadcastIntent);
-    }
-
     /* ******************************************************************************************* */
     /* ******************************************************************************************* */
     // In the vast majority of cases you can simply return 0 for this.
@@ -131,7 +124,7 @@ public class dBusiness implements Parcelable {
     // Using the `in` variable, we can retrieve the values that
     // we originally wrote into the `Parcel`.  This constructor is usually
     // private so that only the `CREATOR` field can access.
-    protected dBusiness(Parcel in) {
+    protected dbBusiness(Parcel in) {
         this.mId = in.readLong();
         this.mBusinessId = in.readString();
         this.mDisplayName = in.readString();
@@ -148,17 +141,17 @@ public class dBusiness implements Parcelable {
     // After implementing the `Parcelable` interface, we need to create the
     // `Parcelable.Creator<MyParcelable> CREATOR` constant for our class;
     // Notice how it has our class specified as its type.
-    public static final Parcelable.Creator<dBusiness> CREATOR = new Parcelable.Creator<dBusiness>() {
+    public static final Parcelable.Creator<dbBusiness> CREATOR = new Parcelable.Creator<dbBusiness>() {
         // This simply calls our new constructor (typically private) and
         // passes along the unmarshalled `Parcel`, and then returns the new object!
         @Override
-        public dBusiness createFromParcel(Parcel source) {
-            return new dBusiness(source);
+        public dbBusiness createFromParcel(Parcel source) {
+            return new dbBusiness(source);
         }
         // We just need to copy this and change the type to match our class.
         @Override
-        public dBusiness[] newArray(int size) {
-            return new dBusiness[size];
+        public dbBusiness[] newArray(int size) {
+            return new dbBusiness[size];
         }
     };
 }

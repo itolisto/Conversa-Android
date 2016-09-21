@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import ee.app.conversa.R;
 import ee.app.conversa.model.nCategory;
 import ee.app.conversa.model.nHeaderTitle;
+import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.GenericViewHolder> {
@@ -67,9 +69,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Generi
     @Override
     public void onBindViewHolder(GenericViewHolder holder, int i) {
         if (holder instanceof CategoryViewHolder) {
+            if ((i + 1) < mCategories.size() && mCategories.get(i + 1) instanceof nHeaderTitle) {
+                ((nCategory) mCategories.get(i)).setRemoveDividerMargin(true);
+            } else {
+                ((nCategory) mCategories.get(i)).setRemoveDividerMargin(false);
+            }
+
             ((CategoryViewHolder) holder).setCategory((nCategory)mCategories.get(i));
         } else {
-            ((HeaderViewHolder) holder).setHeaderTitle(((nHeaderTitle)mCategories.get(i)).getHeaderName());
+            ((HeaderViewHolder) holder).setHeaderTitle(((nHeaderTitle) mCategories.get(i)).getHeaderName());
         }
     }
 
@@ -126,17 +134,29 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Generi
 
         public MediumTextView tvCategoryTitle;
         public SimpleDraweeView sdvCategoryImage;
+        public View vDivider;
 
         public CategoryViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
             super(itemView, activity);
             this.tvCategoryTitle = (MediumTextView) itemView.findViewById(R.id.tvCategoryTitle);
             this.sdvCategoryImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvCategoryImage);
+            this.vDivider = itemView.findViewById(R.id.vDivider);
             itemView.setOnClickListener(this);
         }
 
         public void setCategory(nCategory category) {
             if (activity.get() != null) {
                 tvCategoryTitle.setText(category.getCategoryName(activity.get()));
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dpToPixels(activity.get(), 1));
+
+                if (category.getRemoveDividerMargin()) {
+                    params.setMargins(0, 0, 0, 0);
+                } else {
+                    params.setMargins(Utils.dpToPixels(activity.get(), 35), 0, 0, 0);
+                }
+
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                vDivider.setLayoutParams(params);
             }
 
             Uri uri;
@@ -145,6 +165,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Generi
             } else {
                 uri = Uri.parse(category.getAvatarUrl());
             }
+
             sdvCategoryImage.setImageURI(uri);
         }
 

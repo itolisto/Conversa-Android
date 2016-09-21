@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,7 +38,7 @@ import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.events.MessagePressedEvent;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.messageshandling.SendMessageAsync;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
@@ -51,7 +50,7 @@ import ee.app.conversa.view.TouchImageView;
 public class ActivityChatWall extends ConversaActivity implements View.OnClickListener,
 		View.OnTouchListener, TextWatcher {
 
-	private dBusiness businessObject;
+	private dbBusiness businessObject;
 	private MessagesAdapter gMessagesAdapter;
 
 	private boolean addAsContact;
@@ -65,7 +64,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private EditText mEtMessageText;
 	private BottomSheetDialogFragment myBottomSheet;
 	private RelativeLayout rlImageDisplay;
-	private FloatingActionButton mBtnWallSend;
+	private ImageButton mBtnWallSend;
 
 	public ActivityChatWall() {
 		this.loading = false;
@@ -116,21 +115,19 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		super.initialization();
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		MediumTextView mTitleTextView = (MediumTextView) toolbar.findViewById(R.id.tvChatName);
+		ImageButton mBackButton = (ImageButton) toolbar.findViewById(R.id.ibBack);
 		LightTextView mSubTitleTextView = (LightTextView) toolbar.findViewById(R.id.tvChatStatus);
 		SimpleDraweeView imageButton = (SimpleDraweeView) toolbar.findViewById(R.id.ivAvatarChat);
+		mBackButton.setOnClickListener(this);
 		imageButton.setOnClickListener(this);
 		mTitleTextView.setText(businessObject.getDisplayName());
 
 		setSupportActionBar(toolbar);
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
 
 		mRvWallMessages = (RecyclerView) findViewById(R.id.rvWallMessages);
 		mTvNoMessages = (TextView) findViewById(R.id.tvNoMessages);
 		mEtMessageText = (EditText) findViewById(R.id.etWallMessage);
-		mBtnWallSend = (FloatingActionButton) findViewById(R.id.btnWallSend);
+		mBtnWallSend = (ImageButton) findViewById(R.id.btnWallSend);
 		rlImageDisplay = (RelativeLayout) findViewById(R.id.rlImageDisplay);
 		mTivPhotoImage = (TouchImageView) findViewById(R.id.tivPhotoImage);
 
@@ -210,7 +207,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	@Override
 	protected void openFromNotification(Intent intent) {
 		Log.e("openFromNotification", "New intent with flags " + intent.getFlags());
-		dBusiness business = intent.getParcelableExtra(Const.kClassBusiness);
+		dbBusiness business = intent.getParcelableExtra(Const.kClassBusiness);
 
 		if (business == null) {
 			super.onBackPressed();
@@ -306,8 +303,14 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 	@Override
 	public void onClick(View v) {
-		if (v instanceof FloatingActionButton) {
+		if(v instanceof ImageButton) {
 			switch (v.getId()) {
+				case R.id.ibBack:
+					onBackPressed();
+					break;
+				case R.id.btnSlideButton:
+					myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
+					break;
 				case R.id.btnWallSend:
 					String body = mEtMessageText.getText().toString().trim();
 
@@ -319,12 +322,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 								addAsContact,
 								businessObject);
 					}
-					break;
-			}
-		} else if(v instanceof ImageButton) {
-			switch (v.getId()) {
-				case R.id.btnSlideButton:
-					myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
 					break;
 			}
 		} else if (v instanceof ImageView) {
@@ -377,7 +374,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			rlImageDisplay.startAnimation(slidein);
 			rlImageDisplay.setVisibility(View.VISIBLE);
 		} catch (Exception e) {
-			// Couldn't open image, get default image
+			// Couldn't open image
 		}
 	}
 
@@ -499,4 +496,5 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			mBtnWallSend.setEnabled(true);
 		}
 	}
+
 }

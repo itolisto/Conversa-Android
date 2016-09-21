@@ -13,12 +13,22 @@ public class nCategory {
     private final int relevance;
     private final int position;
     private final String avatarUrl;
+    private boolean removeDividerMargin;
 
     public nCategory(String objectId, int relevance, int position, String avatarUrl) {
         this.objectId = objectId;
         this.relevance = relevance;
         this.position = position;
         this.avatarUrl = avatarUrl;
+        this.removeDividerMargin = false;
+    }
+
+    public void setRemoveDividerMargin(boolean removeDividerMargin) {
+        this.removeDividerMargin = removeDividerMargin;
+    }
+
+    public boolean getRemoveDividerMargin() {
+        return removeDividerMargin;
     }
 
     public String getObjectId() {

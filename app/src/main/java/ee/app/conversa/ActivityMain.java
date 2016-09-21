@@ -53,7 +53,7 @@ public class ActivityMain extends ConversaActivity {
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         titles = getResources().getStringArray(R.array.categories_titles);
-        PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        final PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setOffscreenPageLimit(2);
 
@@ -85,7 +85,13 @@ public class ActivityMain extends ConversaActivity {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                tab.setIcon(tabIcons[tab.getPosition()]);
+                int position = tab.getPosition();
+
+                if (position == 0) {
+                    ((FragmentUsersChat)mPagerAdapter.getRegisteredFragment(0)).finishActionMode();
+                }
+
+                tab.setIcon(tabIcons[position]);
             }
 
             @Override

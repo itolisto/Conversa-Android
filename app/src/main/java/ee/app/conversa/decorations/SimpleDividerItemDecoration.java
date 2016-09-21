@@ -37,14 +37,17 @@ public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
             android.R.attr.listDivider
     };
 
+    private final int paddingLeftInDp;
+
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
     private Drawable mDivider;
     private int mOrientation;
 
-    public SimpleDividerItemDecoration(Context context, int orientation) {
+    public SimpleDividerItemDecoration(Context context, int orientation, int paddingLeftInDp) {
         final TypedArray a = context.obtainStyledAttributes(ATTRS);
         mDivider = a.getDrawable(0);
+        this.paddingLeftInDp = paddingLeftInDp;
         a.recycle();
         setOrientation(orientation);
     }
@@ -66,7 +69,7 @@ public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     public void drawVertical(Canvas c, RecyclerView parent) {
-        final int left = parent.getPaddingLeft();
+        final int left = parent.getPaddingLeft() + paddingLeftInDp;
         final int right = parent.getWidth() - parent.getPaddingRight();
         final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {

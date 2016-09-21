@@ -14,7 +14,7 @@
         <RelativeLayout
             android:id="@+id/rlProfileHeader"
             android:layout_width="match_parent"
-            android:layout_height="160dp">
+            android:layout_height="wrap_content">
 
             <com.facebook.drawee.view.SimpleDraweeView
                 android:id="@+id/sdvBusinessImage"
@@ -67,16 +67,29 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp" />
 
-            <ee.app.conversa.view.RegularTextView
+            <ee.app.conversa.view.MediumTextView
+                android:id="@+id/mtvBusinessName"
                 android:maxLines="1"
-                android:textSize="14sp"
-                android:id="@+id/rtvFollowers"
-                android:text="@string/number_of_followers"
+                android:textSize="16sp"
+                android:ellipsize="middle"
+                android:text="@string/test_string"
                 android:layout_width="wrap_content"
-                android:layout_height="25dp"
+                android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:textColor="@color/default_black"
                 android:layout_below="@id/sdvBusinessImage" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:maxLines="1"
+                android:textSize="14sp"
+                android:layout_marginTop="7dp"
+                android:id="@+id/rtvFollowers"
+                android:text="@string/number_of_followers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/default_black"
+                android:layout_below="@id/mtvBusinessName" />
 
             <ee.app.conversa.view.LightTextView
                 android:maxLines="1"
@@ -84,7 +97,7 @@
                 android:id="@+id/ltvMemberSince"
                 android:text="@string/member_since"
                 android:layout_width="wrap_content"
-                android:layout_height="25dp"
+                android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/rtvFollowers"
                 android:textColor="@color/default_black" />
@@ -101,6 +114,7 @@
                 android:padding="7dp"
                 android:layout_marginTop="7dp"
                 android:id="@+id/rlSpecialPromoContainer"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ee.app.conversa.view.RegularTextView
@@ -147,7 +161,7 @@
                             android:gravity="center"
                             android:layout_width="25dp"
                             android:background="@drawable/textview_circular_border"
-                            android:text="L"
+                            android:text="@string/profile_day_one"
                             android:layout_height="25dp" />
                     </RelativeLayout>
                     <RelativeLayout
@@ -160,7 +174,7 @@
                             android:gravity="center"
                             android:layout_width="25dp"
                             android:background="@drawable/textview_circular_border"
-                            android:text="M"
+                            android:text="@string/profile_day_two"
                             android:layout_height="25dp" />
                     </RelativeLayout>
                     <RelativeLayout
@@ -173,7 +187,7 @@
                             android:gravity="center"
                             android:layout_width="25dp"
                             android:background="@drawable/textview_circular_border"
-                            android:text="Mi"
+                            android:text="@string/profile_day_three"
                             android:layout_height="25dp" />
                     </RelativeLayout>
                     <RelativeLayout
@@ -186,7 +200,7 @@
                             android:gravity="center"
                             android:layout_width="25dp"
                             android:background="@drawable/textview_circular_border"
-                            android:text="J"
+                            android:text="@string/profile_day_four"
                             android:layout_height="25dp" />
                     </RelativeLayout>
                     <RelativeLayout
@@ -199,7 +213,7 @@
                             android:gravity="center"
                             android:layout_width="25dp"
                             android:background="@drawable/textview_circular_border"
-                            android:text="V"
+                            android:text="@string/profile_day_five"
                             android:layout_height="25dp" />
                     </RelativeLayout>
                     <RelativeLayout
@@ -212,7 +226,7 @@
                             android:gravity="center"
                             android:layout_width="25dp"
                             android:background="@drawable/textview_circular_border"
-                            android:text="S"
+                            android:text="@string/profile_day_six"
                             android:layout_height="25dp" />
                     </RelativeLayout>
                     <RelativeLayout
@@ -225,20 +239,21 @@
                             android:gravity="center"
                             android:layout_width="25dp"
                             android:background="@drawable/textview_circular_border"
-                            android:text="D"
+                            android:text="@string/profile_day_seven"
                             android:layout_height="25dp" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llGeneralInfo"
                 android:padding="7dp"
                 android:layout_marginTop="7dp"
                 android:orientation="vertical"
                 android:weightSum="2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                
+
                 <LinearLayout
                     android:weightSum="2"
                     android:orientation="horizontal"
@@ -262,7 +277,6 @@
                         <ee.app.conversa.view.LightTextView
                             android:id="@+id/ltvSchedule"
                             android:layout_marginTop="7dp"
-                            android:text="Hola"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
@@ -282,7 +296,6 @@
                         <ee.app.conversa.view.LightTextView
                             android:id="@+id/ltvDelivery"
                             android:layout_marginTop="7dp"
-                            android:text="@string/test_string"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
@@ -310,7 +323,6 @@
                         <ee.app.conversa.view.LightTextView
                             android:id="@+id/ltvLink"
                             android:layout_marginTop="7dp"
-                            android:text="Hola"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
@@ -330,7 +342,6 @@
                         <ee.app.conversa.view.LightTextView
                             android:layout_marginTop="7dp"
                             android:id="@+id/ltvContactNumber"
-                            android:text="@string/test_string"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>

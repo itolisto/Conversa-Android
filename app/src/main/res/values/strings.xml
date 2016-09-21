@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="request_permission">This sample needs camera permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+
+
+
+
+
+
     <string name="app_name" translatable="false">Conversa</string>
     <string name="test_string">Test string test string</string>
-
-    <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
-        send downstream messages to this app.</string>
-    <string name="registering_message" translatable="false">Generating InstanceID token...</string>
-    <string name="token_error_message">An error occurred while either fetching the InstanceID token,
-        sending the fetched token to the server or subscribing to the PubSub topic. Please try
-        running the sample again.</string>
-
 
     <string name="string_signin_title_one">Chat to any business</string>
     <string name="string_signin_title_two">Simple. Fast. Effective.</string>
@@ -27,8 +29,6 @@
 
     <string name="browse_categories">Browse categories</string>
 
-    <string name="search_title_menu">Search</string>
-
     <string name="me">Me</string>
     <string name="contacts_last_message_text">%1$s: %2$s</string>
     <string name="contacts_last_message_image">%1s: Picture</string>
@@ -36,6 +36,10 @@
     <string name="contacts_last_message_audio">%1s: Audio</string>
     <string name="contacts_last_message_location">%1s: Location</string>
     <string name="contacts_last_message_default">%1s: Message</string>
+
+    <string name="no_messages">No Messages</string>
+    <string name="no_messages_description_one">When you have messages, you\'ll</string>
+    <string name="no_messages_description_two">see them here.</string>
 
     <string name="start_browsing"><u>Start browsing</u></string>
     <string name="chat_wall_message_hint">Type a message</string>
@@ -64,6 +68,19 @@
     <string name="sett_notification_push_title">Push notifications</string>
     <string name="sett_notification_inapp_title">In-App notifications</string>
 
+    <string name="sett_account_email_title">Change email</string>
+    <string name="sett_account_password_title">Change password</string>
+    <string name="sett_account_clear_recent_title">Clear recent searches</string>
+    <string name="sett_account_blocked_title">Blocked</string>
+    <string name="sett_account_logout_title">Log out</string>
+    <string name="sett_account_email_summary">Email address linked to this account</string>
+    <string name="sett_account_blocked_summary">Manage blocked users</string>
+
+    <string name="sett_preferences_default_title">Title</string>
+    <string name="sett_preferences_default_description">Description</string>
+
+    <!--<string name="sett_account_"></string>-->
+
     <string name="sett_notification_sound_title">Sound</string>
     <string name="sett_notification_preview_title">Preview</string>
     <string name="sett_notification_sound_summary">Play when receiving a push notification</string>
@@ -76,19 +93,42 @@
     <string name="sett_chat_quality_default_entry">High</string>
     <string name="sett_chat_message_sent_sound">Sound when sending</string>
     <string name="sett_chat_message_received_sound">Sound when receiving</string>
+    
+
+    <string name="profile_day_one">M</string>
+    <string name="profile_day_two">T</string>
+    <string name="profile_day_three">W</string>
+    <string name="profile_day_four">Th</string>
+    <string name="profile_day_five">F</string>
+    <string name="profile_day_six">S</string>
+    <string name="profile_day_seven">Su</string>
 
 
+    <string name="selected_count">%1$s selected</string>
+    <string name="search_title_menu">Search</string>
+    <string name="delete_title_menu">Delete</string>
+    <string name="settings_title_menu">Settings</string>
+    <string name="mute_title_menu">Mute</string>
 
 
+    <string name="recent_searches_message">Do you want to clear your recent searches?</string>
+    <string name="recent_searches_ok">Clear</string>
 
+    <string name="logout_message">Do you want to logout?</string>
+    <string name="logout_ok">Logout</string>
+    <string name="cancel">Cancel</string>
 
+    <string name="settings_using_conversa">I\'m using Conversa</string>
+    <string name="settings_body_conversa">I been using Conversa and I really like it (: Go to the Play Store and download it!</string>
+    <string name="settings_share_conversa">How do you want to share?</string>
+
+    <string name="settings_email_succesful">Email changed</string>
+    <string name="settings_email_error">We\'re sorry, email couldn\'t be changed. Please try again later</string>
+    <string name="settings_password_succesful">Password changed</string>
+    <string name="settings_password_error">We\'re sorry, password couldn\'t be changed. Please try again later</string>
 
 
     <!-- ******* FOR LAYOUTS  ******* -->
-    <!-- FOR FRAGMENT_SEARCH -->
-    <string name="no_found">No business where found</string>
-    <string name="back_button_label">Back</string>
-
     <!-- FOR SIGN IN/UP  -->
     <string name="SIGN_IN">Log In</string>
     <string name="SIGN_UP">Sign Up</string>
@@ -101,96 +141,36 @@
     <string name="email">email</string>
     <string name="password">password</string>
 
-    <string-array name="gender_array">
-        <item>Select gender</item>
-        <item>Male</item>
-        <item>Female</item>
-    </string-array>
-
     <!-- FOR CHAT WALL -->
     <string name="action_location">Locations</string>
     <string name="select_location">Select the location your message will be delivered</string>
     <string name="no_wall_messages">No messages</string>
     <string name="SEND">SEND</string>
-    <string name="Send">Send</string>
-
-    <!-- FOR HOOKUP DIALOGS -->
-    <string name="Ok" translatable="false">@android:string/ok</string>
-    <string name="Cancel" translatable="false">@android:string/cancel</string>
-    <string name="delete_user">Delete conversation?</string>
 
     <!-- FOR NO INTERNET CONNECTION -->
     <string name="NO_INTERNET_CONNECTION">NO INTERNET CONNECTION</string>
 
-    <!-- FOR SETTINGS LAYOUT -->
-    <string name="notification_preferences" translatable="false">Notifications</string>
-    <string name="in_app_checkbox_preference_key" translatable="false">in_app_checkbox_preference_key</string>
-    <string name="in_app_checkbox_preference" translatable="false">In-App</string>
-    <string name="summary_in_app_checkbox_preference">In-App Notifications</string>
-    <string name="notification_checkbox_preference_key" translatable="false">notification_checkbox_preference_key</string>
-    <string name="notification_checkbox_preference" translatable="false">Notification</string>
-    <string name="summary_notification_checkbox_preference">In Notification Center</string>
-
-    <string name="account_preferences">Account</string>
-    <string name="email_edittext_preference_key" translatable="false">email_edittext_preference_key</string>
-    <string name="email_edittext_preference" translatable="false">e-mail</string>
-    <string name="dialog_email_edittext_preference">Change e-mail</string>
-
-    <string name="name_edittext_preference_key" translatable="false">name_edittext_preference_key</string>
-    <string name="name_edittext_preference" translatable="false">Username</string>
-    <string name="dialog_name_edittext_preference" translatable="false">Change username</string>
-
-    <string name="password_edittext_preference_key" translatable="false">password_edittext_preference_key</string>
-    <string name="password_edittext_preference" translatable="false">Password</string>
-    <string name="dialog_password_edittext_preference" translatable="false">Change password</string>
-
-    <string name="logout_preference_key" translatable="false">logout_preference_key</string>
-    <string name="logout_preference" translatable="false">Log Out</string>
-
-    <string name="about_attributes" translatable="false">Conversa</string>
-    <string name="share_preference_key" translatable="false">share_preference_key</string>
-    <string name="share_preference">Share</string>
-    <string name="summary_share_preference">Do you love Conversa? Share it! (:</string>
-    <string name="go_intent_preference" translatable="false">Conversa</string>
     <string name="summary_go_intent_preference">Conversa Official Site</string>
     <string name="terms_of_use_preference">Terms &amp; Conditions</string>
-    <string name="privacy_politics_preference" translatable="false">Privacy Policy</string>
+    <string name="privacy_politics_preference">Privacy Policy</string>
 
     <!-- ******* FOR CLASSES  ******* -->
-
-    <!-- FOR ConversaAsyncTask/ConversaAsync -->
     <string name="token_expired_error">Token expired!</string>
-    <string name="no_internet_connection">No internet connection</string>
-    <string name="hookup_date_time_format" translatable="false">MMM dd, HH:mm</string>
-    <string name="can_not_connect_to_server">Can\'t connect to server</string>
-    <string name="an_internal_error_has_occurred">An internal error has occurred</string>
-    <string name="an_server_error_has_occurred">An server error has occurred</string>
-
-    <!-- FOR HookUpAlertDialog -->
     <string name="invalid_token_message">Token has expired.\nPlease login again.</string>
 
     <!-- FOR SignInActivity/Utils -->
     <string name="no_user_registered">No user registered with this email or password</string>
-    <string name="CLOSE">CLOSE</string>
     <string name="email_fail_sent">Couldn\'t find an account associated with this email!</string>
     <string name="email_sent">Password sent to your email address</string>
-    <string name="email_ok">Email OK</string>
 
-    <string name="name_ok">Name OK</string>
-    <string name="password_ok">Password OK</string>
     <string name="gender_error">Please select gender</string>
     <string name="birthday_error">Please select your birthday</string>
     <string name="birthday_error1">You must be at least 18 years old to use Conversa</string>
-    <string name="confirm_email">Are you sure this is your email address? %1s \nWill send an email to reset your password, be careful!</string>
-    <string name="fb_action_error">An error ocurred while connecting to Facebook, please try later</string>
+    <string name="confirm_email">Are you sure this is your email address? %1s \nWe\'ll send an email to reset your password, be careful!</string>
 
     <string name="email_already_taken">Email is already taken</string>
     <string name="name_already_taken">Name is already taken</string>
 
-    <!-- FOR DeleteUserDialog -->
-    <string name="delete_error1">An error has ocurred while deleting conversation</string>
-    <string name="delete_error2">An error has ocurred while updating view</string>
-    <string name="delete_successful">Conversation deleted</string>
 
     <!-- FOR WallMessagesAdapter -->
     <string name="posted_less_than_a_minute_ago">Less than a minute ago</string>
@@ -204,16 +184,9 @@
     <string name="minutes_ago">minutes ago</string>
     <string name="close">close</string>
 
-    <!-- FOR LocationActivity -->
-    <string name="LOCATION">Location</string>
-
-    <!-- FOR FragmentCategory -->
-    <string name="category">Category</string>
-    <string name="categories">Categories</string>
-    <string name="no_categories">No categories can be retrieve</string>
     <string name="fav_error">An error has occurred while setting commerce as favorite</string>
-    <string name="adding_contact_error">An error has occurred while starting chat</string>
 
+    <string name="category">Category</string>
     <string name="cSYHk42aEOz">Cars</string>
     <string name="cRWcS1d4bqt">Baby</string>
     <string name="cDqCLGage9M">Beauty</string>
@@ -245,22 +218,8 @@
     <string name="cprn5lWuEDc">Online \u0026 Internet</string>
 
     <!-- FOR FragmentSettings -->
-    <string name="logout_message">Do you want to logout?</string>
 
-    <string name="settings_using_conversa">I\'m using</string>
-    <string name="settings_body1_conversa">I been using</string>
-    <string name="settings_body2_conversa">and I really like it (: Go to the Play Store and download it!</string>
-    <string name="settings_share_conversa">How do you want to share?</string>
-    <string name="settings_email_succesful">Email changed</string>
-    <string name="settings_email_error">We\'re sorry, email couldn\'t be changed. Please try again later</string>
-    <string name="settings_password_succesful">Password changed</string>
-    <string name="settings_password_error">We\'re sorry, password couldn\'t be changed. Please try again later</string>
-    <string name="settings_name_succesful">Username changed</string>
-    <string name="settings_name_error">We\'re sorry, username couldn\'t be changed. Please try again later</string>
-    <string name="settings_logout_succesful" translatable="false">Database removed</string>
-    <string name="settings_logout_error" translatable="false">An error has ocurred while removing databased. Database not removed</string>
-    <string name="no_messages">No Messages</string>
-    <string name="no_messages_description_one">When you have messages, you\'ll</string>
-    <string name="no_messages_description_two">see them here.</string>
+    <string name="settings_logout_succesful">Database removed</string>
+    <string name="settings_logout_error">An error has occurred while removing databased. Database not removed</string>
 
 </resources>

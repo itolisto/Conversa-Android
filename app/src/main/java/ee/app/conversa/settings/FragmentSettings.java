@@ -49,11 +49,10 @@ public class FragmentSettings extends PreferenceFragment implements Preference.O
                 Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 // Add data to the intent, the receiving app will decide what to do with it.
-                String subject = getActivity().getString(R.string.settings_using_conversa) + " " + getActivity().getString(R.string.app_name);
+                String subject = getActivity().getString(R.string.settings_using_conversa);
                 intent.putExtra(Intent.EXTRA_SUBJECT, subject);
 
-                String body = getActivity().getString(R.string.settings_body1_conversa) + " " +
-                        getActivity().getString(R.string.app_name) + " " + getActivity().getString(R.string.settings_body2_conversa);
+                String body = getActivity().getString(R.string.settings_body_conversa);
 
                 intent.putExtra(Intent.EXTRA_TEXT, body);
                 startActivity(Intent.createChooser(intent, getActivity().getString(R.string.settings_share_conversa)));

@@ -12,7 +12,7 @@ import android.util.Log;
 
 import ee.app.conversa.ActivityMain;
 import ee.app.conversa.R;
-import ee.app.conversa.database.MySQLiteHelper;
+import ee.app.conversa.model.database.NotificationInformation;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.notifications.NotificationDeleted;
 import ee.app.conversa.notifications.NotificationPressed;
@@ -23,7 +23,7 @@ import ee.app.conversa.utils.Const;
  */
 public class PushNotification {
 
-    public static void showMessageNotification(Context context, String from, String jsonData, dbMessage message, MySQLiteHelper.NotificationInformation summary) {
+    public static void showMessageNotification(Context context, String from, String jsonData, dbMessage message, NotificationInformation summary) {
         // Press intent
         Intent intent = new Intent(context, NotificationPressed.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

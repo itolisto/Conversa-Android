@@ -2,7 +2,7 @@ package ee.app.conversa.events;
 
 import java.util.List;
 
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 
 /**
  * Created by edgargomez on 9/6/16.
@@ -10,25 +10,31 @@ import ee.app.conversa.model.database.dBusiness;
 public class ContactEvent {
 
     private final int action_code;
-    private final dBusiness response;
-    private final List<dBusiness> list_response;
+    private final dbBusiness response;
+    private final List<dbBusiness> list_response;
+    private final List<String> contact_list;
 
-    public ContactEvent(int action_code, dBusiness response, List<dBusiness> list_response) {
+    public ContactEvent(int action_code, dbBusiness response, List<dbBusiness> list_response, List<String> contact_list) {
         this.action_code = action_code;
         this.response = response;
         this.list_response = list_response;
+        this.contact_list = contact_list;
     }
 
     public int getActionCode() {
         return action_code;
     }
 
-    public dBusiness getResponse() {
+    public dbBusiness getResponse() {
         return response;
     }
 
-    public List<dBusiness> getListResponse() {
+    public List<dbBusiness> getListResponse() {
         return list_response;
+    }
+
+    public List<String> getContactList() {
+        return contact_list;
     }
 
 }

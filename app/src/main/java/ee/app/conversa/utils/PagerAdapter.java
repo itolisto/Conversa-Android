@@ -5,14 +5,14 @@
  */
 package ee.app.conversa.utils;
 
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 
 import ee.app.conversa.FragmentRoot;
 import ee.app.conversa.FragmentUsersChat;
 
-public class PagerAdapter extends FragmentStatePagerAdapter {
+public class PagerAdapter extends SmartFragmentStatePagerAdapter<Fragment> {
 
 	public PagerAdapter(FragmentManager fm) {
         super(fm);

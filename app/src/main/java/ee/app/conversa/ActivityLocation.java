@@ -86,8 +86,8 @@ public class ActivityLocation extends ConversaActivity implements OnMapReadyCall
 		super.initialization();
 		mExtras = getIntent().getExtras();
 		mTypeOfLocation = mExtras.getString(Const.LOCATION);
-		mLatitude = mExtras.getDouble(Const.LATITUDE);
-		mLongitude = mExtras.getDouble(Const.LONGITUDE);
+		mLatitude = mExtras.getFloat(Const.LATITUDE);
+		mLongitude = mExtras.getFloat(Const.LONGITUDE);
 
 		Button mBtnSend = (Button) findViewById(R.id.btnSend);
 		mBtnSend.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());

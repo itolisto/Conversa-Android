@@ -3,73 +3,87 @@
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlCategoryLayout"
     android:layout_width="match_parent"
-    android:layout_height="65dp"
-    android:clipToPadding="false" >
+    android:layout_height="65dp" >
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/sdvCategoryImage"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            fresco:fadeDuration="300"
-            fresco:actualImageScaleType="focusCrop"
-            fresco:placeholderImage="@drawable/business_default"
-            fresco:placeholderImageScaleType="fitCenter"
-            fresco:failureImage="@drawable/business_default"
-            fresco:failureImageScaleType="centerInside"
-            fresco:retryImage="@drawable/business_default"
-            fresco:retryImageScaleType="centerCrop"
-            fresco:progressBarImage="@drawable/rotate_loading"
-            fresco:progressBarImageScaleType="centerInside"
-            fresco:progressBarAutoRotateInterval="1000"
-            fresco:roundTopLeft="false"
-            fresco:roundTopRight="false"
-            fresco:roundBottomLeft="false"
-            fresco:roundBottomRight="false" />
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/sdvCategoryImage"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginEnd="0dp"
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="focusCrop"
+        fresco:placeholderImage="@drawable/business_default"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:failureImage="@drawable/business_default"
+        fresco:failureImageScaleType="centerInside"
+        fresco:retryImage="@drawable/business_default"
+        fresco:retryImageScaleType="centerCrop"
+        fresco:progressBarImage="@drawable/rotate_loading"
+        fresco:progressBarImageScaleType="centerInside"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:roundTopLeft="false"
+        fresco:roundTopRight="false"
+        fresco:roundBottomLeft="false"
+        fresco:roundBottomRight="false" />
 
-        <ee.app.conversa.view.MediumTextView
-            android:id="@+id/tvCategoryTitle"
-            android:layout_width="wrap_content"
+    <ee.app.conversa.view.MediumTextView
+        android:id="@+id/tvCategoryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/sdvCategoryImage"
+        android:layout_toEndOf="@id/sdvCategoryImage"
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_centerVertical="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:text="@string/test_string"
+        android:textColor="#444444"
+        android:textSize="17sp" />
+
+    <LinearLayout
+        android:id="@+id/llUserIndicators"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:weightSum="1"
+        android:visibility="gone"
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="bottom|center_horizontal" >
+
+        <ee.app.conversa.view.RegularTextView
+            android:id="@+id/tvMessages"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/sdvCategoryImage"
-            android:layout_toEndOf="@id/sdvCategoryImage"
-            android:layout_marginLeft="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_centerVertical="true"
-            android:gravity="center"
+            android:layout_width="0dip"
+            android:contentDescription="@null"
+            android:background="@null"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/hookup_alert"
             android:text="@string/test_string"
-            android:textColor="#444444"
-            android:textSize="17sp" />
+            android:textSize="16sp"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="bottom"/>
+    </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/llUserIndicators"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:weightSum="1"
-            android:visibility="gone"
-            android:layout_marginRight="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="8dp"
-            android:gravity="bottom|center_horizontal" >
-
-            <ee.app.conversa.view.RegularTextView
-                android:id="@+id/tvMessages"
-                android:layout_height="wrap_content"
-                android:layout_width="0dip"
-                android:contentDescription="@null"
-                android:background="@null"
-                android:layout_weight="1"
-                android:textColor="@color/hookup_alert"
-                android:text="@string/test_string"
-                android:textSize="16sp"
-                android:layout_marginRight="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_gravity="bottom"/>
-        </LinearLayout>
+    <View
+        android:id="@+id/vDivider"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
 </RelativeLayout>

@@ -4,11 +4,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -17,24 +17,34 @@ import java.util.List;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.view.MediumTextView;
+import ee.app.conversa.view.RegularTextView;
 
+
+/**
+ * ChatsAdapter class was implemented using https://github.com/writtmeyer/recyclerviewdemo
+ * along with the post from Wolfram Rittmeyer which you could find at
+ * http://www.grokkingandroid.com/first-glance-androids-recyclerview/
+ *
+ */
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> {
 
     private AppCompatActivity mActivity;
-    private List<dBusiness> mUsers;
+    private List<dbBusiness> mUsers;
     private OnItemClickListener listener;
     private OnLongClickListener longlistener;
+    private SparseBooleanArray mSelectedPositions;
 
     public interface OnItemClickListener {
-        void onItemClick(dBusiness contact);
+        void onItemClick(dbBusiness contact, int position);
     }
 
     public interface OnLongClickListener {
-        void onItemLongClick(dBusiness contact);
+        void onItemLongClick(dbBusiness contact, int position);
     }
 
     public ChatsAdapter(AppCompatActivity activity, OnItemClickListener listener, OnLongClickListener longlistener) {
@@ -42,6 +52,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         this.mActivity = activity;
         this.listener = listener;
         this.longlistener = longlistener;
+        this.mSelectedPositions = new SparseBooleanArray();
     }
 
     @Override
@@ -57,7 +68,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        dBusiness user = mUsers.get(position);
+        dbBusiness user = mUsers.get(position);
 
         if (ConversaApp.getInstance(mActivity).getDB().hasUnreadMessagesOrNewMessages(user.getBusinessId())) {
             holder.ivUnread.setVisibility(View.VISIBLE);
@@ -74,9 +85,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         Uri uri;
         if(user.getAvatarThumbFileId().isEmpty()) {
-            uri = Uri.parse(user.getAvatarThumbFileId());
-        } else {
             uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+        } else {
+            uri = Uri.parse(user.getAvatarThumbFileId());
         }
 
         holder.ivUserImage.setImageURI(uri);
@@ -108,6 +119,45 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
                     break;
             }
         }
+
+        if (mSelectedPositions.get(position, false)) {
+            holder.itemView.setActivated(true);
+        }
+    }
+
+    // item changes its selection state
+    public void toggleSelection(int position) {
+        if (mSelectedPositions.get(position, false)) {
+            mSelectedPositions.delete(position);
+        } else {
+            mSelectedPositions.put(position, true);
+        }
+        notifyItemChanged(position);
+    }
+
+    // clear all selections
+    public void clearSelections(boolean updateViews) {
+        if (updateViews) {
+            for (int i = 0; i < mSelectedPositions.size(); i++) {
+                notifyItemChanged(mSelectedPositions.keyAt(i));
+            }
+        }
+
+        mSelectedPositions.clear();
+    }
+
+    // get the number of currently selected items
+    public int getSelectedItemCount() {
+        return mSelectedPositions.size();
+    }
+
+    // Currently selected items.
+    public ArrayList<String> getSelectedItems() {
+        ArrayList<String> items = new ArrayList<>(mSelectedPositions.size());
+        for (int i = 0; i < mSelectedPositions.size(); i++) {
+            items.add(Long.toString(mUsers.get(mSelectedPositions.keyAt(i)).getId()));
+        }
+        return items;
     }
 
     public void clearItems() {
@@ -115,57 +165,49 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void addItems(List<dBusiness> users) {
+    public void addItems(List<dbBusiness> users) {
         mUsers = users;
         notifyItemRangeInserted(0, users.size());
     }
 
-    public void newContactInserted(dBusiness user) {
+    public void newContactInserted(dbBusiness user) {
         mUsers.add(0, user);
         notifyItemInserted(0);
     }
 
     public void changeContactPosition(int oldposition, int newposition) {
-        dBusiness customer = mUsers.get(oldposition);
+        dbBusiness customer = mUsers.get(oldposition);
         mUsers.remove(oldposition);
         mUsers.add(newposition, customer);
         notifyItemMoved(oldposition, newposition);
     }
 
-    public void removeContact(dBusiness user, int from, int count) {
-        int size = mUsers.size();
-
-        for (int i = 0; i < size; i++) {
-            dBusiness m = mUsers.get(i);
-            if (m.getId() == user.getId()) {
-                mUsers.remove(i);
-                if (i >= from && i < (from + count)) {
-                    notifyItemRemoved(i);
-                }
-                break;
-            }
+    public void removeContacts() {
+        for (int i = 0; i < mSelectedPositions.size(); i++) {
+            int position = mSelectedPositions.keyAt(i);
+            mUsers.remove(position);
+            notifyItemRemoved(position);
         }
+
+        clearSelections(false);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public SimpleDraweeView ivUserImage;
-        public TextView tvUser;
-        public TextView tvLastMessage;
+        public MediumTextView tvUser;
+        public RegularTextView tvLastMessage;
         public ImageView ivUnread;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.ivUserImage = (SimpleDraweeView) itemView
                     .findViewById(R.id.sdvContactAvatar);
-            this.tvUser = (TextView) itemView
+            this.tvUser = (MediumTextView) itemView
                     .findViewById(R.id.tvUser);
-            this.tvLastMessage = (TextView) itemView
+            this.tvLastMessage = (RegularTextView) itemView
                     .findViewById(R.id.tvLastMessage);
             this.ivUnread = (ImageView) itemView
                     .findViewById(R.id.ivUnread);
-
-            this.tvUser.setTypeface(ConversaApp.getInstance(mActivity).getTfRalewayMedium());
-            this.tvLastMessage.setTypeface(ConversaApp.getInstance(mActivity).getTfRalewayRegular());
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -173,14 +215,18 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            if (listener != null)
-                listener.onItemClick(mUsers.get(getAdapterPosition()));
+            if (listener != null) {
+                int position = getAdapterPosition();
+                listener.onItemClick(mUsers.get(position), position);
+            }
         }
 
         @Override
         public boolean onLongClick(View v) {
-            if (longlistener != null)
-                longlistener.onItemLongClick(mUsers.get(getAdapterPosition()));
+            if (longlistener != null) {
+                int position = getAdapterPosition();
+                longlistener.onItemLongClick(mUsers.get(position), position);
+            }
             return true;
         }
     }

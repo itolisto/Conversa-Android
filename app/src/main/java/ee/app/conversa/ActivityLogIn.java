@@ -21,7 +21,7 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import ee.app.conversa.dialog.CustomDeleteUserDialog;
+import ee.app.conversa.dialog.CustomDialog;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
@@ -139,7 +139,7 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
                         }
                     });
                 } else {
-                    final CustomDeleteUserDialog dialog = new CustomDeleteUserDialog(this);
+                    final CustomDialog dialog = new CustomDialog(this);
                     dialog.setTitle(null)
                             .setMessage("Please enter check email and password are ok")
                             .setupPositiveButton("Accept", new View.OnClickListener() {

@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ActivityMain;
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.utils.Const;
 
 /**
@@ -60,7 +60,7 @@ public class NotificationPressed extends AppCompatActivity {
                     break;
                 }
 
-                dBusiness user = ConversaApp.getInstance(this).getDB().isContact(contactId);
+                dbBusiness user = ConversaApp.getInstance(this).getDB().isContact(contactId);
                 if (user != null) {
                     // Set extras
                     intent = new Intent(this, ActivityChatWall.class);

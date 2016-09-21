@@ -86,6 +86,12 @@ public class Utils {
 		}
 	}
 
+	// As described in StackOverflow answer: http://stackoverflow.com/a/9274868/5349296
+	public static int dpToPixels(Context context, int dp) {
+		int afsd = (int) (dp * context.getResources().getDisplayMetrics().density);
+		return afsd;
+	}
+
 	public static String getDate(Context context, long time) {
 		Calendar cal = Calendar.getInstance(Locale.getDefault());
 		cal.setTimeInMillis(time);

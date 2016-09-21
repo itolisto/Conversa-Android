@@ -36,7 +36,8 @@ import java.util.concurrent.TimeoutException;
 
 import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
+import ee.app.conversa.model.database.dbSearch;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
@@ -47,6 +48,7 @@ import ee.app.conversa.utils.Utils;
 public class ActivitySearch extends ConversaActivity implements SearchView.OnQueryTextListener,
         BusinessAdapter.OnLocalItemClickListener, View.OnTouchListener {
 
+    private boolean mLoading;
     private final ExecutorService tpe;
     private final ExecutorService callResults;
     Future<String> future;
@@ -147,6 +149,8 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
             }
         });
 
+        mLoading = true;
+
         futureResult = callResults.submit(new Runnable() {
             @Override
             public void run() {
@@ -175,9 +179,9 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
 
     private void showResults(String response) {
         Logger.error("Future get result: ", response);
-
         JSONObject jsonRootObject;
         boolean error = false;
+
         try {
             if (response.isEmpty()) {
                 error = true;
@@ -190,8 +194,8 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
                     return;
                 }
 
-                List<dBusiness> allResults = new ArrayList<>();
-                dBusiness business = new dBusiness();
+                List<dbBusiness> allResults = new ArrayList<>();
+                dbBusiness business = new dbBusiness();
 
                 for (int i = 0; i < size; i++) {
                     JSONObject object = results.getJSONObject(i);
@@ -207,6 +211,8 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
         } catch (JSONException e) {
             error = true;
         } finally {
+            mLoading = false;
+
             if (error) {
                 // Clear all results and show error
                 mIvNoResults.setVisibility(View.VISIBLE);
@@ -256,15 +262,32 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
     }
 
     @Override
-    public void onItemClick(View itemView, int position, dBusiness business) {
-        dBusiness dbBusiness = ConversaApp.getInstance(this).getDB().isContact(business.getBusinessId());
+    public void onItemClick(View itemView, int position, final dbBusiness business) {
+        final dbBusiness dbbusiness = ConversaApp.getInstance(this)
+                .getDB()
+                .isContact(business.getBusinessId());
+
         Intent intent = new Intent(this, ActivityProfile.class);
 
-        if (dbBusiness == null) {
+        if (dbbusiness == null) {
             intent.putExtra(Const.kYapDatabaseName, true);
         } else {
             intent.putExtra(Const.kYapDatabaseName, false);
         }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ConversaApp.getInstance(getApplicationContext())
+                        .getDB()
+                        .addSearch(new dbSearch(-1,
+                                business.getBusinessId(),
+                                business.getDisplayName(),
+                                business.getConversaId(),
+                                business.getAvatarThumbFileId()
+                        ));
+            }
+        }).start();
 
         intent.putExtra(Const.kClassBusiness, business);
         startActivity(intent);

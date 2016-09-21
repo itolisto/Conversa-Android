@@ -1,41 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <PreferenceCategory
         android:title="@string/sett_account_account_title">
 
-        <ee.app.conversa.view.InLinePreference
-            android:defaultValue="afsdfa"
-            android:key="erwewrweewrwe"
-            android:title="fadsfadsf"/>
+        <EditTextPreference
+            android:title="@string/sett_account_email_title"
+            android:defaultValue=""
+            android:key="sett_account_email_key" />
 
-        <ee.app.conversa.view.InLinePreference
-            android:defaultValue="afsdfa"
-            android:key="erwewrvzxcvcxw"
-            android:title="fadsfadsf"/>
-
-        <ee.app.conversa.view.InLinePreference
-            android:defaultValue="afsdfa"
-            android:key="erwewrgkjhjhkw"
-            android:title="fadsfadsf"/>
+        <EditTextPreference
+            android:title="@string/sett_account_password_title"
+            android:defaultValue=""
+            android:key="sett_account_password_key" />
 
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/sett_account_privacy_title">
 
         <Preference
-            android:title="Clean"
-            android:key="fadfadsf"
-            android:icon="@drawable/username_icon" />
-
-        <ee.app.conversa.view.SwitchCompatPreference
-            android:key="ewtretwremkm"
-            android:title="@string/sett_chat_message_received_sound"
-            android:defaultValue="true" />
+            android:title="@string/sett_account_clear_recent_title"
+            android:key="sett_account_clear_recent_key" />
 
         <Preference
-            android:title="Logout"
-            android:key="fadfadsfadsfadsf"
-            android:icon="@drawable/username_icon" />
+            android:title="@string/sett_account_blocked_title"
+            android:summary="@string/sett_account_blocked_summary"
+            android:key="sett_account_blocked_key" />
+
+        <Preference
+            android:title="@string/sett_account_logout_title"
+            android:key="sett_account_logout_key" />
 
     </PreferenceCategory>
 </PreferenceScreen>

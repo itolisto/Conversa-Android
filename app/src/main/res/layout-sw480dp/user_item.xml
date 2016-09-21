@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    android:background="@android:color/white"
+    android:background="@drawable/statelist_item_background"
     android:layout_width="match_parent"
     android:layout_height="85dp">
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/sdvContactAvatar"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
         android:layout_marginRight="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="5dp"
         fresco:fadeDuration="300"
         fresco:actualImageScaleType="centerInside"
         fresco:placeholderImage="@drawable/business_default"
@@ -30,33 +29,31 @@
 
     <ImageView
         android:id="@+id/ivUnread"
-        android:layout_height="15dp"
-        android:layout_width="15dp"
+        android:layout_height="12dp"
+        android:layout_width="12dp"
         android:contentDescription="@null"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:weightSum="1"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="7dp"
         android:background="@drawable/notification"
         android:textColor="@color/hookup_alert"
-        android:textSize="16sp"
-        android:layout_gravity="bottom" />
+        android:textSize="16sp" />
 
     <ee.app.conversa.view.MediumTextView
         android:id="@+id/tvUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="13dp"
         android:textColor="#444444"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:layout_toRightOf="@id/sdvContactAvatar"
         android:layout_toEndOf="@id/sdvContactAvatar"
-        android:layout_toLeftOf="@id/ivUnread"
-        android:layout_toStartOf="@id/ivUnread"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginEnd="14dp"
         android:textSize="18sp" />
 
     <ee.app.conversa.view.RegularTextView
@@ -64,15 +61,22 @@
         android:layout_below="@+id/tvUser"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="2dp"
         android:textColor="@color/light_gray_subtext"
-        android:maxLines="2"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:layout_toRightOf="@id/sdvContactAvatar"
         android:layout_toEndOf="@id/sdvContactAvatar"
-        android:layout_toLeftOf="@id/ivUnread"
-        android:layout_toStartOf="@id/ivUnread"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="7dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="13dp"
         android:textSize="14sp" />
+
+    <View
+        android:layout_marginLeft="84dp"
+        android:layout_marginStart="84dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
 </RelativeLayout>

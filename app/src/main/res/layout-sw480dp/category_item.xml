@@ -10,9 +10,11 @@
         android:id="@+id/sdvCategoryImage"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginEnd="0dp"
         fresco:fadeDuration="300"
         fresco:actualImageScaleType="focusCrop"
         fresco:placeholderImage="@drawable/business_default"
@@ -38,6 +40,8 @@
         android:layout_marginLeft="30dp"
         android:layout_marginStart="30dp"
         android:layout_centerVertical="true"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:gravity="center"
         android:text="@string/test_string"
         android:textColor="#444444"
@@ -65,6 +69,8 @@
             android:contentDescription="@null"
             android:background="@null"
             android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@color/hookup_alert"
             android:text="@string/test_string"
             android:textSize="16sp"
@@ -72,4 +78,13 @@
             android:layout_marginEnd="10dp"
             android:layout_gravity="bottom"/>
     </LinearLayout>
+
+    <View
+        android:id="@+id/vDivider"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
 </RelativeLayout>

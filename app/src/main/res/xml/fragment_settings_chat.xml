@@ -6,6 +6,7 @@
             android:summary="@string/sett_chat_quality_default_entry"
             android:entries="@array/sett_chat_quality_entries"
             android:entryValues="@array/sett_chat_quality_values"
+            android:defaultValue="1"
             android:key="sett_chat_quality_key"
             android:title="@string/sett_chat_quality_title" />
         <ee.app.conversa.view.SwitchCompatPreference

@@ -3,85 +3,73 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/default_white"
     tools:context=".ActivityChatWall" >
 
     <RelativeLayout
         android:layout_marginTop="?attr/actionBarSize"
-        android:background="@android:color/transparent"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/llTextOptions"
-            android:weightSum="10"
-            android:orientation="horizontal"
-            android:padding="5dp"
+            android:paddingLeft="14dp"
+            android:paddingStart="14dp"
+            android:paddingRight="14dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="7dp"
+            android:gravity="bottom"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <RelativeLayout
-                android:layout_weight="1"
-                android:id="@+id/rlSlideOptions"
-                android:layout_width="0dp"
-                android:layout_marginRight="5dp"
-                android:layout_height="match_parent" >
+            <ImageButton
+                android:id="@+id/btnSlideButton"
+                android:src="@drawable/ic_attachment"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:contentDescription="@null" />
 
-                <ImageButton
-                    android:id="@+id/btnSlideButton"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_centerInParent="true"
-                    android:background="@null"
-                    android:src="@drawable/more_btn_off"
-                    android:scaleType="fitXY"
-                    android:contentDescription="@null" />
-            </RelativeLayout>
+            <ImageButton
+                android:id="@+id/btnWallSend"
+                android:src="@drawable/ic_send"
+                android:scaleType="centerInside"
+                android:background="@drawable/imagebutton_circular_chat_selector"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:contentDescription="@null" />
 
             <EditText
-                android:layout_weight="7"
                 android:id="@+id/etWallMessage"
-                android:layout_width="0dp"
+                android:layout_toRightOf="@id/btnSlideButton"
+                android:layout_toEndOf="@id/btnSlideButton"
+                android:layout_toLeftOf="@id/btnWallSend"
+                android:layout_toStartOf="@id/btnWallSend"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:layout_marginEnd="5dp"
                 android:textColor="@android:color/darker_gray"
+                android:layout_marginLeft="7dp"
+                android:layout_marginStart="7dp"
                 android:maxLines="4"
                 android:gravity="top|start"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:hint="@string/chat_wall_message_hint"
                 android:background="@drawable/sent_bubble"
                 android:inputType="textCapSentences|textMultiLine"
-                android:scrollHorizontally="false"
-                android:padding="5dp" />
-
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:background="@color/chat_bottom_bar" >
-
-                <ImageButton
-                    android:src="@android:drawable/ic_menu_send"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <!--<Button-->
-                <!--android:id="@+id/btnWallSend"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="35dp"-->
-                <!--android:text="@string/Send"-->
-                <!--android:textColor="@color/rounded_rect_send_selector"-->
-                <!--android:textStyle="bold"-->
-                <!--android:background="@null" />-->
-            </RelativeLayout>
-        </LinearLayout>
+                android:scrollHorizontally="true"
+                android:padding="7dp" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="7dp"
             android:layout_above="@id/llTextOptions" >
 
             <android.support.v7.widget.RecyclerView
@@ -107,13 +95,18 @@
                 android:text="@string/no_wall_messages"
                 android:textColor="@color/text_gray" />
         </RelativeLayout>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/toolbar_dropshadow"/>
     </RelativeLayout>
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_green"
+        android:background="#F7F7F7"
         android:fitsSystemWindows="true">
 
         <android.support.v7.widget.Toolbar
@@ -127,16 +120,16 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <!--<include layout="@layout/image_view_chat"-->
-    <!--android:id="@+id/rlImageDisplay"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:visibility="gone"/>-->
+    <include layout="@layout/image_view_chat"
+        android:id="@+id/rlImageDisplay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
-    <!--<include layout="@layout/push_notification"-->
-    <!--android:id="@+id/rlPushNotification"-->
-    <!--android:layout_alignParentTop="true"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:visibility="gone" />-->
+    <include layout="@layout/push_notification"
+        android:id="@+id/rlPushNotification"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 </android.support.design.widget.CoordinatorLayout>

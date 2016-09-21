@@ -11,16 +11,20 @@ package ee.app.conversa.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.NotificationInformation;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.model.database.dbSearch;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Logger;
 
@@ -31,11 +35,12 @@ public class MySQLiteHelper {
     private DatabaseHelper myDbHelper;
 
     private static final String DATABASE_NAME1 = "conversadb.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String TABLE_MESSAGES = "message";
     private static final String TABLE_CV_CONTACTS = "cv_contact";
     private static final String TABLE_NOTIFICATION = "notification";
+    private static final String TABLE_SEARCH = "search";
 
     private static final String COLUMN_ID = "_id";
 
@@ -108,10 +113,26 @@ public class MySQLiteHelper {
             + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL );";
     private static final String tcIndex1 = "CREATE UNIQUE INDEX IF NOT EXISTS C_businessId on "  + TABLE_CV_CONTACTS + "(" + sBusinessBusinessId + ");";
 
+    // SEARCHES
+    private static final String sSearchBusinessId = "business_id";
+    private static final String sSearchDisplayName = "display_name";
+    private static final String sSearchConversaId = "conversa_id";
+    private static final String sSearchAvatarUrl = "avatar_url";
+    private static final String sSearchCreatedAt = "created_at";
+
+    private static final String TABLE_SEARCH_CREATE = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_SEARCH + "("
+            + "\"" + COLUMN_ID + "\" INTEGER PRIMARY KEY, "
+            + "\"" + sSearchBusinessId + "\" TEXT NOT NULL, "
+            + "\"" + sSearchDisplayName + "\" TEXT NOT NULL, "
+            + "\"" + sSearchConversaId + "\" TEXT NOT NULL, "
+            + "\"" + sSearchAvatarUrl + "\" TEXT NOT NULL DEFAULT 0, "
+            + "\"" + sSearchCreatedAt + "\" INTEGER NOT NULL );";
+
     // NOTIFICATIONS
-    public static final String sNotificationAndroidId = "android_id";
-    public static final String sNotificationGroup = "group_id";
-    public static final String sNotificationCount = "count";
+    private static final String sNotificationAndroidId = "android_id";
+    private static final String sNotificationGroup = "group_id";
+    private static final String sNotificationCount = "count";
 
     private static final String TABLE_NOTIFICATION_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NOTIFICATION + "("
@@ -163,7 +184,7 @@ public class MySQLiteHelper {
     /************************************************************/
     /*********************OPERATIONS METHODS*********************/
     /************************************************************/
-    public dBusiness saveContact(dBusiness user) {
+    public dbBusiness saveContact(dbBusiness user) {
         ContentValues contact = new ContentValues();
         contact.put(sBusinessBusinessId, user.getBusinessId());
         contact.put(sBusinessDisplayName, user.getDisplayName());
@@ -185,14 +206,14 @@ public class MySQLiteHelper {
         return user;
     }
 
-    public List<dBusiness> getAllContacts() {
-        List<dBusiness> contacts = new ArrayList<>();
+    public List<dbBusiness> getAllContacts() {
+        List<dbBusiness> contacts = new ArrayList<>();
 
         Cursor cursor = openDatabase().query(TABLE_CV_CONTACTS,null,null,null,null,null, sBusinessRecent + " DESC");
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            dBusiness contact = cursorToUser(cursor);
+            dbBusiness contact = cursorToUser(cursor);
             contacts.add(contact);
             cursor.moveToNext();
         }
@@ -202,16 +223,16 @@ public class MySQLiteHelper {
         return contacts;
     }
 
-    public dBusiness deleteContactById(dBusiness customer) {
-        openDatabase().delete(TABLE_CV_CONTACTS, COLUMN_ID + " = ? ",
-                new String[]{Long.toString(customer.getId())});
-        return customer;
+    public void deleteContactsById(List<String> customer) {
+        String args = TextUtils.join(",", customer);
+        openDatabase().execSQL(String.format("DELETE FROM " + TABLE_CV_CONTACTS
+                + " WHERE " + COLUMN_ID + " IN (%s);", args));
     }
 
-    public dBusiness isContact(String businessId) {
+    public dbBusiness isContact(String businessId) {
         Cursor cursor = openDatabase().query(TABLE_CV_CONTACTS, null, sBusinessBusinessId + " = ?", new String[]{businessId}, null, null, null);
         cursor.moveToFirst();
-        dBusiness contact = null;
+        dbBusiness contact = null;
 
         while (!cursor.isAfterLast()) {
             contact = cursorToUser(cursor);
@@ -244,8 +265,8 @@ public class MySQLiteHelper {
         openDatabase().update(TABLE_CV_CONTACTS, contentValues, "_id = ? ", new String[]{id});
     }
 
-    private dBusiness cursorToUser(Cursor cursor) {
-        dBusiness contact = new dBusiness();
+    private dbBusiness cursorToUser(Cursor cursor) {
+        dbBusiness contact = new dbBusiness();
         contact.setId(cursor.getLong(0));
         contact.setBusinessId(cursor.getString(1));
         contact.setDisplayName(cursor.getString(2));
@@ -451,57 +472,83 @@ public class MySQLiteHelper {
     /* ******************************************* */
     /* ******************************************* */
 
-    public static class NotificationInformation {
+    public boolean addSearch(dbSearch search) {
+        ContentValues searchContent = new ContentValues();
+        long currentTimestamp = System.currentTimeMillis();
 
-        public NotificationInformation(String groupId) {
-            // Set default values
-            this.notification_id = -1;
-            this.android_notification_id = (int) System.currentTimeMillis() / 1000;
-            this.groupId = groupId;
-            this.count = 1;
-        }
+        if (DatabaseUtils.queryNumEntries(openDatabase(), TABLE_SEARCH) < 5) {
+            // Create record
+            searchContent.put(sSearchBusinessId, search.getBusinessId());
+            searchContent.put(sSearchDisplayName, search.getDisplayName());
+            searchContent.put(sSearchConversaId, search.getConversaId());
+            searchContent.put(sSearchAvatarUrl, search.getAvatarUrl());
+            searchContent.put(sSearchCreatedAt, currentTimestamp);
 
-        public long getNotificationId() {
-            return notification_id;
-        }
+            return (openDatabase().insert(TABLE_SEARCH, null, searchContent) != -1);
+        } else {
+            // Update last record
+            dbSearch recentSearch = null;
+            String query = "SELECT MIN(" + sSearchCreatedAt + ") FROM " + TABLE_SEARCH;
 
-        public void setNotificationId(long notification_id) {
-            this.notification_id = notification_id;
-        }
+            Cursor cursor = openDatabase().rawQuery(query, new String[]{});
+            cursor.moveToFirst();
 
-        public int getAndroidNotificationId() {
-            return android_notification_id;
-        }
-
-        public void setAndroidNotificationId(long android_notification_id) {
-            if (android_notification_id < Integer.MIN_VALUE || android_notification_id > Integer.MAX_VALUE) {
-                this.android_notification_id = -1;
+            while (!cursor.isAfterLast()) {
+                recentSearch = cursorToSearch(cursor);
+                cursor.moveToNext();
             }
 
-            this.android_notification_id = (int)android_notification_id;
-        }
+            // make sure to close the cursor
+            cursor.close();
 
-        public String getGroupId() {
-            return groupId;
+            if (recentSearch != null) {
+                searchContent.put(sSearchBusinessId, search.getBusinessId());
+                searchContent.put(sSearchDisplayName, search.getDisplayName());
+                searchContent.put(sSearchConversaId, search.getConversaId());
+                searchContent.put(sSearchAvatarUrl, search.getAvatarUrl());
+                searchContent.put(sSearchCreatedAt, currentTimestamp);
+                return (openDatabase().update(TABLE_SEARCH, searchContent,
+                        COLUMN_ID + " = ?", new String[] {String.valueOf(search.getID())} ) == 1);
+            } else {
+                return false;
+            }
         }
-
-        public void setGroupId(String groupId) {
-            this.groupId = groupId;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public void setCount(int count) {
-            this.count = count;
-        }
-
-        private long notification_id;
-        private int android_notification_id;
-        private String groupId;
-        private int count;
     }
+
+    public List<dbSearch> getRecentSearches() {
+        String query = "SELECT * FROM " + TABLE_SEARCH + " ORDER BY " + sSearchCreatedAt + " ASC";
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
+        cursor.moveToFirst();
+        ArrayList<dbSearch> searches = new ArrayList<>(cursor.getCount());
+
+        while (!cursor.isAfterLast()) {
+            dbSearch contact = cursorToSearch(cursor);
+            searches.add(contact);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return searches;
+    }
+
+    public void clearRecentSearches() {
+        openDatabase().delete(TABLE_SEARCH, null, null);
+    }
+
+    private dbSearch cursorToSearch(Cursor cursor) {
+        dbSearch search = new dbSearch(
+                cursor.getLong(0),
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getString(3),
+                cursor.getString(4)
+        );
+        return search;
+    }
+
+    /* ******************************************* */
+    /* ******************************************* */
+    /* ******************************************* */
 
     public NotificationInformation getGroupInformation(String group_id) {
         String query = "SELECT " + COLUMN_ID + "," + sNotificationAndroidId + "," + sNotificationCount + " FROM " + TABLE_NOTIFICATION + " WHERE " + sNotificationGroup + " = \'" + group_id + "\'" + " LIMIT 1";
@@ -564,6 +611,7 @@ public class MySQLiteHelper {
             db.execSQL(tmIndex2);
             db.execSQL(TABLE_CONTACTS_CREATE);
             db.execSQL(tcIndex1);
+            db.execSQL(TABLE_SEARCH_CREATE);
             db.execSQL(TABLE_NOTIFICATION_CREATE);
             db.execSQL(newMessageTrigger);
             db.execSQL(deleteUserTrigger);
@@ -575,6 +623,7 @@ public class MySQLiteHelper {
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_CV_CONTACTS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_SEARCH);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATION);
             onCreate(db);
         }

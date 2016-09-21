@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
-import ee.app.conversa.model.database.dBusiness;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Business;
 
 public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHolder> {
@@ -29,7 +29,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
     }
 
     public interface OnLocalItemClickListener {
-        void onItemClick(View itemView, int position, dBusiness business);
+        void onItemClick(View itemView, int position, dbBusiness business);
     }
 
     public BusinessAdapter(AppCompatActivity activity, OnItemClickListener listener) {
@@ -71,8 +71,8 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
             }
 
             holder.sdvCategoryImage.setImageURI(uri);
-        } else if (object.getClass().equals(dBusiness.class)) {
-            dBusiness business = (dBusiness) object;
+        } else if (object.getClass().equals(dbBusiness.class)) {
+            dbBusiness business = (dbBusiness) object;
             holder.tvBusiness.setText(business.getDisplayName());
             holder.tvAbout.setText(business.getConversaId());
             Uri uri;
@@ -90,7 +90,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         this.notifyItemRangeInserted(mBusiness.size(), business.size());
     }
 
-    public void addLocalItems(List<dBusiness> business, boolean addLoadMoreCell) {
+    public void addLocalItems(List<dbBusiness> business, boolean addLoadMoreCell) {
         mBusiness.addAll(business);
         this.notifyItemRangeInserted(mBusiness.size(), business.size());
     }
@@ -125,9 +125,9 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
                 if (listener != null) {
                     listener.onItemClick(itemView, getLayoutPosition(), (Business)object);
                 }
-            } else if (object.getClass().equals(dBusiness.class)) {
+            } else if (object.getClass().equals(dbBusiness.class)) {
                 if (localListener != null) {
-                    localListener.onItemClick(itemView, getLayoutPosition(), (dBusiness)object);
+                    localListener.onItemClick(itemView, getLayoutPosition(), (dbBusiness)object);
                 }
             }
         }
