@@ -59,10 +59,12 @@ public class ContactIntentService extends IntentService {
                     break;
                 case ACTION_MESSAGE_UPDATE:
                     break;
-                case ACTION_MESSAGE_DELETE:
+                case ACTION_MESSAGE_DELETE: {
+                    // Delete from database
                     ConversaApp.getInstance(this).getDB().deleteContactsById(list);
                     refresh = false;
                     break;
+                }
                 case ACTION_MESSAGE_RETRIEVE_ALL:
                     users = ConversaApp.getInstance(this).getDB().getAllContacts();
                     refresh = false;

@@ -1,4 +1,4 @@
-package ee.app.conversa;
+package ee.app.conversa.extendables;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
+import ee.app.conversa.ConversaApp;
+import ee.app.conversa.R;
 import ee.app.conversa.management.ConnectionChangeReceiver;
 import ee.app.conversa.settings.language.DynamicLanguage;
 

@@ -15,8 +15,10 @@ import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +28,7 @@ import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.database.dbSearch;
 import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 
 public class MySQLiteHelper {
@@ -206,6 +209,12 @@ public class MySQLiteHelper {
         return user;
     }
 
+    public synchronized int updateContactAvatar(long contactId, String avatarUrl) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(sBusinessAvatarFile, avatarUrl);
+        return openDatabase().update(TABLE_CV_CONTACTS, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(contactId)});
+    }
+
     public List<dbBusiness> getAllContacts() {
         List<dbBusiness> contacts = new ArrayList<>();
 
@@ -223,8 +232,96 @@ public class MySQLiteHelper {
         return contacts;
     }
 
+    @WorkerThread
+    public void deleteDataAssociatedWithUser(String ids, int total) {
+        String query = "SELECT " + sBusinessAvatarFile + "," + sBusinessBusinessId + " FROM "
+                + TABLE_CV_CONTACTS + " WHERE " + COLUMN_ID + " IN (" + ids + ")";
+
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
+        cursor.moveToFirst();
+        List<String> avatars = new ArrayList<>(total);
+        List<String> business = new ArrayList<>(total);
+
+        while (!cursor.isAfterLast()) {
+            avatars.add(cursor.getString(0));
+            business.add(cursor.getString(1));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        int i = 0;
+
+        for (i = 0; i < avatars.size(); i++) {
+            if (avatars.get(i) != null) {
+                File file = new File(avatars.get(i));
+                try {
+                    file.delete();
+                } catch (SecurityException e) {
+                    Logger.error("deleteDataAssociated", e.getMessage());
+                }
+            }
+        }
+
+        // 132 is the min string. It happens when only one user is deleted
+        StringBuilder objectIds = new StringBuilder(15);
+        for (i = 0; i < business.size(); i++) {
+            objectIds.append("\'");
+            objectIds.append(business.get(i));
+            objectIds.append("\'");
+            if (i + 1 < business.size()) {
+                objectIds.append(",");
+            }
+        }
+
+        StringBuilder sb = new StringBuilder(132);
+        // Delete data associated with messages
+        sb.append("SELECT ");
+        sb.append(sMessageFileId);
+        sb.append(" FROM ");
+        sb.append(TABLE_MESSAGES);
+        sb.append(" WHERE ");
+        sb.append(sMessageType);
+        sb.append(" NOT IN (\'");
+        sb.append(Const.kMessageTypeLocation);
+        sb.append("\',\'");
+        sb.append(Const.kMessageTypeText);
+        sb.append("\')");
+        sb.append(" AND (");
+        sb.append(sMessageFromUserId);
+        sb.append(" IN (");
+        sb.append(objectIds);
+        sb.append(")");
+        sb.append(" OR ");
+        sb.append(sMessageToUserId);
+        sb.append(" IN (");
+        sb.append(objectIds);
+        sb.append(")");
+        sb.append(")");
+
+        query = sb.toString();
+
+        cursor = openDatabase().rawQuery(query, new String[]{});
+        cursor.moveToFirst();
+
+        for (i = 0; i < cursor.getCount(); i++) {
+            if (cursor.getString(0) != null) {
+                File file = new File(cursor.getString(0));
+                try {
+                    file.delete();
+                } catch (SecurityException e) {
+                    Logger.error("deleteDataAssociated", e.getMessage());
+                }
+            }
+        }
+
+        cursor.close();
+    }
+
+    @WorkerThread
     public void deleteContactsById(List<String> customer) {
         String args = TextUtils.join(",", customer);
+        // Delete avatars/images/videos/audios associated with contact list
+        deleteDataAssociatedWithUser(args, customer.size());
         openDatabase().execSQL(String.format("DELETE FROM " + TABLE_CV_CONTACTS
                 + " WHERE " + COLUMN_ID + " IN (%s);", args));
     }

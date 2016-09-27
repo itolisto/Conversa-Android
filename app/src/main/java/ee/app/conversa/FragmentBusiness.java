@@ -196,7 +196,9 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
 
         try {
             if(business.getAvatar() != null && !business.getAvatar().getUrl().isEmpty()) {
-                dbBusiness.setAvatarThumbFileId(business.getAvatar().getUrl());
+                if (dbBusiness.getAvatarThumbFileId().isEmpty()) {
+                    dbBusiness.setAvatarThumbFileId(business.getAvatar().getUrl());
+                }
             } else {
                 dbBusiness.setAvatarThumbFileId("");
             }

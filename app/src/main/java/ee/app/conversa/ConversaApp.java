@@ -73,6 +73,8 @@ public class ConversaApp extends Application {
 	private MySQLiteHelper mDb;
 	private Preferences mPreferences;
 	private LocalBroadcastManager mLocalBroadcastManager;
+//	private ImageFetcher mImageFetcher;
+//	public static final String IMAGE_CACHE_DIR = "thumbs";
 
 	public static ConversaApp getInstance(Context context) {
 		return (ConversaApp)context.getApplicationContext();
@@ -99,7 +101,14 @@ public class ConversaApp extends Application {
 		initializeEventBus();
 		initializeBugShaker();
 		initializeTypefaces();
+//		initializeCache();
 	}
+
+//	private void initializeCache() {
+//		int mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+//		mImageFetcher = new ImageFetcher(this, mImageThumbSize);
+//		mImageFetcher.setLoadingImage(R.drawable.business_default);
+//	}
 
 	private void initializeOneSignal() {
 		OneSignal
@@ -262,6 +271,10 @@ public class ConversaApp extends Application {
 	public synchronized Preferences getPreferences() {
 		return mPreferences;
 	}
+
+//	public ImageFetcher getImageFetcher() {
+//		return mImageFetcher;
+//	}
 
 	public Typeface getTfRalewayThin() {
 		return mTfRalewayThin;

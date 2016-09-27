@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="2dp"
-        android:textColor="@color/light_gray_subtext"
+        android:textColor="@color/default_gray"
         android:maxLines="1"
         android:ellipsize="end"
         android:layout_toRightOf="@id/sdvContactAvatar"

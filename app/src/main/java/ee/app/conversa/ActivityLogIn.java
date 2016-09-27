@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import ee.app.conversa.dialog.CustomDialog;
+import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;

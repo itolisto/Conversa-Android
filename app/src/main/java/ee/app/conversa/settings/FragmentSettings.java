@@ -25,10 +25,22 @@ public class FragmentSettings extends PreferenceFragment implements Preference.O
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener((ActivityPreferences)getActivity());
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         ((ActivityPreferences)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((ActivityPreferences)getActivity()).getSupportActionBar().setTitle(R.string.settings);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener((ActivityPreferences) getActivity());
     }
 
     @Override

@@ -62,30 +62,12 @@ public class Const {
 
 
 	// User class
-	public static final String kUserAvatarKey   = "avatar";
 	public static final String kUserUsernameKey = "username";
 	public static final String kUserEmailKey    = "email";
 	public static final String kUserPasswordKey = "password";
-	public static final String kUserDisplayNameKey  = "displayName";
 	public static final String kUserTypeKey     = "userType";
 	public static final String kUserBirthday = "birthday";
 	public static final String kUserGender = "gender";
-
-
-	// Options constants
-	public static final String kOptionsContactNumber = "02";
-	public static final String kOptionsAddress = "03";
-	public static final String kOptionsClosedOn = "04";
-	public static final String kOptionsDelivery = "05";
-	public static final String kOptionsLink = "06";
-	public static final String kOptionsSpecialPromo = "07";
-	public static final String kOptionsDaySpecial = "08";
-
-
-
-
-
-
 
 	// Options class
 	public static final String kClassOptions           = "Options";

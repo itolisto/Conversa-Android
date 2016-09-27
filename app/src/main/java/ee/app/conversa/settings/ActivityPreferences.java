@@ -9,20 +9,12 @@ import android.view.MenuItem;
 
 import ee.app.conversa.R;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.settings.language.DynamicLanguage;
-import ee.app.conversa.utils.Preferences;
 
 /**
  * Created by edgargomez on 9/14/16.
  */
-public class ActivityPreferences extends ConversaActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
-
-    @Override
-    protected void onPreCreate() {
-        dynamicLanguage.onCreate(this);
-    }
+public class ActivityPreferences extends ConversaActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,14 +44,8 @@ public class ActivityPreferences extends ConversaActivity implements SharedPrefe
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        dynamicLanguage.onResume(this);
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(Preferences.LANGUAGE_PREF)) {
+        if (key.equals(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY)) {
             recreate();
         }
     }

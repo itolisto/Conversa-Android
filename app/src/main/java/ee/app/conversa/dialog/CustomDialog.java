@@ -95,9 +95,10 @@ public class CustomDialog extends AlertDialog {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             customView = inflater.inflate(customResId, null, false);
             mCustomContainer.addView(customView);
-        } else if (customView == null && customResId == null) {
-            mContent.setVisibility(View.GONE);
         }
+//        else if (customView == null && customResId == null) {
+//            mContent.setVisibility(View.GONE);
+//        }
 
         if (positiveText != null && mPositiveClickListener != null) {
             mPositive.setText(positiveText);

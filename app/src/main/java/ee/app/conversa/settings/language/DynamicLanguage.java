@@ -13,11 +13,17 @@ import java.util.Locale;
 import ee.app.conversa.ConversaApp;
 
 /**
- * Created by edgargomez on 9/5/16.
+ *
+ * Copyright 2011 Whisper Systems
+ * Copyright 2013-2016 Open Whisper Systems
+ * Licensed under the GPLv3: http://www.gnu.org/licenses/gpl-3.0.html
+ *
+ * DynamicLanguage was taken from Signal-Android open source app. Signal-Android can be
+ * found at https://github.com/WhisperSystems/Signal-Android
  */
 public class DynamicLanguage {
 
-    private static final String DEFAULT = "en";
+    private static final String DEFAULT = "es";
 
     private Locale currentLocale;
 
@@ -57,15 +63,24 @@ public class DynamicLanguage {
         }
     }
 
-    private static Locale getSelectedLocale(Context context) {
+    public static Locale getSelectedLocale(Context context) {
         String language[] = TextUtils.split(ConversaApp.getInstance(context).getPreferences().getLanguage(), "_");
+        Resources res = context.getResources();
 
-        if (language[0].equals(DEFAULT)) {
-            return Locale.getDefault();
-        } else if (language.length == 2) {
-            return new Locale(language[0], language[1]);
+        if (res != null) {
+            if (res.getConfiguration().locale.getLanguage().equals(new Locale(language[0]).getLanguage())) {
+                return res.getConfiguration().locale;
+            } else if (language.length == 2) {
+                return new Locale(language[0], language[1]);
+            } else {
+                if (language[0].equals("zz")) {
+                    return Locale.getDefault();
+                } else {
+                    return new Locale(language[0]);
+                }
+            }
         } else {
-            return new Locale(language[0]);
+            return Locale.getDefault();
         }
     }
 
@@ -74,4 +89,5 @@ public class DynamicLanguage {
             activity.overridePendingTransition(0, 0);
         }
     }
+
 }

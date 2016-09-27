@@ -16,6 +16,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 
+import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.utils.Utils;
 
 /**

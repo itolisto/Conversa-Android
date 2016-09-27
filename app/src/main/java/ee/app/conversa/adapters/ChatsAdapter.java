@@ -1,6 +1,5 @@
 package ee.app.conversa.adapters;
 
-import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +20,7 @@ import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
 import ee.app.conversa.view.RegularTextView;
 
@@ -68,61 +68,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        dbBusiness user = mUsers.get(position);
-
-        if (ConversaApp.getInstance(mActivity).getDB().hasUnreadMessagesOrNewMessages(user.getBusinessId())) {
-            holder.ivUnread.setVisibility(View.VISIBLE);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                holder.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification, null));
-            } else {
-                holder.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification));
-            }
-        } else {
-            holder.ivUnread.setVisibility(View.GONE);
-        }
-
-        holder.tvUser.setText(user.getDisplayName());
-
-        Uri uri;
-        if(user.getAvatarThumbFileId().isEmpty()) {
-            uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-        } else {
-            uri = Uri.parse(user.getAvatarThumbFileId());
-        }
-
-        holder.ivUserImage.setImageURI(uri);
-
-        dbMessage lastMessage = ConversaApp.getInstance(mActivity).getDB().getLastMessage(user.getBusinessId());
-
-        if(lastMessage == null) {
-            holder.tvLastMessage.setText("");
-        } else {
-            String from;
-            if(lastMessage.getFromUserId().equals(Account.getCurrentUser().getObjectId())) {
-                from = mActivity.getString(R.string.me);
-            } else {
-                from = user.getDisplayName();
-            }
-
-            switch(lastMessage.getMessageType()) {
-                case Const.kMessageTypeImage:
-                    holder.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_image, from));
-                    break;
-                case Const.kMessageTypeLocation:
-                    holder.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_location, from));
-                    break;
-                case Const.kMessageTypeText:
-                    holder.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_text, from, lastMessage.getBody()));
-                    break;
-                default:
-                    holder.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_default, from));
-                    break;
-            }
-        }
-
-        if (mSelectedPositions.get(position, false)) {
-            holder.itemView.setActivated(true);
-        }
+        holder.setContact(mUsers.get(position), position);
     }
 
     // item changes its selection state
@@ -211,6 +157,58 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+        }
+
+        public void setContact(dbBusiness user, int position) {
+            if (ConversaApp.getInstance(mActivity).getDB().hasUnreadMessagesOrNewMessages(user.getBusinessId())) {
+                this.ivUnread.setVisibility(View.VISIBLE);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    this.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification, null));
+                } else {
+                    this.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification));
+                }
+            } else {
+                this.ivUnread.setVisibility(View.GONE);
+            }
+
+            this.tvUser.setText(user.getDisplayName());
+            this.ivUserImage.setImageURI(Utils.getUriFromString(user.getAvatarThumbFileId()));
+
+            updateLastMessage(user);
+
+            if (mSelectedPositions.get(position, false)) {
+                this.itemView.setActivated(true);
+            }
+        }
+
+        public void updateLastMessage(dbBusiness user) {
+            dbMessage lastMessage = ConversaApp.getInstance(mActivity).getDB().getLastMessage(user.getBusinessId());
+
+            if(lastMessage == null) {
+                this.tvLastMessage.setText("");
+            } else {
+                String from;
+                if(lastMessage.getFromUserId().equals(Account.getCurrentUser().getObjectId())) {
+                    from = mActivity.getString(R.string.me);
+                } else {
+                    from = user.getDisplayName();
+                }
+
+                switch(lastMessage.getMessageType()) {
+                    case Const.kMessageTypeImage:
+                        this.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_image, from));
+                        break;
+                    case Const.kMessageTypeLocation:
+                        this.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_location, from));
+                        break;
+                    case Const.kMessageTypeText:
+                        this.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_text, from, lastMessage.getBody()));
+                        break;
+                    default:
+                        this.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_default, from));
+                        break;
+                }
+            }
         }
 
         @Override

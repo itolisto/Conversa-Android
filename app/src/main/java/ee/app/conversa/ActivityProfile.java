@@ -1,16 +1,33 @@
 package ee.app.conversa;
 
+import android.app.TaskStackBuilder;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.request.BasePostprocessor;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.imagepipeline.request.Postprocessor;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.parse.FunctionCallback;
@@ -21,33 +38,44 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import ee.app.conversa.dialog.CustomDialog;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
+import ee.app.conversa.view.BoldTextView;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.MediumTextView;
 import ee.app.conversa.view.RegularTextView;
+
+import static ee.app.conversa.R.id.rtvLocationDescription;
 
 public class ActivityProfile extends ConversaActivity implements View.OnClickListener, OnLikeListener {
 
     // General
     private dbBusiness businessObject;
     private boolean addAsContact;
+    private Toolbar toolbar;
     // Containers
     private RelativeLayout mRlProfileHeader;
-    private RelativeLayout mRlSpecialPromoContainer;
+    private LinearLayout mLlSpecialPromoContainer;
     private LinearLayout mLlClosedOnContainer;
-    private LinearLayout mLlGeneralInfo;
+    private LinearLayout mLlScheduleContainer;
+    private LinearLayout mLlDeliveryContainer;
+    private LinearLayout mLlLinkContainer;
+    private LinearLayout mLlContactNumberContainer;
     private LinearLayout mLlAddressContainer;
     // Profile views
     private SimpleDraweeView mSdvBusinessImage;
     private LikeButton mBtnFavorite;
-    private RegularTextView mRtvFollowers;
-    private LightTextView mLtvMemberSince;
+    private BoldTextView mBtvFollowers;
+    // Special promo
+    private RegularTextView mRtvSpecialPromo;
+    private SimpleDraweeView mSdvSpecialPromo;
     // ClosedOn views
     private LightTextView mLtvMonday;
     private LightTextView mLtvTuesday;
@@ -56,9 +84,12 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     private LightTextView mLtvFriday;
     private LightTextView mLtvSaturday;
     private LightTextView mLtvSunday;
+    // Location views
+    private RegularTextView mRtvLocationDescription;
+    private Button mBtnLocation;
     // GeneralInfo views
     private LightTextView mltvSchedule;
-    private LightTextView mltvDelivery;
+    private ImageView mltvDelivery;
     private LightTextView mltvLink;
     private LightTextView mltvContactNumber;
 
@@ -88,18 +119,47 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     protected void initialization() {
         super.initialization();
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        FrameLayout mBackButton = (FrameLayout) toolbar.findViewById(R.id.ibBack);
+        ImageButton mShareButton = (ImageButton) toolbar.findViewById(R.id.ibShare);
+        MediumTextView mTitle = (MediumTextView) toolbar.findViewById(R.id.mtvTitle);
+        mBackButton.setOnClickListener(this);
+        mShareButton.setOnClickListener(this);
+        mTitle.setText(businessObject.getDisplayName());
+        setSupportActionBar(toolbar);
+
+        Bitmap bitmap;
+
+        if (businessObject.getAvatarThumbFileId().isEmpty()) {
+            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.business_default);
+        } else {
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(businessObject.getAvatarThumbFileId()));
+            } catch (IOException e) {
+                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.business_default);
+            }
+        }
+
+        Palette.from(bitmap).generate(paletteListener);
+
         mRlProfileHeader = (RelativeLayout) findViewById(R.id.rlProfileHeader);
-        mRlSpecialPromoContainer = (RelativeLayout) findViewById(R.id.rlSpecialPromoContainer);
+        mLlSpecialPromoContainer = (LinearLayout) findViewById(R.id.llSpecialPromoContainer);
         mLlClosedOnContainer = (LinearLayout) findViewById(R.id.llClosedOnContainer);
-        mLlGeneralInfo = (LinearLayout) findViewById(R.id.llGeneralInfo);
-        mLlAddressContainer = (LinearLayout) findViewById(R.id.rlAddressContainer);
+        mLlScheduleContainer = (LinearLayout) findViewById(R.id.llScheduleContainer);
+        mLlDeliveryContainer = (LinearLayout) findViewById(R.id.llDeliveryContainer);
+        mLlLinkContainer = (LinearLayout) findViewById(R.id.llLinkContainer);
+        mLlContactNumberContainer = (LinearLayout) findViewById(R.id.llContactNumberContainer);
+        mLlAddressContainer = (LinearLayout) findViewById(R.id.llAddressContainer);
         // Profile views
         mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvBusinessImage);
         mBtnFavorite = (LikeButton) findViewById(R.id.btnFavorite);
-        mRtvFollowers = (RegularTextView) findViewById(R.id.rtvFollowers);
-        mLtvMemberSince = (LightTextView) findViewById(R.id.ltvMemberSince);
+        mBtvFollowers = (BoldTextView) findViewById(R.id.btvFollowers);
         Button mBtnStartChat = (Button) findViewById(R.id.btnStartChat);
-        MediumTextView mMtvBusinessName = (MediumTextView) findViewById(R.id.mtvBusinessName);
+        BoldTextView mBtvConversaId = (BoldTextView) findViewById(R.id.btvConversaId);
+        RegularTextView mMtvBusinessName = (RegularTextView) findViewById(R.id.rtvBusinessName);
+        // Special promo
+        mRtvSpecialPromo = (RegularTextView) findViewById(R.id.rtvSpecialPromo);
+        mSdvSpecialPromo = (SimpleDraweeView) findViewById(R.id.sdvSpecialPromo);
         // ClosedOn views
         mLtvMonday = (LightTextView) findViewById(R.id.ltvMonday);
         mLtvTuesday = (LightTextView) findViewById(R.id.ltvTuesday);
@@ -108,22 +168,45 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         mLtvFriday = (LightTextView) findViewById(R.id.ltvFriday);
         mLtvSaturday = (LightTextView) findViewById(R.id.ltvSaturday);
         mLtvSunday = (LightTextView) findViewById(R.id.ltvSunday);
+        // Location views
+        mRtvLocationDescription = (RegularTextView) findViewById(rtvLocationDescription);
+        mBtnLocation = (Button) findViewById(R.id.btnLocation);
         // GeneralInfo views
         mltvSchedule = (LightTextView) findViewById(R.id.ltvSchedule);
-        mltvDelivery = (LightTextView) findViewById(R.id.ltvDelivery);
+        mltvDelivery = (ImageView) findViewById(R.id.ltvDelivery);
         mltvLink = (LightTextView) findViewById(R.id.ltvLink);
         mltvContactNumber = (LightTextView) findViewById(R.id.ltvContactNumber);
 
         mMtvBusinessName.setText(businessObject.getDisplayName());
+        mBtvConversaId.setText(businessObject.getConversaId());
 
-        Uri uri;
-        if(businessObject.getAvatarThumbFileId().isEmpty()) {
-            uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-        } else {
-            uri = Uri.parse(businessObject.getAvatarThumbFileId());
-        }
+        Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
-        mSdvBusinessImage.setImageURI(uri);
+        Postprocessor redMeshPostprocessor = new BasePostprocessor() {
+            @Override
+            public String getName() {
+                return "redMeshPostprocessor";
+            }
+
+            @Override
+            public void process(Bitmap bitmap) {
+                if (bitmap != null) {
+                    Palette.from(bitmap).generate(paletteListener);
+                }
+            }
+        };
+
+        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                .setPostprocessor(redMeshPostprocessor)
+                .build();
+
+        PipelineDraweeController controller = (PipelineDraweeController)
+                Fresco.newDraweeControllerBuilder()
+                        .setImageRequest(request)
+                        .setOldController(mSdvBusinessImage.getController())
+                        .build();
+        mSdvBusinessImage.setController(controller);
+
         mBtnFavorite.setOnLikeListener(this);
         mBtnStartChat.setOnClickListener(this);
         mBtnFavorite.setEnabled(false);
@@ -144,6 +227,9 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         drawable = (GradientDrawable)mLtvSunday.getBackground();
         drawable.setStroke(1, Color.RED);
 
+        mLlScheduleContainer.setOnClickListener(this);
+        mLlAddressContainer.setOnClickListener(this);
+
         // Call Parse for registry
         HashMap<String, String> params = new HashMap<>(1);
         params.put("business", businessObject.getBusinessId());
@@ -159,16 +245,82 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         });
     }
 
+    Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
+        public void onGenerated(Palette palette) {
+            if (palette.getLightVibrantSwatch() != null) {
+                toolbar.setBackgroundColor(palette.getLightVibrantSwatch().getRgb());
+            } else if (palette.getLightMutedSwatch() != null) {
+                toolbar.setBackgroundColor(palette.getLightMutedSwatch().getRgb());
+            }
+        }
+    };
+
+    @Override
+    public void onBackPressed() {
+        navigateUp();
+    }
+
+    private void navigateUp() {
+        Intent upIntent = NavUtils.getParentActivityIntent(this);
+        if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+            // This activity is NOT part of this app's task, so create a new task
+            // when navigating up, with a synthesized back stack.
+            TaskStackBuilder.create(this)
+                    // Add all of this activity's parents to the back stack
+                    .addNextIntentWithParentStack(upIntent)
+                    // Navigate up to the closest parent
+                    .startActivities();
+        } else {
+            // This activity is part of this app's task, so simply
+            // navigate up to the logical parent activity.
+            NavUtils.navigateUpTo(this, upIntent);
+        }
+    }
+
     @Override
     public void onClick(View v) {
-        if (v instanceof Button) {
-            switch (v.getId()) {
-                case R.id.btnStartChat:
-                    Intent intent = new Intent(this, ActivityChatWall.class);
-                    intent.putExtra(Const.kClassBusiness, businessObject);
-                    intent.putExtra(Const.kYapDatabaseName, addAsContact);
-                    startActivity(intent);
-                    break;
+        switch (v.getId()) {
+            case R.id.ibShare: {
+                break;
+            }
+            case R.id.ibBack: {
+                navigateUp();
+                break;
+            }
+            case R.id.btnStartChat: {
+                Intent intent = new Intent(this, ActivityChatWall.class);
+                intent.putExtra(Const.kClassBusiness, businessObject);
+                intent.putExtra(Const.kYapDatabaseName, addAsContact);
+                startActivity(intent);
+                break;
+            }
+            case R.id.llScheduleContainer: {
+                final CustomDialog dialog = new CustomDialog(this);
+                dialog.setTitle(getString(R.string.profile_conversa_time_info_title))
+                        .setMessage(getString(R.string.profile_conversa_time_info_message))
+                        .setupNegativeButton(null, null)
+                        .setupPositiveButton(getString(android.R.string.ok), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                dialog.show();
+                break;
+            }
+            case R.id.llAddressContainer: {
+                final CustomDialog dialog = new CustomDialog(this);
+                dialog.setTitle(null)
+                        .setMessage(getString(R.string.profile_locations_info_message))
+                        .setupNegativeButton(null, null)
+                        .setupPositiveButton(getString(android.R.string.ok), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                dialog.show();
+                break;
             }
         }
     }
@@ -205,97 +357,125 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             } else {
                 JSONObject jsonRootObject = new JSONObject(result);
 
-                JSONArray options = jsonRootObject.optJSONArray("options");
-                JSONArray tags = jsonRootObject.optJSONArray("tags");
-                JSONArray openOn = jsonRootObject.optJSONArray("openOn");
                 int followers = jsonRootObject.optInt("followers", 0);
+                String daySpecial = jsonRootObject.optString("daySpecial", null);
+                String website = jsonRootObject.optString("website", null);
+                boolean delivery = jsonRootObject.optBoolean("", false);
+                JSONArray openOn = jsonRootObject.optJSONArray("openOn");
+                String number = jsonRootObject.optString("number", null);
+                boolean multiple = jsonRootObject.optBoolean("multiple", false);
+                boolean online = jsonRootObject.optBoolean("online", false);
+                String promo = jsonRootObject.optString("promo", null);
+                String promoTextColor = jsonRootObject.optString("promoColor", null);
+                String promoBackground = jsonRootObject.optString("promoBack", null);
+                JSONArray tags = jsonRootObject.optJSONArray("tags");
                 boolean verified = jsonRootObject.optBoolean("verified", false);
                 long since = jsonRootObject.optLong("since", 0L);
                 boolean favorite = jsonRootObject.optBoolean("favorite", false);
 
-                JSONObject specialPromo = jsonRootObject.optJSONObject("promo");
-                if (specialPromo != null) {
-                    mRlSpecialPromoContainer.setVisibility(View.VISIBLE);
-                }
+                if (promo != null || promoBackground != null) {
+                    mLlSpecialPromoContainer.setVisibility(View.VISIBLE);
 
-                // Iterator
-                int i;
+                    if (promo != null) {
+                        mRtvSpecialPromo.setVisibility(View.VISIBLE);
+                        if (promoTextColor != null) {
+                            try {
+                                mRtvSpecialPromo.setTextColor(Color.parseColor(promoTextColor));
+                            } catch (IllegalArgumentException e) {
+                                mRtvSpecialPromo.setTextColor(Color.WHITE);
+                            }
+                        }
+                    }
 
-                // Get options
-                int size = options.length();
-                for (i = 0; i < size; i++) {
-                    JSONObject object = options.optJSONObject(i);
-                    String value = object.optString("value");
-                    Logger.error("Options", value);
-
-                    switch (object.optString("code")) {
-                        case Const.kOptionsContactNumber:
-                            break;
-                        case Const.kOptionsAddress:
-                            break;
-                        case Const.kOptionsClosedOn:
-                            break;
-                        case Const.kOptionsDelivery:
-                            mltvDelivery.setText(value);
-                            break;
-                        case Const.kOptionsLink:
-                            mltvLink.setText(value);
-                            break;
-                        case Const.kOptionsSpecialPromo:
-                            break;
-                        case Const.kOptionsDaySpecial:
-                            break;
-                        default:
-                            break;
+                    if (promoBackground != null) {
+                        mSdvSpecialPromo.setVisibility(View.VISIBLE);
                     }
                 }
 
+                // Iterator
+                int i, size;
+
                 // Get tags
-                size = tags.length();
-                for (i = 0; i < size; i++) {
-                    String tag = tags.getString(i);
-                    Logger.error("Tags", tag);
+                if (tags != null) {
+                    size = tags.length();
+                    for (i = 0; i < size; i++) {
+                        String tag = tags.getString(i);
+                        Logger.error("Tags", tag);
+                    }
                 }
 
                 // Get open days
-                size = openOn.length();
-                for (i = 0; i < size; i++) {
-                    GradientDrawable drawable;
-                    switch (openOn.getInt(i)) {
-                        case 1:
-                            drawable = (GradientDrawable)mLtvMonday.getBackground();
-                            drawable.setStroke(1, Color.GREEN);
-                            break;
-                        case 2:
-                            drawable = (GradientDrawable)mLtvTuesday.getBackground();
-                            drawable.setStroke(1, Color.GREEN);
-                            break;
-                        case 3:
-                            drawable = (GradientDrawable)mLtvWednesday.getBackground();
-                            drawable.setStroke(1, Color.GREEN);
-                            break;
-                        case 4:
-                            drawable = (GradientDrawable)mLtvThursday.getBackground();
-                            drawable.setStroke(1, Color.GREEN);
-                            break;
-                        case 5:
-                            drawable = (GradientDrawable)mLtvFriday.getBackground();
-                            drawable.setStroke(1, Color.GREEN);
-                            break;
-                        case 6:
-                            drawable = (GradientDrawable)mLtvSaturday.getBackground();
-                            drawable.setStroke(1, Color.GREEN);
-                            break;
-                        case 7:
-                            drawable = (GradientDrawable)mLtvSunday.getBackground();
-                            drawable.setStroke(1, Color.GREEN);
-                            break;
+                if (openOn != null) {
+                    size = openOn.length();
+                    for (i = 0; i < size; i++) {
+                        GradientDrawable drawable;
+                        switch (openOn.getInt(i)) {
+                            case 1:
+                                drawable = (GradientDrawable) mLtvMonday.getBackground();
+                                drawable.setStroke(1, Color.GREEN);
+                                break;
+                            case 2:
+                                drawable = (GradientDrawable) mLtvTuesday.getBackground();
+                                drawable.setStroke(1, Color.GREEN);
+                                break;
+                            case 3:
+                                drawable = (GradientDrawable) mLtvWednesday.getBackground();
+                                drawable.setStroke(1, Color.GREEN);
+                                break;
+                            case 4:
+                                drawable = (GradientDrawable) mLtvThursday.getBackground();
+                                drawable.setStroke(1, Color.GREEN);
+                                break;
+                            case 5:
+                                drawable = (GradientDrawable) mLtvFriday.getBackground();
+                                drawable.setStroke(1, Color.GREEN);
+                                break;
+                            case 6:
+                                drawable = (GradientDrawable) mLtvSaturday.getBackground();
+                                drawable.setStroke(1, Color.GREEN);
+                                break;
+                            case 7:
+                                drawable = (GradientDrawable) mLtvSunday.getBackground();
+                                drawable.setStroke(1, Color.GREEN);
+                                break;
+                        }
                     }
                 }
 
                 mBtnFavorite.setLiked(favorite);
-                mRtvFollowers.setText(getString(R.string.number_of_followers, followers));
-                mLtvMemberSince.setText(Utils.getDate(this, since));
+                mBtvFollowers.setText(String.valueOf(followers));
+
+                if (website != null) {
+                    mltvLink.setText(website);
+                } else {
+                    mltvLink.setText(R.string.profile_no_website_message);
+                }
+
+                if (number != null) {
+                    mltvContactNumber.setText(number);
+                } else {
+                    mltvContactNumber.setText(R.string.profile_no_number_message);
+                }
+
+                if (delivery) {
+                    mltvDelivery.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_check));
+                } else {
+                    mltvDelivery.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_cancel));
+                }
+
+                if (multiple) {
+                    // Multiple locations
+                    mRtvLocationDescription.setText(R.string.profile_location_multiple_location);
+                    mBtnLocation.setVisibility(View.VISIBLE);
+                } else if (online) {
+                    // Just online
+                    mRtvLocationDescription.setText(R.string.profile_location_online_location);
+                    mBtnLocation.setVisibility(View.GONE);
+                } else {
+                    // One location
+                    mRtvLocationDescription.setText(R.string.profile_location_one_location);
+                    mBtnLocation.setVisibility(View.VISIBLE);
+                }
             }
         } catch (JSONException e) {
             Logger.error("parseResult", e.getMessage());
@@ -303,4 +483,18 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             mBtnFavorite.setEnabled(true);
         }
     }
+
+//    AsyncTask<String, Void, Bitmap> afsd = new AsyncTask<String, Void, Bitmap>() {
+//
+//        @Override
+//        protected Bitmap doInBackground(String... params) {
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap bitmap) {
+//
+//        }
+//    };
+
 }

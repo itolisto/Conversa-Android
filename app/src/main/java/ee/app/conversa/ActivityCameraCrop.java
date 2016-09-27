@@ -38,7 +38,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
@@ -57,12 +56,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 import ee.app.conversa.utils.ImageFilePath;
 import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.CroppedImageView;
 
 /**
@@ -209,35 +206,18 @@ public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouc
 		}
 	}
 
-	public Uri getOutputMediaFileUri(int type) throws IOException, NullPointerException {
+	public Uri getOutputMediaFileUri(int type) throws Exception {
 		return Uri.fromFile(getOutputMediaFile(type));
 	}
 
-	private File getOutputMediaFile(int type) throws IOException {
-		// Create the File where the photo should go //
-		// External sdcard location
-		File mediaStorageDir = new File(
-				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-				IMAGE_DIRECTORY_NAME);
-
-		// Create the storage directory if it does not exist
-		if (!mediaStorageDir.exists()) {
-			if (!mediaStorageDir.mkdirs()) {
-				Logger.error(IMAGE_DIRECTORY_NAME, "Oops! Failed create "
-						+ IMAGE_DIRECTORY_NAME + " directory");
-				return null;
-			}
-		}
-
+	private File getOutputMediaFile(int type) throws Exception {
 		// Create a media file name
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
-				Locale.getDefault()).format(new Date(System.currentTimeMillis()));
-
 		File mediaFile;
 
 		if (type == MEDIA_TYPE_IMAGE) {
-			mediaFile = new File(mediaStorageDir.getPath() + File.separator
-					+ "IMG_" + timeStamp + ".jpg");
+			mediaFile = new File(Utils.getResourceName(
+					Utils.getMediaDirectory(this)
+			));
 		} else {
 			return null;
 		}

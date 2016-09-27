@@ -6,6 +6,7 @@
         <item>Medium</item>
         <item>Low</item>
     </string-array>
+
     <string-array name="sett_chat_quality_values">
         <item>0</item>
         <item>1</item>
@@ -13,13 +14,24 @@
     </string-array>
 
     <string-array name="categories_titles">
-        <item name="Conversas">Chats</item>
+        <item name="Chats">Chats</item>
         <item name="Explore">Explore</item>
     </string-array>
 
     <string-array name="gender_array">
-        <item>Select gender</item>
         <item>Male</item>
         <item>Female</item>
+    </string-array>
+
+    <string-array name="language_entries">
+        <item>@string/sett_language_default_option</item>
+        <item>English</item>
+        <item>Español</item>
+    </string-array>
+
+    <string-array name="language_values">
+        <item>zz</item>
+        <item>en</item>
+        <item>es</item>
     </string-array>
 </resources>

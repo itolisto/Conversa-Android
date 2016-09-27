@@ -2,14 +2,23 @@
 <resources>
 
     <string name="picture">Picture</string>
-    <string name="description_info">Info</string>
+    <string name="description_info" translatable="false">Info</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 
+    <string name="message_sent_error">Failed</string>
 
+    <string name="profile_location_online_location">We are only present online</string>
+    <string name="profile_location_one_location">We have one location, check it out on the map</string>
+    <string name="profile_location_multiple_location">We have multiple locations, check them out on the map</string>
 
+    <string name="profile_conversa_time_info_title">What is ConversaTime?</string>
+    <string name="profile_conversa_time_info_message">ConversaTime is the schedule by which we will be answering you through chat, but our goal is to serve 24hrs.</string>
 
+    <string name="profile_locations_info_message">When a business has a physical address, you can check out on the map and easly drive from where you are</string>
 
+    <string name="profile_no_number_message">No number available</string>
+    <string name="profile_no_website_message">Working on website</string>
 
     <string name="app_name" translatable="false">Conversa</string>
     <string name="test_string">Test string test string</string>
@@ -21,19 +30,24 @@
     <string name="string_signin_sign_up_business_one">Looking to sign up your</string>
     <string name="string_signin_sign_up_business_two">business click here</string>
 
+    <string name="signup_register_error">Sorry, this email is already being used by another user, try with another</string>
     <string name="signup_name_error">Name should contain more than 1 character in length</string>
     <string name="signup_password_length_error">Password is required</string>
     <string name="signup_password_regex_error">Password should contain at least one digit, one lowercase letter and a special character</string>
     <string name="sign_email_not_valid_error">Email is not valid</string>
     <string name="sign_email_length_error">Email is required</string>
+    <string name="signup_birthday_empty_error">Please select your birthday</string>
+    <string name="signup_birthday_invalid_error">Invalid birthday date</string>
+    <string name="signup_birthday_old_error">You must be at least 18 years old to use Conversa</string>
+    <string name="signup_gender_empty_error">Please select gender</string>
 
     <string name="browse_categories">Browse categories</string>
 
     <string name="me">Me</string>
-    <string name="contacts_last_message_text">%1$s: %2$s</string>
+    <string name="contacts_last_message_text" translatable="false">%1$s: %2$s</string>
     <string name="contacts_last_message_image">%1s: Picture</string>
-    <string name="contacts_last_message_video">%1s: Video</string>
-    <string name="contacts_last_message_audio">%1s: Audio</string>
+    <string name="contacts_last_message_video" translatable="false">%1s: Video</string>
+    <string name="contacts_last_message_audio" translatable="false">%1s: Audio</string>
     <string name="contacts_last_message_location">%1s: Location</string>
     <string name="contacts_last_message_default">%1s: Message</string>
 
@@ -44,21 +58,22 @@
     <string name="start_browsing"><u>Start browsing</u></string>
     <string name="chat_wall_message_hint">Type a message</string>
     <string name="member_since">Since %1s</string>
-    <string name="number_of_followers">%1d Followers</string>
+    <string name="number_of_followers">Followers</string>
 
     <string name="special_promo_title">Special promo</string>
-    <string name="link_title">Webpage</string>
+    <string name="link_title">Link</string>
     <string name="delivery_title">Delivery</string>
-    <string name="schedule_title">Schedule</string>
+    <string name="schedule_title">ConversaTime</string>
     <string name="open_on_title">Open on</string>
-    <string name="addreess_title">Address</string>
+    <string name="locations_title">Locations</string>
     <string name="contact_number_title">Contact number</string>
 
 
     <string name="settings">Settings</string>
     <string name="preferences__account">Account</string>
-    <string name="preferences__chats">Chats</string>
+    <string name="preferences__chats" translatable="false">Chats</string>
     <string name="preferences__notifications">Notifications</string>
+    <string name="preferences__language">Language</string>
     <string name="preferences__share">Share</string>
     <string name="preferences__help">Help</string>
 
@@ -93,7 +108,11 @@
     <string name="sett_chat_quality_default_entry">High</string>
     <string name="sett_chat_message_sent_sound">Sound when sending</string>
     <string name="sett_chat_message_received_sound">Sound when receiving</string>
-    
+
+    <string name="sett_language_default_option">Default</string>
+
+    <string name="search_no_results_found">No results found</string>
+    <string name="search_results_error" translatable="false">Oops, I did it again</string>
 
     <string name="profile_day_one">M</string>
     <string name="profile_day_two">T</string>
@@ -104,7 +123,7 @@
     <string name="profile_day_seven">Su</string>
 
 
-    <string name="selected_count">%1$s selected</string>
+    <string name="selected_count">%1$d selected</string>
     <string name="search_title_menu">Search</string>
     <string name="delete_title_menu">Delete</string>
     <string name="settings_title_menu">Settings</string>
@@ -140,6 +159,11 @@
     <string name="username">username</string>
     <string name="email">email</string>
     <string name="password">password</string>
+    <string name="birthday">birthday</string>
+    <string name="gender">gender</string>
+
+    <string name="language_spinner_title">Select language</string>
+    <string name="gender_spinner_title">Select gender</string>
 
     <!-- FOR CHAT WALL -->
     <string name="action_location">Locations</string>
@@ -162,10 +186,6 @@
     <string name="no_user_registered">No user registered with this email or password</string>
     <string name="email_fail_sent">Couldn\'t find an account associated with this email!</string>
     <string name="email_sent">Password sent to your email address</string>
-
-    <string name="gender_error">Please select gender</string>
-    <string name="birthday_error">Please select your birthday</string>
-    <string name="birthday_error1">You must be at least 18 years old to use Conversa</string>
     <string name="confirm_email">Are you sure this is your email address? %1s \nWe\'ll send an email to reset your password, be careful!</string>
 
     <string name="email_already_taken">Email is already taken</string>
@@ -174,15 +194,16 @@
 
     <!-- FOR WallMessagesAdapter -->
     <string name="posted_less_than_a_minute_ago">Less than a minute ago</string>
-    <string name="week_ago">week ago</string>
-    <string name="weeks_ago">weeks ago</string>
-    <string name="day_ago">day ago</string>
-    <string name="days_ago">days ago</string>
-    <string name="hour_ago">hour ago</string>
-    <string name="hours_ago">hours ago</string>
-    <string name="minute_ago">minute ago</string>
-    <string name="minutes_ago">minutes ago</string>
+    <string name="week_ago">One week ago</string>
+    <string name="weeks_ago">%1d weeks ago</string>
+    <string name="day_ago">One day ago</string>
+    <string name="days_ago">%1d days ago</string>
+    <string name="hour_ago">One hour ago</string>
+    <string name="hours_ago">%1d hours ago</string>
+    <string name="minute_ago">One minute ago</string>
+    <string name="minutes_ago">%1d minutes ago</string>
     <string name="close">close</string>
+    <string name="loading">Loading</string>
 
     <string name="fav_error">An error has occurred while setting commerce as favorite</string>
 
@@ -204,7 +225,7 @@
     <string name="cay9ADQjpRT">Furniture</string>
     <string name="ccCZl1h0sXf">Office Supplies</string>
     <string name="cR7LZJ3Lbj8">Gifts</string>
-    <string name="cDvl63HGh9j">Retailers</string>
+    <string name="cDvl63HGh9j" translatable="false">Retailers</string>
     <string name="cr4ZYMKINHp">Women\'s Clothing</string>
     <string name="cMHbjypaY4R">Men\'s Clothing</string>
     <string name="cydPTRrUJye">Health</string>
@@ -215,7 +236,7 @@
     <string name="caWthcdxIAJ">Men Shoes</string>
     <string name="cuRzYgo8krw">Women Shoes</string>
     <string name="c4EsFpxgOu6">Delivery</string>
-    <string name="cprn5lWuEDc">Online \u0026 Internet</string>
+    <string name="cprn5lWuEDc" translatable="false">Online \u0026 Internet</string>
 
     <!-- FOR FragmentSettings -->
 

@@ -1,6 +1,7 @@
 package ee.app.conversa.adapters;
 
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +9,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,6 +30,7 @@ import ee.app.conversa.R;
 import ee.app.conversa.events.MessagePressedEvent;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Logger;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.RegularTextView;
 
@@ -56,10 +57,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 	@Override
 	public int getItemViewType(int position) {
 		Object object = mMessages.get(position);
-		if (object instanceof LoadItem) {
-			return LOADER_TYPE;
-		} else {
+		if (object instanceof dbMessage) {
 			return (((dbMessage)object).getFromUserId().equals(toUser)) ? TO_ME_VIEW_TYPE : FROM_ME_VIEW_TYPE;
+		} else {
+			return LOADER_TYPE;
 		}
 	}
 
@@ -89,18 +90,49 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 	}
 
 	@Override
+	public void onBindViewHolder(GenericViewHolder holder, int position, List<Object> payloads) {
+		if (payloads.isEmpty()) {
+			super.onBindViewHolder(holder, position, payloads);
+		} else {
+			if (holder instanceof MessageViewHolder) {
+				if (payloads.size() > 0) {
+					if (payloads.get(0) instanceof String) {
+						switch ((String)payloads.get(0)) {
+							case "updateTime": {
+								((MessageViewHolder)holder).updateLastMessage((dbMessage)mMessages.get(position));
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
 	public void onBindViewHolder(GenericViewHolder holder, int position) {
 		if (holder instanceof MessageViewHolder) {
-			if (position > 0) {
-				((MessageViewHolder)holder).showMessage(
-						(dbMessage)mMessages.get(position),
-						(dbMessage)mMessages.get(position - 1));
+			if (position + 1 < mMessages.size()) {
+				if (mMessages.get(position + 1) instanceof dbMessage) {
+					((MessageViewHolder) holder).showMessage(
+							(dbMessage) mMessages.get(position),
+							(dbMessage) mMessages.get(position + 1));
+				} else {
+					((MessageViewHolder)holder).showMessage(
+							(dbMessage)mMessages.get(position),
+							null);
+				}
 			} else {
 				((MessageViewHolder)holder).showMessage(
 						(dbMessage)mMessages.get(position),
 						null);
 			}
 		}
+	}
+
+	public void updateTime(int position, int count) {
+		Logger.error("TIMER", "RUN\nRUN\nRUN\nFirst:"+position+"\nCount:"+count);
+		notifyItemRangeChanged(position, count, "updateTime");
 	}
 
 	public void setMessages(List<dbMessage> messages) {
@@ -112,7 +144,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 	public void addLoad(boolean show) {
 		int position = mMessages.size();
 		if (show) {
-			mMessages.add(position, new LoadItem());
+			mMessages.add(position, new Object());
 			notifyItemInserted(position);
 		} else {
 			mMessages.remove(position - 1);
@@ -174,21 +206,21 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		long diffw  = diff / (1000 * 60 * 60 * 24 * 7);
 
 		if (diffw >= 2) {
-			subText = diffw + " " + activity.getString(R.string.weeks_ago);
+			subText = activity.getString(R.string.weeks_ago, diffw);
 		} else if (diffw >= 1 && diffw < 2) {
-			subText = diffw + " " + activity.getString(R.string.week_ago);
+			subText = activity.getString(R.string.week_ago);
 		} else if (diffh >= 48 && diffh < 168) {
-			subText = diffd + " " + activity.getString(R.string.days_ago);
+			subText = activity.getString(R.string.days_ago, diffd);
 		} else if (diffh >= 24 && diffh < 48) {
-			subText = diffd + " " + activity.getString(R.string.day_ago);
+			subText = activity.getString(R.string.day_ago);
 		} else if (diffh >= 2 && diffh < 24) {
-			subText = diffh + " " + activity.getString(R.string.hours_ago);
+			subText = activity.getString(R.string.hours_ago, diffh);
 		} else if (diffm >= 60 && diffm < 120) {
-			subText = diffh + " " + activity.getString(R.string.hour_ago);
+			subText = activity.getString(R.string.hour_ago);
 		} else if (diffm > 1 && diffm < 60) {
-			subText = diffm + " " + activity.getString(R.string.minutes_ago);
+			subText = activity.getString(R.string.minutes_ago, diffm);
 		} else if (diffm == 1) {
-			subText = diffm + " " + activity.getString(R.string.minute_ago);
+			subText = activity.getString(R.string.minute_ago);
 		} else {
 			subText = activity.getString(R.string.posted_less_than_a_minute_ago);
 		}
@@ -196,51 +228,45 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		return subText;
 	}
 
-	class ViewHolder extends MessageViewHolder {
+	private class ViewHolder extends MessageViewHolder {
 
-		public ViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+		ViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
 			super(itemView, activity);
 		}
 
 	}
 
-	class IncomingViewHolder extends MessageViewHolder {
+	private class IncomingViewHolder extends MessageViewHolder {
 
-		public IncomingViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+		IncomingViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
 			super(itemView, activity);
 		}
 
 	}
 
-	class LoaderViewHolder extends GenericViewHolder {
+	private class LoaderViewHolder extends GenericViewHolder {
 
-		public LoaderViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+		LoaderViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
 			super(itemView, activity);
 		}
-
-	}
-
-	class LoadItem {
-
-		public LoadItem(){}
 
 	}
 
 	// Taken from http://stackoverflow.com/questions/26245139/how-to-create-recyclerview-with-multiple-view-type
-	public class MessageViewHolder extends GenericViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
-		protected final TextView mTvDate;
-		protected final RelativeLayout mRlBackground;
-		protected final RegularTextView mRtvMessageText;
-		protected final RelativeLayout mRlImageContainer;
-		protected final MapView mMvMessageMap;
-		protected final SimpleDraweeView mSdvMessageImage;
-		protected final LightTextView mLtvSubText;
+	class MessageViewHolder extends GenericViewHolder implements OnClickListener, View.OnLongClickListener, OnMapReadyCallback {
+		private final LightTextView mTvDate;
+		private final RelativeLayout mRlBackground;
+		private final RegularTextView mRtvMessageText;
+		private final RelativeLayout mRlImageContainer;
+		private final MapView mMvMessageMap;
+		private final SimpleDraweeView mSdvMessageImage;
+		private final LightTextView mLtvSubText;
 		protected WeakReference<dbMessage> message;
 
-		public MessageViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+		MessageViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
 			super(itemView, activity);
 
-			this.mTvDate = (TextView) itemView.findViewById(R.id.tvDate);
+			this.mTvDate = (LightTextView) itemView.findViewById(R.id.tvDate);
 			this.mRlBackground = (RelativeLayout) itemView.findViewById(R.id.rlBackground);
 			this.mRtvMessageText = (RegularTextView) itemView.findViewById(R.id.rtvMessageText);
 			this.mRlImageContainer = (RelativeLayout) itemView.findViewById(R.id.rlImageContainer);
@@ -254,12 +280,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			this.mRlBackground.setOnLongClickListener(this);
 		}
 
-		public void showMessage(dbMessage message, dbMessage previousMessage) {
+		void showMessage(dbMessage message, dbMessage previousMessage) {
 			this.message = new WeakReference<>(message);
 
 			// 1. Hide date. Will later check date text string and if it should be visible
 			this.mTvDate.setVisibility(View.GONE);
-
 			// 2. Hide message subtext and map/image relative layout
 			this.mLtvSubText.setVisibility(View.GONE);
 
@@ -298,26 +323,44 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			}
 
 			// 4. Decide if date should be visible
-			this.mTvDate.setText(setDate(message, this.activity.get()));
+			if (previousMessage == null) {
+				this.mTvDate.setText(setDate(message, this.activity.get()));
+				this.mTvDate.setVisibility(View.VISIBLE);
+			} else if ((previousMessage.getCreated() + (15 * 60 * 1000)) <= message.getCreated()) {
+				Logger.error("message", "previous" + (previousMessage.getCreated() + (15 * 60 * 1000)) +"\ncurrent" + message.getCreated());
+				this.mTvDate.setText(setDate(message, this.activity.get()));
+				this.mTvDate.setVisibility(View.VISIBLE);
+			}
 
 			// 5. Decide whether to show message status
 			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
 				this.mLtvSubText.setVisibility(View.VISIBLE);
 				if (this.activity.get() != null) {
-					this.mLtvSubText.setText(activity.get().getString(R.string.app_name));
+					this.mLtvSubText.setText(activity.get().getString(R.string.message_sent_error));
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+						this.mLtvSubText.setTextColor(activity.get().getResources()
+								.getColor(R.color.default_red, null));
+					} else {
+						this.mLtvSubText.setTextColor(activity.get().getResources()
+								.getColor(R.color.default_red));
+					}
 				}
-			} else {
-				this.mLtvSubText.setVisibility(View.GONE);
 			}
 		}
 
-		public void loadMessage() {
+		public void updateLastMessage(dbMessage message) {
+			if (mTvDate.getVisibility() == View.VISIBLE) {
+				this.mTvDate.setText(setDate(message, this.activity.get()));
+			}
+		}
+
+		void loadMessage() {
 			if (message.get() != null) {
 				this.mRtvMessageText.setText(message.get().getBody());
 			}
 		}
 
-		public void loadMap() {
+		void loadMap() {
 			// 1. Create map
 			this.mMvMessageMap.onCreate(null);
 			this.mMvMessageMap.onResume();
@@ -325,7 +368,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			this.mMvMessageMap.getMapAsync(this);
 		}
 
-		public void loadImage() {
+		void loadImage() {
 			if (activity.get() != null && message.get() != null) {
 				final float density = activity.get().getResources().getDisplayMetrics().density;
 				// 1. Resize image to display
@@ -375,11 +418,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 
 	}
 
-	public class GenericViewHolder extends RecyclerView.ViewHolder {
+	class GenericViewHolder extends RecyclerView.ViewHolder {
 
 		protected final WeakReference<AppCompatActivity> activity;
 
-		public GenericViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
+		GenericViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
 			super(itemView);
 			this.activity = activity;
 		}

@@ -35,6 +35,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     private ChatsAdapter mUserListAdapter;
     private boolean refresh;
     private ActionMode actionMode;
+//    private ImageFetcher mImageFetcher;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -43,12 +44,30 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
 
         mRvUsers = (RecyclerView) rootView.findViewById(R.id.lvUsers);
         mRlNoUsers = (RelativeLayout) rootView.findViewById(R.id.rlNoChats);
+//        mImageFetcher = ConversaApp.getInstance(getContext()).getImageFetcher();
+//        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(getContext(), ConversaApp.IMAGE_CACHE_DIR);
+//        cacheParams.setMemCacheSizePercent(0.20f); // Set memory cache to 25% of app memory
+//        mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
 
         mUserListAdapter = new ChatsAdapter((AppCompatActivity) getActivity(), this, this);
         mRvUsers.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvUsers.setItemAnimator(new DefaultItemAnimator());
         mRvUsers.setAdapter(mUserListAdapter);
         mRvUsers.setHasFixedSize(true);
+//        mRvUsers.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+//                    // Before Honeycomb pause image loading on scroll to help with performance
+//                    if (!Utils.hasHoneycomb()) {
+//                        mImageFetcher.setPauseWork(true);
+//                    }
+//                } else {
+//                    mImageFetcher.setPauseWork(false);
+//                }
+//            }
+//        });
+
         refresh = false;
 
         RegularTextView mRtvStartBrowsing = (RegularTextView) rootView.findViewById(R.id.rtvStartBrowsing);
@@ -56,6 +75,26 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
 
         return rootView;
     }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        mImageFetcher.setExitTasksEarly(false);
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        mImageFetcher.setPauseWork(false);
+//        mImageFetcher.setExitTasksEarly(true);
+//        mImageFetcher.flushCache();
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        mImageFetcher.closeCache();
+//    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

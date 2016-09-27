@@ -1,9 +1,10 @@
 package ee.app.conversa;
 
+import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -18,21 +19,25 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.request.BasePostprocessor;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.imagepipeline.request.Postprocessor;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.events.MessagePressedEvent;
@@ -45,7 +50,6 @@ import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.MediumTextView;
 import ee.app.conversa.view.MyBottomSheetDialogFragment;
-import ee.app.conversa.view.TouchImageView;
 
 public class ActivityChatWall extends ConversaActivity implements View.OnClickListener,
 		View.OnTouchListener, TextWatcher {
@@ -58,16 +62,18 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private boolean loadMore;
 	private boolean newMessagesFromNewIntent;
 
+	private LightTextView mSubTitleTextView;
 	private RecyclerView mRvWallMessages;
-	private TouchImageView mTivPhotoImage;
 	private TextView mTvNoMessages;
 	private EditText mEtMessageText;
 	private BottomSheetDialogFragment myBottomSheet;
-	private RelativeLayout rlImageDisplay;
 	private ImageButton mBtnWallSend;
+	private Bitmap bmAvatar;
+
+	private Timer timer;
 
 	public ActivityChatWall() {
-		this.loading = false;
+		this.loading = true;
 		this.loadMore = true;
 		this.newMessagesFromNewIntent = false;
 	}
@@ -98,6 +104,51 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		startTimer();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		stoptimertask();
+	}
+
+	public void startTimer() {
+		if (loading || timer != null) {
+			return;
+		}
+
+		//set a new Timer
+		timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				if (gMessagesAdapter != null && mRvWallMessages != null) {
+					final int firstVisibleItem = ((LinearLayoutManager)mRvWallMessages.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+					final int lastVisibleItem = ((LinearLayoutManager)mRvWallMessages.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (firstVisibleItem >= 0) {
+								gMessagesAdapter.updateTime(firstVisibleItem, (lastVisibleItem - firstVisibleItem) + 1);
+							}
+						}
+					});
+				}
+			}
+		}, 0, 60000);
+	}
+
+	public void stoptimertask() {
+		//stop the timer, if it's not already null
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+		}
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			// Respond to the action bar's Up/Home button
@@ -115,11 +166,40 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		super.initialization();
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		MediumTextView mTitleTextView = (MediumTextView) toolbar.findViewById(R.id.tvChatName);
-		ImageButton mBackButton = (ImageButton) toolbar.findViewById(R.id.ibBack);
-		LightTextView mSubTitleTextView = (LightTextView) toolbar.findViewById(R.id.tvChatStatus);
-		SimpleDraweeView imageButton = (SimpleDraweeView) toolbar.findViewById(R.id.ivAvatarChat);
+		FrameLayout mBackButton = (FrameLayout) toolbar.findViewById(R.id.flBack);
+		ImageButton mIbBackButton = (ImageButton) toolbar.findViewById(R.id.ibBack);
+		mSubTitleTextView = (LightTextView) toolbar.findViewById(R.id.tvChatStatus);
+		SimpleDraweeView ivContactAvatar = (SimpleDraweeView) toolbar.findViewById(R.id.ivAvatarChat);
+
+		Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
+		Postprocessor redMeshPostprocessor = new BasePostprocessor() {
+			@Override
+			public String getName() {
+				return "redMeshPostprocessor";
+			}
+
+			@Override
+			public void process(Bitmap bitmap) {
+				if (bitmap != null) {
+					bmAvatar = bitmap;
+				}
+			}
+		};
+
+		ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+				.setPostprocessor(redMeshPostprocessor)
+				.build();
+
+		PipelineDraweeController controller = (PipelineDraweeController)
+				Fresco.newDraweeControllerBuilder()
+						.setImageRequest(request)
+						.setOldController(ivContactAvatar.getController())
+						.build();
+		ivContactAvatar.setController(controller);
+
+		mIbBackButton.setOnClickListener(this);
 		mBackButton.setOnClickListener(this);
-		imageButton.setOnClickListener(this);
+		ivContactAvatar.setOnClickListener(this);
 		mTitleTextView.setText(businessObject.getDisplayName());
 
 		setSupportActionBar(toolbar);
@@ -128,17 +208,12 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		mTvNoMessages = (TextView) findViewById(R.id.tvNoMessages);
 		mEtMessageText = (EditText) findViewById(R.id.etWallMessage);
 		mBtnWallSend = (ImageButton) findViewById(R.id.btnWallSend);
-		rlImageDisplay = (RelativeLayout) findViewById(R.id.rlImageDisplay);
-		mTivPhotoImage = (TouchImageView) findViewById(R.id.tivPhotoImage);
 
 		myBottomSheet = MyBottomSheetDialogFragment.newInstance(businessObject.getBusinessId(), this);
 
-		Button mBtnBack	= (Button) findViewById(R.id.btnCloseImage);
 		ImageButton mBtnOpenSlidingDrawer = (ImageButton) findViewById(R.id.btnSlideButton);
 
 		mEtMessageText.setTypeface(ConversaApp.getInstance(this).getTfRalewayRegular());
-		mBtnBack.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
-
 		mEtMessageText.addTextChangedListener(this);
 
 		gMessagesAdapter = new MessagesAdapter(this, businessObject.getBusinessId());
@@ -157,12 +232,13 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 					// 2. If load more is true retrieve more messages otherwise skip
 					if (loadMore) {
 						gMessagesAdapter.addLoad(true);
+						mRvWallMessages.scrollToPosition(totalItemCount);
 						new Handler().postDelayed(new Runnable() {
 							@Override
 							public void run() {
 								dbMessage.getAllMessageForChat(getApplicationContext(), businessObject.getBusinessId(), 20, totalItemCount);
 							}
-						}, 1800);
+						}, 1900);
 						loading = true;
 					}
 				}
@@ -172,14 +248,11 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		mBtnWallSend.setOnClickListener(this);
 		mBtnOpenSlidingDrawer.setOnClickListener(this);
-		mBtnBack.setOnClickListener(this);
 	}
 
 	@Override
 	public void onBackPressed() {
-		if(closeThisFirst()) {
-			navigateUp();
-		}
+		navigateUp();
 	}
 
 	private void navigateUp() {
@@ -233,7 +306,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		switch (v.getId()) {
 			case R.id.rvWallMessages:
 				Utils.hideKeyboard(this);
-				closeThisFirst();
 				return false;
 		}
 
@@ -303,39 +375,29 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 	@Override
 	public void onClick(View v) {
-		if(v instanceof ImageButton) {
-			switch (v.getId()) {
-				case R.id.ibBack:
-					onBackPressed();
-					break;
-				case R.id.btnSlideButton:
-					myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
-					break;
-				case R.id.btnWallSend:
-					String body = mEtMessageText.getText().toString().trim();
+		switch (v.getId()) {
+			case R.id.ivAvatarChat:
+				// Llamar a Servidor por foto y actualizar
+				break;
+			case R.id.ibBack:
+			case R.id.flBack:
+				onBackPressed();
+				break;
+			case R.id.btnSlideButton:
+				myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
+				break;
+			case R.id.btnWallSend:
+				String body = mEtMessageText.getText().toString().trim();
 
-					if (body.length() > 0) {
-						mEtMessageText.setText("");
-						SendMessageAsync.sendTextMessage(
-								this,
-								body,
-								addAsContact,
-								businessObject);
-					}
-					break;
-			}
-		} else if (v instanceof ImageView) {
-			switch (v.getId()) {
-				case R.id.ivAvatarChat:
-					// Llamar a Servidor por foto y actualizar
-					break;
-			}
-		} else if (v instanceof Button) {
-			switch (v.getId()) {
-				case R.id.btnCloseImage:
-					closeImage();
-					break;
-			}
+				if (body.length() > 0) {
+					mEtMessageText.setText("");
+					SendMessageAsync.sendTextMessage(
+							this,
+							body,
+							addAsContact,
+							businessObject);
+				}
+				break;
 		}
 	}
 
@@ -353,38 +415,14 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		mBtnWallSend.setEnabled(true);
 	}
 
-	private boolean closeThisFirst() {
-		if(rlImageDisplay.getVisibility() == View.VISIBLE) {
-			closeImage();
-			return false;
-		} else {
-			return true;
-		}
-	}
-
 	public void showImage(final dbMessage m) {
-		try {
-			Utils.hideKeyboard(this);
-			BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-			Bitmap bitmap = BitmapFactory.decodeFile(m.getFileId(), bmOptions);
-			bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
-			mTivPhotoImage.setImageBitmap(bitmap);
-			final Animation slidein = AnimationUtils.loadAnimation(getApplicationContext(),
-					R.anim.slide_in);
-			rlImageDisplay.startAnimation(slidein);
-			rlImageDisplay.setVisibility(View.VISIBLE);
-		} catch (Exception e) {
-			// Couldn't open image
-		}
-	}
-
-	public void closeImage() {
-		final Animation slideout = AnimationUtils.loadAnimation(getApplicationContext(),
-				R.anim.slide_out);
-		rlImageDisplay.startAnimation(slideout);
-		rlImageDisplay.setVisibility(View.GONE);
-		mTivPhotoImage.setImageBitmap(null);
-		mTivPhotoImage.resetZoom();
+		final Intent i = new Intent(this, ActivityImageDetail.class);
+		i.putExtra(ActivityImageDetail.EXTRA_IMAGE, m.getFileId());
+//			ActivityOptions options = ActivityOptions.makeScaleUpAnimation(
+//					v, 0, 0, v.getWidth(), v.getHeight());
+		ActivityOptions options = ActivityOptions.makeScaleUpAnimation(
+				mBtnWallSend, 0, 0, mBtnWallSend.getWidth(), mBtnWallSend.getHeight());
+		startActivity(i, options.toBundle());
 	}
 
 	@Override
@@ -397,7 +435,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				dbMessage.updateUnreadMessages(this, businessObject.getBusinessId());
 				// Set messages
 				gMessagesAdapter.setMessages(messages);
-				mRvWallMessages.getLayoutManager().smoothScrollToPosition(mRvWallMessages, null, messages.size() - 1);
 				// As this is the first time we load messages, change visibility
 				mTvNoMessages.setVisibility(View.GONE);
 				mRvWallMessages.setVisibility(View.VISIBLE);
@@ -426,6 +463,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		// 2. Set loading as completed
 		loading = false;
+		startTimer();
 	}
 
 	@Override
@@ -480,6 +518,11 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		} else {
 			super.MessageReceived(message);
 		}
+	}
+
+	@Override
+	public void ContactAdded(dbBusiness response) {
+		Utils.saveToInternalStorage(this, bmAvatar, response.getId());
 	}
 
 	@Override

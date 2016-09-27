@@ -10,16 +10,20 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-import ee.app.conversa.BaseActivity;
 import ee.app.conversa.R;
 import ee.app.conversa.dialog.InAppPushNotification;
+import ee.app.conversa.events.ContactEvent;
 import ee.app.conversa.events.MessageEvent;
+import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
+import ee.app.conversa.management.contact.ContactIntentService;
 import ee.app.conversa.management.message.MessageIntentService;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Logger;
 
-public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
+public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted,
+        OnContactTaskCompleted {
 
 	protected RelativeLayout mRlPushNotification;
 
@@ -75,6 +79,26 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactEvent(ContactEvent event) {
+        int action_code = event.getActionCode();
+
+        switch (action_code) {
+            case ContactIntentService.ACTION_MESSAGE_SAVE:
+                ContactAdded(event.getResponse());
+                break;
+            case ContactIntentService.ACTION_MESSAGE_UPDATE:
+                ContactUpdated(event.getResponse());
+                break;
+            case ContactIntentService.ACTION_MESSAGE_DELETE:
+                ContactDeleted(event.getContactList());
+                break;
+            case ContactIntentService.ACTION_MESSAGE_RETRIEVE_ALL:
+                ContactGetAll(event.getListResponse());
+                break;
+        }
+    }
+
     @Override
     protected void initialization() {
         super.initialization();
@@ -115,4 +139,23 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
         /* Child activities override this method */
     }
 
+    @Override
+    public void ContactGetAll(List<dbBusiness> response) {
+        /* Child activities override this method */
+    }
+
+    @Override
+    public void ContactAdded(dbBusiness response) {
+        /* Child activities override this method */
+    }
+
+    @Override
+    public void ContactDeleted(List<String> response) {
+        /* Child activities override this method */
+    }
+
+    @Override
+    public void ContactUpdated(dbBusiness response) {
+        /* Child activities override this method */
+    }
 }

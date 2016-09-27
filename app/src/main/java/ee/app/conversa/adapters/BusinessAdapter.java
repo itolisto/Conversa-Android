@@ -61,8 +61,8 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
 
         if (object.getClass().equals(Business.class)) {
             Business temp = (Business) object;
-            holder.tvBusiness.setText(temp.getConversaID());
-            holder.tvAbout.setText(temp.getAbout());
+            holder.tvBusiness.setText(temp.getDisplayName());
+            holder.tvAbout.setText(temp.getConversaID());
             Uri uri;
             if(temp.getAvatar() != null && !temp.getAvatar().getUrl().isEmpty()) {
                 uri = Uri.parse(temp.getAvatar().getUrl());

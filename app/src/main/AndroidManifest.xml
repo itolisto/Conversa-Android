@@ -101,13 +101,20 @@
 
         <activity android:name="ee.app.conversa.ActivityProfile"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:parentActivityName="ee.app.conversa.ActivityMain" />
 
         <activity
             android:name="ee.app.conversa.ActivityChatWall"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:parentActivityName="ee.app.conversa.ActivityMain" />
+
+        <activity
+            android:name="ee.app.conversa.ActivityImageDetail"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            android:parentActivityName="ee.app.conversa.ActivityChatWall" />
 
         <activity
             android:name="ee.app.conversa.ActivityLocation"

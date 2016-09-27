@@ -1,5 +1,7 @@
 package ee.app.conversa;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,7 +13,9 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
+import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
 
@@ -41,6 +45,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         super.initialization();
         Button mBtnSignIn = (Button) findViewById(R.id.btnSignIn);
         Button mBtnSignUp = (Button) findViewById(R.id.btnSignUp);
+        ImageView mivLanguage = (ImageView) findViewById(R.id.ivLanguage);
 
         LightTextView mLtvClickHere = (LightTextView) findViewById(R.id.ltvClickHere);
         if (mLtvClickHere != null) {
@@ -66,6 +71,8 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
             mBtnSignUp.setOnClickListener(this);
             mBtnSignUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
         }
+
+        mivLanguage.setOnClickListener(this);
 	}
 
     @Override
@@ -79,6 +86,35 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
             case R.id.btnSignUp: {
                 Intent intent = new Intent(getApplicationContext(), ActivitySignUp.class);
                 startActivity(intent);
+                break;
+            }
+            case R.id.ivLanguage: {
+                int index;
+
+                switch(ConversaApp.getInstance(getBaseContext()).getPreferences().getLanguage()) {
+                    case "en":
+                        index = 1;
+                        break;
+                    case "es":
+                        index = 2;
+                        break;
+                    default:
+                        index = 0;
+                        break;
+                }
+
+                AlertDialog.Builder b = new AlertDialog.Builder(this);
+                b.setTitle(R.string.language_spinner_title);
+                b.setSingleChoiceItems(R.array.language_entries, index, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ConversaApp.getInstance(getBaseContext()).getPreferences()
+                                .setLanguage(getResources().getStringArray(R.array.language_values)[which]);
+                        recreate();
+                        dialog.dismiss();
+                    }
+                });
+                b.show();
                 break;
             }
         }

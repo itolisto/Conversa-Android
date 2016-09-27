@@ -12,11 +12,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,15 +48,16 @@ import ee.app.conversa.utils.Utils;
 public class ActivitySearch extends ConversaActivity implements SearchView.OnQueryTextListener,
         BusinessAdapter.OnLocalItemClickListener, View.OnTouchListener {
 
-    private boolean mLoading;
     private final ExecutorService tpe;
     private final ExecutorService callResults;
     Future<String> future;
     Future<?> futureResult;
 
-    private ImageView mIvNoResults;
-    private ProgressBar mPbLoadingResults;
+    private LinearLayout mLlNoResultsContainer;
+    private LinearLayout mLlErrorContainer;
+    private AVLoadingIndicatorView mPbLoadingResults;
     private RecyclerView mRvSearchResults;
+
     private BusinessAdapter mBusinessListAdapter;
 
     public ActivitySearch() {
@@ -97,8 +98,9 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mIvNoResults = (ImageView) findViewById(R.id.ivNoResults);
-        mPbLoadingResults = (ProgressBar) findViewById(R.id.pbLoadingResults);
+        mLlNoResultsContainer = (LinearLayout) findViewById(R.id.llNoResultsContainer);
+        mLlErrorContainer = (LinearLayout) findViewById(R.id.llErrorContainer);
+        mPbLoadingResults = (AVLoadingIndicatorView) findViewById(R.id.pbLoadingResults);
         mRvSearchResults = (RecyclerView) findViewById(R.id.rvSearchResults);
 
         mBusinessListAdapter= new BusinessAdapter(this, this);
@@ -128,11 +130,14 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
             }
         }
 
-        mPbLoadingResults.setVisibility(View.VISIBLE);
         mBusinessListAdapter.clear();
+        mLlNoResultsContainer.setVisibility(View.GONE);
+        mLlErrorContainer.setVisibility(View.GONE);
+        mRvSearchResults.setVisibility(View.GONE);
+        mPbLoadingResults.smoothToShow();
 
         if (text.isEmpty()) {
-            showResults("");
+            showResults("", false);
         }
 
         future = tpe.submit(new Callable<String>() {
@@ -149,8 +154,6 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
             }
         });
 
-        mLoading = true;
-
         futureResult = callResults.submit(new Runnable() {
             @Override
             public void run() {
@@ -160,16 +163,16 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                showResults(result);
+                                showResults(result, result.isEmpty());
                             }
                         });
                     }
-                } catch (InterruptedException|ExecutionException |TimeoutException e) {
+                } catch (InterruptedException|ExecutionException|TimeoutException e) {
                     Logger.error("Future task result error: ", e.getMessage());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            showResults("");
+                            showResults("", true);
                         }
                     });
                 }
@@ -177,51 +180,57 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
         });
     }
 
-    private void showResults(String response) {
+    private void showResults(String response, boolean error) {
         Logger.error("Future get result: ", response);
         JSONObject jsonRootObject;
-        boolean error = false;
+        boolean toJSONError = false;
 
         try {
-            if (response.isEmpty()) {
-                error = true;
-            } else {
-                jsonRootObject = new JSONObject(response);
-                JSONArray results = jsonRootObject.optJSONArray("results");
-                int size = results.length();
+            if (!error) {
+                if (!response.isEmpty() && response.startsWith("{")) {
+                    jsonRootObject = new JSONObject(response);
+                    JSONArray results = jsonRootObject.optJSONArray("results");
+                    int size = results.length();
 
-                if (size == 0) {
-                    return;
+                    if (size == 0) {
+                        return;
+                    }
+
+                    List<dbBusiness> allResults = new ArrayList<>();
+                    dbBusiness business = new dbBusiness();
+
+                    for (int i = 0; i < size; i++) {
+                        JSONObject object = results.getJSONObject(i);
+                        business.setBusinessId(object.optString("oj"));
+                        business.setAvatarThumbFileId(object.optString("av"));
+                        business.setConversaId(object.optString("id"));
+                        business.setDisplayName(object.optString("dn"));
+                        allResults.add(business);
+                    }
+
+                    mBusinessListAdapter.addLocalItems(allResults, false);
                 }
-
-                List<dbBusiness> allResults = new ArrayList<>();
-                dbBusiness business = new dbBusiness();
-
-                for (int i = 0; i < size; i++) {
-                    JSONObject object = results.getJSONObject(i);
-                    business.setBusinessId(object.optString("oj"));
-                    business.setAvatarThumbFileId(object.optString("av"));
-                    business.setConversaId(object.optString("id"));
-                    business.setDisplayName(object.optString("dn"));
-                    allResults.add(business);
-                }
-
-                mBusinessListAdapter.addLocalItems(allResults, false);
             }
         } catch (JSONException e) {
-            error = true;
+            toJSONError = true;
         } finally {
-            mLoading = false;
+            mPbLoadingResults.smoothToHide();
 
-            if (error) {
+            if (error || toJSONError) {
                 // Clear all results and show error
-                mIvNoResults.setVisibility(View.VISIBLE);
-                mRvSearchResults.setVisibility(View.GONE);
+                mLlNoResultsContainer.setVisibility(View.GONE);
+                mLlErrorContainer.setVisibility(View.VISIBLE);
+            } else if (response.isEmpty() || !response.startsWith("{")) {
+                mLlNoResultsContainer.setVisibility(View.GONE);
+                mLlErrorContainer.setVisibility(View.GONE);
+            } else if (mBusinessListAdapter.getItemCount() == 0) {
+                mLlNoResultsContainer.setVisibility(View.VISIBLE);
+                mLlErrorContainer.setVisibility(View.GONE);
             } else {
-                mIvNoResults.setVisibility(View.GONE);
+                mLlNoResultsContainer.setVisibility(View.GONE);
+                mLlErrorContainer.setVisibility(View.GONE);
                 mRvSearchResults.setVisibility(View.VISIBLE);
             }
-            mPbLoadingResults.setVisibility(View.GONE);
         }
     }
 

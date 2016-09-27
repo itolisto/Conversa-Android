@@ -60,6 +60,16 @@ Preference.OnPreferenceChangeListener {
     public boolean onPreferenceClick(Preference preference) {
         switch (preference.getKey()) {
             case PreferencesKeys.ACCOUNT_CLEAR_RECENT_KEY: {
+                int colorNegative, colorPositive;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    colorPositive = getActivity().getResources().getColor(android.R.color.holo_red_light, null);
+                    colorNegative = getActivity().getResources().getColor(R.color.default_black, null);
+                } else {
+                    colorPositive = getActivity().getResources().getColor(android.R.color.holo_red_light);
+                    colorNegative = getActivity().getResources().getColor(R.color.default_black);
+                }
+
                 final CustomDialog dialog = new CustomDialog(getActivity());
                 dialog.setTitle(null)
                         .setMessage(getString(R.string.recent_searches_message))
@@ -69,13 +79,15 @@ Preference.OnPreferenceChangeListener {
                                 dialog.dismiss();
                             }
                         })
+                        .setNegativeColor(colorNegative)
                         .setupPositiveButton(getString(R.string.recent_searches_ok), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 ConversaApp.getInstance(getActivity()).getDB().clearRecentSearches();
                                 dialog.dismiss();
                             }
-                        });
+                        })
+                        .setPositiveColor(colorPositive);
                 dialog.show();
                 break;
             }
