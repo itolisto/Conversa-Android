@@ -25,10 +25,10 @@
 
     <string name="string_signin_title_one">Chat to any business</string>
     <string name="string_signin_title_two">Simple. Fast. Effective.</string>
-    <string name="string_signin_are_you_new">ARE YOU NEW?</string>
+    <string name="string_signin_are_you_new">ARE YOU NEW HERE?</string>
     <string name="string_signin_already_have_an_account">I ALREADY HAVE AN ACCOUNT</string>
-    <string name="string_signin_sign_up_business_one">Looking to sign up your</string>
-    <string name="string_signin_sign_up_business_two">business click here</string>
+    <string name="string_signin_sign_up_business_one">LOOKING TO SIGN UP YOUR</string>
+    <string name="string_signin_sign_up_business_two">BUSINESS? CLICK HERE</string>
 
     <string name="signup_register_error">Sorry, this email is already being used by another user, try with another</string>
     <string name="signup_name_error">Name should contain more than 1 character in length</string>
@@ -122,6 +122,7 @@
     <string name="profile_day_six">S</string>
     <string name="profile_day_seven">Su</string>
 
+    <string name="profile_go_location">Go</string>
 
     <string name="selected_count">%1$d selected</string>
     <string name="search_title_menu">Search</string>
@@ -151,9 +152,10 @@
     <!-- FOR SIGN IN/UP  -->
     <string name="SIGN_IN">Log In</string>
     <string name="SIGN_UP">Sign Up</string>
+    <string name="FORGOT_PASSWORD">Forgot password</string>
 
     <string name="have_account">Already have an account?</string>
-    <string name="FORGOT_PASSWORD">Send password</string>
+    <string name="send_password">Send password</string>
     <string name="forgot_password"><u>forgot password?</u></string>
 
     <string name="username">username</string>
@@ -211,10 +213,10 @@
     <string name="cSYHk42aEOz">Cars</string>
     <string name="cRWcS1d4bqt">Baby</string>
     <string name="cDqCLGage9M">Beauty</string>
-    <string name="cQNFkAelMAd">Home</string>
+    <string name="cQNFkAelMAd">Home \u0026 Garden</string>
     <string name="ccGWcPxDcB7">Food</string>
     <string name="caDuBd0GuuH">Restaurants</string>
-    <string name="cW0lNHTPV3v">Sports</string>
+    <string name="cW0lNHTPV3v">Sports \u0026 Fitness</string>
     <string name="c462mKRISE7">Electronics</string>
     <string name="ccQy8YtN7j4">Entertainment</string>
     <string name="cTFau41aZ8E">Musical Instruments</string>
@@ -231,7 +233,7 @@
     <string name="cydPTRrUJye">Health</string>
     <string name="c1zZcJ8an9Z">Services</string>
     <string name="cJi1FwE21F8">Party Supplies</string>
-    <string name="cFBv7AV5OGU">Telecommunications</string>
+    <string name="cFBv7AV5OGU">Videogames</string>
     <string name="cVZg31Kxzew">Travel</string>
     <string name="caWthcdxIAJ">Men Shoes</string>
     <string name="cuRzYgo8krw">Women Shoes</string>

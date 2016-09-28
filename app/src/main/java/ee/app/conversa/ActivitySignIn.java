@@ -3,11 +3,12 @@ package ee.app.conversa;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
@@ -49,15 +50,22 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
 
         LightTextView mLtvClickHere = (LightTextView) findViewById(R.id.ltvClickHere);
         if (mLtvClickHere != null) {
-            SpannableString styledString = new SpannableString(getString(R.string.string_signin_sign_up_business_two));
+            String text = getString(R.string.string_signin_sign_up_business_two);
+
+            int index = TextUtils.indexOf(text, "?") + 2; // Index starts from zero but spannable string starts from one, plus whitespace
+
+            Spannable styledString = new SpannableString(text);
+            // url
+            styledString.setSpan(new URLSpan("http://www.google.com"), index, text.length(), 0);
             // change text color
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                styledString.setSpan(new ForegroundColorSpan(Color.RED), 8, 19, 0);
+                styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.default_green, null)),
+                        index, text.length(), 0);
             } else {
-                styledString.setSpan(new ForegroundColorSpan(Color.RED), 8, 19, 0);
+                styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.default_green)),
+                        index, text.length(), 0);
             }
-            // url
-            styledString.setSpan(new URLSpan("http://www.google.com"), 8, 19, 0);
+            // this step is mandated for the url and clickable styles.
             mLtvClickHere.setMovementMethod(LinkMovementMethod.getInstance());
             mLtvClickHere.setText(styledString);
         }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="FORGOT_PASSWORD">Enviar contraseña</string>
     <string name="NO_INTERNET_CONNECTION">SIN CONEXION A INTERNET</string>
     <string name="SEND">ENVIAR</string>
     <string name="SIGN_IN">Iniciar sesión</string>
@@ -14,16 +13,16 @@
     <string name="c4EsFpxgOu6">Servicio a domicilio</string>
     <string name="c90Y0ajWUAG">Mascotas</string>
     <string name="cDqCLGage9M">Belleza</string>
-    <string name="cFBv7AV5OGU">Telecomunicaciones</string>
+    <string name="cFBv7AV5OGU">Videojuegos</string>
     <string name="cJi1FwE21F8">Suplementos para fiesta</string>
     <string name="cMHbjypaY4R">Ropa de hombre</string>
-    <string name="cQNFkAelMAd">Hogar</string>
+    <string name="cQNFkAelMAd">Hogar y Jardín</string>
     <string name="cR7LZJ3Lbj8">Regalos</string>
     <string name="cRWcS1d4bqt">Bebés</string>
     <string name="cSYHk42aEOz">Carros</string>
     <string name="cTFau41aZ8E">Instrumentos musicales</string>
     <string name="cVZg31Kxzew">Viajes</string>
-    <string name="cW0lNHTPV3v">Deportes</string>
+    <string name="cW0lNHTPV3v">Deportes y Fitness</string>
     <string name="caDuBd0GuuH">Restaurantes</string>
     <string name="caWthcdxIAJ">Zapatos para hombre</string>
     <string name="camera_error">Este dispositivo no soporta API Camera2</string>
@@ -104,9 +103,9 @@
     <string name="summary_go_intent_preference">Sitio oficial de Conversa</string>
     <string name="string_signin_title_two">Simple. Rápido. Efectivo.</string>
     <string name="string_signin_title_one">Habla con cualquier negocio</string>
-    <string name="string_signin_sign_up_business_two">negocios presionar aquí</string>
-    <string name="string_signin_sign_up_business_one">Buscando registrar tu negocio</string>
-    <string name="string_signin_are_you_new">¿ERES NUEVO?</string>
+    <string name="string_signin_sign_up_business_two">NEGOCIO? PRESIONA AQUI</string>
+    <string name="string_signin_sign_up_business_one">¿BUSCANDO REGISTRAR TU</string>
+    <string name="string_signin_are_you_new">¿ERES NUEVO AQUI?</string>
     <string name="string_signin_already_have_an_account">YA TENGO UNA CUENTA</string>
     <string name="start_browsing"><u>Comienza a navegar</u></string>
     <string name="special_promo_title">Promoción especial</string>
@@ -173,4 +172,8 @@
     <string name="signup_gender_empty_error">Selecciona tu género</string>
     <string name="signup_register_error">Lo sentimos, este correo electrónico ya está siendo usado por otro usuario, intenta con otro</string>
     <string name="signup_birthday_invalid_error">Fecha de nacimiento no válida</string>
+    <string name="gender_spinner_title">Seleccionar género</string>
+    <string name="send_password">Enviar contraseña</string>
+    <string name="FORGOT_PASSWORD">Recuperar contraseña</string>
+    <string name="profile_go_location">Ir</string>
 </resources>

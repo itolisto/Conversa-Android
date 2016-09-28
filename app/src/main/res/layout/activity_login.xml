@@ -8,12 +8,24 @@
 	tools:context="ee.app.conversa.ActivityLogIn" >
 
 	<RelativeLayout
-		android:layout_gravity="center"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content" >
 
+		<ee.app.conversa.view.BoldTextView
+			android:id="@+id/btvTitle"
+			android:text="@string/SIGN_IN"
+			android:layout_marginTop="40dp"
+			android:textSize="18sp"
+			android:textColor="@color/default_black"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
 		<android.support.design.widget.TextInputLayout
 			android:id="@+id/tilEmail"
+			android:layout_marginTop="14dp"
+			android:layout_below="@id/btvTitle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:padding="14dp" >
@@ -31,29 +43,11 @@
 				android:textSize="18sp" />
 		</android.support.design.widget.TextInputLayout>
 
-		<Button
-			android:id="@+id/btnForgotPassword"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/tilEmail"
-			android:layout_alignParentRight="true"
-			android:layout_alignParentEnd="true"
-			android:layout_marginTop="3dp"
-			android:layout_marginRight="3dp"
-			android:layout_marginEnd="3dp"
-			android:background="@null"
-			android:gravity="bottom"
-			android:textAllCaps="false"
-			android:text="@string/forgot_password"
-			android:textColor="@color/default_gray" />
-
 		<android.support.design.widget.TextInputLayout
 			android:id="@+id/tilPassword"
 			android:layout_below="@id/tilEmail"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_toLeftOf="@id/btnForgotPassword"
-			android:layout_toStartOf="@id/btnForgotPassword"
 			android:padding="14dp" >
 
 			<EditText
@@ -70,12 +64,28 @@
 		</android.support.design.widget.TextInputLayout>
 
 		<Button
+			android:id="@+id/btnForgotPassword"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/tilPassword"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
+			android:layout_marginTop="3dp"
+			android:layout_marginRight="3dp"
+			android:layout_marginEnd="3dp"
+			android:background="@null"
+			android:gravity="top"
+			android:textAllCaps="false"
+			android:text="@string/forgot_password"
+			android:textColor="@color/default_gray" />
+
+		<Button
 			android:id="@+id/btnSignInIn"
 			android:layout_width="175dp"
 			android:layout_height="35dp"
-			android:layout_below="@+id/btnForgotPassword"
+			android:layout_below="@id/btnForgotPassword"
 			android:layout_centerHorizontal="true"
-			android:layout_marginTop="22dp"
+			android:layout_marginTop="14dp"
 			android:gravity="center"
 			android:text="@string/SIGN_IN"
 			android:textColor="@drawable/textcolor_white_state"

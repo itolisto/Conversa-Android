@@ -62,7 +62,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         if (object.getClass().equals(Business.class)) {
             Business temp = (Business) object;
             holder.tvBusiness.setText(temp.getDisplayName());
-            holder.tvAbout.setText(temp.getConversaID());
+            holder.tvConversaId.setText(temp.getConversaID());
             Uri uri;
             if(temp.getAvatar() != null && !temp.getAvatar().getUrl().isEmpty()) {
                 uri = Uri.parse(temp.getAvatar().getUrl());
@@ -74,7 +74,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
         } else if (object.getClass().equals(dbBusiness.class)) {
             dbBusiness business = (dbBusiness) object;
             holder.tvBusiness.setText(business.getDisplayName());
-            holder.tvAbout.setText(business.getConversaId());
+            holder.tvConversaId.setText(business.getConversaId());
             Uri uri;
             if(business.getAvatarThumbFileId().isEmpty()) {
                 uri = Uri.parse(business.getAvatarThumbFileId());
@@ -104,14 +104,14 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView tvBusiness;
-        public TextView tvAbout;
+        public TextView tvConversaId;
         public SimpleDraweeView sdvCategoryImage;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            this.tvBusiness = (TextView) itemView.findViewById(R.id.tvConversaId);
-            this.tvAbout = (TextView) itemView.findViewById(R.id.tvDisplayName);
+            this.tvBusiness = (TextView) itemView.findViewById(R.id.mtvDisplayName);
+            this.tvConversaId = (TextView) itemView.findViewById(R.id.ltvConversaId);
             this.sdvCategoryImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvBusinessImage);
 
             itemView.setOnClickListener(this);

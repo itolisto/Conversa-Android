@@ -18,7 +18,6 @@ import ee.app.conversa.ConversaApp;
 import ee.app.conversa.dialog.PushNotification;
 import ee.app.conversa.events.ContactEvent;
 import ee.app.conversa.events.MessageEvent;
-import ee.app.conversa.management.ably.Connection;
 import ee.app.conversa.management.contact.ContactIntentService;
 import ee.app.conversa.management.message.MessageIntentService;
 import ee.app.conversa.model.database.NotificationInformation;
@@ -28,7 +27,6 @@ import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.model.parse.pMessage;
 import ee.app.conversa.utils.Const;
-import io.ably.lib.realtime.ConnectionState;
 
 /**
  * Created by edgargomez on 7/21/16.
@@ -59,10 +57,17 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     return true;
                 }
 
-                if (Connection.getInstance() != null && Connection.getInstance().ablyConnectionStatus() == ConnectionState.connected) {
-                    Log.e(TAG, "Returning as Ably client is connected");
-                    return true;
-                }
+                // TODO: This verification was removed due to a lock with Ably
+                /**
+                 * The lock is triggered when the app recovers internet connection and Ably
+                 * connects, but cannot receive the message, therefore OneSignal will be
+                 * the only one who receives the message but is it check for Ably, it will
+                 * skip the message thus the user won't be notified about it.
+                 */
+//                if (Connection.getInstance() != null && Connection.getInstance().ablyConnectionStatus() == ConnectionState.connected) {
+//                    Log.e(TAG, "Returning as Ably client is connected");
+//                    return true;
+//                }
 
                 String messageId = pushData.optString("messageId", null);
                 String contactId = pushData.optString("contactId", null);

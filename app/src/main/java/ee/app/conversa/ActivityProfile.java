@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
@@ -28,6 +29,11 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.parse.FunctionCallback;
@@ -54,12 +60,15 @@ import ee.app.conversa.view.RegularTextView;
 
 import static ee.app.conversa.R.id.rtvLocationDescription;
 
-public class ActivityProfile extends ConversaActivity implements View.OnClickListener, OnLikeListener {
+public class ActivityProfile extends ConversaActivity implements
+        View.OnClickListener, OnLikeListener, GoogleApiClient.OnConnectionFailedListener {
 
     // General
     private dbBusiness businessObject;
     private boolean addAsContact;
+    private int followers;
     private Toolbar toolbar;
+    private static final int PLACE_PICKER_FLAG = 1;
     // Containers
     private RelativeLayout mRlProfileHeader;
     private LinearLayout mLlSpecialPromoContainer;
@@ -209,6 +218,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
 
         mBtnFavorite.setOnLikeListener(this);
         mBtnStartChat.setOnClickListener(this);
+        mBtnLocation.setOnClickListener(this);
         mBtnFavorite.setEnabled(false);
 
         GradientDrawable drawable;
@@ -260,6 +270,11 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         navigateUp();
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
     private void navigateUp() {
         Intent upIntent = NavUtils.getParentActivityIntent(this);
         if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
@@ -280,6 +295,22 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.btnLocation: {
+                // Construct an intent for the place picker
+                try {
+                    PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+                    Intent intent = intentBuilder.build(this);
+                    // Start the intent by requesting a result,
+                    // identified by a request code.
+                    startActivityForResult(intent, PLACE_PICKER_FLAG);
+
+                } catch (GooglePlayServicesRepairableException e) {
+
+                } catch (GooglePlayServicesNotAvailableException e) {
+
+                }
+                break;
+            }
             case R.id.ibShare: {
                 break;
             }
@@ -326,6 +357,20 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Make sure the request was successful
+        if (resultCode == RESULT_OK) {
+            // Check which request we're responding to
+            switch (requestCode) {
+                case ActivityProfile.PLACE_PICKER_FLAG: {
+
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
     public void liked(final LikeButton likeButton) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("business", businessObject.getBusinessId());
@@ -333,7 +378,9 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         ParseCloud.callFunctionInBackground("favorite", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object object, ParseException e) {
+                followers++;
                 likeButton.setLiked(true);
+                mBtvFollowers.setText(String.valueOf(followers));
             }
         });
     }
@@ -345,7 +392,9 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         ParseCloud.callFunctionInBackground("favorite", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object object, ParseException e) {
+                followers--;
                 likeButton.setLiked(false);
+                mBtvFollowers.setText(String.valueOf(followers));
             }
         });
     }
@@ -357,7 +406,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             } else {
                 JSONObject jsonRootObject = new JSONObject(result);
 
-                int followers = jsonRootObject.optInt("followers", 0);
+                followers = jsonRootObject.optInt("followers", 0);
                 String daySpecial = jsonRootObject.optString("daySpecial", null);
                 String website = jsonRootObject.optString("website", null);
                 boolean delivery = jsonRootObject.optBoolean("", false);
@@ -378,6 +427,8 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
 
                     if (promo != null) {
                         mRtvSpecialPromo.setVisibility(View.VISIBLE);
+                        mSdvSpecialPromo.setVisibility(View.VISIBLE);
+
                         if (promoTextColor != null) {
                             try {
                                 mRtvSpecialPromo.setTextColor(Color.parseColor(promoTextColor));
@@ -389,6 +440,15 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
 
                     if (promoBackground != null) {
                         mSdvSpecialPromo.setVisibility(View.VISIBLE);
+
+                        Uri uri;
+                        if(promoBackground.isEmpty()) {
+                            uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.specialpromo_dropshadow);
+                        } else {
+                            uri = Uri.parse(promoBackground);
+                        }
+
+                        mSdvSpecialPromo.setImageURI(uri);
                     }
                 }
 
@@ -483,18 +543,5 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             mBtnFavorite.setEnabled(true);
         }
     }
-
-//    AsyncTask<String, Void, Bitmap> afsd = new AsyncTask<String, Void, Bitmap>() {
-//
-//        @Override
-//        protected Bitmap doInBackground(String... params) {
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Bitmap bitmap) {
-//
-//        }
-//    };
 
 }

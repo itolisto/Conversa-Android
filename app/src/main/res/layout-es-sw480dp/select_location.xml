@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlLocations"
+    android:clipToPadding="true"
+    android:clickable="true"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:padding="7dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:id="@+id/rlOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10">
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btnReloadLocation"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/refresh_icon" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:padding="7dp"
+            android:layout_weight="9"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <ee.app.conversa.view.BoldTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gray"
+                android:textSize="18sp"
+                android:text="@string/action_location" />
+            <ee.app.conversa.view.LightTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gray"
+                android:textSize="15sp"
+                android:text="@string/select_location" />
+        </LinearLayout>
+
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btnCloseLocation"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/cancel_icon" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvLocations"
+        android:layout_below="@id/rlOptions"
+        android:layout_marginTop="7dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:overScrollMode="never"
+        android:cacheColorHint="@android:color/transparent"
+        android:listSelector="@android:color/transparent"
+        android:stackFromBottom="true"
+        android:transcriptMode="disabled" />
+
+</RelativeLayout>
