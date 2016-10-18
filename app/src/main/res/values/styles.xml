@@ -1,5 +1,11 @@
 <resources>
 
+    <style name="AppThemeDialog" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/default_green</item>
+        <item name="colorPrimaryDark">@color/default_green_darker</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowActionBarOverlay">true</item>
@@ -12,11 +18,11 @@
         <item name="actionModeStyle">@style/MyTheme.ActionMode</item>
         <item name="android:actionModeStyle">@style/MyTheme.ActionMode</item>
 
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+        <item name="colorPrimary">@color/default_green</item>
         <!--   darker variant for the status bar and contextual app bars -->
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <item name="colorPrimaryDark">@color/default_green_darker</item>
         <!--   theme UI controls like checkboxes and text fields e.g. FloatActionButton -->
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
+        <item name="colorAccent">@color/colorAccent</item>
 
         <!-- Title Text Color -->
         <!--<item name="android:textColorPrimary">@color/my_primary_text</item>-->
@@ -26,7 +32,7 @@
         <!--<item name="android:windowBackground">@color/window_background</item>-->
 
         <!-- For preferences -->
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
     </style>
 
     <style name="TransparentDialogTheme" parent="android:Theme.Dialog">
@@ -36,17 +42,6 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:backgroundDimEnabled">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Dialog" parent="Theme.AppCompat.Dialog">
-        <item name="colorAccent">@color/default_white</item>
-        <item name="android:textColorPrimary">@color/light_gray_subtext</item>
-        <item name="android:background">@color/colorPrimary</item>
-    </style>
-
-    <style name="CustomProgressBar" parent="@android:style/Widget.ProgressBar.Large">
-        <item name="android:indeterminate">true</item>
-        <item name="android:indeterminateDrawable">@drawable/rotate_loading</item>
     </style>
 
     <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">
@@ -66,18 +61,11 @@
         <item name="textAllCaps">true</item>
     </style>
 
-    <style name="TextAppearance.Widget.Event.Toolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <!--Any text styling can be done here-->
-        <item name="android:textStyle">bold</item>
-        <!--<item name="android:textSize">@dimen/event_title_text_size</item>-->
-    </style>
-
     <!-- ToolBar -->
     <style name="ToolBarStyle" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <!--<item name="actionMenuTextColor">@android:color/white</item>-->
-        <item name="titleTextAppearance">@style/TextAppearance.Widget.Event.Toolbar.Title</item>
         <item name="android:actionModeBackground">@color/default_green</item>
         <item name="actionModeBackground">@color/default_green</item>
     </style>
@@ -86,4 +74,5 @@
         <item name="android:actionModeBackground">@color/default_green</item>
         <item name="actionModeBackground">@color/default_green</item>
     </style>
+
 </resources>

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_white"
-    tools:context=".ActivityChatWall" >
+    tools:context=".ActivityChatWall"
+    android:fitsSystemWindows="true" >
 
     <RelativeLayout
         android:layout_marginTop="?attr/actionBarSize"
@@ -107,8 +108,7 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#F7F7F7"
-        android:fitsSystemWindows="true">
+        android:background="#F7F7F7">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"

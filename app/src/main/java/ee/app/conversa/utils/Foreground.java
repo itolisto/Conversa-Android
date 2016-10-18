@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * 2.b) Register to be notified (useful in Service or other non-UI components):
  *
- *   Foreground.Listener myListener = new Foreground.Listener(){
+ *   Foreground.Listener myListener = new Foreground.Listener() {
  *       public void onBecameForeground(){
  *           // ... whatever you want to do
  *       }
@@ -33,19 +32,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *       }
  *   }
  *
- *   public void onCreate(){
+ *   public void onCreate() {
  *      super.onCreate();
- *      Foreground.get(this).addListener(listener);
+ *      Foreground.get(this).addListener(myListener);
  *   }
  *
- *   public void onDestroy(){
- *      super.onCreate();
- *      Foreground.get(this).removeListener(listener);
+ *   public void onDestroy() {
+ *      super.onDestroy();
+ *      Foreground.get(this).removeListener(myListener);
  *   }
  */
 public class Foreground implements Application.ActivityLifecycleCallbacks {
 
-    public static final long CHECK_DELAY = 500;
+    public static final long CHECK_DELAY = 600;
     public static final String TAG = Foreground.class.getSimpleName();
 
     public interface Listener {
@@ -129,17 +128,17 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
         if (check != null)
             handler.removeCallbacks(check);
 
-        if (wasBackground){
-            Log.i(TAG, "went foreground");
+        if (wasBackground) {
+            Logger.error(TAG, "went foreground");
             for (Listener l : listeners) {
                 try {
                     l.onBecameForeground();
                 } catch (Exception exc) {
-                    Log.e(TAG, "Listener threw exception!", exc);
+                    Logger.error(TAG, "Listener threw exception!", exc);
                 }
             }
         } else {
-            Log.i(TAG, "still foreground");
+            Logger.error(TAG, "still foreground");
         }
     }
 
@@ -150,21 +149,21 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
         if (check != null)
             handler.removeCallbacks(check);
 
-        handler.postDelayed(check = new Runnable(){
+        handler.postDelayed(check = new Runnable() {
             @Override
             public void run() {
                 if (foreground && paused) {
                     foreground = false;
-                    Log.i(TAG, "went background");
+                    Logger.error(TAG, "went background");
                     for (Listener l : listeners) {
                         try {
                             l.onBecameBackground();
                         } catch (Exception exc) {
-                            Log.e(TAG, "Listener threw exception!", exc);
+                            Logger.error(TAG, "Listener threw exception!", exc);
                         }
                     }
                 } else {
-                    Log.i(TAG, "still foreground");
+                    Logger.error(TAG, "still foreground");
                 }
             }
         }, CHECK_DELAY);

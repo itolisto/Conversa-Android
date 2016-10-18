@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto" >
 
     <PreferenceCategory
         android:title="@string/sett_account_account_title">
@@ -22,14 +23,10 @@
             android:title="@string/sett_account_clear_recent_title"
             android:key="sett_account_clear_recent_key" />
 
-        <Preference
-            android:title="@string/sett_account_blocked_title"
-            android:summary="@string/sett_account_blocked_summary"
-            android:key="sett_account_blocked_key" />
-
-        <Preference
+        <ee.app.conversa.view.CustomTitlePreference
             android:title="@string/sett_account_logout_title"
-            android:key="sett_account_logout_key" />
+            android:key="sett_account_logout_key"
+            custom:titleColor="@color/default_red" />
 
     </PreferenceCategory>
 </PreferenceScreen>

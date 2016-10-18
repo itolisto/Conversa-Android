@@ -18,14 +18,16 @@ import android.widget.RelativeLayout;
 
 import java.util.List;
 
+import ee.app.conversa.actions.ContactAction;
 import ee.app.conversa.adapters.ChatsAdapter;
-import ee.app.conversa.events.RefreshEvent;
 import ee.app.conversa.extendables.ConversaFragment;
-import ee.app.conversa.management.contact.ContactIntentService;
+import ee.app.conversa.contact.ContactIntentService;
+import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.model.database.dbBusiness;
+import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.settings.ActivityPreferences;
 import ee.app.conversa.utils.Const;
-import ee.app.conversa.view.RegularTextView;
+import ee.app.conversa.view.BoldTextView;
 
 public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.OnItemClickListener,
         ChatsAdapter.OnLongClickListener, View.OnClickListener, ActionMode.Callback {
@@ -35,66 +37,31 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     private ChatsAdapter mUserListAdapter;
     private boolean refresh;
     private ActionMode actionMode;
-//    private ImageFetcher mImageFetcher;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_users, container, false);
 
         mRvUsers = (RecyclerView) rootView.findViewById(R.id.lvUsers);
         mRlNoUsers = (RelativeLayout) rootView.findViewById(R.id.rlNoChats);
-//        mImageFetcher = ConversaApp.getInstance(getContext()).getImageFetcher();
-//        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(getContext(), ConversaApp.IMAGE_CACHE_DIR);
-//        cacheParams.setMemCacheSizePercent(0.20f); // Set memory cache to 25% of app memory
-//        mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
 
         mUserListAdapter = new ChatsAdapter((AppCompatActivity) getActivity(), this, this);
         mRvUsers.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvUsers.setItemAnimator(new DefaultItemAnimator());
         mRvUsers.setAdapter(mUserListAdapter);
         mRvUsers.setHasFixedSize(true);
-//        mRvUsers.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
-//                    // Before Honeycomb pause image loading on scroll to help with performance
-//                    if (!Utils.hasHoneycomb()) {
-//                        mImageFetcher.setPauseWork(true);
-//                    }
-//                } else {
-//                    mImageFetcher.setPauseWork(false);
-//                }
-//            }
-//        });
 
         refresh = false;
 
-        RegularTextView mRtvStartBrowsing = (RegularTextView) rootView.findViewById(R.id.rtvStartBrowsing);
+        BoldTextView mRtvStartBrowsing = (BoldTextView) rootView.findViewById(R.id.rtvStartBrowsing);
         mRtvStartBrowsing.setOnClickListener(this);
+
+        unregisterListener = false;
 
         return rootView;
     }
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        mImageFetcher.setExitTasksEarly(false);
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        mImageFetcher.setPauseWork(false);
-//        mImageFetcher.setExitTasksEarly(true);
-//        mImageFetcher.flushCache();
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        mImageFetcher.closeCache();
-//    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -121,14 +88,6 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    protected void refresh(RefreshEvent event) {
-        if (event.isRefresh()) {
-            refresh = true;
-            dbBusiness.getAllContacts(getContext());
-        }
-    }
-
-    @Override
     public void ContactGetAll(final List<dbBusiness> contacts) {
         if (refresh) {
             mUserListAdapter.clearItems();
@@ -144,7 +103,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
                 mRvUsers.setVisibility(View.VISIBLE);
             }
 
-            mUserListAdapter.addItems(contacts);
+            mUserListAdapter.setItems(contacts);
         }
     }
 
@@ -161,7 +120,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
         }
 
         // 2. Add contact to adapter
-        mUserListAdapter.newContactInserted(response);
+        mUserListAdapter.addContact(response);
     }
 
     @Override
@@ -186,11 +145,29 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
+    public void MessageReceived(dbMessage response) {
+        mUserListAdapter.updateContactPosition(response.getFromUserId());
+    }
+
+    @Override
+    public void MessageSent(dbMessage response) {
+        mUserListAdapter.updateContactPosition(response.getToUserId());
+    }
+
+    @Override
+    public void MessageUpdated(dbMessage response, MessageUpdateReason reason) {
+        if (reason == MessageUpdateReason.VIEW) {
+            mUserListAdapter.updateContactView(response.getFromUserId());
+        }
+    }
+
+    @Override
     public void onItemClick(dbBusiness contact, int position) {
         if (actionMode == null) {
             Intent intent = new Intent(getActivity(), ActivityChatWall.class);
-            intent.putExtra(Const.kClassBusiness, contact);
-            intent.putExtra(Const.kYapDatabaseName, false);
+            intent.putExtra(Const.iExtraBusiness, contact);
+            intent.putExtra(Const.iExtraAddBusiness, false);
+            intent.putExtra(Const.iExtraPosition, position);
             startActivity(intent);
         } else {
             myToggleSelection(position);
@@ -254,7 +231,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
         switch (menuItem.getItemId()) {
             case R.id.menu_delete:
                 Intent intent = new Intent(getActivity(), ContactIntentService.class);
-                intent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactIntentService.ACTION_MESSAGE_DELETE);
+                intent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactAction.ACTION_CONTACT_DELETE);
                 intent.putStringArrayListExtra(ContactIntentService.INTENT_EXTRA_CUSTOMER_LIST,
                         mUserListAdapter.getSelectedItems());
                 getActivity().startService(intent);
@@ -270,7 +247,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
             actionMode = null;
         }
 
-        mUserListAdapter.clearSelections(true);
+        mUserListAdapter.clearSelections();
     }
 
 }

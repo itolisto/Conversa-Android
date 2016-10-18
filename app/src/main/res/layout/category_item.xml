@@ -25,11 +25,7 @@
         fresco:retryImageScaleType="centerCrop"
         fresco:progressBarImage="@drawable/rotate_loading"
         fresco:progressBarImageScaleType="centerInside"
-        fresco:progressBarAutoRotateInterval="1000"
-        fresco:roundTopLeft="false"
-        fresco:roundTopRight="false"
-        fresco:roundBottomLeft="false"
-        fresco:roundBottomRight="false" />
+        fresco:progressBarAutoRotateInterval="1000" />
 
     <ee.app.conversa.view.MediumTextView
         android:id="@+id/tvCategoryTitle"

@@ -6,7 +6,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ActivityProfile" >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -46,11 +48,22 @@
                     android:maxLines="1"
                     android:textSize="18sp"
                     android:ellipsize="middle"
-                    android:text="@string/test_string"
+                    android:maxWidth="300dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:textColor="@color/default_black"
+                    android:layout_below="@id/sdvBusinessImage" />
+
+                <ImageView
+                    android:id="@+id/ivStatus"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@color/black"
+                    android:visibility="gone"
+                    android:contentDescription="@null"
+                    android:layout_toEndOf="@id/rtvBusinessName"
+                    android:layout_toRightOf="@id/rtvBusinessName"
                     android:layout_below="@id/sdvBusinessImage" />
 
                 <ee.app.conversa.view.BoldTextView
@@ -61,7 +74,7 @@
                     android:id="@+id/btvConversaId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/test_string"
+                    android:maxWidth="150dp"
                     android:layout_centerHorizontal="true"
                     android:textColor="@color/default_black"
                     android:layout_below="@id/rtvBusinessName" />
@@ -111,8 +124,8 @@
 
                 <Button
                     android:id="@+id/btnStartChat"
-                    android:scaleX="0.55"
-                    android:scaleY="0.55"
+                    android:scaleX="0.65"
+                    android:scaleY="0.65"
                     android:background="@drawable/start_chat"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
@@ -139,10 +152,10 @@
                     android:layout_height="wrap_content">
 
                     <ee.app.conversa.view.RegularTextView
-                        android:paddingStart="7dp"
-                        android:paddingLeft="7dp"
-                        android:paddingEnd="7dp"
-                        android:paddingRight="7dp"
+                        android:paddingEnd="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingStart="16dp"
+                        android:paddingRight="16dp"
                         android:textColor="@android:color/holo_blue_dark"
                         android:text="@string/special_promo_title"
                         android:layout_width="wrap_content"
@@ -158,13 +171,13 @@
                             android:layout_height="match_parent"
                             android:visibility="gone"
                             fresco:fadeDuration="300"
-                            fresco:actualImageScaleType="centerInside"
+                            fresco:actualImageScaleType="fitXY"
                             fresco:placeholderImage="@drawable/specialpromo_dropshadow"
-                            fresco:placeholderImageScaleType="centerInside"
+                            fresco:placeholderImageScaleType="fitXY"
                             fresco:failureImage="@drawable/specialpromo_dropshadow"
-                            fresco:failureImageScaleType="centerInside"
+                            fresco:failureImageScaleType="fitXY"
                             fresco:retryImage="@drawable/specialpromo_dropshadow"
-                            fresco:retryImageScaleType="centerInside"
+                            fresco:retryImageScaleType="fitXY"
                             fresco:progressBarImage="@drawable/rotate_loading"
                             fresco:progressBarImageScaleType="centerInside"
                             fresco:progressBarAutoRotateInterval="1000" />
@@ -188,10 +201,10 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:paddingEnd="7dp"
-                    android:paddingLeft="7dp"
-                    android:paddingStart="7dp"
-                    android:paddingRight="7dp"
+                    android:paddingEnd="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingRight="16dp"
                     android:orientation="vertical"
                     android:layout_marginTop="7dp"
                     android:id="@+id/llClosedOnContainer"
@@ -316,10 +329,10 @@
                 <LinearLayout
                     android:weightSum="2"
                     android:layout_marginTop="7dp"
-                    android:paddingEnd="7dp"
-                    android:paddingLeft="7dp"
-                    android:paddingStart="7dp"
-                    android:paddingRight="7dp"
+                    android:paddingEnd="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingRight="16dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
@@ -385,10 +398,10 @@
                 <LinearLayout
                     android:weightSum="2"
                     android:layout_marginTop="7dp"
-                    android:paddingEnd="7dp"
-                    android:paddingLeft="7dp"
-                    android:paddingStart="7dp"
-                    android:paddingRight="7dp"
+                    android:paddingEnd="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingRight="16dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
@@ -440,10 +453,10 @@
 
                 <LinearLayout
                     android:layout_marginTop="7dp"
-                    android:layout_marginLeft="7dp"
-                    android:layout_marginStart="7dp"
-                    android:layout_marginRight="7dp"
-                    android:layout_marginEnd="7dp"
+                    android:paddingEnd="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingRight="16dp"
                     android:orientation="vertical"
                     android:id="@+id/llAddressContainer"
                     android:layout_width="match_parent"
@@ -478,7 +491,7 @@
                         android:textSize="12sp"
                         android:text="@string/profile_go_location"
                         android:layout_marginTop="7dp"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:background="@drawable/button_shape_green_border"
                         style="@style/Widget.AppCompat.Button.Borderless"
                         android:layout_width="40dp"
@@ -492,8 +505,7 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#F7F7F7"
-        android:fitsSystemWindows="true">
+        android:background="#F7F7F7">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"

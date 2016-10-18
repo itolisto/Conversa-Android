@@ -72,30 +72,28 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
                 mEtSendPasswordEmail.requestFocus();
                 break;
             case R.id.btnSendPassword:
-                if(!mTilForgotPassword.isErrorEnabled()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage(getString(R.string.confirm_email, mEtSendPasswordEmail.getText().toString()))
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    String sentToEmail = mEtSendPasswordEmail.getText().toString();
-                                    ParseUser.requestPasswordResetInBackground(sentToEmail, new RequestPasswordResetCallback() {
-                                        public void done(ParseException e) {
-                                            if(e == null) {
-                                                Toast.makeText(getApplicationContext(), getString(R.string.email_sent), Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Toast.makeText(getApplicationContext(), getString(R.string.email_fail_sent), Toast.LENGTH_SHORT).show();
-                                            }
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.confirm_email, mEtSendPasswordEmail.getText().toString()))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                String sentToEmail = mEtSendPasswordEmail.getText().toString();
+                                ParseUser.requestPasswordResetInBackground(sentToEmail, new RequestPasswordResetCallback() {
+                                    public void done(ParseException e) {
+                                        if(e == null) {
+                                            Toast.makeText(getApplicationContext(), getString(R.string.email_sent), Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), getString(R.string.email_fail_sent), Toast.LENGTH_SHORT).show();
                                         }
-                                    });
-                                }
-                            })
-                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    builder.show();
-                }
+                                    }
+                                });
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                builder.show();
                 break;
         }
     }
@@ -103,18 +101,31 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
     private void isEmailValid(String email) {
         TextInputLayout layout = mTilForgotPassword;
 
-        if (Utils.checkEmail(email)) {
-            layout.setErrorEnabled(false);
-            layout.setError("");
+        if (email.isEmpty()) {
+            layout.setErrorEnabled(true);
+            layout.setError(getString(R.string.sign_email_length_error));
         } else {
-            if (email.isEmpty()) {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.sign_email_length_error));
+            if (Utils.checkEmail(email)) {
+                layout.setErrorEnabled(false);
+                layout.setError("");
             } else {
                 layout.setErrorEnabled(true);
                 layout.setError(getString(R.string.sign_email_not_valid_error));
             }
         }
+    }
+
+    private boolean validateForm() {
+        if (mEtSendPasswordEmail.getText().toString().isEmpty()) {
+            mBtnSendPassword.setEnabled(false);
+        } else if (mTilForgotPassword.isErrorEnabled()) {
+            mBtnSendPassword.setEnabled(false);
+        } else {
+            mBtnSendPassword.setEnabled(true);
+            return true;
+        }
+
+        return false;
     }
 
     private class MyTextWatcher implements TextWatcher {
@@ -135,6 +146,8 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
                     isEmailValid(editable.toString());
                     break;
             }
+
+            validateForm();
         }
     }
 }

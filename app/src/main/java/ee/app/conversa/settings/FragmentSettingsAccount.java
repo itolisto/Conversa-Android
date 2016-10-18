@@ -1,13 +1,17 @@
 package ee.app.conversa.settings;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.onesignal.OneSignal;
 import com.parse.ParseException;
 import com.parse.SaveCallback;
@@ -18,8 +22,7 @@ import java.util.Collection;
 import ee.app.conversa.ActivitySignIn;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.dialog.CustomDialog;
-import ee.app.conversa.management.ably.Connection;
+import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
@@ -41,8 +44,6 @@ Preference.OnPreferenceChangeListener {
                 .setOnPreferenceChangeListener(this);
         this.findPreference(PreferencesKeys.ACCOUNT_CLEAR_RECENT_KEY)
                 .setOnPreferenceClickListener(this);
-        this.findPreference(PreferencesKeys.ACCOUNT_BLOCKED_KEY)
-                .setOnPreferenceClickListener(this);
         this.findPreference(PreferencesKeys.ACCOUNT_LOGOUT_KEY)
                 .setOnPreferenceClickListener(this);
 
@@ -52,7 +53,6 @@ Preference.OnPreferenceChangeListener {
     @Override
     public void onResume() {
         super.onResume();
-        ((ActivityPreferences)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((ActivityPreferences)getActivity()).getSupportActionBar().setTitle(R.string.preferences__account);
     }
 
@@ -70,29 +70,31 @@ Preference.OnPreferenceChangeListener {
                     colorNegative = getActivity().getResources().getColor(R.color.default_black);
                 }
 
-                final CustomDialog dialog = new CustomDialog(getActivity());
-                dialog.setTitle(null)
-                        .setMessage(getString(R.string.recent_searches_message))
-                        .setupNegativeButton(getString(R.string.cancel), new View.OnClickListener() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("");
+                builder.setMessage(getString(R.string.recent_searches_message));
+
+                String positiveText = getString(R.string.recent_searches_ok);
+                builder.setPositiveButton(positiveText,
+                        new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeColor(colorNegative)
-                        .setupPositiveButton(getString(R.string.recent_searches_ok), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 ConversaApp.getInstance(getActivity()).getDB().clearRecentSearches();
                                 dialog.dismiss();
                             }
-                        })
-                        .setPositiveColor(colorPositive);
-                dialog.show();
-                break;
-            }
-            case PreferencesKeys.ACCOUNT_BLOCKED_KEY: {
+                        });
 
+                String negativeText = getString(R.string.cancel);
+                builder.setNegativeButton(negativeText,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 break;
             }
             case PreferencesKeys.ACCOUNT_LOGOUT_KEY: {
@@ -106,25 +108,73 @@ Preference.OnPreferenceChangeListener {
                     colorNegative = getActivity().getResources().getColor(R.color.default_black);
                 }
 
-                final CustomDialog dialog = new CustomDialog(getActivity());
-                dialog.setTitle(getString(R.string.logout_message))
-                        .setMessage(null)
-                        .setupNegativeButton(getString(R.string.cancel), new View.OnClickListener() {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setTitle(getString(R.string.logout_message));
+//                builder.setMessage("");
+//
+//                String positiveText = getString(R.string.logout_ok);
+//                builder.setPositiveButton(positiveText,
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+//                                appLogout();
+//                            }
+//                        });
+//
+//                String negativeText = getString(R.string.cancel);
+//                builder.setNegativeButton(negativeText,
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+//                            }
+//                        });
+//
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+                new MaterialDialog.Builder(getActivity())
+                        .title(getString(R.string.logout_message))
+                        .positiveText(getString(R.string.logout_ok))
+                        .negativeText(getString(R.string.cancel))
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(View v) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeColor(colorNegative)
-                        .setupPositiveButton(getString(R.string.logout_ok), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 dialog.dismiss();
                                 appLogout();
                             }
                         })
-                        .setPositiveColor(colorPositive);
-                dialog.show();
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+
+//                Context a = this.getActivity();
+//                MaterialDialog.Builder builder = new MaterialDialog.Builder(a)
+//                        .title(getString(R.string.logout_message))
+//                        .positiveText(getString(R.string.logout_ok))
+//                        .negativeText(getString(R.string.cancel))
+//                        .positiveColor(colorPositive)
+//                        .negativeColor(colorNegative)
+//                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                            @Override
+//                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                                dialog.dismiss();
+//                                appLogout();
+//                            }
+//                        })
+//                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+//                            @Override
+//                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                                dialog.dismiss();
+//                            }
+//                        });
+//
+//                MaterialDialog dialog = builder.build();
+//                dialog.show();
                 break;
             }
             default:
@@ -138,47 +188,58 @@ Preference.OnPreferenceChangeListener {
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         switch (preference.getKey()) {
             case PreferencesKeys.ACCOUNT_EMAIL_KEY: {
+                final String oldEmail = Account.getCurrentUser().getEmail();
                 String email = (String) newValue;
                 email = email.replaceAll("\\t", "");
                 email = email.replaceAll("\\n", "");
                 email = email.replaceAll(" ", "");
                 final String newEmail = email;
 
-                if (Utils.checkEmail(newEmail)) {
-                    Account.getCurrentUser().setEmail(newEmail);
-                    Account.getCurrentUser().saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                findPreference(PreferencesKeys.ACCOUNT_EMAIL_KEY).setSummary(newEmail);
-                                showSuccessMessage(getString(R.string.settings_email_succesful));
-                            } else {
-                                showErrorMessage(getString(R.string.settings_email_error));
-                            }
-                        }
-                    });
+                if (newEmail.isEmpty()) {
+                    showErrorMessage(getString(R.string.sign_email_length_error));
                 } else {
-                    showErrorMessage(getString(R.string.sign_email_not_valid_error));
+                    if (Utils.checkEmail(newEmail)) {
+                        Account.getCurrentUser().setEmail(newEmail);
+                        Account.getCurrentUser().saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    findPreference(PreferencesKeys.ACCOUNT_EMAIL_KEY).setSummary(newEmail);
+                                    showSuccessMessage(getString(R.string.settings_email_succesful));
+                                } else {
+                                    Account.getCurrentUser().setEmail(oldEmail);
+                                    showErrorMessage(getString(R.string.settings_email_error));
+                                }
+                            }
+                        });
+                    } else {
+                        showErrorMessage(getString(R.string.sign_email_not_valid_error));
+                    }
                 }
-
+                // Return false as we don't wanna save/update this preference
                 return false;
             }
             case PreferencesKeys.ACCOUNT_PASSWORD_KEY: {
                 String newPassword = (String) newValue;
-                if (Utils.checkPassword(newPassword)) {
-                    Account.getCurrentUser().setPassword(newPassword);
-                    Account.getCurrentUser().saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                showSuccessMessage(getString(R.string.settings_password_succesful));
-                            } else {
-                                showErrorMessage(getString(R.string.settings_password_error));
-                            }
-                        }
-                    });
+
+                if (newPassword.isEmpty()) {
+                    showErrorMessage(getString(R.string.signup_password_empty_error));
                 } else {
-                    showErrorMessage(getString(R.string.signup_password_regex_error));
+                    if (Utils.checkPassword(newPassword)) {
+                        Account.getCurrentUser().setPassword(newPassword);
+                        Account.getCurrentUser().saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    showSuccessMessage(getString(R.string.settings_password_succesful));
+                                } else {
+                                    showErrorMessage(getString(R.string.settings_password_error));
+                                }
+                            }
+                        });
+                    } else {
+                        showErrorMessage(getString(R.string.signup_password_regex_error));
+                    }
                 }
 
                 return false;
@@ -189,50 +250,54 @@ Preference.OnPreferenceChangeListener {
     }
 
     private void showSuccessMessage(String message) {
-        final CustomDialog dialog = new CustomDialog(getActivity());
-        dialog.setTitle(null)
-                .setMessage(message)
-                .setupNegativeButton(null, null)
-                .setupPositiveButton(getString(android.R.string.ok), new View.OnClickListener() {
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
+                .title("")
+                .content(message)
+                .positiveText(getString(android.R.string.ok))
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
                     }
                 });
+
+        MaterialDialog dialog = builder.build();
         dialog.show();
     }
 
     private void showErrorMessage(String message) {
-        final CustomDialog dialog = new CustomDialog(getActivity());
-        dialog.setTitle(null)
-                .setMessage(message)
-                .setupNegativeButton(null, null)
-                .setupPositiveButton(getString(android.R.string.ok), new View.OnClickListener() {
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
+                .title("")
+                .content(message)
+                .positiveText(getString(android.R.string.ok))
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
                     }
                 });
+
+        MaterialDialog dialog = builder.build();
         dialog.show();
     }
 
     private void appLogout() {
         boolean result = ConversaApp.getInstance(getActivity()).getDB().deleteDatabase();
         if(result)
-            Logger.error("Logout", getActivity().getString(R.string.settings_logout_succesful));
+            Logger.error("Logout", "Database removed");
         else
-            Logger.error("Logout", getActivity().getString(R.string.settings_logout_error));
+            Logger.error("Logout", "An error has occurred while removing databased. Database not removed");
 
-        OneSignal.setSubscription(false);
-        Collection<String> tempList = new ArrayList<>();
+        Collection<String> tempList = new ArrayList<>(2);
         tempList.add("upbc");
         tempList.add("upvt");
         OneSignal.deleteTags(tempList);
         OneSignal.clearOneSignalNotifications();
-        Connection.getInstance().disconnectAbly();
+        OneSignal.setSubscription(false);
+        AblyConnection.getInstance().disconnectAbly();
 
         Account.logOut();
-        AppCompatActivity fromActivity = (AppCompatActivity)getActivity();
+        AppCompatActivity fromActivity = (AppCompatActivity) getActivity();
         Intent goToSignIn = new Intent(fromActivity, ActivitySignIn.class);
         goToSignIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         goToSignIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

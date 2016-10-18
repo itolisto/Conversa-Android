@@ -11,8 +11,10 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         fresco:fadeDuration="300"
         fresco:actualImageScaleType="centerInside"
         fresco:placeholderImage="@drawable/business_default"
@@ -26,44 +28,44 @@
         fresco:progressBarAutoRotateInterval="1000"
         fresco:roundAsCircle="true" />
 
-    <RelativeLayout
-        android:layout_alignTop="@id/sdvBusinessImage"
-        android:layout_alignBottom="@id/sdvBusinessImage"
+    <View
+        android:id="@+id/vDivider"
+        android:layout_height="1dp"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_centerVertical="true"
         android:layout_toEndOf="@id/sdvBusinessImage"
-        android:layout_toRightOf="@id/sdvBusinessImage"
-        android:paddingLeft="7dp"
-        android:paddingStart="7dp"
-        android:paddingRight="16dp"
-        android:paddingEnd="16dp"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent" >
+        android:layout_toRightOf="@id/sdvBusinessImage" />
 
-        <View
-            android:id="@+id/vDivider"
-            android:layout_centerVertical="true"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
+    <ee.app.conversa.view.MediumTextView
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="18sp"
+        android:id="@+id/mtvDisplayName"
+        android:layout_above="@id/vDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/vDivider"
+        android:layout_alignStart="@id/vDivider"
+        android:textColor="@color/default_black" />
 
-        <ee.app.conversa.view.MediumTextView
-            android:id="@+id/mtvDisplayName"
-            android:text="@string/test_string"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/vDivider"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@color/default_black"
-            android:textSize="18sp" />
+    <ee.app.conversa.view.LightTextView
+        android:maxLines="1"
+        android:textSize="14sp"
+        android:ellipsize="end"
+        android:id="@+id/ltvConversaId"
+        android:layout_below="@id/vDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/vDivider"
+        android:layout_alignStart="@id/vDivider"
+        android:textColor="@color/default_gray" />
 
-        <ee.app.conversa.view.LightTextView
-            android:id="@+id/ltvConversaId"
-            android:text="@string/test_string"
-            android:layout_below="@id/vDivider"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/default_black"
-            android:textSize="14sp"
-            android:maxLines="1"
-            android:ellipsize="end" />
-    </RelativeLayout>
+    <View
+        android:layout_marginLeft="84dp"
+        android:layout_marginStart="84dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_item_divider_height"/>
 </RelativeLayout>

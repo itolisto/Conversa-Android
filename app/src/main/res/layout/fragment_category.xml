@@ -1,24 +1,66 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:background="@android:color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/rlNoCategories"
-        android:background="@android:color/white"
+        android:visibility="gone"
+        android:id="@+id/rlNoConnection"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/pbLoadingCategories"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            style="@style/AVLoadingIndicatorView"
-            app:indicatorName="BallPulseIndicator"
-            app:indicatorColor="@color/no_connection_background" />
+        <View
+            android:id="@+id/vCenter"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
+        <ImageView
+            android:layout_marginBottom="2dp"
+            android:src="@drawable/ic_no_conection"
+            android:scaleType="centerInside"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/vCenter"
+            android:layout_width="75dp"
+            android:layout_height="75dp" />
+
+        <ee.app.conversa.view.LightTextView
+            android:id="@+id/ltvNoConnection"
+            android:layout_marginTop="2dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/default_gray"
+            android:text="@string/no_internet_connection"
+            android:layout_below="@id/vCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_below="@id/ltvNoConnection"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/btnRetry"
+            android:layout_width="85dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="7dp"
+            android:padding="7dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textAllCaps="false"
+            android:text="@string/no_internet_connection_retry"
+            android:textColor="@drawable/textcolor_gray_state"
+            android:background="@drawable/button_shape_gray_border" />
     </RelativeLayout>
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/pbLoadingCategories"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        style="@style/AVLoadingIndicatorView"
+        app:indicatorName="BallPulseIndicator"
+        app:indicatorColor="@color/no_connection_background" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/srlCategories"
@@ -29,7 +71,6 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
             android:cacheColorHint="@android:color/transparent"
             android:divider="@null"
             android:listSelector="@android:color/transparent"

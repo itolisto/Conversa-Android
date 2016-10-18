@@ -8,12 +8,14 @@
     tools:context="ee.app.conversa.ActivitySearch">
 
     <RelativeLayout
+        android:layout_marginTop="60dp"
         android:background="@android:color/white"
         android:layout_below="@id/ablToolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
         <LinearLayout
+            android:gravity="center"
             android:visibility="gone"
             android:orientation="vertical"
             android:layout_width="wrap_content"
@@ -79,19 +81,18 @@
             android:overScrollMode="never" />
     </RelativeLayout>
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/ablToolbar"
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/floating_search_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/default_gray"
-            app:layout_scrollFlags="scroll|enterAlways" />
-    </android.support.design.widget.AppBarLayout>
+        android:layout_height="match_parent"
+        app:floatingSearch_searchBarMarginLeft="16dp"
+        app:floatingSearch_searchBarMarginTop="7dp"
+        app:floatingSearch_searchBarMarginRight="16dp"
+        app:floatingSearch_searchHint="@string/search_toolbar_hint"
+        app:floatingSearch_showSearchKey="true"
+        app:floatingSearch_leftActionMode="showHome"
+        app:floatingSearch_close_search_on_keyboard_dismiss="true"/>
+    <!--app:floatingSearch_menu="@menu/menu_main"-->
 
     <include android:id="@+id/rlPushNotification"
         android:layout_width="match_parent"

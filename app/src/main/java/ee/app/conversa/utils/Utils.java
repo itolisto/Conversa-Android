@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -101,14 +102,13 @@ public class Utils {
     }
 
 	public static boolean checkPassword(String password) {
-		String pattern = "/^(?=.*[A-Za-z])(?=.*\\d)(?=.*\\W).{6,}$/";
+		String pattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*\\W).{6,}$";
 		return Pattern.compile(pattern).matcher(password).matches();
 	}
 
 	public static void subscribeToTags(String channelName) {
 		JSONObject tags = new JSONObject();
 		try {
-			tags.put("upbc", channelName);
 			tags.put("upvt", channelName);
 			tags.put("UserType", 1);
 		} catch (JSONException e) {
@@ -134,7 +134,12 @@ public class Utils {
 				new URL(path);
 				uri = Uri.parse(path);
 			} catch (MalformedURLException e) {
-				uri = Uri.fromFile(new File(path));
+				File file = new File(path);
+				if (file.exists()) {
+					uri = Uri.fromFile(file);
+				} else {
+					uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+				}
 			}
 		}
 
@@ -143,23 +148,61 @@ public class Utils {
 
 	// As described in StackOverflow answer: http://stackoverflow.com/a/9274868/5349296
 	public static int dpToPixels(Context context, int dp) {
-		int afsd = (int) (dp * context.getResources().getDisplayMetrics().density);
-		return afsd;
+		return (int) (dp * context.getResources().getDisplayMetrics().density);
 	}
 
-	public static String getDate(Context context, long time) {
+	public static String getTimeOrDay(Context context, long time, boolean onlyDay) {
+		return getDateOrTime(context, time, false, false, onlyDay);
+	}
+
+	public static String getDate(Context context, long time, boolean withYear) {
+		return getDateOrTime(context, time, true, withYear, false);
+	}
+
+	private static String getDateOrTime(Context context, long time, boolean isDate,
+										boolean withYear, boolean onlyDay)
+	{
 		Calendar cal = Calendar.getInstance(Locale.getDefault());
 		cal.setTimeInMillis(time);
-		String date = DateFormat.format("MM/yyyy", cal).toString();
-		return context.getString(R.string.member_since, date);
+
+		if (isDate) {
+			if (withYear) {
+				return DateFormat.format("dd/MM/yyyy", cal).toString();
+			} else {
+				return DateFormat.format("dd/MM", cal).toString();
+			}
+		} else {
+			if (onlyDay) {
+				switch (cal.get(Calendar.DAY_OF_WEEK)) {
+					case Calendar.SUNDAY:
+						return context.getString(R.string.chat_date_sunday);
+					case Calendar.MONDAY:
+						return context.getString(R.string.chat_date_monday);
+					case Calendar.TUESDAY:
+						return context.getString(R.string.chat_date_tuesday);
+					case Calendar.WEDNESDAY:
+						return context.getString(R.string.chat_date_wednesday);
+					case Calendar.THURSDAY:
+						return context.getString(R.string.chat_date_thursday);
+					case Calendar.FRIDAY:
+						return context.getString(R.string.chat_date_friday);
+					case Calendar.SATURDAY:
+						return context.getString(R.string.chat_date_saturday);
+					default:
+						return DateFormat.format("HH:mm", cal).toString();
+				}
+			} else {
+				return DateFormat.format("HH:mm", cal).toString();
+			}
+		}
 	}
 
-	public static File getMediaDirectory(Context context) throws Exception {
+	public static File getMediaDirectory(Context context, String folder) throws Exception {
 		ContextWrapper cw = new ContextWrapper(context);
 		// path to /data/data/yourapp/app_data/imageDir
 		// Create the File where the photo should go //
 		// External sdcard location
-		File directory = cw.getDir("avatars", Context.MODE_PRIVATE);
+		File directory = cw.getDir(folder, Context.MODE_PRIVATE);
 
 		if (directory == null) {
 			throw new Exception("Failed to get media directory");
@@ -186,7 +229,7 @@ public class Utils {
 				+ "IMG_" + timeStamp + ".jpg";
 	}
 
-	public static void saveToInternalStorage(Context context, Bitmap bitmapImage, long id) {
+	public static void saveAvatarToInternalStorage(Context context, Bitmap bitmapImage, long id) {
 		new AsyncTask<Object, Void, Bitmap>() {
 			@Override
 			protected Bitmap doInBackground(Object... params) {
@@ -204,7 +247,7 @@ public class Utils {
 				String path;
 
 				try {
-					path = Utils.getResourceName(Utils.getMediaDirectory(context));
+					path = Utils.getResourceName(Utils.getMediaDirectory(context, "avatars"));
 					// Create imageDir
 					File mypath = new File(path);
 
@@ -213,7 +256,7 @@ public class Utils {
 					bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
 					fos.close();
 				} catch (Exception e) {
-					Logger.error("saveToInternalStorage", e.getMessage());
+					Logger.error("saveAvatarToInternalStorage", e.getMessage());
 					return null;
 				}
 
@@ -226,12 +269,37 @@ public class Utils {
 
 				return bitmap;
 			}
-
-			@Override
-			protected void onPostExecute(Bitmap bitmap) {
-
-			}
 		}.execute(bitmapImage, context, id);
+	}
+
+	@WorkerThread
+	public static String saveImageToInternalStorage(Context context, Bitmap bitmapImage, long id) {
+		if (bitmapImage == null || context == null) {
+			return "";
+		}
+
+		String path;
+
+		try {
+			path = Utils.getResourceName(Utils.getMediaDirectory(context, "images"));
+			// Create imageDir
+			File mypath = new File(path);
+
+			FileOutputStream fos = new FileOutputStream(mypath);
+			// Use the compress method on the BitMap object to write image to the OutputStream
+			bitmapImage.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+			fos.close();
+		} catch (Exception e) {
+			Logger.error("saveImageToInternalStorage", e.getMessage());
+			return "";
+		}
+
+		if (id != -1) {
+			// Update contact url
+			ConversaApp.getInstance(context).getDB().updateLocalUrl(id, path);
+		}
+
+		return path;
 	}
 
 }

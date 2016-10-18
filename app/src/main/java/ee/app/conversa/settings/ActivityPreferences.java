@@ -25,8 +25,8 @@ public class ActivityPreferences extends ConversaActivity implements
         setSupportActionBar(toolbar);
 
         getFragmentManager().beginTransaction()
-                .replace(R.id.content_frame,
-                        new FragmentSettings()).commit();
+                .replace(R.id.content_frame, new FragmentSettings())
+                .commit();
     }
 
     @Override

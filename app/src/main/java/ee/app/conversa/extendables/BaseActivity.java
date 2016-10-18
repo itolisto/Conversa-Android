@@ -16,6 +16,7 @@ import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.management.ConnectionChangeReceiver;
 import ee.app.conversa.settings.language.DynamicLanguage;
+import ee.app.conversa.utils.Utils;
 
 /**
  * Created by edgargomez on 6/3/16.
@@ -24,7 +25,6 @@ public class BaseActivity extends AppCompatActivity {
 
     protected RelativeLayout mRlNoInternetNotification;
     protected boolean checkInternetConnection;
-    protected boolean hasInternetConnection;
     private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
     private final IntentFilter mConnectionChangeFilter = new IntentFilter(ConnectionChangeReceiver.INTERNET_CONNECTION_CHANGE);
 
@@ -33,7 +33,6 @@ public class BaseActivity extends AppCompatActivity {
         onPreCreate();
         super.onCreate(savedInstanceState);
         checkInternetConnection = true;
-        hasInternetConnection = true;
     }
 
     protected void onPreCreate() {
@@ -53,7 +52,7 @@ public class BaseActivity extends AppCompatActivity {
         super.onResume();
         dynamicLanguage.onResume(this);
         if (checkInternetConnection) {
-            if (hasInternetConnection) {
+            if (Utils.hasNetworkConnection(this)) {
                 yesInternetConnection();
             } else {
                 noInternetConnection();
@@ -73,10 +72,8 @@ public class BaseActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getBooleanExtra(ConnectionChangeReceiver.HAS_INTERNET_CONNECTION, true)) {
                 yesInternetConnection();
-                hasInternetConnection = true;
             } else {
                 noInternetConnection();
-                hasInternetConnection = false;
             }
         }
     };
@@ -97,6 +94,10 @@ public class BaseActivity extends AppCompatActivity {
             mRlNoInternetNotification.setVisibility(View.GONE);
             mRlNoInternetNotification.startAnimation(slideout);
         }
+    }
+
+    public boolean hasInternetConnection() {
+        return Utils.hasNetworkConnection(this);
     }
 
     protected void initialization() {

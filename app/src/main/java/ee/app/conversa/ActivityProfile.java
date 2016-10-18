@@ -22,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.birbit.android.jobqueue.JobManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -29,11 +32,6 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.parse.FunctionCallback;
@@ -47,8 +45,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 
-import ee.app.conversa.dialog.CustomDialog;
 import ee.app.conversa.extendables.ConversaActivity;
+import ee.app.conversa.jobs.FavoriteJob;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
@@ -57,17 +55,27 @@ import ee.app.conversa.view.BoldTextView;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.MediumTextView;
 import ee.app.conversa.view.RegularTextView;
+import io.branch.indexing.BranchUniversalObject;
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+import io.branch.referral.SharingHelper;
+import io.branch.referral.util.BranchEvent;
+import io.branch.referral.util.LinkProperties;
+import io.branch.referral.util.ShareSheetStyle;
 
 import static ee.app.conversa.R.id.rtvLocationDescription;
 
 public class ActivityProfile extends ConversaActivity implements
-        View.OnClickListener, OnLikeListener, GoogleApiClient.OnConnectionFailedListener {
+        View.OnClickListener, OnLikeListener {
+
+    private final String TAG = ActivityProfile.class.getSimpleName();
 
     // General
     private dbBusiness businessObject;
     private boolean addAsContact;
     private int followers;
     private Toolbar toolbar;
+    private JobManager jobManager;
     private static final int PLACE_PICKER_FLAG = 1;
     // Containers
     private RelativeLayout mRlProfileHeader;
@@ -82,6 +90,7 @@ public class ActivityProfile extends ConversaActivity implements
     private SimpleDraweeView mSdvBusinessImage;
     private LikeButton mBtnFavorite;
     private BoldTextView mBtvFollowers;
+    private ImageView mIvStatus;
     // Special promo
     private RegularTextView mRtvSpecialPromo;
     private SimpleDraweeView mSdvSpecialPromo;
@@ -113,26 +122,35 @@ public class ActivityProfile extends ConversaActivity implements
             if(extras == null) {
                 finish();
             } else {
-                businessObject = extras.getParcelable(Const.kClassBusiness);
-                addAsContact = extras.getBoolean(Const.kYapDatabaseName);
+                businessObject = extras.getParcelable(Const.iExtraBusiness);
+                addAsContact = extras.getBoolean(Const.iExtraAddBusiness);
             }
         } else {
-            businessObject = savedInstanceState.getParcelable(Const.kClassBusiness);
-            addAsContact = savedInstanceState.getBoolean(Const.kYapDatabaseName);
+            businessObject = savedInstanceState.getParcelable(Const.iExtraBusiness);
+            addAsContact = savedInstanceState.getBoolean(Const.iExtraAddBusiness);
         }
 
         initialization();
     }
 
     @Override
+    public void onNewIntent(Intent intent) {
+        this.setIntent(intent);
+    }
+
+    @Override
     protected void initialization() {
         super.initialization();
 
+        jobManager = ConversaApp.getInstance(this).getJobManager();
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        FrameLayout mBackButton = (FrameLayout) toolbar.findViewById(R.id.ibBack);
+        FrameLayout mFlBack = (FrameLayout) toolbar.findViewById(R.id.flBack);
+        ImageButton mIbBack = (ImageButton) toolbar.findViewById(R.id.ibBack);
         ImageButton mShareButton = (ImageButton) toolbar.findViewById(R.id.ibShare);
         MediumTextView mTitle = (MediumTextView) toolbar.findViewById(R.id.mtvTitle);
-        mBackButton.setOnClickListener(this);
+        mFlBack.setOnClickListener(this);
+        mIbBack.setOnClickListener(this);
         mShareButton.setOnClickListener(this);
         mTitle.setText(businessObject.getDisplayName());
         setSupportActionBar(toolbar);
@@ -163,6 +181,7 @@ public class ActivityProfile extends ConversaActivity implements
         mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvBusinessImage);
         mBtnFavorite = (LikeButton) findViewById(R.id.btnFavorite);
         mBtvFollowers = (BoldTextView) findViewById(R.id.btvFollowers);
+        mIvStatus = (ImageView) findViewById(R.id.ivStatus);
         Button mBtnStartChat = (Button) findViewById(R.id.btnStartChat);
         BoldTextView mBtvConversaId = (BoldTextView) findViewById(R.id.btvConversaId);
         RegularTextView mMtvBusinessName = (RegularTextView) findViewById(R.id.rtvBusinessName);
@@ -266,13 +285,26 @@ public class ActivityProfile extends ConversaActivity implements
     };
 
     @Override
-    public void onBackPressed() {
-        navigateUp();
+    public void onStart() {
+        super.onStart();
+        Branch branch = Branch.getInstance();
+        branch.initSession(new Branch.BranchReferralInitListener(){
+            @Override
+            public void onInitFinished(JSONObject referringParams, BranchError error) {
+                if (error == null) {
+                    // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
+                    // params will be empty if no data found
+                    // ... insert custom logic here ...
+                } else {
+                    Logger.error("MyApp", error.getMessage());
+                }
+            }
+        }, this.getIntent().getData(), this);
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+    public void onBackPressed() {
+        navigateUp();
     }
 
     private void navigateUp() {
@@ -296,60 +328,105 @@ public class ActivityProfile extends ConversaActivity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnLocation: {
-                // Construct an intent for the place picker
-                try {
-                    PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
-                    Intent intent = intentBuilder.build(this);
-                    // Start the intent by requesting a result,
-                    // identified by a request code.
-                    startActivityForResult(intent, PLACE_PICKER_FLAG);
 
-                } catch (GooglePlayServicesRepairableException e) {
-
-                } catch (GooglePlayServicesNotAvailableException e) {
-
-                }
                 break;
             }
             case R.id.ibShare: {
+                Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
+
+                BranchUniversalObject branchUniversalObject = new BranchUniversalObject()
+                        .setCanonicalIdentifier("item/12345")
+                        .setTitle("My Content Title")
+                        .setContentDescription("My Content Description")
+                        .setContentImageUrl("https://example.com/mycontent-12345.png")
+                        .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+                        .addContentMetadata("property1", "blue")
+                        .addContentMetadata("property2", "red");
+
+                LinkProperties linkProperties = new LinkProperties()
+                        .setChannel("facebook")
+                        .setFeature("sharing")
+                        .addControlParameter("$desktop_url", "http://example.com/home")
+                        .addControlParameter("$ios_url", "http://example.com/ios");
+
+//                branchUniversalObject.generateShortUrl(this, linkProperties, new Branch.BranchLinkCreateListener() {
+//                    @Override
+//                    public void onLinkCreate(String url, BranchError error) {
+//                        if (error == null) {
+//                            Logger.error("MyApp", "got my Branch link to share: " + url);
+//                        }
+//                    }
+//                });
+
+                ShareSheetStyle shareSheetStyle = new ShareSheetStyle(this, "Check this out!", "This stuff is awesome: ")
+                        .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
+                        .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
+                        .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
+                        .addPreferredSharingOption(SharingHelper.SHARE_WITH.EMAIL)
+                        .setAsFullWidthStyle(true)
+                        .setSharingTitle("Share With");
+
+                branchUniversalObject.showShareSheet(this,
+                        linkProperties,
+                        shareSheetStyle,
+                        new Branch.BranchLinkShareListener() {
+                            @Override
+                            public void onShareLinkDialogLaunched() {
+                            }
+                            @Override
+                            public void onShareLinkDialogDismissed() {
+                            }
+                            @Override
+                            public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
+                            }
+                            @Override
+                            public void onChannelSelected(String channelName) {
+                            }
+                        });
+
                 break;
             }
+            case R.id.flBack:
             case R.id.ibBack: {
                 navigateUp();
                 break;
             }
             case R.id.btnStartChat: {
                 Intent intent = new Intent(this, ActivityChatWall.class);
-                intent.putExtra(Const.kClassBusiness, businessObject);
-                intent.putExtra(Const.kYapDatabaseName, addAsContact);
+                intent.putExtra(Const.iExtraBusiness, businessObject);
+                intent.putExtra(Const.iExtraAddBusiness, addAsContact);
                 startActivity(intent);
                 break;
             }
             case R.id.llScheduleContainer: {
-                final CustomDialog dialog = new CustomDialog(this);
-                dialog.setTitle(getString(R.string.profile_conversa_time_info_title))
-                        .setMessage(getString(R.string.profile_conversa_time_info_message))
-                        .setupNegativeButton(null, null)
-                        .setupPositiveButton(getString(android.R.string.ok), new View.OnClickListener() {
+                MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+                        .title(getString(R.string.profile_conversa_time_info_title))
+                        .content(getString(R.string.profile_conversa_time_info_message))
+                        .positiveText(getString(android.R.string.ok))
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 dialog.dismiss();
                             }
                         });
+
+                MaterialDialog dialog = builder.build();
                 dialog.show();
                 break;
             }
             case R.id.llAddressContainer: {
-                final CustomDialog dialog = new CustomDialog(this);
-                dialog.setTitle(null)
-                        .setMessage(getString(R.string.profile_locations_info_message))
-                        .setupNegativeButton(null, null)
-                        .setupPositiveButton(getString(android.R.string.ok), new View.OnClickListener() {
+                MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+                        .title("")
+                        .content(getString(R.string.profile_locations_info_message))
+                        .positiveText(getString(android.R.string.ok))
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 dialog.dismiss();
                             }
                         });
+
+                MaterialDialog dialog = builder.build();
                 dialog.show();
                 break;
             }
@@ -372,31 +449,18 @@ public class ActivityProfile extends ConversaActivity implements
 
     @Override
     public void liked(final LikeButton likeButton) {
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("business", businessObject.getBusinessId());
-        params.put("favorite", true);
-        ParseCloud.callFunctionInBackground("favorite", params, new FunctionCallback<Object>() {
-            @Override
-            public void done(Object object, ParseException e) {
-                followers++;
-                likeButton.setLiked(true);
-                mBtvFollowers.setText(String.valueOf(followers));
-            }
-        });
+        jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), true));
+        followers++;
+        mBtvFollowers.setText(String.valueOf(followers));
+        likeButton.setLiked(true);
     }
 
     @Override
     public void unLiked(final LikeButton likeButton) {
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("business", businessObject.getBusinessId());
-        ParseCloud.callFunctionInBackground("favorite", params, new FunctionCallback<Object>() {
-            @Override
-            public void done(Object object, ParseException e) {
-                followers--;
-                likeButton.setLiked(false);
-                mBtvFollowers.setText(String.valueOf(followers));
-            }
-        });
+        jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), false));
+        followers--;
+        mBtvFollowers.setText(String.valueOf(followers));
+        likeButton.setLiked(false);
     }
 
     private void parseResult(String result) {
@@ -421,6 +485,7 @@ public class ActivityProfile extends ConversaActivity implements
                 boolean verified = jsonRootObject.optBoolean("verified", false);
                 long since = jsonRootObject.optLong("since", 0L);
                 boolean favorite = jsonRootObject.optBoolean("favorite", false);
+                int status = jsonRootObject.optInt("status", 0);
 
                 if (promo != null || promoBackground != null) {
                     mLlSpecialPromoContainer.setVisibility(View.VISIBLE);
@@ -452,17 +517,18 @@ public class ActivityProfile extends ConversaActivity implements
                     }
                 }
 
+                // Status
+                switch (status) {
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        break;
+                }
+
                 // Iterator
                 int i, size;
-
-                // Get tags
-                if (tags != null) {
-                    size = tags.length();
-                    for (i = 0; i < size; i++) {
-                        String tag = tags.getString(i);
-                        Logger.error("Tags", tag);
-                    }
-                }
 
                 // Get open days
                 if (openOn != null) {
@@ -526,7 +592,7 @@ public class ActivityProfile extends ConversaActivity implements
                 if (multiple) {
                     // Multiple locations
                     mRtvLocationDescription.setText(R.string.profile_location_multiple_location);
-                    mBtnLocation.setVisibility(View.VISIBLE);
+                    //mBtnLocation.setVisibility(View.VISIBLE);
                 } else if (online) {
                     // Just online
                     mRtvLocationDescription.setText(R.string.profile_location_online_location);
@@ -534,7 +600,7 @@ public class ActivityProfile extends ConversaActivity implements
                 } else {
                     // One location
                     mRtvLocationDescription.setText(R.string.profile_location_one_location);
-                    mBtnLocation.setVisibility(View.VISIBLE);
+                    //mBtnLocation.setVisibility(View.VISIBLE);
                 }
             }
         } catch (JSONException e) {

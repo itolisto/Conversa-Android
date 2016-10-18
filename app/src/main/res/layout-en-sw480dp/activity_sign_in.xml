@@ -9,101 +9,115 @@
 		android:id="@+id/ivConversa"
 		android:layout_width="match_parent"
 		android:layout_height="130dp"
-		android:layout_marginTop="5dp"
+		android:layout_marginTop="?attr/actionBarSize"
 		android:contentDescription="@null"
 		android:scaleType="centerInside"
 		android:src="@drawable/signin_image" />
 
-	<ee.app.conversa.view.LightTextView
-		android:id="@+id/ltvFirstUnderTitle"
+	<RelativeLayout
 		android:layout_below="@id/ivConversa"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="7dp"
-		android:layout_centerHorizontal="true"
-		android:gravity="center"
-		android:text="@string/string_signin_title_one"
-		android:textColor="@color/default_gray"
-		android:textSize="20sp" />
+		android:layout_marginEnd="40dp"
+		android:layout_marginRight="40dp"
+		android:layout_marginLeft="40dp"
+		android:layout_marginStart="40dp"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
 
-	<ee.app.conversa.view.LightTextView
-		android:id="@+id/ltvSecondUnderTitle"
-		android:layout_below="@id/ltvFirstUnderTitle"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerHorizontal="true"
-		android:gravity="center"
-		android:text="@string/string_signin_title_two"
-		android:textColor="@color/default_gray"
-		android:textSize="20sp" />
+		<ee.app.conversa.view.BoldTextView
+			android:id="@+id/ltvSecondUnderTitle"
+			android:layout_marginTop="14dp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:textAllCaps="true"
+			android:text="@string/string_signin_title_two"
+			android:textColor="@color/default_gray"
+			android:textSize="15sp" />
 
-	<ee.app.conversa.view.BoldTextView
-		android:id="@+id/btvSignUpInfo"
-		android:layout_below="@id/ltvSecondUnderTitle"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="40dp"
-		android:layout_centerHorizontal="true"
-		android:gravity="center"
-		android:text="@string/string_signin_are_you_new"
-		android:textColor="@color/default_black"
-		android:textSize="13.5sp" />
+		<ee.app.conversa.view.BoldTextView
+			android:id="@+id/btvSignUpInfo"
+			android:layout_below="@id/ltvSecondUnderTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="30dp"
+			android:gravity="center"
+			android:text="@string/string_signin_are_you_new"
+			android:textColor="@color/default_black"
+			android:textSize="13.5sp" />
 
-	<Button
-		android:id="@+id/btnSignUp"
-		android:layout_below="@id/btvSignUpInfo"
-		android:layout_width="200dp"
-		android:layout_height="50dp"
-		android:layout_marginTop="7dp"
-		android:layout_centerHorizontal="true"
-		android:gravity="center"
-		android:text="@string/SIGN_UP"
-		android:textColor="@drawable/textcolor_white_state"
-		android:textSize="20sp"
-		android:background="@drawable/button_shape_white" />
+		<RelativeLayout
+			android:gravity="center"
+			android:id="@+id/rlSignUpContainer"
+			android:layout_below="@id/btvSignUpInfo"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+			<Button
+				android:id="@+id/btnSignUp"
+				android:layout_width="170dp"
+				android:layout_height="40dp"
+				android:layout_marginTop="7dp"
+				android:paddingLeft="7dp"
+				android:paddingStart="7dp"
+				android:paddingRight="7dp"
+				android:paddingEnd="7dp"
+				android:text="@string/SIGN_UP"
+				android:textColor="@drawable/textcolor_white_state"
+				android:textSize="13sp"
+				android:background="@drawable/button_shape_white" />
+		</RelativeLayout>
 
-	<ee.app.conversa.view.BoldTextView
-		android:id="@+id/tvAlready"
-		android:layout_below="@id/btnSignUp"
-		android:layout_width="200dp"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="35dp"
-		android:layout_centerHorizontal="true"
-		android:gravity="center"
-		android:maxLines="1"
-		android:text="@string/string_signin_already_have_an_account"
-		android:textColor="@color/default_black"
-		android:textSize="13.5sp" />
+		<ee.app.conversa.view.BoldTextView
+			android:id="@+id/tvAlready"
+			android:layout_below="@id/rlSignUpContainer"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="25dp"
+			android:gravity="center"
+			android:maxLines="1"
+			android:text="@string/string_signin_already_have_an_account"
+			android:textColor="@color/default_black"
+			android:textSize="13.5sp" />
 
-	<Button
-		android:id="@+id/btnSignIn"
-		android:layout_below="@+id/tvAlready"
-		android:layout_width="200dp"
-		android:layout_height="50dp"
-		android:layout_marginTop="7dp"
-		android:layout_centerHorizontal="true"
-		android:gravity="center"
-		android:text="@string/SIGN_IN"
-		android:textColor="@drawable/textcolor_green_state"
-		android:textSize="20sp"
-		android:background="@drawable/button_shape_green_border" />
+		<RelativeLayout
+			android:gravity="center"
+			android:id="@+id/rlSignInContainer"
+			android:layout_below="@id/tvAlready"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+			<Button
+				android:id="@+id/btnSignIn"
+				android:layout_width="170dp"
+				android:layout_height="40dp"
+				android:layout_marginTop="7dp"
+				android:paddingLeft="7dp"
+				android:paddingStart="7dp"
+				android:paddingRight="7dp"
+				android:paddingEnd="7dp"
+				android:gravity="center"
+				android:text="@string/SIGN_IN"
+				android:textColor="@drawable/textcolor_green_state"
+				android:textSize="13sp"
+				android:background="@drawable/button_shape_green_border" />
+		</RelativeLayout>
 
-	<ee.app.conversa.view.LightTextView
-		android:id="@+id/ltvClickHere"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:layout_centerHorizontal="true"
-		android:text="@string/string_signin_sign_up_business_two"
-		android:textSize="14sp" />
+		<ee.app.conversa.view.LightTextView
+			android:id="@+id/ltvClickHere"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:layout_marginBottom="16dp"
+			android:layout_alignParentBottom="true"
+			android:text="@string/string_signin_sign_up_business_two"
+			android:textSize="12sp" />
 
-	<ee.app.conversa.view.LightTextView
-		android:layout_above="@id/ltvClickHere"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerHorizontal="true"
-		android:text="@string/string_signin_sign_up_business_one"
-		android:textSize="14sp" />
+		<ee.app.conversa.view.LightTextView
+			android:layout_above="@id/ltvClickHere"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:text="@string/string_signin_sign_up_business_one"
+			android:textSize="12sp" />
+	</RelativeLayout>
 
 	<ImageView
 		android:id="@+id/ivLanguage"

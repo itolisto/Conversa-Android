@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 
 public class FragmentSettings extends PreferenceFragment implements Preference.OnPreferenceClickListener {
@@ -22,6 +23,9 @@ public class FragmentSettings extends PreferenceFragment implements Preference.O
                 .setOnPreferenceClickListener(this);
         this.findPreference(PreferencesKeys.PREFERENCE_MAIN_SHARE)
                 .setOnPreferenceClickListener(this);
+
+        this.findPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY)
+                .setSummary(ConversaApp.getInstance(getActivity()).getPreferences().getLanguageName());
     }
 
     @Override
@@ -45,7 +49,7 @@ public class FragmentSettings extends PreferenceFragment implements Preference.O
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        Fragment fragment;
+        Fragment fragment = null;
 
         switch (preference.getKey()) {
             case PreferencesKeys.PREFERENCE_MAIN_ACCOUNT:
@@ -72,14 +76,11 @@ public class FragmentSettings extends PreferenceFragment implements Preference.O
             case PreferencesKeys.PREFERENCE_MAIN_HELP:
                 fragment = new FragmentSettingsNotifications();
                 break;
-            default:
-                throw new AssertionError();
         }
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .addToBackStack(null)
-                .hide(this)
                 .commit();
 
         return true;

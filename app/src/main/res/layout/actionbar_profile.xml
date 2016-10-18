@@ -5,18 +5,22 @@
     android:background="@android:color/transparent" >
 
     <FrameLayout
-        android:id="@+id/ibBack"
+        android:id="@+id/flBack"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" >
 
         <ImageButton
+            android:id="@+id/ibBack"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginLeft="7dp"
             android:layout_gravity="center"
-            android:layout_marginStart="7dp"
             android:scaleType="centerInside"
             android:background="@drawable/ic_arrow_back" />
     </FrameLayout>
@@ -25,26 +29,26 @@
         android:id="@+id/ibShare"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_marginEnd="7dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_gravity="center"
         android:scaleType="fitCenter"
-        android:layout_marginRight="7dp"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:background="@drawable/ic_share" />
 
     <ee.app.conversa.view.MediumTextView
+        android:maxLines="1"
         android:textSize="18sp"
         android:gravity="center"
-        android:paddingEnd="7dp"
-        android:paddingLeft="7dp"
-        android:paddingStart="7dp"
-        android:paddingRight="7dp"
+        android:ellipsize="end"
         android:id="@+id/mtvTitle"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/ibBack"
-        android:layout_toRightOf="@id/ibBack"
+        android:layout_toEndOf="@id/flBack"
+        android:layout_toRightOf="@id/flBack"
         android:layout_toLeftOf="@id/ibShare"
         android:layout_toStartOf="@id/ibShare"
         android:layout_width="match_parent"

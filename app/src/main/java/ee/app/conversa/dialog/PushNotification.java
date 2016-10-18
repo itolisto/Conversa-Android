@@ -48,7 +48,7 @@ public class PushNotification {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.icon_notification)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setGroup(summary.getGroupId())
                 .setContentTitle(from)
                 .setContentText(getMessage(context, message))

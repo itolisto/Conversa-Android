@@ -19,6 +19,7 @@ public class PreferencesKeys {
     public static final String CHAT_QUALITY_KEY = "sett_chat_quality_key";
     public static final String CHAT_SOUND_SENDING_KEY = "sett_chat_message_sent_sound_key";
     public static final String CHAT_SOUND_RECEIVING_KEY = "sett_chat_message_received_sound_key";
+    public static final String CHAT_DOWNLOAD_KEY = "sett_chat_download_automatically_key";
 
     public static final String ACCOUNT_EMAIL_KEY = "sett_account_email_key";
     public static final String ACCOUNT_PASSWORD_KEY = "sett_account_password_key";

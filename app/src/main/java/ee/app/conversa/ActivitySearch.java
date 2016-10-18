@@ -1,19 +1,16 @@
 package ee.app.conversa;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -38,15 +35,16 @@ import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbSearch;
+import ee.app.conversa.model.nHeaderTitle;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
-import ee.app.conversa.utils.Utils;
 
 /**
  * Created by edgargomez on 7/12/16.
  */
-public class ActivitySearch extends ConversaActivity implements SearchView.OnQueryTextListener,
-        BusinessAdapter.OnLocalItemClickListener, View.OnTouchListener {
+public class ActivitySearch extends ConversaActivity implements BusinessAdapter.OnLocalItemClickListener {
+
+    private boolean isLoading;
 
     private final ExecutorService tpe;
     private final ExecutorService callResults;
@@ -57,6 +55,9 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
     private LinearLayout mLlErrorContainer;
     private AVLoadingIndicatorView mPbLoadingResults;
     private RecyclerView mRvSearchResults;
+    private FloatingSearchView mSearchView;
+
+    private List<Object> recentList = new ArrayList<>(6);
 
     private BusinessAdapter mBusinessListAdapter;
 
@@ -83,6 +84,7 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         checkInternetConnection = false;
+        isLoading = false;
         initialization();
     }
 
@@ -90,13 +92,26 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
     protected void initialization() {
         super.initialization();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
+        mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
+            @Override
+            public void onHomeClicked() {
+                if (TextUtils.isEmpty(mSearchView.getQuery())) {
+                    finish();
+                } else {
+                    mSearchView.clearQuery();
+                    isLoading = false;
+                    showRecents();
+                }
+            }
+        });
 
-        // Initial state of tabs and titles
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+                searchBusiness(newQuery, 0);
+            }
+        });
 
         mLlNoResultsContainer = (LinearLayout) findViewById(R.id.llNoResultsContainer);
         mLlErrorContainer = (LinearLayout) findViewById(R.id.llErrorContainer);
@@ -107,38 +122,36 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
         mRvSearchResults.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRvSearchResults.setAdapter(mBusinessListAdapter);
         mRvSearchResults.setItemAnimator(new DefaultItemAnimator());
-        mRvSearchResults.setOnTouchListener(this);
+
+        recentList.add(new nHeaderTitle(getString(R.string.recent_searches_title), 0));
+
+        recent.execute();
     }
 
     public synchronized void searchBusiness(final String text, final int skip) {
         // future
-        if(future != null) {
+        if (future != null) {
             future.cancel(true);
-            while(true) {
-                if (future.isCancelled() || future.isDone()) {
-                    break;
-                }
-            }
         }
 
-        if(futureResult != null) {
+        if (futureResult != null) {
             futureResult.cancel(true);
-            while(true) {
-                if (futureResult.isCancelled() || futureResult.isDone()) {
-                    break;
-                }
-            }
         }
-
-        mBusinessListAdapter.clear();
-        mLlNoResultsContainer.setVisibility(View.GONE);
-        mLlErrorContainer.setVisibility(View.GONE);
-        mRvSearchResults.setVisibility(View.GONE);
-        mPbLoadingResults.smoothToShow();
 
         if (text.isEmpty()) {
-            showResults("", false);
+            isLoading = false;
+            showRecents();
+            return;
         }
+
+        if (skip == 0) {
+            mLlNoResultsContainer.setVisibility(View.GONE);
+            mLlErrorContainer.setVisibility(View.GONE);
+            mRvSearchResults.setVisibility(View.GONE);
+        }
+
+        mPbLoadingResults.smoothToShow();
+        isLoading = true;
 
         future = tpe.submit(new Callable<String>() {
             public String call() throws Exception {
@@ -163,7 +176,7 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                showResults(result, result.isEmpty());
+                                showResults(result, false, skip);
                             }
                         });
                     }
@@ -172,7 +185,7 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            showResults("", true);
+                            showResults("", true, 0);
                         }
                     });
                 }
@@ -180,41 +193,48 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
         });
     }
 
-    private void showResults(String response, boolean error) {
-        Logger.error("Future get result: ", response);
+    private void showResults(String response, boolean error, int skip) {
         JSONObject jsonRootObject;
         boolean toJSONError = false;
 
         try {
             if (!error) {
-                if (!response.isEmpty() && response.startsWith("{")) {
-                    jsonRootObject = new JSONObject(response);
-                    JSONArray results = jsonRootObject.optJSONArray("results");
-                    int size = results.length();
+                jsonRootObject = new JSONObject(response);
+                JSONArray results = jsonRootObject.optJSONArray("results");
+                int size = results.length();
 
-                    if (size == 0) {
-                        return;
-                    }
+                if (size == 0) {
+                    mBusinessListAdapter.clear();
+                    return;
+                }
 
-                    List<dbBusiness> allResults = new ArrayList<>();
+                List<Object> allResults = new ArrayList<>(size);
+
+                if (skip == 0) {
+                    allResults.add(new nHeaderTitle(getString(R.string.searches_top_results_title), 0));
+                }
+
+                for (int i = 0; i < size; i++) {
+                    JSONObject object = results.getJSONObject(i);
                     dbBusiness business = new dbBusiness();
+                    business.setBusinessId(object.optString("oj"));
+                    business.setAvatarThumbFileId(object.optString("av"));
+                    business.setConversaId(object.optString("id"));
+                    business.setDisplayName(object.optString("dn"));
+                    allResults.add(business);
+                }
 
-                    for (int i = 0; i < size; i++) {
-                        JSONObject object = results.getJSONObject(i);
-                        business.setBusinessId(object.optString("oj"));
-                        business.setAvatarThumbFileId(object.optString("av"));
-                        business.setConversaId(object.optString("id"));
-                        business.setDisplayName(object.optString("dn"));
-                        allResults.add(business);
-                    }
-
-                    mBusinessListAdapter.addLocalItems(allResults, false);
+                if (skip == 0) {
+                    mBusinessListAdapter.setSearches(allResults, true);
+                } else {
+                    //mBusinessListAdapter.addLocalItems(allResults, true);
                 }
             }
         } catch (JSONException e) {
             toJSONError = true;
         } finally {
             mPbLoadingResults.smoothToHide();
+            isLoading = false;
 
             if (error || toJSONError) {
                 // Clear all results and show error
@@ -223,7 +243,7 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
             } else if (response.isEmpty() || !response.startsWith("{")) {
                 mLlNoResultsContainer.setVisibility(View.GONE);
                 mLlErrorContainer.setVisibility(View.GONE);
-            } else if (mBusinessListAdapter.getItemCount() == 0) {
+            } else if (mBusinessListAdapter.getItemCount() <= 1) {
                 mLlNoResultsContainer.setVisibility(View.VISIBLE);
                 mLlErrorContainer.setVisibility(View.GONE);
             } else {
@@ -235,42 +255,6 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(this);
-        //SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        //searchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, MainActivity.class)));
-        searchView.setIconifiedByDefault(false);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // User pressed the search button
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        searchBusiness(newText, 0);
-        return false;
-    }
-
-    @Override
     public void onItemClick(View itemView, int position, final dbBusiness business) {
         final dbBusiness dbbusiness = ConversaApp.getInstance(this)
                 .getDB()
@@ -279,17 +263,19 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
         Intent intent = new Intent(this, ActivityProfile.class);
 
         if (dbbusiness == null) {
-            intent.putExtra(Const.kYapDatabaseName, true);
+            intent.putExtra(Const.iExtraAddBusiness, true);
         } else {
-            intent.putExtra(Const.kYapDatabaseName, false);
+            intent.putExtra(Const.iExtraAddBusiness, false);
         }
 
+        // Save to recent searches
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ConversaApp.getInstance(getApplicationContext())
                         .getDB()
-                        .addSearch(new dbSearch(-1,
+                        .addSearch(new dbSearch(
+                                business.getId(),
                                 business.getBusinessId(),
                                 business.getDisplayName(),
                                 business.getConversaId(),
@@ -298,13 +284,60 @@ public class ActivitySearch extends ConversaActivity implements SearchView.OnQue
             }
         }).start();
 
-        intent.putExtra(Const.kClassBusiness, business);
+        intent.putExtra(Const.iExtraBusiness, business);
         startActivity(intent);
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        Utils.hideKeyboard(this);
-        return false;
+    AsyncTask<Void, Void, List<dbBusiness>> recent = new AsyncTask<Void, Void, List<dbBusiness>>() {
+        @Override
+        protected List<dbBusiness> doInBackground(Void... params) {
+            List<dbSearch> list = ConversaApp.getInstance(getApplicationContext()).getDB()
+                    .getRecentSearches();
+            List<dbBusiness> searches = new ArrayList<>(list.size());
+
+            for (int i = 0; i < list.size(); i++) {
+                dbSearch search = list.get(i);
+                dbBusiness business = ConversaApp.getInstance(getApplicationContext()).getDB()
+                        .isContact(search.getBusinessId());
+
+                if (business == null) {
+                    business = new dbBusiness();
+                    business.setId(search.getID());
+                    business.setBusinessId(search.getBusinessId());
+                    business.setDisplayName(search.getDisplayName());
+                    business.setConversaId(search.getConversaId());
+                    business.setAvatarThumbFileId(search.getAvatarUrl());
+                }
+
+                searches.add(business);
+            }
+
+            if (searches.size() > 0) {
+                recentList.addAll(searches);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<dbBusiness> dbSearches) {
+            showRecents();
+        }
+    };
+
+    private void showRecents() {
+        if (!isLoading) {
+            if (recentList.size() > 1) {
+                mBusinessListAdapter.setRecents(recentList);
+                mPbLoadingResults.smoothToHide();
+
+                if (mRvSearchResults.getVisibility() != View.VISIBLE) {
+                    mLlNoResultsContainer.setVisibility(View.GONE);
+                    mLlErrorContainer.setVisibility(View.GONE);
+                    mRvSearchResults.setVisibility(View.VISIBLE);
+                }
+            }
+        }
     }
+
 }

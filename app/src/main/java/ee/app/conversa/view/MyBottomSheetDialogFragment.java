@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.afollestad.materialcamera.MaterialCamera;
+
 import java.lang.ref.WeakReference;
 
 import ee.app.conversa.ActivityCameraCrop;
@@ -48,7 +50,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.menu_actionbar_chat, container, false);
+        View v = inflater.inflate(R.layout.bottomsheet_chat, container, false);
 		ImageButton mBtnCamera = (ImageButton) v.findViewById(R.id.btnCamera);
 		ImageButton mBtnGallery = (ImageButton) v.findViewById(R.id.btnGallery);
 		ImageButton mBtnLocation = (ImageButton) v.findViewById(R.id.btnLocation);
@@ -67,9 +69,17 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
 
         switch (view.getId()) {
             case R.id.btnCamera: {
-                Intent intent = new Intent(mActivity.get(), ActivityCameraCrop.class);
-                intent.putExtra("type", "camera");
-                mActivity.get().startActivityForResult(intent, ActivityCameraCrop.PICK_CAMERA_REQUEST);
+//                Intent intent = new Intent(mActivity.get(), ActivityCameraCrop.class);
+//                intent.putExtra("type", "camera");
+//                mActivity.get().startActivityForResult(intent, ActivityCameraCrop.PICK_CAMERA_REQUEST);
+                MaterialCamera materialCamera = new MaterialCamera(mActivity.get())
+                        .showPortraitWarning(true)
+                        .allowRetry(true)
+                        .defaultToFrontFacing(true)
+                        .allowRetry(true)
+                        .autoSubmit(false)
+                        .labelConfirm(R.string.logout_ok);
+                materialCamera.start(ActivityChatWall.CAMERA_RQ);
                 break;
             }
             case R.id.btnGallery: {

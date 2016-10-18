@@ -32,8 +32,9 @@
 
     <string name="signup_register_error">Sorry, this email is already being used by another user, try with another</string>
     <string name="signup_name_error">Name should contain more than 1 character in length</string>
-    <string name="signup_password_length_error">Password is required</string>
-    <string name="signup_password_regex_error">Password should contain at least one digit, one lowercase letter and a special character</string>
+    <string name="signup_password_empty_error">Password is required</string>
+    <string name="signup_password_length_error">Password must contain at least six characters</string>
+    <string name="signup_password_regex_error">Password should contain at least one letter, one digit and a special character</string>
     <string name="sign_email_not_valid_error">Email is not valid</string>
     <string name="sign_email_length_error">Email is required</string>
     <string name="signup_birthday_empty_error">Please select your birthday</string>
@@ -42,6 +43,8 @@
     <string name="signup_gender_empty_error">Please select gender</string>
 
     <string name="browse_categories">Browse categories</string>
+    <string name="recent_searches_title">Recent searches</string>
+    <string name="searches_top_results_title">Top results</string>
 
     <string name="me">Me</string>
     <string name="contacts_last_message_text" translatable="false">%1$s: %2$s</string>
@@ -108,9 +111,12 @@
     <string name="sett_chat_quality_default_entry">High</string>
     <string name="sett_chat_message_sent_sound">Sound when sending</string>
     <string name="sett_chat_message_received_sound">Sound when receiving</string>
+    <string name="sett_chat_download_automatically_title">Download media</string>
+    <string name="sett_chat_download_automatically_summary">Automatically download media when received</string>
 
     <string name="sett_language_default_option">Default</string>
 
+    <string name="search_toolbar_hint">Search business, stores, etc.</string>
     <string name="search_no_results_found">No results found</string>
     <string name="search_results_error" translatable="false">Oops, I did it again</string>
 
@@ -161,11 +167,14 @@
     <string name="username">username</string>
     <string name="email">email</string>
     <string name="password">password</string>
-    <string name="birthday">birthday</string>
+    <string name="birthday">birthday (dd-mm-yyyy)</string>
     <string name="gender">gender</string>
 
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+
     <string name="language_spinner_title">Select language</string>
-    <string name="gender_spinner_title">Select gender</string>
+    <string name="no_internet_connection_retry">Retry</string>
 
     <!-- FOR CHAT WALL -->
     <string name="action_location">Locations</string>
@@ -174,7 +183,7 @@
     <string name="SEND">SEND</string>
 
     <!-- FOR NO INTERNET CONNECTION -->
-    <string name="NO_INTERNET_CONNECTION">NO INTERNET CONNECTION</string>
+    <string name="no_internet_connection">No internet connection</string>
 
     <string name="summary_go_intent_preference">Conversa Official Site</string>
     <string name="terms_of_use_preference">Terms &amp; Conditions</string>
@@ -194,7 +203,9 @@
     <string name="name_already_taken">Name is already taken</string>
 
 
-    <!-- FOR WallMessagesAdapter -->
+    <!-- FOR ActivityChatWall -->
+    <string name="is_typing">is typing&#8230;</string>
+
     <string name="posted_less_than_a_minute_ago">Less than a minute ago</string>
     <string name="week_ago">One week ago</string>
     <string name="weeks_ago">%1d weeks ago</string>
@@ -239,10 +250,13 @@
     <string name="cuRzYgo8krw">Women Shoes</string>
     <string name="c4EsFpxgOu6">Delivery</string>
     <string name="cprn5lWuEDc" translatable="false">Online \u0026 Internet</string>
-
-    <!-- FOR FragmentSettings -->
-
-    <string name="settings_logout_succesful">Database removed</string>
-    <string name="settings_logout_error">An error has occurred while removing databased. Database not removed</string>
+    <string name="chat_date_monday">Monday</string>
+    <string name="chat_date_tuesday">Tuesday</string>
+    <string name="chat_date_wednesday">Wednesday</string>
+    <string name="chat_date_thursday">Thursday</string>
+    <string name="chat_date_friday">Friday</string>
+    <string name="chat_date_saturday">Saturday</string>
+    <string name="chat_day_yesterday">Yesterday</string>
+    <string name="chat_date_sunday">Sunday</string>
 
 </resources>

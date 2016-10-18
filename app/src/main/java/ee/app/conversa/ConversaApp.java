@@ -29,6 +29,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.StrictMode;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
 import com.birbit.android.jobqueue.JobManager;
@@ -45,7 +46,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.events.MyEventBusIndex;
-import ee.app.conversa.management.ably.Connection;
+import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.model.parse.BusinessCategory;
@@ -57,6 +58,7 @@ import ee.app.conversa.notifications.onesignal.CustomNotificationReceivedHandler
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Preferences;
+import io.branch.referral.Branch;
 
 /**
  * Basic Application class, holds references to often used single instance
@@ -73,8 +75,6 @@ public class ConversaApp extends Application {
 	private MySQLiteHelper mDb;
 	private Preferences mPreferences;
 	private LocalBroadcastManager mLocalBroadcastManager;
-//	private ImageFetcher mImageFetcher;
-//	public static final String IMAGE_CACHE_DIR = "thumbs";
 
 	public static ConversaApp getInstance(Context context) {
 		return (ConversaApp)context.getApplicationContext();
@@ -92,8 +92,10 @@ public class ConversaApp extends Application {
 		setLocalBroadcastManager();
 
 		Fresco.initialize(this);
-		Connection.initAblyManager(this);
+		AblyConnection.initAblyManager(this);
+		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
+		initializeBranch();
 		initializeOneSignal();
 		initializeParse();
 		initializeDeveloperBuild();
@@ -101,14 +103,11 @@ public class ConversaApp extends Application {
 		initializeEventBus();
 		initializeBugShaker();
 		initializeTypefaces();
-//		initializeCache();
 	}
 
-//	private void initializeCache() {
-//		int mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
-//		mImageFetcher = new ImageFetcher(this, mImageThumbSize);
-//		mImageFetcher.setLoadingImage(R.drawable.business_default);
-//	}
+	private void initializeBranch() {
+		Branch.getAutoInstance(this);
+	}
 
 	private void initializeOneSignal() {
 		OneSignal
@@ -271,10 +270,6 @@ public class ConversaApp extends Application {
 	public synchronized Preferences getPreferences() {
 		return mPreferences;
 	}
-
-//	public ImageFetcher getImageFetcher() {
-//		return mImageFetcher;
-//	}
 
 	public Typeface getTfRalewayThin() {
 		return mTfRalewayThin;

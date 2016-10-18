@@ -96,9 +96,6 @@ public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouc
 	private String _path;
 	private CroppedImageView mCropImageView;
 
-	// directory name to store captured images and videos
-	private static final String IMAGE_DIRECTORY_NAME = "images";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -216,7 +213,7 @@ public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouc
 
 		if (type == MEDIA_TYPE_IMAGE) {
 			mediaFile = new File(Utils.getResourceName(
-					Utils.getMediaDirectory(this)
+					Utils.getMediaDirectory(this, "images")
 			));
 		} else {
 			return null;

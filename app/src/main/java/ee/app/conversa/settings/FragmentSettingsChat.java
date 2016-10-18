@@ -4,12 +4,13 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 
 /**
  * Created by edgargomez on 9/9/16.
  */
-public class FragmentSettingsChat extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+public class FragmentSettingsChat extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle paramBundle) {
@@ -17,23 +18,27 @@ public class FragmentSettingsChat extends PreferenceFragment implements Preferen
         addPreferencesFromResource(R.xml.fragment_settings_chat);
 
         this.findPreference(PreferencesKeys.CHAT_QUALITY_KEY)
-                .setOnPreferenceClickListener(this);
-        this.findPreference(PreferencesKeys.CHAT_SOUND_SENDING_KEY)
-                .setOnPreferenceClickListener(this);
-        this.findPreference(PreferencesKeys.CHAT_SOUND_RECEIVING_KEY)
-                .setOnPreferenceClickListener(this);
+                .setOnPreferenceChangeListener(this);
+
+        this.findPreference(PreferencesKeys.CHAT_QUALITY_KEY)
+                .setSummary(ConversaApp.getInstance(getActivity()).getPreferences().getUploadQuality());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((ActivityPreferences)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((ActivityPreferences)getActivity()).getSupportActionBar().setTitle(R.string.preferences__chats);
     }
 
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        return false;
-    }
 
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference.getKey().equals(PreferencesKeys.CHAT_QUALITY_KEY)) {
+            this.findPreference(PreferencesKeys.CHAT_QUALITY_KEY)
+                    .setSummary(ConversaApp.getInstance(getActivity())
+                            .getPreferences().getUploadQualityFromNewValue((String)newValue));
+        }
+
+        return true;
+    }
 }

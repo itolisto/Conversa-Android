@@ -18,11 +18,6 @@
         <item name="Explore">Explore</item>
     </string-array>
 
-    <string-array name="gender_array">
-        <item>Male</item>
-        <item>Female</item>
-    </string-array>
-
     <string-array name="language_entries">
         <item>@string/sett_language_default_option</item>
         <item>English</item>

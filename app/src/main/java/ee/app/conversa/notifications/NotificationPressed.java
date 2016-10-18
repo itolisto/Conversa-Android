@@ -64,8 +64,8 @@ public class NotificationPressed extends AppCompatActivity {
                 if (user != null) {
                     // Set extras
                     intent = new Intent(this, ActivityChatWall.class);
-                    intent.putExtra(Const.kClassBusiness, user);
-                    intent.putExtra(Const.kYapDatabaseName, false);
+                    intent.putExtra(Const.iExtraBusiness, user);
+                    intent.putExtra(Const.iExtraAddBusiness, false);
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
                 }
                 break;

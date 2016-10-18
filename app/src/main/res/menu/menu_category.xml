@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:myapp="http://schemas.android.com/apk/res-auto" >
-
     <item
         android:title="@string/search_title_menu"
         android:id="@+id/grid_default_search"
-        android:icon="@drawable/ic_search_white"
+        android:icon="@drawable/ic_search_gray"
         myapp:showAsAction="always" />
 </menu>

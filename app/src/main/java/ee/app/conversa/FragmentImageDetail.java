@@ -16,14 +16,22 @@
 
 package ee.app.conversa;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
+
+import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.Utils;
+import ee.app.conversa.view.ZoomableDraweeView;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ActivityImageDetail}.
@@ -31,7 +39,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 public class FragmentImageDetail extends Fragment {
     private static final String IMAGE_DATA_EXTRA = "extra_image_data";
     private String mImageUrl;
-    private SimpleDraweeView mImageView;
+    private ZoomableDraweeView mImageView;
 
     /**
      * Factory method to generate a new instance of the fragment given an image number.
@@ -61,7 +69,7 @@ public class FragmentImageDetail extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mImageUrl = getArguments() != null ? getArguments().getString(IMAGE_DATA_EXTRA) : null;
+        mImageUrl = getArguments() != null ? getArguments().getString(IMAGE_DATA_EXTRA) : "";
     }
 
     @Override
@@ -69,7 +77,15 @@ public class FragmentImageDetail extends Fragment {
             Bundle savedInstanceState) {
         // Inflate and locate the main ImageView
         final View v = inflater.inflate(R.layout.image_detail_fragment, container, false);
-        mImageView = (SimpleDraweeView) v.findViewById(R.id.imageView);
+        mImageView = (ZoomableDraweeView) v.findViewById(R.id.imageView);
+        Uri uri = Utils.getUriFromString(mImageUrl);
+        mImageView.setAllowTouchInterceptionWhileZoomed(true);
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setUri(uri)
+                .build();
+        mImageView.setController(controller);
+        mImageView.setTapListener(createTapListener(1));
+
         return v;
     }
 
@@ -80,6 +96,15 @@ public class FragmentImageDetail extends Fragment {
         if (OnClickListener.class.isInstance(getActivity())) {
             mImageView.setOnClickListener((OnClickListener) getActivity());
         }
+    }
+
+    private GestureDetector.SimpleOnGestureListener createTapListener(final int position) {
+        return new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public void onLongPress(MotionEvent e) {
+                Logger.error("FragmentImageDetail", "onLongPress: " + position);
+            }
+        };
     }
 
 }

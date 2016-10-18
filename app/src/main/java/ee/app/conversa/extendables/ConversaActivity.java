@@ -1,7 +1,6 @@
 package ee.app.conversa.extendables;
 
 import android.content.Intent;
-import android.util.Log;
 import android.widget.RelativeLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -12,12 +11,19 @@ import java.util.List;
 
 import ee.app.conversa.R;
 import ee.app.conversa.dialog.InAppPushNotification;
-import ee.app.conversa.events.ContactEvent;
-import ee.app.conversa.events.MessageEvent;
+import ee.app.conversa.events.TypingEvent;
+import ee.app.conversa.events.contact.ContactDeleteEvent;
+import ee.app.conversa.events.contact.ContactRetrieveEvent;
+import ee.app.conversa.events.contact.ContactSaveEvent;
+import ee.app.conversa.events.contact.ContactUpdateEvent;
+import ee.app.conversa.events.message.MessageDeleteEvent;
+import ee.app.conversa.events.message.MessageIncomingEvent;
+import ee.app.conversa.events.message.MessageOutgoingEvent;
+import ee.app.conversa.events.message.MessageRetrieveEvent;
+import ee.app.conversa.events.message.MessageUpdateEvent;
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
-import ee.app.conversa.management.contact.ContactIntentService;
-import ee.app.conversa.management.message.MessageIntentService;
+import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Logger;
@@ -37,6 +43,14 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     @Override
+    protected void initialization() {
+        super.initialization();
+        if (mRlPushNotification == null) {
+            mRlPushNotification = (RelativeLayout) findViewById(R.id.rlPushNotification);
+        }
+    }
+
+    @Override
 	protected void onStart() {
 		super.onStart();
         EventBus.getDefault().register(this);
@@ -49,65 +63,64 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 	}
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {
-        int action_code = event.getActionCode();
-        dbMessage response = event.getResponse();
-        List<dbMessage> list_response = event.getListResponse();
-
-        if (response == null && list_response == null) {
-            Log.e("onMessageEvent", "MessageEvent parameters are null");
-            return;
-        }
-
-        switch (action_code) {
-            case MessageIntentService.ACTION_MESSAGE_SAVE:
-                MessageSent(response);
-                break;
-            case MessageIntentService.ACTION_MESSAGE_NEW_MESSAGE:
-                MessageReceived(response);
-                break;
-            case MessageIntentService.ACTION_MESSAGE_UPDATE:
-            case MessageIntentService.ACTION_MESSAGE_UPDATE_UNREAD:
-                MessageUpdated(response);
-                break;
-            case MessageIntentService.ACTION_MESSAGE_DELETE:
-                MessageDeleted(response);
-                break;
-            case MessageIntentService.ACTION_MESSAGE_RETRIEVE_ALL:
-                MessagesGetAll(list_response);
-                break;
-        }
+    public void onTypingEvent(TypingEvent event) {
+        onTypingMessage(event.getFrom(), event.isTyping());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onContactEvent(ContactEvent event) {
-        int action_code = event.getActionCode();
+    public void onMessageOutgoingEvent(MessageOutgoingEvent event) {
+        MessageSent(event.getMessage());
+    }
 
-        switch (action_code) {
-            case ContactIntentService.ACTION_MESSAGE_SAVE:
-                ContactAdded(event.getResponse());
-                break;
-            case ContactIntentService.ACTION_MESSAGE_UPDATE:
-                ContactUpdated(event.getResponse());
-                break;
-            case ContactIntentService.ACTION_MESSAGE_DELETE:
-                ContactDeleted(event.getContactList());
-                break;
-            case ContactIntentService.ACTION_MESSAGE_RETRIEVE_ALL:
-                ContactGetAll(event.getListResponse());
-                break;
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageIncomingEvent(MessageIncomingEvent event) {
+        MessageReceived(event.getMessage());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageUpdateEvent(MessageUpdateEvent event) {
+        MessageUpdated(event.getMessage(), event.getReason());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageDeleteEvent(MessageDeleteEvent event) {
+        MessageDeleted(event.getMessageList());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageRetrieveEvent(MessageRetrieveEvent event) {
+        MessagesGetAll(event.getMessageList());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactSaveEvent(ContactSaveEvent event) {
+        ContactAdded(event.getContact());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactUpdateEvent(ContactUpdateEvent event) {
+        ContactUpdated(event.getContact());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactDeleteEvent(ContactDeleteEvent event) {
+        ContactDeleted(event.getContactList());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactRetrieveEvent(ContactRetrieveEvent event) {
+        ContactGetAll(event.getListResponse());
+    }
+
+    /* ********************************************************************** */
+    /* ********************************************************************** */
+
+    protected void openFromNotification(Intent intent) {
+        /* Child activities override this method */
     }
 
     @Override
-    protected void initialization() {
-        super.initialization();
-        if (mRlPushNotification == null) {
-            mRlPushNotification = (RelativeLayout) findViewById(R.id.rlPushNotification);
-        }
-    }
-
-    protected void openFromNotification(Intent intent) {
+    public void onTypingMessage(String from, boolean isTyping) {
         /* Child activities override this method */
     }
 
@@ -130,12 +143,12 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     @Override
-    public void MessageDeleted(final dbMessage response) {
+    public void MessageDeleted(final List<String> response) {
         /* Child activities override this method */
     }
 
     @Override
-    public void MessageUpdated(final dbMessage response) {
+    public void MessageUpdated(final dbMessage response, MessageUpdateReason reason) {
         /* Child activities override this method */
     }
 
@@ -158,4 +171,5 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     public void ContactUpdated(dbBusiness response) {
         /* Child activities override this method */
     }
+
 }

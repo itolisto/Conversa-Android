@@ -17,9 +17,4 @@
         <item name="Chats">Chats</item>
         <item name="Explora">Explora</item>
     </string-array>
-
-    <string-array name="gender_array">
-        <item>Hombre</item>
-        <item>Mujer</item>
-    </string-array>
 </resources>

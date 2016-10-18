@@ -9,11 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.parse.FindCallback;
@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ee.app.conversa.adapters.BusinessAdapter;
+import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.model.parse.BusinessCategory;
@@ -35,10 +36,9 @@ import ee.app.conversa.utils.Const;
 
 public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItemClickListener {
 
-    private RelativeLayout mRlNoBusiness;
-    private RecyclerView mRvBusiness;
-    private ImageView mIvNoBusiness;
+    private RelativeLayout mRlNoConnection;
     private AVLoadingIndicatorView mPbLoadingCategory;
+    private RecyclerView mRvBusiness;
 
     private BusinessAdapter mBusinessListAdapter;
 
@@ -74,10 +74,9 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_business_categories, container, false);
 
-        mRlNoBusiness = (RelativeLayout) rootView.findViewById(R.id.rlNoBusiness);
-        mRvBusiness = (RecyclerView) rootView.findViewById(R.id.rvBusiness);
-        mIvNoBusiness = (ImageView) rootView.findViewById(R.id.ivNoBusiness);
+        mRlNoConnection = (RelativeLayout) rootView.findViewById(R.id.rlNoConnection);
         mPbLoadingCategory = (AVLoadingIndicatorView) rootView.findViewById(R.id.pbLoadingCategory);
+        mRvBusiness = (RecyclerView) rootView.findViewById(R.id.rvBusiness);
 
         mBusinessListAdapter= new BusinessAdapter((AppCompatActivity)getActivity(), this);
         mRvBusiness.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -109,72 +108,70 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
     }
 
     private void getBusinessByCategoryAsync() {
-        if(categoryId.isEmpty()) {
-            // Some error while getting category id
-            mRvBusiness.setVisibility(View.GONE);
-            mRlNoBusiness.setVisibility(View.VISIBLE);
-            mPbLoadingCategory.smoothToHide();
-            mIvNoBusiness.setVisibility(View.VISIBLE);
-        } else {
-            ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
-            Collection<String> collection = new ArrayList<>();
-            collection.add(Const.kBusinessCategoryBusinessKey);
-            query.selectKeys(collection);
+        if (((BaseActivity)getActivity()).hasInternetConnection()) {
+            if(TextUtils.isEmpty(categoryId)) {
+                // This should never happen
+                mRlNoConnection.setVisibility(View.GONE);
+                mPbLoadingCategory.smoothToHide();
+                mRvBusiness.setVisibility(View.GONE);
+            } else {
+                ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
+                Collection<String> collection = new ArrayList<>();
+                collection.add(Const.kBusinessCategoryBusinessKey);
+                query.selectKeys(collection);
 
-            String cat = Const.kBusinessCategoryBusinessKey.concat(".").concat(Const.kBusinessBusinessInfoKey);
-            query.include(cat);
-            query.whereEqualTo(Const.kBusinessCategoryCategoryKey, ParseObject.createWithoutData(bCategory.class, categoryId));
-            query.whereEqualTo(Const.kBusinessCategoryActiveKey, true);
+                String cat = Const.kBusinessCategoryBusinessKey.concat(".").concat(Const.kBusinessBusinessInfoKey);
+                query.include(cat);
+                query.whereEqualTo(Const.kBusinessCategoryCategoryKey, ParseObject.createWithoutData(bCategory.class, categoryId));
+                query.whereEqualTo(Const.kBusinessCategoryActiveKey, true);
 
-            ParseQuery<Business> param1 = ParseQuery.getQuery(Business.class);
-            param1.whereEqualTo(Const.kBusinessActiveKey, true);
-            param1.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
-            param1.whereDoesNotExist(Const.kBusinessBusinessKey);
+                ParseQuery<Business> param1 = ParseQuery.getQuery(Business.class);
+                param1.whereEqualTo(Const.kBusinessActiveKey, true);
+                param1.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
+                param1.whereDoesNotExist(Const.kBusinessBusinessKey);
 
-            query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
-            query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
-            query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
-            query.setLimit(15);
-            query.setSkip(page * 15);
+                query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
+                query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
+                query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
+                query.setLimit(15);
+                query.setSkip(page * 15);
 
-            mPbLoadingCategory.smoothToShow();
+                mPbLoadingCategory.smoothToShow();
 
-            query.findInBackground(new FindCallback<BusinessCategory>() {
+                query.findInBackground(new FindCallback<BusinessCategory>() {
 
-                @Override
-                public void done(List<BusinessCategory> objects, ParseException e) {
-                    if (objects != null && objects.size() > 0) {
-                        List<Business> business = new ArrayList<>(objects.size());
-                        final int size = objects.size();
+                    @Override
+                    public void done(List<BusinessCategory> objects, ParseException e) {
+                        if (objects != null && objects.size() > 0) {
+                            List<Business> business = new ArrayList<>(objects.size());
+                            final int size = objects.size();
 
-                        for (int i = 0; i < size; i++) {
-                            business.add(objects.get(i).getBusiness());
-                        }
+                            for (int i = 0; i < size; i++) {
+                                business.add(objects.get(i).getBusiness());
+                            }
 
-                        boolean add = (size == 15);
-                        mBusinessListAdapter.addItems(business, add);
+                            boolean add = (size == 15);
+                            mBusinessListAdapter.addItems(business, add);
 
-                        mPbLoadingCategory.smoothToHide();
+                            mPbLoadingCategory.smoothToHide();
 
-                        if(page == 0) {
-                            mRvBusiness.setVisibility(View.VISIBLE);
-                            mRlNoBusiness.setVisibility(View.GONE);
-                        }
+                            if (mRlNoConnection.getVisibility() == View.VISIBLE) {
+                                mRlNoConnection.setVisibility(View.GONE);
+                            }
 
-                        page++;
-                    } else {
-                        mRvBusiness.setVisibility(View.GONE);
-                        mRlNoBusiness.setVisibility(View.VISIBLE);
-                        mPbLoadingCategory.smoothToHide();
+                            if(page == 0) {
+                                mRvBusiness.setVisibility(View.VISIBLE);
+                            }
 
-                        if (e == null) {
-                            mIvNoBusiness.setVisibility(View.GONE);
-                        } else {
-                            mIvNoBusiness.setVisibility(View.VISIBLE);
+                            page++;
                         }
                     }
-                }
-            });
+                });
+            }
+        } else {
+            mPbLoadingCategory.smoothToHide();
+            mRvBusiness.setVisibility(View.GONE);
+            mRlNoConnection.setVisibility(View.VISIBLE);
         }
     }
 
@@ -189,9 +186,9 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
             dbBusiness.setDisplayName(business.getDisplayName());
             dbBusiness.setConversaId(business.getConversaID());
             dbBusiness.setAbout(business.getAbout());
-            intent.putExtra(Const.kYapDatabaseName, true);
+            intent.putExtra(Const.iExtraAddBusiness, true);
         } else {
-            intent.putExtra(Const.kYapDatabaseName, false);
+            intent.putExtra(Const.iExtraAddBusiness, false);
         }
 
         try {
@@ -206,7 +203,7 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
             dbBusiness.setAvatarThumbFileId("");
         }
 
-        intent.putExtra(Const.kClassBusiness, dbBusiness);
+        intent.putExtra(Const.iExtraBusiness, dbBusiness);
         startActivity(intent);
     }
 

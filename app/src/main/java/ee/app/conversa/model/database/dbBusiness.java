@@ -29,7 +29,8 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import ee.app.conversa.management.contact.ContactIntentService;
+import ee.app.conversa.actions.ContactAction;
+import ee.app.conversa.contact.ContactIntentService;
 
 /**
  * Emoticon
@@ -87,7 +88,7 @@ public class dbBusiness implements Parcelable {
     /* ******************************************************************************************* */
     public static void getAllContacts(Context context) {
         Intent broadcastIntent = new Intent(context, ContactIntentService.class);
-        broadcastIntent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactIntentService.ACTION_MESSAGE_RETRIEVE_ALL);
+        broadcastIntent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactAction.ACTION_CONTACT_RETRIEVE_ALL);
         context.startService(broadcastIntent);
     }
 

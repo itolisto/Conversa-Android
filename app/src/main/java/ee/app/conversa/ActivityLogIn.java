@@ -21,7 +21,6 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import ee.app.conversa.dialog.CustomDialog;
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
@@ -80,7 +79,9 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
     @Override
     public void yesInternetConnection() {
         super.yesInternetConnection();
-        mBtnSignInIn.setEnabled(true);
+        if (validateForm()) {
+            mBtnSignInIn.setEnabled(true);
+        }
     }
 
     @Override
@@ -103,69 +104,73 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
                 startActivity(intent);
                 break;
             case R.id.btnSignInIn:
-                if(validateForm()) {
-                    final String mSignInEmail = mEtSignInEmail.getText().toString();
-                    final String mSignInPassword = mEtSignInPassword.getText().toString();
+                final String mSignInEmail = mEtSignInEmail.getText().toString();
+                final String mSignInPassword = mEtSignInPassword.getText().toString();
 
-                    ParseQuery<Account> query = ParseQuery.getQuery(Account.class);
-                    query.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
-                    query.whereEqualTo(Const.kUserTypeKey, 1);
+                ParseQuery<Account> query = ParseQuery.getQuery(Account.class);
+                query.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
+                query.whereEqualTo(Const.kUserTypeKey, 1);
 
-                    Collection<String> collection = new ArrayList<>();
-                    collection.add(Const.kUserUsernameKey);
-                    query.selectKeys(collection);
+                Collection<String> collection = new ArrayList<>();
+                collection.add(Const.kUserUsernameKey);
+                query.selectKeys(collection);
 
-                    final ProgressDialog progress = new ProgressDialog(this);
-                    progress.show();
+                final ProgressDialog progress = new ProgressDialog(this);
+                progress.show();
 
-                    query.getFirstInBackground(new GetCallback<Account>() {
-                        @Override
-                        public void done(Account object, ParseException e) {
-                            progress.dismiss();
+                query.getFirstInBackground(new GetCallback<Account>() {
+                    @Override
+                    public void done(Account object, ParseException e) {
+                        progress.dismiss();
 
-                            if (e == null) {
-                                String username = object.getUsername();
-                                ParseUser.logInInBackground(username, mSignInPassword, new LogInCallback() {
-                                    public void done(ParseUser user, ParseException e) {
-                                        if (user != null) {
-                                            AuthListener(true, null);
-                                        } else {
-                                            AuthListener(false, e);
-                                        }
+                        if (e == null) {
+                            String username = object.getUsername();
+                            ParseUser.logInInBackground(username, mSignInPassword, new LogInCallback() {
+                                public void done(ParseUser user, ParseException e) {
+                                    if (user != null) {
+                                        AuthListener(true, null);
+                                    } else {
+                                        AuthListener(false, e);
                                     }
-                                });
-                            } else {
-                                AuthListener(false, e);
-                            }
-                        }
-                    });
-                } else {
-                    final CustomDialog dialog = new CustomDialog(this);
-                    dialog.setTitle(null)
-                            .setMessage("Please enter check email and password are ok")
-                            .setupPositiveButton("Accept", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    //contact.removeContact();
-                                    dialog.dismiss();
                                 }
                             });
-                    dialog.show();
-                }
+                        } else {
+                            AuthListener(false, e);
+                        }
+                    }
+                });
                 break;
         }
     }
 
     private boolean validateForm() {
         if (mEtSignInEmail.getText().toString().isEmpty() || mEtSignInPassword.getText().toString().isEmpty()) {
-            return false;
+            mBtnSignInIn.setEnabled(false);
+        } else if (mTilSignInEmail.isErrorEnabled() || mTilSignInPassword.isErrorEnabled()) {
+            mBtnSignInIn.setEnabled(false);
+        } else {
+            mBtnSignInIn.setEnabled(true);
+            return true;
         }
 
-        if (mTilSignInEmail.isErrorEnabled() || mTilSignInPassword.isErrorEnabled()) {
-            return false;
-        }
+        return false;
+    }
 
-        return true;
+    private void isEmailValid(String email) {
+        TextInputLayout layout = mTilSignInEmail;
+
+        if (email.isEmpty()) {
+            layout.setErrorEnabled(true);
+            layout.setError(getString(R.string.sign_email_length_error));
+        } else {
+            if (Utils.checkEmail(email)) {
+                layout.setErrorEnabled(false);
+                layout.setError("");
+            } else {
+                layout.setErrorEnabled(true);
+                layout.setError(getString(R.string.sign_email_not_valid_error));
+            }
+        }
     }
 
     private void isPasswordValid(String password) {
@@ -173,32 +178,10 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
 
         if (password.isEmpty()) {
             layout.setErrorEnabled(true);
-            layout.setError(getString(R.string.signup_password_length_error));
+            layout.setError(getString(R.string.signup_password_empty_error));
         } else {
-            if (Utils.checkPassword(password)) {
-                //layout.setErrorEnabled(false);
-                //layout.setError("");
-            } else {
-                layout.setErrorEnabled(false);
-                layout.setError("");
-            }
-        }
-    }
-
-    private void isEmailValid(String email) {
-        TextInputLayout layout = mTilSignInEmail;
-
-        if (Utils.checkEmail(email)) {
             layout.setErrorEnabled(false);
             layout.setError("");
-        } else {
-            if (email.isEmpty()) {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.sign_email_length_error));
-            } else {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.sign_email_not_valid_error));
-            }
         }
     }
 
@@ -227,17 +210,16 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
         public void afterTextChanged(Editable editable) {
-//            if (editable.toString().isEmpty())
-//                return;
-
             switch (view.getId()) {
                 case R.id.etSignInEmail:
                     isEmailValid(editable.toString());
                     break;
                 case R.id.etSignInPassword:
-                    //isPasswordValid(editable.toString());
+                    isPasswordValid(editable.toString());
                     break;
             }
+
+            validateForm();
         }
     }
 }

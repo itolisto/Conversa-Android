@@ -17,5 +17,10 @@
             android:key="sett_chat_message_received_sound_key"
             android:title="@string/sett_chat_message_received_sound"
             android:defaultValue="true" />
+        <!--<ee.app.conversa.view.SwitchCompatPreference-->
+            <!--android:key="sett_chat_download_automatically_key"-->
+            <!--android:title="@string/sett_chat_download_automatically_title"-->
+            <!--android:summary="@string/sett_chat_download_automatically_summary"-->
+            <!--android:defaultValue="true" />-->
     </PreferenceCategory>
 </PreferenceScreen>

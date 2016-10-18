@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/relativeLayout_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000" >
+    android:layout_height="match_parent" >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:background="@color/image_view_background" >
 
         <ee.app.conversa.view.CroppedImageView
@@ -54,10 +50,7 @@
 
     <include layout="@layout/camera_crop_photo_footer_cam"
         android:id="@+id/llFooter"
-        android:layout_marginBottom="7dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

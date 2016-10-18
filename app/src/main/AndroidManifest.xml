@@ -93,16 +93,19 @@
 
         <activity android:name="ee.app.conversa.ActivitySearch"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-            </intent-filter>
-        </activity>
+            android:launchMode="singleTop" />
 
         <activity android:name="ee.app.conversa.ActivityProfile"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
-            android:parentActivityName="ee.app.conversa.ActivityMain" />
+            android:parentActivityName="ee.app.conversa.ActivityMain" >
+            <intent-filter>
+                <data android:scheme="conversappbranch" android:host="open" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="ee.app.conversa.ActivityChatWall"
@@ -126,16 +129,16 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
 
-        <activity android:name=".notifications.NotificationPressed"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:excludeFromRecents="true" />
-
         <activity
             android:name="ee.app.conversa.settings.ActivityPreferences"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:parentActivityName="ee.app.conversa.ActivityMain" />
+
+        <activity android:name=".notifications.NotificationPressed"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true" />
 
         <activity
             android:name="com.afollestad.materialcamera.CaptureActivity"
@@ -158,6 +161,16 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAwg-G3VTF0jS_dyyTcfdZ6pDA2UK9rgYQ" />
 
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="key_test_ndl297oYX8yqRLgyhnRoLpidDuc2i3tr" />
+
+        <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
         <!-- Receive data in the background with or without displaying a notification. -->
         <service
             android:name=".notifications.onesignal.CustomNotificationExtenderService"
@@ -171,13 +184,13 @@
         <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />
 
         <service
-            android:name=".management.contact.ContactIntentService"
+            android:name=".contact.ContactIntentService"
             android:exported="false" />
         <service
-            android:name=".management.message.MessageIntentService"
+            android:name=".messaging.MessageIntentService"
             android:exported="false" />
         <service
-            android:name=".management.message.CustomMessageService"
+            android:name=".messaging.CustomMessageService"
             android:exported="false" />
     </application>
 </manifest>

@@ -39,7 +39,7 @@ import ee.app.conversa.utils.Utils;
 
 public class ConnectionChangeReceiver extends BroadcastReceiver {
 
-	/* Connection constants */
+	/* AblyConnection constants */
 	public static final String INTERNET_CONNECTION_CHANGE = "internet_connection_change";
 	public static final String HAS_INTERNET_CONNECTION = "has_internet_connection";
 	private Intent mConnectionChangeBroadcast = new Intent(INTERNET_CONNECTION_CHANGE);

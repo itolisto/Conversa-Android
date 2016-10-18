@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/regular_tabs"
+            android:theme="@style/ToolBarStyle"
             app:layout_scrollFlags="scroll|enterAlways" />
 
         <android.support.design.widget.TabLayout
@@ -29,6 +30,13 @@
             android:background="@color/regular_tabs"
             style="@style/MyCustomTabLayout" />
     </android.support.design.widget.AppBarLayout>
+
+    <include android:id="@+id/rlNoInternetNotification"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        layout="@layout/no_internet_notification" />
 
     <include android:id="@+id/rlPushNotification"
         android:layout_width="match_parent"

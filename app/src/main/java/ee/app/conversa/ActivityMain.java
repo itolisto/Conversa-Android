@@ -5,8 +5,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -16,13 +16,17 @@ import com.onesignal.OneSignal;
 
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.management.ably.Connection;
+import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.utils.Foreground;
+import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.utils.Utils;
 
-public class ActivityMain extends ConversaActivity {
+public class ActivityMain extends ConversaActivity implements Foreground.Listener {
 
     private ViewPager mViewPager;
     private TabLayout tabLayout;
@@ -43,10 +47,7 @@ public class ActivityMain extends ConversaActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Connection.getInstance().initAbly();
-
-        // Remove internet connection check
-        checkInternetConnection = false;
+        AblyConnection.getInstance().initAbly();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -101,18 +102,35 @@ public class ActivityMain extends ConversaActivity {
         });
 
         // 1. Subscribe to Customer channels if not subscribed already
-        OneSignal.getTags(new OneSignal.GetTagsHandler() {
-            @Override
-            public void tagsAvailable(JSONObject tags) {
-                if (tags == null || tags.length() == 0) {
-                    OneSignal.setSubscription(true);
-                    Utils.subscribeToTags(Account.getCurrentUser().getObjectId());
+        if (ConversaApp.getInstance(this).getPreferences().getCustomerId().isEmpty()) {
+            // 1. Get Customer Id
+            Account.getCustomerId(new WeakReference<AppCompatActivity>(this));
+        } else {
+            OneSignal.getTags(new OneSignal.GetTagsHandler() {
+                @Override
+                public void tagsAvailable(JSONObject tags) {
+                    if (tags == null || tags.length() == 0) {
+                        OneSignal.setSubscription(true);
+                        Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
+                                .getPreferences().getCustomerId());
+                    }
                 }
-            }
-        });
+            });
+        }
 
         initialization();
 	}
+
+    @Override
+    protected void initialization() {
+        super.initialization();
+        Foreground.get(this).addListener(this);
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        Foreground.get(this).removeListener(this);
+    }
 
     @Override
     public void onBackPressed() {
@@ -166,7 +184,7 @@ public class ActivityMain extends ConversaActivity {
                 transaction.commit();
             }
         } else {
-            Log.e(this.getClass().getSimpleName(), "Fragmento no se pudo reemplazar");
+            Logger.error(this.getClass().getSimpleName(), "Fragmento no se pudo reemplazar");
         }
     }
 
@@ -206,6 +224,16 @@ public class ActivityMain extends ConversaActivity {
                 insideCategory = false;
             }
         }
+    }
+
+    @Override
+    public void onBecameForeground() {
+        AblyConnection.getInstance().connectAbly();
+    }
+
+    @Override
+    public void onBecameBackground() {
+        AblyConnection.getInstance().disconnectAbly();
     }
 
 }

@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.parse.FunctionCallback;
@@ -37,14 +38,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import ee.app.conversa.adapters.CategoryAdapter;
+import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.model.nCategory;
 import ee.app.conversa.model.nHeaderTitle;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 
-public class FragmentCategory extends Fragment implements CategoryAdapter.OnItemClickListener {
+public class FragmentCategory extends Fragment implements CategoryAdapter.OnItemClickListener, View.OnClickListener{
 
-    private RelativeLayout mRlCategoriesNoCategories;
+    private RelativeLayout mRlNoConnection;
     private RecyclerView mRvCategory;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private CategoryAdapter mCategoryListAdapter;
@@ -57,10 +59,13 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
 
         View rootView = inflater.inflate(R.layout.fragment_category, container, false);
 
-        mRlCategoriesNoCategories = (RelativeLayout) rootView.findViewById(R.id.rlNoCategories);
+        mRlNoConnection = (RelativeLayout) rootView.findViewById(R.id.rlNoConnection);
         mRvCategory = (RecyclerView) rootView.findViewById(R.id.rvCategories);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.srlCategories);
         mPbLoadingCategories = (AVLoadingIndicatorView) rootView.findViewById(R.id.pbLoadingCategories);
+        Button mBtnRetry = (Button) rootView.findViewById(R.id.btnRetry);
+
+        mBtnRetry.setOnClickListener(this);
 
         mCategoryListAdapter = new CategoryAdapter((ActivityMain)getActivity(), this);
         mRvCategory.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -103,21 +108,30 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
 
     private void getCategoriesAsync() {
         mSwipeRefreshLayout.setEnabled(false);
-        mPbLoadingCategories.smoothToShow();
 
-        // Call Parse for registry
-        HashMap<String, Object> params = new HashMap<>(1);
-        params.put("skip", 0);
-        ParseCloud.callFunctionInBackground("getCategories", params, new FunctionCallback<String>() {
-            @Override
-            public void done(String result, ParseException e) {
-                if(e == null) {
-                    parseResult(result);
-                } else {
-                    parseResult("");
+        if (((BaseActivity)getActivity()).hasInternetConnection()) {
+            mRvCategory.setVisibility(View.GONE);
+            mRlNoConnection.setVisibility(View.GONE);
+            mPbLoadingCategories.smoothToShow();
+
+            // Call Parse for registry
+            HashMap<String, Object> params = new HashMap<>(1);
+            params.put("skip", 0);
+            ParseCloud.callFunctionInBackground("getCategories", params, new FunctionCallback<String>() {
+                @Override
+                public void done(String result, ParseException e) {
+                    if (e == null) {
+                        parseResult(result, true);
+                    } else {
+                        parseResult("", true);
+                    }
                 }
+            });
+        } else {
+            if (mRlNoConnection.getVisibility() != View.VISIBLE) {
+                parseResult("", false);
             }
-        });
+        }
     }
 
     @Override
@@ -151,14 +165,13 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
         }
     }
 
-    private void parseResult(String result) {
+    private void parseResult(String result, boolean connected) {
         if (mSwipeRefreshLayout.isRefreshing()) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
 
         try {
             if (result.isEmpty()) {
-                mRlCategoriesNoCategories.setVisibility(View.VISIBLE);
                 mRvCategory.setVisibility(View.GONE);
             } else {
                 JSONObject jsonRootObject = new JSONObject(result);
@@ -185,7 +198,6 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
                 }
 
                 mCategoryListAdapter.addItems(categoryList, headerList);
-                mRlCategoriesNoCategories.setVisibility(View.GONE);
                 mRvCategory.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
@@ -193,6 +205,19 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
         } finally {
             mPbLoadingCategories.smoothToHide();
             mSwipeRefreshLayout.setEnabled(true);
+
+            if (!connected) {
+                mRlNoConnection.setVisibility(View.VISIBLE);
+            } else {
+                mRlNoConnection.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btnRetry) {
+            getCategoriesAsync();
         }
     }
 }

@@ -11,14 +11,17 @@ import android.widget.ImageView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
-import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.model.nChatItem;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
@@ -33,11 +36,11 @@ import ee.app.conversa.view.RegularTextView;
  */
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> {
 
-    private AppCompatActivity mActivity;
     private List<dbBusiness> mUsers;
     private OnItemClickListener listener;
     private OnLongClickListener longlistener;
     private SparseBooleanArray mSelectedPositions;
+    private final WeakReference<AppCompatActivity> mActivity;
 
     public interface OnItemClickListener {
         void onItemClick(dbBusiness contact, int position);
@@ -49,10 +52,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     public ChatsAdapter(AppCompatActivity activity, OnItemClickListener listener, OnLongClickListener longlistener) {
         this.mUsers = new ArrayList<>();
-        this.mActivity = activity;
+        this.mActivity = new WeakReference<>(activity);
         this.listener = listener;
         this.longlistener = longlistener;
-        this.mSelectedPositions = new SparseBooleanArray();
+        this.mSelectedPositions = new SparseBooleanArray(1);
     }
 
     @Override
@@ -63,33 +66,38 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, this.mActivity);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads);
+        } else {
+            if (payloads.size() > 0) {
+                if (payloads.get(0) instanceof String) {
+                    switch ((String)payloads.get(0)) {
+                        case "toggleActivate": {
+                            holder.toggleActivate();
+                            break;
+                        }
+                        case "updateLastMessage": {
+                            holder.updateLastMessage(mUsers.get(position));
+                            break;
+                        }
+                        case "updateView": {
+                            holder.updateView();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.setContact(mUsers.get(position), position);
-    }
-
-    // item changes its selection state
-    public void toggleSelection(int position) {
-        if (mSelectedPositions.get(position, false)) {
-            mSelectedPositions.delete(position);
-        } else {
-            mSelectedPositions.put(position, true);
-        }
-        notifyItemChanged(position);
-    }
-
-    // clear all selections
-    public void clearSelections(boolean updateViews) {
-        if (updateViews) {
-            for (int i = 0; i < mSelectedPositions.size(); i++) {
-                notifyItemChanged(mSelectedPositions.keyAt(i));
-            }
-        }
-
-        mSelectedPositions.clear();
     }
 
     // get the number of currently selected items
@@ -106,52 +114,143 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         return items;
     }
 
+    // Item changes its selection state
+    public void toggleSelection(int position) {
+        if (mSelectedPositions.get(position, false)) {
+            mSelectedPositions.delete(position);
+        } else {
+            mSelectedPositions.put(position, true);
+        }
+        notifyItemChanged(position, "toggleActivate");
+    }
+
+    // Clear all selections
+    public void clearSelections() {
+        for (int i = 0; i < mSelectedPositions.size(); i++) {
+            notifyItemChanged(mSelectedPositions.keyAt(i), "toggleActivate");
+        }
+        mSelectedPositions.clear();
+    }
+
     public void clearItems() {
         mUsers.clear();
+    }
+
+    public void setItems(List<dbBusiness> users) {
+        mUsers = users;
         notifyDataSetChanged();
     }
 
-    public void addItems(List<dbBusiness> users) {
-        mUsers = users;
-        notifyItemRangeInserted(0, users.size());
-    }
-
-    public void newContactInserted(dbBusiness user) {
+    public void addContact(dbBusiness user) {
         mUsers.add(0, user);
         notifyItemInserted(0);
     }
 
-    public void changeContactPosition(int oldposition, int newposition) {
-        dbBusiness customer = mUsers.get(oldposition);
-        mUsers.remove(oldposition);
-        mUsers.add(newposition, customer);
-        notifyItemMoved(oldposition, newposition);
+    public void updateContactPosition(String businessId) {
+        for (int i = 0; i < mUsers.size(); i++) {
+            if (mUsers.get(i).getBusinessId().equals(businessId)) {
+                if (i > 0) {
+                    mUsers.add(0, mUsers.remove(i));
+                    notifyItemMoved(i, 0);
+                }
+                notifyItemChanged(0, "updateLastMessage");
+                break;
+            }
+        }
+    }
+
+    public void updateContactView(String businessId) {
+        for (int i = 0; i < mUsers.size(); i++) {
+            if (mUsers.get(i).getBusinessId().equals(businessId)) {
+                notifyItemChanged(i, "updateView");
+                break;
+            }
+        }
+    }
+
+    public void updateContactRead(String businessId) {
+        for (int i = 0; i < mUsers.size(); i++) {
+            if (mUsers.get(i).getBusinessId().equals(businessId)) {
+                notifyItemChanged(i, "updateUnread");
+                break;
+            }
+        }
     }
 
     public void removeContacts() {
-        for (int i = 0; i < mSelectedPositions.size(); i++) {
-            int position = mSelectedPositions.keyAt(i);
-            mUsers.remove(position);
-            notifyItemRemoved(position);
+        List<String> positionsById = getSelectedItems();
+        int size = mSelectedPositions.size();
+        int p = 0;
+
+        for (int i = 0; i < mUsers.size(); i++) {
+            if (mUsers.get(i).getId() == Long.parseLong(positionsById.get(p))) {
+                mUsers.remove(i);
+                notifyItemRemoved(i);
+                size--;
+                p++;
+                i = 0;
+
+                if (size == 0) {
+                    break;
+                }
+            }
         }
 
-        clearSelections(false);
+        mSelectedPositions.clear();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-        public SimpleDraweeView ivUserImage;
-        public MediumTextView tvUser;
-        public RegularTextView tvLastMessage;
-        public ImageView ivUnread;
+    private String setDate(AppCompatActivity activity, long timeOfCreation) {
+        if (activity == null) {
+            return "";
+        }
 
-        public ViewHolder(View itemView) {
+        long now = System.currentTimeMillis();
+
+        // Compute start of the day for the timestamp
+        Calendar cal = Calendar.getInstance(Locale.getDefault());
+        cal.setTimeInMillis(now);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        if (timeOfCreation > cal.getTimeInMillis()) {
+            return Utils.getTimeOrDay(activity, timeOfCreation, false);
+        } else {
+            long diff = now - timeOfCreation;
+            long diffd = diff / (1000 * 60 * 60 * 24);
+
+            if (diffd > 7) {
+                return Utils.getDate(activity, timeOfCreation, true);
+            } else if (diffd > 0 && diffd <= 7){
+                return Utils.getTimeOrDay(activity, timeOfCreation, true);
+            } else {
+                return activity.getString(R.string.chat_day_yesterday);
+            }
+        }
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+        private SimpleDraweeView ivUserImage;
+        private MediumTextView tvUser;
+        private RegularTextView tvDate;
+        private RegularTextView tvLastMessage;
+        private ImageView ivUnread;
+        protected WeakReference<AppCompatActivity> activity;
+
+        ViewHolder(View itemView, WeakReference<AppCompatActivity> activity) {
             super(itemView);
+
+            this.activity = activity;
+
             this.ivUserImage = (SimpleDraweeView) itemView
                     .findViewById(R.id.sdvContactAvatar);
             this.tvUser = (MediumTextView) itemView
-                    .findViewById(R.id.tvUser);
+                    .findViewById(R.id.mtvUser);
+            this.tvDate = (RegularTextView) itemView
+                    .findViewById(R.id.rtvDate);
             this.tvLastMessage = (RegularTextView) itemView
-                    .findViewById(R.id.tvLastMessage);
+                    .findViewById(R.id.rtvLastMessage);
             this.ivUnread = (ImageView) itemView
                     .findViewById(R.id.ivUnread);
 
@@ -159,18 +258,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             itemView.setOnLongClickListener(this);
         }
 
-        public void setContact(dbBusiness user, int position) {
-            if (ConversaApp.getInstance(mActivity).getDB().hasUnreadMessagesOrNewMessages(user.getBusinessId())) {
-                this.ivUnread.setVisibility(View.VISIBLE);
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    this.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification, null));
-                } else {
-                    this.ivUnread.setBackground(mActivity.getResources().getDrawable(R.drawable.notification));
-                }
-            } else {
-                this.ivUnread.setVisibility(View.GONE);
-            }
-
+        void setContact(dbBusiness user, int position) {
             this.tvUser.setText(user.getDisplayName());
             this.ivUserImage.setImageURI(Utils.getUriFromString(user.getAvatarThumbFileId()));
 
@@ -178,36 +266,83 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
             if (mSelectedPositions.get(position, false)) {
                 this.itemView.setActivated(true);
+            } else {
+                this.itemView.setActivated(false);
             }
         }
 
-        public void updateLastMessage(dbBusiness user) {
-            dbMessage lastMessage = ConversaApp.getInstance(mActivity).getDB().getLastMessage(user.getBusinessId());
+        void toggleActivate() {
+            if (this.itemView.isActivated()) {
+                this.itemView.setActivated(false);
+            } else {
+                this.itemView.setActivated(true);
+            }
+        }
+
+        void updateView() {
+            this.ivUnread.setVisibility(View.GONE);
+        }
+
+        void updateLastMessage(dbBusiness user) {
+            if (this.activity.get() == null) {
+                return;
+            }
+
+            nChatItem info = ConversaApp.getInstance(this.activity.get()).getDB()
+                    .getLastMessageAndUnredCount(user.getBusinessId());
+            dbMessage lastMessage = info.getMessage();
 
             if(lastMessage == null) {
                 this.tvLastMessage.setText("");
+                this.tvDate.setVisibility(View.GONE);
             } else {
+                this.tvDate.setVisibility(View.VISIBLE);
+                this.tvDate.setText(setDate(this.activity.get(), lastMessage.getCreated()));
+
                 String from;
-                if(lastMessage.getFromUserId().equals(Account.getCurrentUser().getObjectId())) {
-                    from = mActivity.getString(R.string.me);
+
+                if (lastMessage.getFromUserId().equals(
+                        ConversaApp.getInstance(this.activity.get())
+                                .getPreferences()
+                                .getCustomerId()))
+                {
+                    from = this.activity.get().getString(R.string.me);
                 } else {
                     from = user.getDisplayName();
                 }
 
                 switch(lastMessage.getMessageType()) {
                     case Const.kMessageTypeImage:
-                        this.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_image, from));
+                        this.tvLastMessage.setText(this.activity.get()
+                                .getString(R.string.contacts_last_message_image, from));
                         break;
                     case Const.kMessageTypeLocation:
-                        this.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_location, from));
+                        this.tvLastMessage.setText(this.activity.get()
+                                .getString(R.string.contacts_last_message_location, from));
                         break;
                     case Const.kMessageTypeText:
-                        this.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_text, from, lastMessage.getBody()));
+                        this.tvLastMessage.setText(this.activity.get()
+                                .getString(R.string.contacts_last_message_text, from,
+                                        lastMessage.getBody().replaceAll("\\n", " ")));
                         break;
                     default:
-                        this.tvLastMessage.setText(mActivity.getString(R.string.contacts_last_message_default, from));
+                        this.tvLastMessage.setText(this.activity.get()
+                                .getString(R.string.contacts_last_message_default, from));
                         break;
                 }
+            }
+
+            if (info.hasUnreadMessages()) {
+                this.ivUnread.setVisibility(View.VISIBLE);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    this.ivUnread.setBackground(this.activity.get().getResources()
+                            .getDrawable(R.drawable.notification, null));
+                } else {
+                    this.ivUnread.setBackground(this.activity.get().getResources()
+                            .getDrawable(R.drawable.notification));
+                }
+            } else {
+                this.ivUnread.setVisibility(View.INVISIBLE);
             }
         }
 
@@ -230,4 +365,3 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     }
 
 }
-

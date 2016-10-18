@@ -19,18 +19,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
-import ee.app.conversa.events.MessagePressedEvent;
+import ee.app.conversa.delivery.DeliveryStatus;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.RegularTextView;
 
@@ -44,14 +43,21 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 	private final int TO_ME_VIEW_TYPE = 1;
 	private final int FROM_ME_VIEW_TYPE = 2;
 	private final int LOADER_TYPE = 3;
-	private final String toUser;
+	private final OnItemClickListener listener;
 	private final WeakReference<AppCompatActivity> mActivity;
+
+	private String toUser;
 	private List<Object> mMessages;
 
-	public MessagesAdapter(AppCompatActivity activity, String toUser) {
+	public interface OnItemClickListener {
+		void onItemClick(dbMessage message, View view, int position);
+	}
+
+	public MessagesAdapter(AppCompatActivity activity, String toUser, OnItemClickListener listener) {
 		this.toUser = toUser;
 		this.mActivity = new WeakReference<>(activity);
 		this.mMessages = new ArrayList<>(20);
+		this.listener = listener;
 	}
 
 	@Override
@@ -102,6 +108,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 								((MessageViewHolder)holder).updateLastMessage((dbMessage)mMessages.get(position));
 								break;
 							}
+							case "updateStatus": {
+								((MessageViewHolder)holder).updateDeliveryStatus();
+								break;
+							}
+							case "updateImageView": {
+								((MessageViewHolder)holder).updateImageView();
+								break;
+							}
 						}
 					}
 				}
@@ -130,9 +144,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		}
 	}
 
-	public void updateTime(int position, int count) {
-		Logger.error("TIMER", "RUN\nRUN\nRUN\nFirst:"+position+"\nCount:"+count);
-		notifyItemRangeChanged(position, count, "updateTime");
+	public void updateFromId(String toUser) {
+		this.toUser = toUser;
 	}
 
 	public void setMessages(List<dbMessage> messages) {
@@ -171,20 +184,40 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 		notifyItemRangeInserted(positionStart, messages.size());
 	}
 
-	public void updateMessage(dbMessage message, int from, int count) {
+	public void updateImageView(dbMessage message, int from, int count) {
 		int size = mMessages.size();
 
 		for (int i = 0; i < size; i++) {
 			dbMessage m = (dbMessage) mMessages.get(i);
 			if (m.getId() == message.getId()) {
-				m.setDeliveryStatus(message.getDeliveryStatus());
-				mMessages.set(i, m);
+				m.setLocalUrl(message.getLocalUrl());
 				if (i >= from && i <= (from + count)) {
-					notifyItemChanged(i);
+					notifyItemChanged(i, "updateImageView");
 				}
 				break;
 			}
 		}
+	}
+
+	public void updateStatus(dbMessage message, int from, int count) {
+		if (message.getDeliveryStatus().equals(DeliveryStatus.statusParseError)) {
+			int size = mMessages.size();
+
+			for (int i = 0; i < size; i++) {
+				dbMessage m = (dbMessage) mMessages.get(i);
+				if (m.getId() == message.getId()) {
+					m.setDeliveryStatus(message.getDeliveryStatus());
+					if (i >= from && i <= (from + count)) {
+						notifyItemChanged(i, "updateStatus");
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	public void updateTime(int position, int count) {
+		notifyItemRangeChanged(position, count, "updateTime");
 	}
 
 	private String setDate(dbMessage message, AppCompatActivity activity) {
@@ -192,40 +225,32 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			return "";
 		}
 
-		String subText;
-
-		long timeOfCreationOrUpdate = message.getCreated();
-		if (message.getCreated() < message.getModified()) {
-			timeOfCreationOrUpdate = message.getModified();
-		}
-
-		long diff = System.currentTimeMillis() - timeOfCreationOrUpdate;
+		long timeOfCreation = message.getCreated();
+		long diff = System.currentTimeMillis() - timeOfCreation;
 		long diffm = diff / (1000 * 60);
 		long diffh = diff / (1000 * 60 * 60);
 		long diffd = diff / (1000 * 60 * 60 * 24);
 		long diffw  = diff / (1000 * 60 * 60 * 24 * 7);
 
 		if (diffw >= 2) {
-			subText = activity.getString(R.string.weeks_ago, diffw);
+			return activity.getString(R.string.weeks_ago, diffw);
 		} else if (diffw >= 1 && diffw < 2) {
-			subText = activity.getString(R.string.week_ago);
+			return activity.getString(R.string.week_ago);
 		} else if (diffh >= 48 && diffh < 168) {
-			subText = activity.getString(R.string.days_ago, diffd);
+			return activity.getString(R.string.days_ago, diffd);
 		} else if (diffh >= 24 && diffh < 48) {
-			subText = activity.getString(R.string.day_ago);
+			return activity.getString(R.string.day_ago);
 		} else if (diffh >= 2 && diffh < 24) {
-			subText = activity.getString(R.string.hours_ago, diffh);
+			return activity.getString(R.string.hours_ago, diffh);
 		} else if (diffm >= 60 && diffm < 120) {
-			subText = activity.getString(R.string.hour_ago);
+			return activity.getString(R.string.hour_ago);
 		} else if (diffm > 1 && diffm < 60) {
-			subText = activity.getString(R.string.minutes_ago, diffm);
+			return activity.getString(R.string.minutes_ago, diffm);
 		} else if (diffm == 1) {
-			subText = activity.getString(R.string.minute_ago);
+			return activity.getString(R.string.minute_ago);
 		} else {
-			subText = activity.getString(R.string.posted_less_than_a_minute_ago);
+			return activity.getString(R.string.posted_less_than_a_minute_ago);
 		}
-
-		return subText;
 	}
 
 	private class ViewHolder extends MessageViewHolder {
@@ -333,7 +358,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			}
 
 			// 5. Decide whether to show message status
-			if (message.getDeliveryStatus().equals(dbMessage.statusParseError)) {
+			if (message.getDeliveryStatus().equals(DeliveryStatus.statusParseError)) {
 				this.mLtvSubText.setVisibility(View.VISIBLE);
 				if (this.activity.get() != null) {
 					this.mLtvSubText.setText(activity.get().getString(R.string.message_sent_error));
@@ -354,6 +379,24 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			}
 		}
 
+		public void updateDeliveryStatus() {
+			if (this.activity.get() != null) {
+				this.mLtvSubText.setVisibility(View.VISIBLE);
+				this.mLtvSubText.setText(activity.get().getString(R.string.message_sent_error));
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					this.mLtvSubText.setTextColor(activity.get().getResources()
+							.getColor(R.color.default_red, null));
+				} else {
+					this.mLtvSubText.setTextColor(activity.get().getResources()
+							.getColor(R.color.default_red));
+				}
+			}
+		}
+
+		public void updateImageView() {
+			loadImage();
+		}
+
 		void loadMessage() {
 			if (message.get() != null) {
 				this.mRtvMessageText.setText(message.get().getBody());
@@ -372,16 +415,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			if (activity.get() != null && message.get() != null) {
 				final float density = activity.get().getResources().getDisplayMetrics().density;
 				// 1. Resize image to display
-				final int width = (message.get().getWidth() < 1) ? 210 : message.get().getWidth();
-				final int height = (message.get().getHeight() < 1) ? 100 : message.get().getHeight();
+				final int width = (message.get().getWidth() < 1)
+						? Utils.dpToPixels(mActivity.get(), 210) : (int) (message.get().getWidth() / density);
+				final int height = (message.get().getHeight() < 1)
+						? Utils.dpToPixels(mActivity.get(), 100) : (int) (message.get().getHeight() / density);
 				// 2.1 Convert the DP into pixel
 				ViewGroup.LayoutParams params = this.mSdvMessageImage.getLayoutParams();
-				params.height = (int) (height / density);
-				params.width = (int) (width / density);
+				params.height = height;
+				params.width = width;
 				// 2.2 Set image
 				this.mSdvMessageImage.setLayoutParams(params);
-				if (message.get().getFileId() != null) {
-					this.mSdvMessageImage.setImageURI(Uri.fromFile(new File(message.get().getFileId())));
+				if (message.get().getLocalUrl() != null) {
+					this.mSdvMessageImage.setImageURI(Uri.fromFile(new File(message.get().getLocalUrl())));
 				}
 				this.mSdvMessageImage.refreshDrawableState();
 			}
@@ -389,9 +434,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 
 		@Override
 		public void onClick(View view) {
-			if (message.get() != null) {
-				if (!message.get().getMessageType().equals(Const.kMessageTypeText)) {
-					EventBus.getDefault().post(new MessagePressedEvent(message.get()));
+			if (message.get() != null && !message.get().getMessageType().equals(Const.kMessageTypeText)) {
+				if (listener != null) {
+					listener.onItemClick(message.get(), view, getAdapterPosition());
 				}
 			}
 		}
