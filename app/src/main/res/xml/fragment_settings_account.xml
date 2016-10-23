@@ -5,14 +5,12 @@
     <PreferenceCategory
         android:title="@string/sett_account_account_title">
 
-        <EditTextPreference
+        <Preference
             android:title="@string/sett_account_email_title"
-            android:defaultValue=""
             android:key="sett_account_email_key" />
 
-        <EditTextPreference
+        <Preference
             android:title="@string/sett_account_password_title"
-            android:defaultValue=""
             android:key="sett_account_password_key" />
 
     </PreferenceCategory>

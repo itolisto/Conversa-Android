@@ -14,7 +14,6 @@ import android.provider.MediaStore;
 
 public class ImageFilePath {
 
-
     /**
      * Method for return file path of Gallery image
      *
@@ -154,4 +153,5 @@ public class ImageFilePath {
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
+
 }

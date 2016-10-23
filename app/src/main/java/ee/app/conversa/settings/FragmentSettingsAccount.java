@@ -2,16 +2,16 @@ package ee.app.conversa.settings;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.onesignal.OneSignal;
 import com.parse.ParseException;
 import com.parse.SaveCallback;
@@ -30,8 +30,7 @@ import ee.app.conversa.utils.Utils;
 /**
  * Created by edgargomez on 9/9/16.
  */
-public class FragmentSettingsAccount extends PreferenceFragment implements Preference.OnPreferenceClickListener,
-Preference.OnPreferenceChangeListener {
+public class FragmentSettingsAccount extends PreferenceFragment implements Preference.OnPreferenceClickListener {
 
     @Override
     public void onCreate(Bundle paramBundle) {
@@ -39,9 +38,9 @@ Preference.OnPreferenceChangeListener {
         addPreferencesFromResource(R.xml.fragment_settings_account);
 
         this.findPreference(PreferencesKeys.ACCOUNT_EMAIL_KEY)
-                .setOnPreferenceChangeListener(this);
+                .setOnPreferenceClickListener(this);
         this.findPreference(PreferencesKeys.ACCOUNT_PASSWORD_KEY)
-                .setOnPreferenceChangeListener(this);
+                .setOnPreferenceClickListener(this);
         this.findPreference(PreferencesKeys.ACCOUNT_CLEAR_RECENT_KEY)
                 .setOnPreferenceClickListener(this);
         this.findPreference(PreferencesKeys.ACCOUNT_LOGOUT_KEY)
@@ -59,19 +58,55 @@ Preference.OnPreferenceChangeListener {
     @Override
     public boolean onPreferenceClick(Preference preference) {
         switch (preference.getKey()) {
+            case PreferencesKeys.ACCOUNT_EMAIL_KEY: {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.edittext_dialog, null);
+                dialogBuilder.setView(dialogView);
+
+                final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
+
+                dialogBuilder.setTitle(getString(R.string.sett_account_email_title));
+                dialogBuilder.setPositiveButton(getString(R.string.action_change), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        onPreferenceChange(PreferencesKeys.ACCOUNT_EMAIL_KEY, edt.getText().toString());
+                    }
+                });
+                dialogBuilder.setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog b = dialogBuilder.create();
+                b.show();
+                break;
+            }
+            case PreferencesKeys.ACCOUNT_PASSWORD_KEY: {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.edittext_dialog, null);
+                dialogBuilder.setView(dialogView);
+
+                final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
+                edt.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+                dialogBuilder.setTitle(getString(R.string.sett_account_password_title));
+                dialogBuilder.setPositiveButton(getString(R.string.action_change), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        onPreferenceChange(PreferencesKeys.ACCOUNT_PASSWORD_KEY, edt.getText().toString());
+                    }
+                });
+                dialogBuilder.setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog b = dialogBuilder.create();
+                b.show();
+                break;
+            }
             case PreferencesKeys.ACCOUNT_CLEAR_RECENT_KEY: {
-                int colorNegative, colorPositive;
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    colorPositive = getActivity().getResources().getColor(android.R.color.holo_red_light, null);
-                    colorNegative = getActivity().getResources().getColor(R.color.default_black, null);
-                } else {
-                    colorPositive = getActivity().getResources().getColor(android.R.color.holo_red_light);
-                    colorNegative = getActivity().getResources().getColor(R.color.default_black);
-                }
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("");
                 builder.setMessage(getString(R.string.recent_searches_message));
 
                 String positiveText = getString(R.string.recent_searches_ok);
@@ -84,7 +119,7 @@ Preference.OnPreferenceChangeListener {
                             }
                         });
 
-                String negativeText = getString(R.string.cancel);
+                String negativeText = getString(android.R.string.no);
                 builder.setNegativeButton(negativeText,
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -98,83 +133,30 @@ Preference.OnPreferenceChangeListener {
                 break;
             }
             case PreferencesKeys.ACCOUNT_LOGOUT_KEY: {
-                int colorNegative, colorPositive;
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(getString(R.string.logout_message));
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    colorPositive = getActivity().getResources().getColor(android.R.color.holo_red_light, null);
-                    colorNegative = getActivity().getResources().getColor(R.color.default_black, null);
-                } else {
-                    colorPositive = getActivity().getResources().getColor(android.R.color.holo_red_light);
-                    colorNegative = getActivity().getResources().getColor(R.color.default_black);
-                }
-
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                builder.setTitle(getString(R.string.logout_message));
-//                builder.setMessage("");
-//
-//                String positiveText = getString(R.string.logout_ok);
-//                builder.setPositiveButton(positiveText,
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.dismiss();
-//                                appLogout();
-//                            }
-//                        });
-//
-//                String negativeText = getString(R.string.cancel);
-//                builder.setNegativeButton(negativeText,
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.dismiss();
-//                            }
-//                        });
-//
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-                new MaterialDialog.Builder(getActivity())
-                        .title(getString(R.string.logout_message))
-                        .positiveText(getString(R.string.logout_ok))
-                        .negativeText(getString(R.string.cancel))
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                String positiveText = getString(R.string.logout_ok);
+                builder.setPositiveButton(positiveText,
+                        new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 appLogout();
                             }
-                        })
-                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                        });
+
+                String negativeText = getString(android.R.string.no);
+                builder.setNegativeButton(negativeText,
+                        new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
-                        })
-                        .show();
+                        });
 
-//                Context a = this.getActivity();
-//                MaterialDialog.Builder builder = new MaterialDialog.Builder(a)
-//                        .title(getString(R.string.logout_message))
-//                        .positiveText(getString(R.string.logout_ok))
-//                        .negativeText(getString(R.string.cancel))
-//                        .positiveColor(colorPositive)
-//                        .negativeColor(colorNegative)
-//                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-//                            @Override
-//                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-//                                dialog.dismiss();
-//                                appLogout();
-//                            }
-//                        })
-//                        .onNegative(new MaterialDialog.SingleButtonCallback() {
-//                            @Override
-//                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-//                                dialog.dismiss();
-//                            }
-//                        });
-//
-//                MaterialDialog dialog = builder.build();
-//                dialog.show();
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 break;
             }
             default:
@@ -184,9 +166,8 @@ Preference.OnPreferenceChangeListener {
         return true;
     }
 
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        switch (preference.getKey()) {
+    public boolean onPreferenceChange(String key, String newValue) {
+        switch (key) {
             case PreferencesKeys.ACCOUNT_EMAIL_KEY: {
                 final String oldEmail = Account.getCurrentUser().getEmail();
                 String email = (String) newValue;
@@ -250,40 +231,41 @@ Preference.OnPreferenceChangeListener {
     }
 
     private void showSuccessMessage(String message) {
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
-                .title("")
-                .content(message)
-                .positiveText(getString(android.R.string.ok))
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(message);
+
+        String positiveText = getString(android.R.string.ok);
+        builder.setPositiveButton(positiveText,
+                new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
 
-        MaterialDialog dialog = builder.build();
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 
     private void showErrorMessage(String message) {
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
-                .title("")
-                .content(message)
-                .positiveText(getString(android.R.string.ok))
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(message);
+
+        String positiveText = getString(android.R.string.ok);
+        builder.setPositiveButton(positiveText,
+                new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
 
-        MaterialDialog dialog = builder.build();
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 
     private void appLogout() {
-        boolean result = ConversaApp.getInstance(getActivity()).getDB().deleteDatabase();
-        if(result)
+        if (ConversaApp.getInstance(getActivity()).getDB().deleteDatabase())
             Logger.error("Logout", "Database removed");
         else
             Logger.error("Logout", "An error has occurred while removing databased. Database not removed");

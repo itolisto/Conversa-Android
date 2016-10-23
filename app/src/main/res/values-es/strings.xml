@@ -57,7 +57,7 @@
     <string name="hour_ago">Hace una hora</string>
     <string name="hours_ago">Hace %1d horas</string>
     <string name="invalid_token_message">Tu token ha expirado. Por favor inicia sesión de nuevo.</string>
-    <string name="language_spinner_title">Selecciona idioma</string>
+    <string name="language_spinner_title">Seleccionar idioma</string>
     <string name="link_title">Página web</string>
     <string name="loading">Cargando</string>
     <string name="locations_title">Ubicaciones</string>
@@ -191,4 +191,8 @@
     <string name="chat_date_wednesday">Miércoles</string>
     <string name="chat_day_yesterday">Ayer</string>
     <string name="chat_date_sunday">Domingo</string>
+    <string name="sett_help_help">Ayuda</string>
+    <string name="sett_help_licences">Licencias</string>
+    <string name="sett_help_terms">Términos de uso</string>
+    <string name="action_change">Cambiar</string>
 </resources>

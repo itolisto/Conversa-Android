@@ -2,13 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:title="@string/sett_chat_message_title">
-        <ListPreference
-            android:summary="@string/sett_chat_quality_default_entry"
-            android:entries="@array/sett_chat_quality_entries"
-            android:entryValues="@array/sett_chat_quality_values"
-            android:defaultValue="1"
+        <Preference
             android:key="sett_chat_quality_key"
-            android:title="@string/sett_chat_quality_title" />
+            android:title="@string/sett_chat_quality_title"
+            android:summary="@string/sett_chat_quality_default_entry" />
         <ee.app.conversa.view.SwitchCompatPreference
             android:key="sett_chat_message_sent_sound_key"
             android:title="@string/sett_chat_message_sent_sound"
@@ -17,10 +14,5 @@
             android:key="sett_chat_message_received_sound_key"
             android:title="@string/sett_chat_message_received_sound"
             android:defaultValue="true" />
-        <!--<ee.app.conversa.view.SwitchCompatPreference-->
-            <!--android:key="sett_chat_download_automatically_key"-->
-            <!--android:title="@string/sett_chat_download_automatically_title"-->
-            <!--android:summary="@string/sett_chat_download_automatically_summary"-->
-            <!--android:defaultValue="true" />-->
     </PreferenceCategory>
 </PreferenceScreen>

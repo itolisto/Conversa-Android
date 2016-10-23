@@ -157,16 +157,17 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Generi
 
                 params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 vDivider.setLayoutParams(params);
-            }
 
-            Uri uri;
-            if(category.getAvatarUrl().isEmpty()) {
-                uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
-            } else {
-                uri = Uri.parse(category.getAvatarUrl());
-            }
+                Uri uri;
 
-            sdvCategoryImage.setImageURI(uri);
+                if(category.getAvatarUrl().isEmpty()) {
+                    uri = Utils.getDefaultImage(activity.get(), R.drawable.business_default);
+                } else {
+                    uri = Uri.parse(category.getAvatarUrl());
+                }
+
+                sdvCategoryImage.setImageURI(uri);
+            }
         }
 
         @Override

@@ -101,7 +101,7 @@ public class ActivityLocation extends ConversaActivity implements OnMapReadyCall
 		}
 
 		mMapPinBlue = BitmapFactory.decodeResource(getResources(),
-				R.drawable.location_more_icon_active);
+				R.drawable.ic_location_me);
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class ActivityLocation extends ConversaActivity implements OnMapReadyCall
 					new MarkerOptions()
 							.title(nameOfUser)
 							.position(new LatLng(myLat, myLon))
-							.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_more_icon)));
+							.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location)));
 		}
 	}
 

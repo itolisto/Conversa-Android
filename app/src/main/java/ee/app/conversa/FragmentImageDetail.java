@@ -23,7 +23,6 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -79,6 +78,11 @@ public class FragmentImageDetail extends Fragment {
         final View v = inflater.inflate(R.layout.image_detail_fragment, container, false);
         mImageView = (ZoomableDraweeView) v.findViewById(R.id.imageView);
         Uri uri = Utils.getUriFromString(mImageUrl);
+
+        if (uri == null) {
+            uri = Utils.getDefaultImage(getActivity(), R.drawable.business_default);
+        }
+
         mImageView.setAllowTouchInterceptionWhileZoomed(true);
         DraweeController controller = Fresco.newDraweeControllerBuilder()
                 .setUri(uri)
@@ -89,20 +93,17 @@ public class FragmentImageDetail extends Fragment {
         return v;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // Pass clicks on the ImageView to the parent activity to handle
-        if (OnClickListener.class.isInstance(getActivity())) {
-            mImageView.setOnClickListener((OnClickListener) getActivity());
-        }
-    }
-
     private GestureDetector.SimpleOnGestureListener createTapListener(final int position) {
         return new GestureDetector.SimpleOnGestureListener() {
             @Override
             public void onLongPress(MotionEvent e) {
                 Logger.error("FragmentImageDetail", "onLongPress: " + position);
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                ((ActivityImageDetail)getActivity()).onClick(mImageView);
+                return true;
             }
         };
     }

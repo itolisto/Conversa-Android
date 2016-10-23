@@ -1,11 +1,11 @@
 package ee.app.conversa;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -97,7 +97,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                 break;
             }
             case R.id.ivLanguage: {
-                int index;
+                final int index;
 
                 switch(ConversaApp.getInstance(getBaseContext()).getPreferences().getLanguage()) {
                     case "en":
@@ -116,10 +116,12 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                 b.setSingleChoiceItems(R.array.language_entries, index, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ConversaApp.getInstance(getBaseContext()).getPreferences()
-                                .setLanguage(getResources().getStringArray(R.array.language_values)[which]);
-                        recreate();
                         dialog.dismiss();
+                        if (which != index) {
+                            ConversaApp.getInstance(getBaseContext()).getPreferences()
+                                    .setLanguage(getResources().getStringArray(R.array.language_values)[which]);
+                            recreate();
+                        }
                     }
                 });
                 b.show();

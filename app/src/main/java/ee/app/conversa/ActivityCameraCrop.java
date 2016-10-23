@@ -309,7 +309,7 @@ public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouc
     public void scaleView(Bitmap mBitmap) {
         View top_view = findViewById(R.id.topView);
         View bottom_view = findViewById(R.id.bottomView);
-        RelativeLayout footer = (RelativeLayout) findViewById(R.id.llFooter);
+		Button footer = (Button) findViewById(R.id.btnCameraOk);
         LinearLayout crop_frame = (LinearLayout) findViewById(R.id.llCropFrame);
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth();

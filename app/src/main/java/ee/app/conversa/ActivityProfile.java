@@ -210,6 +210,10 @@ public class ActivityProfile extends ConversaActivity implements
 
         Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
+        if (uri == null) {
+            uri = Utils.getDefaultImage(this, R.drawable.business_default);
+        }
+
         Postprocessor redMeshPostprocessor = new BasePostprocessor() {
             @Override
             public String getName() {
@@ -507,8 +511,9 @@ public class ActivityProfile extends ConversaActivity implements
                         mSdvSpecialPromo.setVisibility(View.VISIBLE);
 
                         Uri uri;
+
                         if(promoBackground.isEmpty()) {
-                            uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.specialpromo_dropshadow);
+                            uri = Utils.getDefaultImage(this, R.drawable.specialpromo_dropshadow);
                         } else {
                             uri = Uri.parse(promoBackground);
                         }

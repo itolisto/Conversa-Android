@@ -27,6 +27,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.afollestad.materialcamera.MaterialCamera;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -73,7 +74,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private EditText mEtMessageText;
 	private BottomSheetDialogFragment myBottomSheet;
 	private ImageButton mBtnWallSend;
-	private Bitmap bmAvatar;
+	private Bitmap bmAvatar = null;
 
 	private Timer timer;
 
@@ -246,6 +247,11 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		SimpleDraweeView ivContactAvatar = (SimpleDraweeView) toolbar.findViewById(R.id.ivAvatarChat);
 
 		Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
+
+		if (uri == null) {
+			uri = Utils.getDefaultImage(this, R.drawable.business_default);
+		}
+
 		Postprocessor redMeshPostprocessor = new BasePostprocessor() {
 			@Override
 			public String getName() {
@@ -463,6 +469,19 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 							businessObject);
 					break;
 				}
+				case CAMERA_RQ: {
+//					final File file = new File(data.getData().getPath());
+//					Toast.makeText(getContext(), String.format("Saved to: %s, size: %s",
+//							file.getAbsolutePath(), fileSize(file)), Toast.LENGTH_LONG).show();
+					break;
+				}
+			}
+		} else if (requestCode == CAMERA_RQ) {
+			if (data != null && data.getSerializableExtra(MaterialCamera.ERROR_EXTRA) != null) {
+				Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
+				if (e != null) {
+					Logger.error("onActivityResult", e.getMessage());
+				}
 			}
 		}
 	}
@@ -602,7 +621,9 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	@Override
 	public void ContactAdded(dbBusiness response) {
 		if (response.getBusinessId().equals(businessObject.getBusinessId())) {
-			Utils.saveAvatarToInternalStorage(this, bmAvatar, response.getId());
+			if (bmAvatar != null) {
+				Utils.saveAvatarToInternalStorage(this, bmAvatar, response.getId());
+			}
 		}
 	}
 

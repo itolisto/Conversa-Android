@@ -10,11 +10,8 @@
     <Preference android:key="preferences__notifications"
         android:title="@string/preferences__notifications" />
 
-    <ListPreference android:key="preferences__language"
-        android:title="@string/preferences__language"
-        android:entries="@array/language_entries"
-        android:entryValues="@array/language_values"
-        android:defaultValue="es"/>
+    <Preference android:key="preferences__language"
+        android:title="@string/preferences__language" />
 
     <Preference android:key="preferences__share"
         android:title="@string/preferences__share" />

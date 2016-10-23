@@ -1,5 +1,6 @@
 package ee.app.conversa.adapters;
 
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -40,7 +41,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     private OnItemClickListener listener;
     private OnLongClickListener longlistener;
     private SparseBooleanArray mSelectedPositions;
-    private final WeakReference<AppCompatActivity> mActivity;
+    private AppCompatActivity mActivity;
 
     public interface OnItemClickListener {
         void onItemClick(dbBusiness contact, int position);
@@ -52,7 +53,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     public ChatsAdapter(AppCompatActivity activity, OnItemClickListener listener, OnLongClickListener longlistener) {
         this.mUsers = new ArrayList<>();
-        this.mActivity = new WeakReference<>(activity);
+        this.mActivity = activity;
         this.listener = listener;
         this.longlistener = longlistener;
         this.mSelectedPositions = new SparseBooleanArray(1);
@@ -65,8 +66,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
-        return new ViewHolder(v, this.mActivity);
+        return new ViewHolder(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false)
+                , new WeakReference<>(mActivity));
     }
 
     @Override
@@ -179,21 +181,23 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     public void removeContacts() {
         List<String> positionsById = getSelectedItems();
-        int size = mSelectedPositions.size();
-        int p = 0;
 
-        for (int i = 0; i < mUsers.size(); i++) {
-            if (mUsers.get(i).getId() == Long.parseLong(positionsById.get(p))) {
-                mUsers.remove(i);
-                notifyItemRemoved(i);
-                size--;
-                p++;
-                i = 0;
-
-                if (size == 0) {
+        int i;
+        while (true) {
+            i = 0;
+            while(true) {
+                if (mUsers.get(i).getId() == Long.parseLong(positionsById.get(0))) {
+                    mUsers.remove(i);
+                    positionsById.remove(0);
+                    notifyItemRemoved(i);
                     break;
+                } else {
+                    i++;
                 }
             }
+
+            if (positionsById.size() == 0)
+                break;
         }
 
         mSelectedPositions.clear();
@@ -220,9 +224,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             long diff = now - timeOfCreation;
             long diffd = diff / (1000 * 60 * 60 * 24);
 
-            if (diffd > 7) {
+            if (diffd >= 7) {
                 return Utils.getDate(activity, timeOfCreation, true);
-            } else if (diffd > 0 && diffd <= 7){
+            } else if (diffd > 0 && diffd < 7){
                 return Utils.getTimeOrDay(activity, timeOfCreation, true);
             } else {
                 return activity.getString(R.string.chat_day_yesterday);
@@ -260,7 +264,14 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         void setContact(dbBusiness user, int position) {
             this.tvUser.setText(user.getDisplayName());
-            this.ivUserImage.setImageURI(Utils.getUriFromString(user.getAvatarThumbFileId()));
+
+            Uri uri = Utils.getUriFromString(user.getAvatarThumbFileId());
+
+            if (uri == null) {
+                uri = Utils.getDefaultImage(activity.get(), R.drawable.business_default);
+            }
+
+            this.ivUserImage.setImageURI(uri);
 
             updateLastMessage(user);
 

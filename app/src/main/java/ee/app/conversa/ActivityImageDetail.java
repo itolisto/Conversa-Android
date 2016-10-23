@@ -17,22 +17,23 @@
 package ee.app.conversa;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 
-public class ActivityImageDetail extends FragmentActivity implements OnClickListener {
+public class ActivityImageDetail extends AppCompatActivity implements OnClickListener {
     public static final String EXTRA_IMAGE = "extra_image";
 
     private String mImageUrl;
@@ -43,6 +44,8 @@ public class ActivityImageDetail extends FragmentActivity implements OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+
         setContentView(R.layout.image_detail_pager);
 
         if (savedInstanceState == null) {
@@ -69,10 +72,18 @@ public class ActivityImageDetail extends FragmentActivity implements OnClickList
 
         // Enable some additional newer visibility and ActionBar features to create a more
         // immersive photo viewing experience
-        final ActionBar actionBar = getActionBar();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        if (toolbar != null) {
+            toolbar.getBackground().setAlpha(100);
+            setSupportActionBar(toolbar);
+        }
+
+        final ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
             // Hide title text and set home as up
+            actionBar.setShowHideAnimationEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -90,8 +101,8 @@ public class ActivityImageDetail extends FragmentActivity implements OnClickList
                     });
 
             // Start low profile mode and hide ActionBar
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-            actionBar.hide();
+            //mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+            //actionBar.hide();
         }
 
         // Set the current item based on the extra passed in to this activity
@@ -105,7 +116,7 @@ public class ActivityImageDetail extends FragmentActivity implements OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -145,7 +156,6 @@ public class ActivityImageDetail extends FragmentActivity implements OnClickList
      * Set on the ImageView in the ViewPager children fragments, to enable/disable low profile mode
      * when the ImageView is touched.
      */
-    @TargetApi(VERSION_CODES.HONEYCOMB)
     @Override
     public void onClick(View v) {
         final int vis = mPager.getSystemUiVisibility();

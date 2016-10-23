@@ -258,5 +258,9 @@
     <string name="chat_date_saturday">Saturday</string>
     <string name="chat_day_yesterday">Yesterday</string>
     <string name="chat_date_sunday">Sunday</string>
+    <string name="sett_help_licences">Licences</string>
+    <string name="sett_help_terms">Terms of use</string>
+    <string name="sett_help_help">Help</string>
+    <string name="action_change">Change</string>
 
 </resources>

@@ -50,9 +50,8 @@
             android:background="@drawable/ic_arrow_back" />
     </FrameLayout>
 
-    <LinearLayout
-        android:weightSum="3"
-        android:orientation="vertical"
+    <RelativeLayout
+        android:gravity="center"
         android:layout_toLeftOf="@id/ivAvatarChat"
         android:layout_toStartOf="@id/ivAvatarChat"
         android:layout_toRightOf="@id/flBack"
@@ -62,9 +61,8 @@
 
         <ee.app.conversa.view.MediumTextView
             android:id="@+id/tvChatName"
-            android:layout_weight="2"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="@android:color/black"
             android:textSize="15sp"
@@ -72,15 +70,15 @@
             android:maxLines="1" />
 
         <ee.app.conversa.view.LightTextView
+            android:layout_below="@id/tvChatName"
             android:id="@+id/tvChatStatus"
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="@color/default_gray"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:visibility="gone"
             android:maxLines="1" />
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -30,7 +30,7 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:layout_weight="1"
-        android:src="@drawable/location_more_icon"
+        android:src="@drawable/ic_location"
         style="?android:attr/buttonBarButtonStyle" />
 
 </LinearLayout>

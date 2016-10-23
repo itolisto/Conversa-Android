@@ -28,7 +28,6 @@ import ee.app.conversa.R;
 import ee.app.conversa.delivery.DeliveryStatus;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Const;
-import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.RegularTextView;
@@ -40,11 +39,12 @@ import ee.app.conversa.view.RegularTextView;
  */
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.GenericViewHolder> {
 
+	private final int SHOW_DATE_EACH_X_MESSAGES = 15;
 	private final int TO_ME_VIEW_TYPE = 1;
 	private final int FROM_ME_VIEW_TYPE = 2;
 	private final int LOADER_TYPE = 3;
 	private final OnItemClickListener listener;
-	private final WeakReference<AppCompatActivity> mActivity;
+	private final AppCompatActivity mActivity;
 
 	private String toUser;
 	private List<Object> mMessages;
@@ -55,7 +55,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 
 	public MessagesAdapter(AppCompatActivity activity, String toUser, OnItemClickListener listener) {
 		this.toUser = toUser;
-		this.mActivity = new WeakReference<>(activity);
+		this.mActivity = activity;
 		this.mMessages = new ArrayList<>(20);
 		this.listener = listener;
 	}
@@ -81,17 +81,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			return new IncomingViewHolder(
 					LayoutInflater.from(parent.getContext())
 							.inflate(R.layout.message_incoming_item, parent, false),
-					this.mActivity);
+					new WeakReference<>(mActivity));
 		} else if (viewType == FROM_ME_VIEW_TYPE) {
 			return new ViewHolder(
 					LayoutInflater.from(parent.getContext())
 							.inflate(R.layout.message_item, parent, false),
-					this.mActivity);
+					new WeakReference<>(mActivity));
 		} else {
 			return new LoaderViewHolder(
 					LayoutInflater.from(parent.getContext())
 							.inflate(R.layout.loader_item, parent, false),
-					this.mActivity);
+					new WeakReference<>(mActivity));
 		}
 	}
 
@@ -101,21 +101,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			super.onBindViewHolder(holder, position, payloads);
 		} else {
 			if (holder instanceof MessageViewHolder) {
-				if (payloads.size() > 0) {
-					if (payloads.get(0) instanceof String) {
-						switch ((String)payloads.get(0)) {
-							case "updateTime": {
-								((MessageViewHolder)holder).updateLastMessage((dbMessage)mMessages.get(position));
-								break;
-							}
-							case "updateStatus": {
-								((MessageViewHolder)holder).updateDeliveryStatus();
-								break;
-							}
-							case "updateImageView": {
-								((MessageViewHolder)holder).updateImageView();
-								break;
-							}
+				if (payloads.get(0) instanceof String) {
+					switch ((String)payloads.get(0)) {
+						case "updateTime": {
+							((MessageViewHolder)holder).updateLastMessage((dbMessage)mMessages.get(position));
+							break;
+						}
+						case "updateStatus": {
+							((MessageViewHolder)holder).updateDeliveryStatus();
+							break;
+						}
+						case "updateImageView": {
+							((MessageViewHolder)holder).updateImageView();
+							break;
 						}
 					}
 				}
@@ -130,16 +128,22 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 				if (mMessages.get(position + 1) instanceof dbMessage) {
 					((MessageViewHolder) holder).showMessage(
 							(dbMessage) mMessages.get(position),
-							(dbMessage) mMessages.get(position + 1));
+							(dbMessage) mMessages.get(position + 1),
+							position + 1
+					);
 				} else {
 					((MessageViewHolder)holder).showMessage(
 							(dbMessage)mMessages.get(position),
-							null);
+							null,
+							position + 1
+					);
 				}
 			} else {
 				((MessageViewHolder)holder).showMessage(
 						(dbMessage)mMessages.get(position),
-						null);
+						null,
+						position + 1
+				);
 			}
 		}
 	}
@@ -305,7 +309,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 			this.mRlBackground.setOnLongClickListener(this);
 		}
 
-		void showMessage(dbMessage message, dbMessage previousMessage) {
+		void showMessage(dbMessage message, dbMessage previousMessage, int position) {
 			this.message = new WeakReference<>(message);
 
 			// 1. Hide date. Will later check date text string and if it should be visible
@@ -352,9 +356,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 				this.mTvDate.setText(setDate(message, this.activity.get()));
 				this.mTvDate.setVisibility(View.VISIBLE);
 			} else if ((previousMessage.getCreated() + (15 * 60 * 1000)) <= message.getCreated()) {
-				Logger.error("message", "previous" + (previousMessage.getCreated() + (15 * 60 * 1000)) +"\ncurrent" + message.getCreated());
 				this.mTvDate.setText(setDate(message, this.activity.get()));
 				this.mTvDate.setVisibility(View.VISIBLE);
+			} else if (
+						(previousMessage.getFromUserId().equals(toUser) && !message.getFromUserId().equals(toUser))
+							||
+						(!previousMessage.getFromUserId().equals(toUser) && message.getFromUserId().equals(toUser))
+					)
+			{
+				if (position % SHOW_DATE_EACH_X_MESSAGES == 0) {
+					this.mTvDate.setText(setDate(message, this.activity.get()));
+					this.mTvDate.setVisibility(View.VISIBLE);
+				}
 			}
 
 			// 5. Decide whether to show message status
@@ -416,9 +429,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Generi
 				final float density = activity.get().getResources().getDisplayMetrics().density;
 				// 1. Resize image to display
 				final int width = (message.get().getWidth() < 1)
-						? Utils.dpToPixels(mActivity.get(), 210) : (int) (message.get().getWidth() / density);
+						? Utils.dpToPixels(activity.get(), 210) : (int) (message.get().getWidth() / density);
 				final int height = (message.get().getHeight() < 1)
-						? Utils.dpToPixels(mActivity.get(), 100) : (int) (message.get().getHeight() / density);
+						? Utils.dpToPixels(activity.get(), 100) : (int) (message.get().getHeight() / density);
 				// 2.1 Convert the DP into pixel
 				ViewGroup.LayoutParams params = this.mSdvMessageImage.getLayoutParams();
 				params.height = height;

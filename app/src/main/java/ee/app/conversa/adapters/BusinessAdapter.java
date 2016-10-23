@@ -88,8 +88,12 @@ public class BusinessAdapter extends RecyclerView.Adapter<BusinessAdapter.Generi
 
             if (temp.getAvatar() != null) {
                 uri = Utils.getUriFromString(temp.getAvatar().getUrl());
+
+                if (uri == null) {
+                    uri = Utils.getDefaultImage(mActivity, R.drawable.business_default);
+                }
             } else {
-                uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+                uri = Utils.getDefaultImage(mActivity, R.drawable.business_default);
             }
 
             ((ViewHolder) holder).sdvCategoryImage.setImageURI(uri);

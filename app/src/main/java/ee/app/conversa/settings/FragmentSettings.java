@@ -1,10 +1,12 @@
 package ee.app.conversa.settings;
 
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.AlertDialog;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
@@ -22,6 +24,10 @@ public class FragmentSettings extends PreferenceFragment implements Preference.O
         this.findPreference(PreferencesKeys.PREFERENCE_MAIN_NOTIFICATIONS)
                 .setOnPreferenceClickListener(this);
         this.findPreference(PreferencesKeys.PREFERENCE_MAIN_SHARE)
+                .setOnPreferenceClickListener(this);
+        this.findPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY)
+                .setOnPreferenceClickListener(this);
+        this.findPreference(PreferencesKeys.PREFERENCE_MAIN_HELP)
                 .setOnPreferenceClickListener(this);
 
         this.findPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY)
@@ -61,6 +67,34 @@ public class FragmentSettings extends PreferenceFragment implements Preference.O
             case PreferencesKeys.PREFERENCE_MAIN_NOTIFICATIONS:
                 fragment = new FragmentSettingsNotifications();
                 break;
+            case PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY:
+                final int index;
+
+                switch(ConversaApp.getInstance(getActivity()).getPreferences().getLanguage()) {
+                    case "en":
+                        index = 1;
+                        break;
+                    case "es":
+                        index = 2;
+                        break;
+                    default:
+                        index = 0;
+                        break;
+                }
+
+                AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+                b.setTitle(R.string.language_spinner_title);
+                b.setSingleChoiceItems(R.array.language_entries, index, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if (which != index)
+                            ConversaApp.getInstance(getActivity()).getPreferences()
+                                .setLanguage(getResources().getStringArray(R.array.language_values)[which]);
+                    }
+                });
+                b.show();
+                return true;
             case PreferencesKeys.PREFERENCE_MAIN_SHARE:
                 Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                 intent.setType("text/plain");
@@ -74,7 +108,7 @@ public class FragmentSettings extends PreferenceFragment implements Preference.O
                 startActivity(Intent.createChooser(intent, getActivity().getString(R.string.settings_share_conversa)));
                 return true;
             case PreferencesKeys.PREFERENCE_MAIN_HELP:
-                fragment = new FragmentSettingsNotifications();
+                fragment = new FragmentSettingsHelp();
                 break;
         }
 

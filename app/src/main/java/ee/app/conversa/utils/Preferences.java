@@ -96,6 +96,10 @@ public class Preferences {
         }
     }
 
+    public String getUploadQualityEntry() {
+        return getStringPreference(PreferencesKeys.CHAT_QUALITY_KEY, "1");
+    }
+
     public String getUploadQuality() {
         String position = getStringPreference(PreferencesKeys.CHAT_QUALITY_KEY, "1");
         try {
@@ -178,6 +182,10 @@ public class Preferences {
 
     public void setLanguage(String language) {
         setStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, language);
+    }
+
+    public void setQuality(String quality) {
+        setStringPreference(PreferencesKeys.CHAT_QUALITY_KEY, quality);
     }
 
     /* ******************************************************************************** */

@@ -1,13 +1,17 @@
 package ee.app.conversa.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.AnyRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
@@ -126,24 +130,45 @@ public class Utils {
 	}
 
 	public static Uri getUriFromString(String path) {
-		Uri uri;
 		if(path.isEmpty()) {
-			uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+			return null;
 		} else {
 			try {
 				new URL(path);
-				uri = Uri.parse(path);
+				return Uri.parse(path);
 			} catch (MalformedURLException e) {
 				File file = new File(path);
 				if (file.exists()) {
-					uri = Uri.fromFile(file);
+					return Uri.fromFile(file);
 				} else {
-					uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.business_default);
+					return null;
 				}
 			}
 		}
+	}
 
-		return uri;
+	/**
+	 * Get uri to any resource type [from: http://stackoverflow.com/a/36062748/5349296]
+	 * @param context - context
+	 * @param resId - resource id
+	 * @throws Resources.NotFoundException if the given ID does not exist.
+	 * @return - Uri to resource by given id
+	 */
+	public static Uri getDefaultImage(@NonNull Context context, @AnyRes int resId)
+			throws Resources.NotFoundException, NullPointerException {
+		/** Return a Resources instance for your application's package. */
+		Resources res = context.getResources();
+		/**
+		 * Creates a Uri which parses the given encoded URI string.
+		 * @param uriString an RFC 2396-compliant, encoded URI
+		 * @throws NullPointerException if uriString or context is null
+		 * @throws Resources.NotFoundException if resId couldn't be found
+		 * @return Uri for this given uri string
+		 */
+		return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+				"://" + res.getResourcePackageName(resId)
+				+ '/' + res.getResourceTypeName(resId)
+				+ '/' + res.getResourceEntryName(resId));
 	}
 
 	// As described in StackOverflow answer: http://stackoverflow.com/a/9274868/5349296

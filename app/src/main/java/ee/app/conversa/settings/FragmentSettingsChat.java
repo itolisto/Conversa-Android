@@ -1,8 +1,11 @@
 package ee.app.conversa.settings;
 
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.AlertDialog;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
@@ -10,7 +13,8 @@ import ee.app.conversa.R;
 /**
  * Created by edgargomez on 9/9/16.
  */
-public class FragmentSettingsChat extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
+public class FragmentSettingsChat extends PreferenceFragment implements Preference.OnPreferenceClickListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle paramBundle) {
@@ -18,7 +22,7 @@ public class FragmentSettingsChat extends PreferenceFragment implements Preferen
         addPreferencesFromResource(R.xml.fragment_settings_chat);
 
         this.findPreference(PreferencesKeys.CHAT_QUALITY_KEY)
-                .setOnPreferenceChangeListener(this);
+                .setOnPreferenceClickListener(this);
 
         this.findPreference(PreferencesKeys.CHAT_QUALITY_KEY)
                 .setSummary(ConversaApp.getInstance(getActivity()).getPreferences().getUploadQuality());
@@ -28,17 +32,64 @@ public class FragmentSettingsChat extends PreferenceFragment implements Preferen
     public void onResume() {
         super.onResume();
         ((ActivityPreferences)getActivity()).getSupportActionBar().setTitle(R.string.preferences__chats);
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
 
     @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        if (preference.getKey().equals(PreferencesKeys.CHAT_QUALITY_KEY)) {
-            this.findPreference(PreferencesKeys.CHAT_QUALITY_KEY)
-                    .setSummary(ConversaApp.getInstance(getActivity())
-                            .getPreferences().getUploadQualityFromNewValue((String)newValue));
+    public boolean onPreferenceClick(Preference preference) {
+        switch (preference.getKey()) {
+            case PreferencesKeys.CHAT_QUALITY_KEY:
+                final int index;
+
+                switch(ConversaApp.getInstance(getActivity()).getPreferences().getUploadQualityEntry()) {
+                    case "1":
+                        index = 1;
+                        break;
+                    case "2":
+                        index = 2;
+                        break;
+                    default:
+                        index = 0;
+                        break;
+                }
+
+                AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+                b.setTitle(R.string.sett_chat_quality_title);
+                b.setSingleChoiceItems(R.array.sett_chat_quality_entries, index, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if (which != index)
+                            ConversaApp.getInstance(getActivity()).getPreferences().setQuality(
+                                    Integer.toString(which)
+                            );
+                    }
+                });
+                b.show();
+                break;
         }
 
-        return true;
+        return false;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(PreferencesKeys.CHAT_QUALITY_KEY)) {
+            this.findPreference(PreferencesKeys.CHAT_QUALITY_KEY)
+                    .setSummary(ConversaApp.getInstance(getActivity())
+                            .getPreferences().getUploadQualityFromNewValue(
+                                    ConversaApp.getInstance(getActivity())
+                                            .getPreferences().getUploadQualityEntry()
+                            )
+                    );
+        }
     }
 }

@@ -1,10 +1,14 @@
 package ee.app.conversa.view;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +16,7 @@ import android.widget.ImageButton;
 
 import com.afollestad.materialcamera.MaterialCamera;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 import ee.app.conversa.ActivityCameraCrop;
@@ -19,6 +24,8 @@ import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ActivityLocation;
 import ee.app.conversa.R;
 import ee.app.conversa.utils.Const;
+
+//import com.afollestad.materialcamera.MaterialCamera;
 
 /**
  * Created by edgargomez on 9/9/16.
@@ -69,15 +76,22 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
 
         switch (view.getId()) {
             case R.id.btnCamera: {
+                File saveDir = null;
+
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    // Only use external storage directory if permission is granted, otherwise cache directory is used by default
+                    saveDir = new File(Environment.getExternalStorageDirectory(), "MaterialCamera");
+                    saveDir.mkdirs();
+                }
+
 //                Intent intent = new Intent(mActivity.get(), ActivityCameraCrop.class);
 //                intent.putExtra("type", "camera");
 //                mActivity.get().startActivityForResult(intent, ActivityCameraCrop.PICK_CAMERA_REQUEST);
                 MaterialCamera materialCamera = new MaterialCamera(mActivity.get())
-                        .showPortraitWarning(true)
-                        .allowRetry(true)
-                        .defaultToFrontFacing(true)
+                        .saveDir(saveDir)
                         .allowRetry(true)
                         .autoSubmit(false)
+                        .stillShot()
                         .labelConfirm(R.string.logout_ok);
                 materialCamera.start(ActivityChatWall.CAMERA_RQ);
                 break;
