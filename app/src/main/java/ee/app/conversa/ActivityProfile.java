@@ -1,20 +1,24 @@
 package ee.app.conversa;
 
 import android.app.TaskStackBuilder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -22,8 +26,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.birbit.android.jobqueue.JobManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
@@ -42,7 +44,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import ee.app.conversa.extendables.ConversaActivity;
@@ -50,6 +51,7 @@ import ee.app.conversa.jobs.FavoriteJob;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.BoldTextView;
 import ee.app.conversa.view.LightTextView;
@@ -74,6 +76,7 @@ public class ActivityProfile extends ConversaActivity implements
     private dbBusiness businessObject;
     private boolean addAsContact;
     private int followers;
+    private int rgb;
     private Toolbar toolbar;
     private JobManager jobManager;
     private static final int PLACE_PICKER_FLAG = 1;
@@ -90,7 +93,7 @@ public class ActivityProfile extends ConversaActivity implements
     private SimpleDraweeView mSdvBusinessImage;
     private LikeButton mBtnFavorite;
     private BoldTextView mBtvFollowers;
-    private ImageView mIvStatus;
+    private View mIvStatus;
     // Special promo
     private RegularTextView mRtvSpecialPromo;
     private SimpleDraweeView mSdvSpecialPromo;
@@ -102,12 +105,14 @@ public class ActivityProfile extends ConversaActivity implements
     private LightTextView mLtvFriday;
     private LightTextView mLtvSaturday;
     private LightTextView mLtvSunday;
+    // Delivery
+    private ImageView mIvDelivery;
+    private LightTextView mLtvDelivery;
     // Location views
-    private RegularTextView mRtvLocationDescription;
+    private LightTextView mRtvLocationDescription;
     private Button mBtnLocation;
     // GeneralInfo views
     private LightTextView mltvSchedule;
-    private ImageView mltvDelivery;
     private LightTextView mltvLink;
     private LightTextView mltvContactNumber;
 
@@ -142,6 +147,11 @@ public class ActivityProfile extends ConversaActivity implements
     protected void initialization() {
         super.initialization();
 
+        if (businessObject == null) {
+            finish();
+        }
+
+        rgb = -1;
         jobManager = ConversaApp.getInstance(this).getJobManager();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -155,20 +165,6 @@ public class ActivityProfile extends ConversaActivity implements
         mTitle.setText(businessObject.getDisplayName());
         setSupportActionBar(toolbar);
 
-        Bitmap bitmap;
-
-        if (businessObject.getAvatarThumbFileId().isEmpty()) {
-            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.business_default);
-        } else {
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(businessObject.getAvatarThumbFileId()));
-            } catch (IOException e) {
-                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.business_default);
-            }
-        }
-
-        Palette.from(bitmap).generate(paletteListener);
-
         mRlProfileHeader = (RelativeLayout) findViewById(R.id.rlProfileHeader);
         mLlSpecialPromoContainer = (LinearLayout) findViewById(R.id.llSpecialPromoContainer);
         mLlClosedOnContainer = (LinearLayout) findViewById(R.id.llClosedOnContainer);
@@ -178,10 +174,12 @@ public class ActivityProfile extends ConversaActivity implements
         mLlContactNumberContainer = (LinearLayout) findViewById(R.id.llContactNumberContainer);
         mLlAddressContainer = (LinearLayout) findViewById(R.id.llAddressContainer);
         // Profile views
+        View mVNameContainer = findViewById(R.id.vNameContainer);
         mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvBusinessImage);
         mBtnFavorite = (LikeButton) findViewById(R.id.btnFavorite);
         mBtvFollowers = (BoldTextView) findViewById(R.id.btvFollowers);
-        mIvStatus = (ImageView) findViewById(R.id.ivStatus);
+        mIvStatus = findViewById(R.id.vStatus);
+        mIvStatus.setVisibility(View.GONE);
         Button mBtnStartChat = (Button) findViewById(R.id.btnStartChat);
         BoldTextView mBtvConversaId = (BoldTextView) findViewById(R.id.btvConversaId);
         RegularTextView mMtvBusinessName = (RegularTextView) findViewById(R.id.rtvBusinessName);
@@ -196,12 +194,14 @@ public class ActivityProfile extends ConversaActivity implements
         mLtvFriday = (LightTextView) findViewById(R.id.ltvFriday);
         mLtvSaturday = (LightTextView) findViewById(R.id.ltvSaturday);
         mLtvSunday = (LightTextView) findViewById(R.id.ltvSunday);
+        // Delivery views
+        mIvDelivery = (ImageView) findViewById(R.id.ivDelivery);
+        mLtvDelivery = (LightTextView) findViewById(R.id.ltvDelivery);
         // Location views
-        mRtvLocationDescription = (RegularTextView) findViewById(rtvLocationDescription);
+        mRtvLocationDescription = (LightTextView) findViewById(rtvLocationDescription);
         mBtnLocation = (Button) findViewById(R.id.btnLocation);
         // GeneralInfo views
         mltvSchedule = (LightTextView) findViewById(R.id.ltvSchedule);
-        mltvDelivery = (ImageView) findViewById(R.id.ltvDelivery);
         mltvLink = (LightTextView) findViewById(R.id.ltvLink);
         mltvContactNumber = (LightTextView) findViewById(R.id.ltvContactNumber);
 
@@ -222,9 +222,13 @@ public class ActivityProfile extends ConversaActivity implements
 
             @Override
             public void process(Bitmap bitmap) {
-                if (bitmap != null) {
-                    Palette.from(bitmap).generate(paletteListener);
+                if (bitmap == null) {
+                    bitmap = BitmapFactory.decodeResource(getResources(),
+                            R.drawable.business_default);
+                    rgb = -2;
                 }
+
+                Palette.from(bitmap).generate(paletteListener);
             }
         };
 
@@ -239,6 +243,7 @@ public class ActivityProfile extends ConversaActivity implements
                         .build();
         mSdvBusinessImage.setController(controller);
 
+        mVNameContainer.setOnClickListener(this);
         mBtnFavorite.setOnLikeListener(this);
         mBtnStartChat.setOnClickListener(this);
         mBtnLocation.setOnClickListener(this);
@@ -272,6 +277,7 @@ public class ActivityProfile extends ConversaActivity implements
                 if(e == null) {
                     parseResult(result);
                 } else {
+                    AppActions.validateParseException(getApplicationContext(), e);
                     parseResult("");
                 }
             }
@@ -281,9 +287,22 @@ public class ActivityProfile extends ConversaActivity implements
     Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
         public void onGenerated(Palette palette) {
             if (palette.getLightVibrantSwatch() != null) {
-                toolbar.setBackgroundColor(palette.getLightVibrantSwatch().getRgb());
+                rgb = palette.getLightVibrantSwatch().getRgb();
             } else if (palette.getLightMutedSwatch() != null) {
-                toolbar.setBackgroundColor(palette.getLightMutedSwatch().getRgb());
+                rgb = palette.getLightMutedSwatch().getRgb();
+            } else {
+                rgb = -1;
+            }
+
+            if (rgb != -1 && rgb != -2) {
+                if (android.os.Build.VERSION.SDK_INT >= 21) {
+                    Window window = getWindow();
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    window.setStatusBarColor(rgb);
+                }
+
+                toolbar.setBackgroundColor(rgb);
             }
         }
     };
@@ -331,6 +350,20 @@ public class ActivityProfile extends ConversaActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.vNameContainer: {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.dialog_profile_status, null);
+                dialogBuilder.setView(dialogView);
+                dialogBuilder.setPositiveButton(getString(R.string.dialog_profile_status_understood), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog b = dialogBuilder.create();
+                b.show();
+                break;
+            }
             case R.id.btnLocation: {
 
                 break;
@@ -403,34 +436,34 @@ public class ActivityProfile extends ConversaActivity implements
                 break;
             }
             case R.id.llScheduleContainer: {
-                MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
-                        .title(getString(R.string.profile_conversa_time_info_title))
-                        .content(getString(R.string.profile_conversa_time_info_message))
-                        .positiveText(getString(android.R.string.ok))
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.profile_conversa_time_info_message));
+
+                String positiveText = getString(android.R.string.ok);
+                builder.setPositiveButton(positiveText,
+                        new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
-
-                MaterialDialog dialog = builder.build();
+                AlertDialog dialog = builder.create();
                 dialog.show();
                 break;
             }
             case R.id.llAddressContainer: {
-                MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
-                        .title("")
-                        .content(getString(R.string.profile_locations_info_message))
-                        .positiveText(getString(android.R.string.ok))
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.profile_locations_info_message));
+
+                String positiveText = getString(android.R.string.ok);
+                builder.setPositiveButton(positiveText,
+                        new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
-
-                MaterialDialog dialog = builder.build();
+                AlertDialog dialog = builder.create();
                 dialog.show();
                 break;
             }
@@ -477,7 +510,7 @@ public class ActivityProfile extends ConversaActivity implements
                 followers = jsonRootObject.optInt("followers", 0);
                 String daySpecial = jsonRootObject.optString("daySpecial", null);
                 String website = jsonRootObject.optString("website", null);
-                boolean delivery = jsonRootObject.optBoolean("", false);
+                boolean delivery = jsonRootObject.optBoolean("delivery", false);
                 JSONArray openOn = jsonRootObject.optJSONArray("openOn");
                 String number = jsonRootObject.optString("number", null);
                 boolean multiple = jsonRootObject.optBoolean("multiple", false);
@@ -523,14 +556,37 @@ public class ActivityProfile extends ConversaActivity implements
                 }
 
                 // Status
+                GradientDrawable shapeDrawable;
+
                 switch (status) {
-                    case 1:
+                    case 1: {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_online);
+                        } else {
+                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_online);
+                        }
                         break;
-                    case 2:
+                    }
+                    case 2: {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_offline);
+                        } else {
+                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_offline);
+                        }
                         break;
-                    default:
+                    }
+                    default: {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_away);
+                        } else {
+                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_away);
+                        }
                         break;
+                    }
                 }
+
+                mIvStatus.setVisibility(View.VISIBLE);
+                mIvStatus.setBackground(shapeDrawable);
 
                 // Iterator
                 int i, size;
@@ -589,9 +645,11 @@ public class ActivityProfile extends ConversaActivity implements
                 }
 
                 if (delivery) {
-                    mltvDelivery.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_check));
+                    mIvDelivery.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_check));
+                    mLtvDelivery.setText(getString(R.string.profile_delivery_yes));
                 } else {
-                    mltvDelivery.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_cancel));
+                    mIvDelivery.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_cancel));
+                    mLtvDelivery.setText(getString(R.string.profile_delivery_no));
                 }
 
                 if (multiple) {

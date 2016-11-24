@@ -21,10 +21,6 @@ public class dbSearch {
         this.mAvatarUrl = mAvatarUrl;
     }
 
-    public long getID() {
-        return _ID;
-    }
-
     public String getBusinessId() {
         return mBusinessId;
     }

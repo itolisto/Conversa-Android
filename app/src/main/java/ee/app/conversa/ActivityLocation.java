@@ -75,7 +75,7 @@ public class ActivityLocation extends ConversaActivity implements OnMapReadyCall
 	}
 
 	@Override
-	protected void onDestroy() {
+	public void onDestroy() {
 		super.onDestroy();
 		if (mGpsTracker != null)
 			mGpsTracker.stopUsingGPS();

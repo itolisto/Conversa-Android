@@ -2,6 +2,7 @@ package ee.app.conversa.jobs;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
@@ -24,6 +25,7 @@ import ee.app.conversa.model.database.NotificationInformation;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Business;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Logger;
@@ -93,14 +95,10 @@ public class ReceiveMessageJob extends Job {
             dbbusiness.setConversaId(customer.getConversaID());
             dbbusiness.setAbout(customer.getAbout());
 
-            try {
-                if (customer.getAvatar() != null) {
+            if (customer.getAvatar() != null) {
+                if (!TextUtils.isEmpty(customer.getAvatar().getUrl())) {
                     dbbusiness.setAvatarThumbFileId(customer.getAvatar().getUrl());
-                } else {
-                    dbbusiness.setAvatarThumbFileId("");
                 }
-            } catch (IllegalStateException e) {
-                dbbusiness.setAvatarThumbFileId("");
             }
 
             ConversaApp.getInstance(getApplicationContext()).getDB().saveContact(dbbusiness);
@@ -108,6 +106,13 @@ public class ReceiveMessageJob extends Job {
             if (dbbusiness.getId() == -1) {
                 Logger.error(TAG, "Error guardando Business");
                 return;
+            }
+
+            if (!TextUtils.isEmpty(dbbusiness.getAvatarThumbFileId())) {
+                ConversaApp.getInstance(getApplicationContext())
+                        .getJobManager()
+                        .addJob(new AvatarJob(contactId, dbbusiness.getAvatarThumbFileId(),
+                                dbbusiness.getId()));
             }
         }
 
@@ -149,33 +154,37 @@ public class ReceiveMessageJob extends Job {
         }
 
         if (Foreground.get().isBackground()) {
-            // Autoincrement count
-            NotificationInformation summary = ConversaApp.getInstance(getApplicationContext())
-                    .getDB().getGroupInformation(contactId);
+            if (ConversaApp.getInstance(getApplicationContext())
+                    .getPreferences().getPushNotificationPreview()) {
 
-            if (summary.getNotificationId() == -1) {
-                summary = ConversaApp.getInstance(getApplicationContext()).getDB()
-                        .incrementGroupCount(summary, true);
-            } else {
-                ConversaApp.getInstance(getApplicationContext()).getDB()
-                        .incrementGroupCount(summary, false);
-            }
+                // Autoincrement count
+                NotificationInformation summary = ConversaApp.getInstance(getApplicationContext())
+                        .getDB().getGroupInformation(contactId);
 
-            PushNotification.showMessageNotification(
-                    getApplicationContext(),
-                    dbbusiness.getDisplayName(),
-                    additionalData.toString(),
-                    dbmessage,
-                    summary
-            );
-        } else {
-            // 4. Broadcast results as from IntentService ain't possible to access ui thread
-            EventBus.getDefault().post(new MessageIncomingEvent(dbmessage));
+                if (summary.getNotificationId() == -1) {
+                    ConversaApp.getInstance(getApplicationContext()).getDB()
+                            .incrementGroupCount(summary, true);
+                } else {
+                    ConversaApp.getInstance(getApplicationContext()).getDB()
+                            .incrementGroupCount(summary, false);
+                }
 
-            if (newContact) {
-                EventBus.getDefault().post(new ContactSaveEvent(dbbusiness));
+                PushNotification.showMessageNotification(
+                        getApplicationContext(),
+                        dbbusiness.getDisplayName(),
+                        additionalData.toString(),
+                        dbmessage,
+                        summary
+                );
             }
         }
+
+        // 4. Broadcast results as from IntentService ain't possible to access ui thread
+        if (newContact) {
+            EventBus.getDefault().post(new ContactSaveEvent(dbbusiness));
+        }
+
+        EventBus.getDefault().post(new MessageIncomingEvent(dbmessage));
 
         if (dbmessage.getMessageType().equals(Const.kMessageTypeAudio) ||
                 dbmessage.getMessageType().equals(Const.kMessageTypeVideo) ||
@@ -197,22 +206,26 @@ public class ReceiveMessageJob extends Job {
         if (throwable instanceof ParseException) {
             ParseException exception = (ParseException) throwable;
             Logger.error(TAG, exception.getMessage());
+            AppActions.validateParseException(getApplicationContext(), exception);
 
             if (exception.getCode() == INTERNAL_SERVER_ERROR ||
-                    exception.getCode() == CONNECTION_FAILED ||
-                    exception.getCode() == INVALID_SESSION_TOKEN )
+                    exception.getCode() == CONNECTION_FAILED)
             {
+                // An error occurred in onRun.
+                // Return value determines whether this job should retry or cancel. You can further
+                // specify a backoff strategy or change the job's priority. You can also apply the
+                // delay to the whole group to preserve jobs' running order.
+                RetryConstraint rtn = RetryConstraint.createExponentialBackoff(runCount, 1000);
+                rtn.setNewPriority(Priority.MID);
+                return rtn;
+            } else if (exception.getCode() == INVALID_SESSION_TOKEN) {
+                return RetryConstraint.CANCEL;
+            } else {
                 return RetryConstraint.CANCEL;
             }
         }
 
-        // An error occurred in onRun.
-        // Return value determines whether this job should retry or cancel. You can further
-        // specify a backoff strategy or change the job's priority. You can also apply the
-        // delay to the whole group to preserve jobs' running order.
-        RetryConstraint rtn = RetryConstraint.createExponentialBackoff(runCount, 1000);
-        rtn.setNewPriority(Priority.MID);
-        return rtn;
+        return RetryConstraint.RETRY;
     }
 
 }

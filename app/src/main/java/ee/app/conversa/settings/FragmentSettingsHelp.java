@@ -47,7 +47,7 @@ public class FragmentSettingsHelp extends Fragment implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnLicences: {
-                onMultipleFragmentClick();
+                onLicencesClick();
                 break;
             }
             case R.id.help: {
@@ -61,7 +61,7 @@ public class FragmentSettingsHelp extends Fragment implements View.OnClickListen
         }
     }
 
-    public void onMultipleFragmentClick() {
+    public void onLicencesClick() {
         try {
             final Notices notices = new Notices();
             notices.addNotice(new Notice(
@@ -119,7 +119,6 @@ public class FragmentSettingsHelp extends Fragment implements View.OnClickListen
                     new BSD3ClauseLicense())
             );
 
-//            compile 'com.afollestad.material-dialogs:core:0.9.0.2'
 //            compile 'com.github.dmytrodanylyk:android-morphing-button:98a4986e56'
 
             new LicensesDialog.Builder(getActivity())

@@ -10,15 +10,11 @@ import ee.app.conversa.R;
 public class nCategory {
 
     private final String objectId;
-    private final int relevance;
-    private final int position;
     private final String avatarUrl;
     private boolean removeDividerMargin;
 
-    public nCategory(String objectId, int relevance, int position, String avatarUrl) {
+    public nCategory(String objectId, String avatarUrl) {
         this.objectId = objectId;
-        this.relevance = relevance;
-        this.position = position;
         this.avatarUrl = avatarUrl;
         this.removeDividerMargin = false;
     }
@@ -33,14 +29,6 @@ public class nCategory {
 
     public String getObjectId() {
         return objectId;
-    }
-
-    public int getRelevance() {
-        return relevance;
-    }
-
-    public int getPosition() {
-        return position;
     }
 
     public String getAvatarUrl() {

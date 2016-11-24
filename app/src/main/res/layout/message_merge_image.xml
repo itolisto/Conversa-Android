@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.facebook.drawee.view.SimpleDraweeView
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sdvMessageImage"
+        android:layout_width="@dimen/message_image_width"
+        android:layout_height="@dimen/message_image_height"
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="centerCrop"
+        fresco:placeholderImage="@drawable/image_bubble_default"
+        fresco:placeholderImageScaleType="fitXY"
+        fresco:failureImage="@drawable/image_bubble_failure_default"
+        fresco:failureImageScaleType="fitXY"
+        fresco:retryImage="@drawable/image_bubble_retry_default"
+        fresco:retryImageScaleType="fitXY" />
+</merge>

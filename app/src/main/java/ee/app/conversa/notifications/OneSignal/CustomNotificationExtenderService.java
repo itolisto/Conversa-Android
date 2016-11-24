@@ -13,6 +13,7 @@ import ee.app.conversa.ConversaApp;
 import ee.app.conversa.jobs.ReceiveMessageJob;
 import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.utils.Logger;
+import io.ably.lib.realtime.ConnectionState;
 
 /**
  * Created by edgargomez on 7/21/16.
@@ -22,6 +23,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
     private final String TAG = CustomNotificationExtenderService.class.getSimpleName();
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     protected boolean onNotificationProcessing(OSNotificationReceivedResult result) {
         OSNotificationPayload notification = result.payload;
         JSONObject additionalData = notification.additionalData;
@@ -48,7 +50,8 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                  * skip the message thus the user won't be notified about it. Instead if Ably
                  * is connected where only sleeping this thread for 900ms
                  */
-                if (AblyConnection.getInstance() != null) {
+                if (AblyConnection.getInstance() != null &&
+                        AblyConnection.getInstance().ablyConnectionStatus() == ConnectionState.connected) {
                     try {
                         Thread.sleep(900);
                     } catch (IllegalArgumentException | InterruptedException e) {

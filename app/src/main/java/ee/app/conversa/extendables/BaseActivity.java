@@ -28,16 +28,23 @@ public class BaseActivity extends AppCompatActivity {
     private final DynamicLanguage dynamicLanguage = new DynamicLanguage();
     private final IntentFilter mConnectionChangeFilter = new IntentFilter(ConnectionChangeReceiver.INTERNET_CONNECTION_CHANGE);
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        onPreCreate();
-        super.onCreate(savedInstanceState);
-        checkInternetConnection = true;
-    }
-
     protected void onPreCreate() {
         dynamicLanguage.onCreate(this);
     }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        onPreCreate();
+        checkInternetConnection = true;
+        super.onCreate(savedInstanceState);
+    }
+
+    protected void initialization() {
+        if (checkInternetConnection) {
+            mRlNoInternetNotification = (RelativeLayout) findViewById(R.id.rlNoInternetNotification);
+        }
+    }
+
 
     @Override
     protected void onStart() {
@@ -98,12 +105,6 @@ public class BaseActivity extends AppCompatActivity {
 
     public boolean hasInternetConnection() {
         return Utils.hasNetworkConnection(this);
-    }
-
-    protected void initialization() {
-        if (checkInternetConnection) {
-            mRlNoInternetNotification = (RelativeLayout) findViewById(R.id.rlNoInternetNotification);
-        }
     }
 
 }

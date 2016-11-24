@@ -14,6 +14,7 @@ import android.support.annotation.AnyRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.onesignal.OneSignal;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,6 +39,8 @@ import java.util.regex.Pattern;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
+import ee.app.conversa.contact.ContactUpdateReason;
+import ee.app.conversa.events.contact.ContactUpdateEvent;
 
 import static ee.app.conversa.settings.language.DynamicLanguage.getSelectedLocale;
 
@@ -130,7 +134,7 @@ public class Utils {
 	}
 
 	public static Uri getUriFromString(String path) {
-		if(path.isEmpty()) {
+		if (TextUtils.isEmpty(path)) {
 			return null;
 		} else {
 			try {
@@ -173,7 +177,20 @@ public class Utils {
 
 	// As described in StackOverflow answer: http://stackoverflow.com/a/9274868/5349296
 	public static int dpToPixels(Context context, int dp) {
-		return (int) (dp * context.getResources().getDisplayMetrics().density);
+		return (int) (dp * context.getResources().getDisplayMetrics().density + 0.5f);
+	}
+
+	public static int dpToPixels(Context context, float dp) {
+		return (int) (dp * context.getResources().getDisplayMetrics().density + 0.5f);
+//		return  (int) TypedValue.applyDimension(
+//				TypedValue.COMPLEX_UNIT_DIP,
+//				dp,
+//				context.getResources().getDisplayMetrics()
+//		);
+	}
+
+	public static int dpFromPx(final Context context, final int px) {
+		return Math.round((px - 0.5f) / context.getResources().getDisplayMetrics().density);
 	}
 
 	public static String getTimeOrDay(Context context, long time, boolean onlyDay) {
@@ -254,7 +271,32 @@ public class Utils {
 				+ "IMG_" + timeStamp + ".jpg";
 	}
 
-	public static void saveAvatarToInternalStorage(Context context, Bitmap bitmapImage, long id) {
+	public static void saveAvatarToInternalStorage(Context context, Bitmap bitmap, long id) {
+		if (context == null || bitmap == null || id < 0) {
+			return;
+		}
+
+		String path;
+
+		try {
+			path = Utils.getResourceName(Utils.getMediaDirectory(context, "avatars"));
+			// Create imageDir
+			File mypath = new File(path);
+
+			FileOutputStream fos = new FileOutputStream(mypath);
+			// Use the compress method on the BitMap object to write image to the OutputStream
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+			fos.close();
+		} catch (Exception e) {
+			Logger.error("saveAvatarToInternalStorage", e.getMessage());
+			return;
+		}
+
+		// Update contact url
+		ConversaApp.getInstance(context).getDB().updateContactAvatar(id, path);
+	}
+
+	public static void saveAvatarToInternalStorageAsync(Context context, Bitmap bitmapImage, long id) {
 		new AsyncTask<Object, Void, Bitmap>() {
 			@Override
 			protected Bitmap doInBackground(Object... params) {
@@ -264,8 +306,9 @@ public class Utils {
 
 				Bitmap bitmap = (Bitmap) params[0];
 				Context context = (Context) params[1];
+				long id = (long) params[2];
 
-				if (bitmap == null || context == null) {
+				if (context == null || bitmap == null || id < 0) {
 					return null;
 				}
 
@@ -281,16 +324,16 @@ public class Utils {
 					bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
 					fos.close();
 				} catch (Exception e) {
-					Logger.error("saveAvatarToInternalStorage", e.getMessage());
+					Logger.error("saveAvatarToInternalStorageAsync", e.getMessage());
 					return null;
 				}
 
-				long id = (long) params[2];
-
-				if (id != -1) {
-					// Update contact url
-					ConversaApp.getInstance(context).getDB().updateContactAvatar(id, path);
-				}
+				// Update contact url
+				ConversaApp.getInstance(context).getDB().updateContactAvatar(id, path);
+				EventBus.getDefault().post(new ContactUpdateEvent(
+						ConversaApp.getInstance(context).getDB().getContactById(id),
+						ContactUpdateReason.AVATAR_DOWNLOAD
+				));
 
 				return bitmap;
 			}
@@ -298,8 +341,8 @@ public class Utils {
 	}
 
 	@WorkerThread
-	public static String saveImageToInternalStorage(Context context, Bitmap bitmapImage, long id) {
-		if (bitmapImage == null || context == null) {
+	public static String saveImageToInternalStorage(Context context, Bitmap bitmap, long id) {
+		if (context == null || bitmap == null || id < 0) {
 			return "";
 		}
 
@@ -312,17 +355,15 @@ public class Utils {
 
 			FileOutputStream fos = new FileOutputStream(mypath);
 			// Use the compress method on the BitMap object to write image to the OutputStream
-			bitmapImage.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
 			fos.close();
 		} catch (Exception e) {
 			Logger.error("saveImageToInternalStorage", e.getMessage());
 			return "";
 		}
 
-		if (id != -1) {
-			// Update contact url
-			ConversaApp.getInstance(context).getDB().updateLocalUrl(id, path);
-		}
+		// Update contact url
+		ConversaApp.getInstance(context).getDB().updateLocalUrl(id, path);
 
 		return path;
 	}

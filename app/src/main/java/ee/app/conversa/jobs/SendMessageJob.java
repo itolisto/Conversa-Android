@@ -19,6 +19,7 @@ import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.AppActions;
 
 /**
  * Created by edgargomez on 9/5/16.
@@ -97,6 +98,7 @@ public class SendMessageJob extends Job {
             message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusAllDelivered);
         } catch (ParseException e) {
             message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusParseError);
+            AppActions.validateParseException(getApplicationContext(), e);
         }
     }
 
@@ -107,7 +109,6 @@ public class SendMessageJob extends Job {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        // This method will never be called as all exceptions are being caught in onRun method
         return RetryConstraint.CANCEL;
     }
 

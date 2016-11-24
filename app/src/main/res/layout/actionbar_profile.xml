@@ -45,6 +45,7 @@
         android:textSize="18sp"
         android:gravity="center"
         android:ellipsize="end"
+        android:singleLine="true"
         android:id="@+id/mtvTitle"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/flBack"

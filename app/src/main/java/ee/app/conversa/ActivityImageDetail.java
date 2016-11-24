@@ -64,7 +64,6 @@ public class ActivityImageDetail extends AppCompatActivity implements OnClickLis
         mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), 1);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
-        //mPager.setPageMargin((int) getResources().getDimension(R.dimen.horizontal_page_margin));
         mPager.setOffscreenPageLimit(2);
 
         // Set up activity to go full screen
@@ -165,4 +164,5 @@ public class ActivityImageDetail extends AppCompatActivity implements OnClickLis
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         }
     }
+
 }

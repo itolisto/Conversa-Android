@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <ee.app.conversa.view.RegularTextView
+        android:id="@+id/rtvMessageText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:padding="2dp"
+        android:textColor="@color/text_gray"
+        android:textSize="15sp" />
+</merge>

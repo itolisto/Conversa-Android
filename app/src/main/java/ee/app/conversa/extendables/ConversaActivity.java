@@ -9,8 +9,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.dialog.InAppPushNotification;
+import ee.app.conversa.contact.ContactUpdateReason;
+import ee.app.conversa.dialog.InAppNotification;
 import ee.app.conversa.events.TypingEvent;
 import ee.app.conversa.events.contact.ContactDeleteEvent;
 import ee.app.conversa.events.contact.ContactRetrieveEvent;
@@ -31,6 +33,7 @@ import ee.app.conversa.utils.Logger;
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted,
         OnContactTaskCompleted {
 
+    protected boolean unregisterListener = true;
 	protected RelativeLayout mRlPushNotification;
 
     @Override
@@ -51,16 +54,26 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     @Override
-	protected void onStart() {
-		super.onStart();
-        EventBus.getDefault().register(this);
-	}
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
 
     @Override
-	protected void onStop() {
+    public void onStop() {
+        if (unregisterListener) {
+            EventBus.getDefault().unregister(this);
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         EventBus.getDefault().unregister(this);
-		super.onStop();
-	}
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTypingEvent(TypingEvent event) {
@@ -99,7 +112,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onContactUpdateEvent(ContactUpdateEvent event) {
-        ContactUpdated(event.getContact());
+        ContactUpdated(event.getContact(), event.getReason());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -138,7 +151,9 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     public void MessageReceived(dbMessage response) {
         // Show in-app notification
         if (mRlPushNotification != null) {
-            InAppPushNotification.make(getApplicationContext(), mRlPushNotification).show(response.getBody(), response.getFromUserId());
+            if (ConversaApp.getInstance(this).getPreferences().getInAppNotificationPreview())
+                InAppNotification.make(this, mRlPushNotification)
+                        .show(response);
         }
     }
 
@@ -168,7 +183,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     @Override
-    public void ContactUpdated(dbBusiness response) {
+    public void ContactUpdated(dbBusiness response, ContactUpdateReason reason) {
         /* Child activities override this method */
     }
 

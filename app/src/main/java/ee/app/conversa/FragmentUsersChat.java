@@ -20,8 +20,11 @@ import java.util.List;
 
 import ee.app.conversa.actions.ContactAction;
 import ee.app.conversa.adapters.ChatsAdapter;
-import ee.app.conversa.extendables.ConversaFragment;
 import ee.app.conversa.contact.ContactIntentService;
+import ee.app.conversa.contact.ContactUpdateReason;
+import ee.app.conversa.extendables.ConversaFragment;
+import ee.app.conversa.interfaces.OnContactClickListener;
+import ee.app.conversa.interfaces.OnContactLongClickListener;
 import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
@@ -29,8 +32,8 @@ import ee.app.conversa.settings.ActivityPreferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.view.BoldTextView;
 
-public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.OnItemClickListener,
-        ChatsAdapter.OnLongClickListener, View.OnClickListener, ActionMode.Callback {
+public class FragmentUsersChat extends ConversaFragment implements OnContactClickListener,
+        OnContactLongClickListener, View.OnClickListener, ActionMode.Callback {
 
     private RecyclerView mRvUsers;
     private RelativeLayout mRlNoUsers;
@@ -48,10 +51,10 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
         mRlNoUsers = (RelativeLayout) rootView.findViewById(R.id.rlNoChats);
 
         mUserListAdapter = new ChatsAdapter((AppCompatActivity) getActivity(), this, this);
+        mRvUsers.setHasFixedSize(true);
         mRvUsers.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvUsers.setItemAnimator(new DefaultItemAnimator());
         mRvUsers.setAdapter(mUserListAdapter);
-        mRvUsers.setHasFixedSize(true);
 
         refresh = false;
 
@@ -68,12 +71,6 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
         dbBusiness.getAllContacts(getContext());
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_main, menu);
     }
 
     @Override
@@ -140,7 +137,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void ContactUpdated(dbBusiness response) {
+    public void ContactUpdated(dbBusiness response, ContactUpdateReason reason) {
 
     }
 
@@ -162,7 +159,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void onItemClick(dbBusiness contact, int position) {
+    public void onContactClick(dbBusiness contact, View v, int position) {
         if (actionMode == null) {
             Intent intent = new Intent(getActivity(), ActivityChatWall.class);
             intent.putExtra(Const.iExtraBusiness, contact);
@@ -175,7 +172,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void onItemLongClick(final dbBusiness contact, int position) {
+    public void onContactLongClick(dbBusiness contact, View v, int position) {
         if (actionMode == null) {
             myToggleSelection(position);
         }

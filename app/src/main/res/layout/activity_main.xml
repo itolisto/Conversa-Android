@@ -31,19 +31,13 @@
             style="@style/MyCustomTabLayout" />
     </android.support.design.widget.AppBarLayout>
 
-    <include android:id="@+id/rlNoInternetNotification"
-        android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        layout="@layout/no_internet_notification" />
+    <include layout="@layout/no_internet_notification"
+        android:id="@+id/rlNoInternetNotification"
+        android:visibility="gone" />
 
-    <include android:id="@+id/rlPushNotification"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentTop="true"
-        android:visibility="gone"
-        layout="@layout/push_notification" />
+    <include layout="@layout/push_notification"
+        android:id="@+id/rlPushNotification"
+        android:visibility="gone" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"

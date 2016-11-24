@@ -39,7 +39,7 @@
         <Button
             android:layout_below="@id/ltvNoConnection"
             android:layout_centerHorizontal="true"
-            android:id="@+id/btnRetry"
+            android:id="@+id/btnRetryResult"
             android:layout_width="85dp"
             android:layout_height="30dp"
             android:layout_marginTop="7dp"

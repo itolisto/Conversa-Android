@@ -3,6 +3,7 @@ package ee.app.conversa.contact;
 import android.app.IntentService;
 import android.content.Intent;
 import android.database.SQLException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
@@ -14,6 +15,7 @@ import ee.app.conversa.actions.ContactAction;
 import ee.app.conversa.events.contact.ContactDeleteEvent;
 import ee.app.conversa.events.contact.ContactRetrieveEvent;
 import ee.app.conversa.events.contact.ContactSaveEvent;
+import ee.app.conversa.jobs.AvatarJob;
 import ee.app.conversa.model.database.dbBusiness;
 
 /**
@@ -51,7 +53,17 @@ public class ContactIntentService extends IntentService {
                 case ACTION_CONTACT_SAVE:
                     ConversaApp.getInstance(this).getDB().saveContact(user);
                     if (user.getId() != -1) {
+                        // Notify all listeners
                         EventBus.getDefault().post(new ContactSaveEvent(user));
+                        // Download avatar
+                        if (!TextUtils.isEmpty(user.getAvatarThumbFileId())) {
+                            ConversaApp.getInstance(this)
+                                    .getJobManager()
+                                    .addJob(new AvatarJob(
+                                            user.getBusinessId(),
+                                            user.getAvatarThumbFileId(),
+                                            user.getId()));
+                        }
                     }
                     break;
                 case ACTION_CONTACT_UPDATE:

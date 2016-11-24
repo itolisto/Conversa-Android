@@ -15,7 +15,7 @@
     <string name="profile_conversa_time_info_title">What is ConversaTime?</string>
     <string name="profile_conversa_time_info_message">ConversaTime is the schedule by which we will be answering you through chat, but our goal is to serve 24hrs.</string>
 
-    <string name="profile_locations_info_message">When a business has a physical address, you can check out on the map and easly drive from where you are</string>
+    <string name="profile_locations_info_message">When a business has a physical address, you can check out on the map and easily drive from where you are</string>
 
     <string name="profile_no_number_message">No number available</string>
     <string name="profile_no_website_message">Working on website</string>
@@ -47,12 +47,11 @@
     <string name="searches_top_results_title">Top results</string>
 
     <string name="me">Me</string>
-    <string name="contacts_last_message_text" translatable="false">%1$s: %2$s</string>
-    <string name="contacts_last_message_image">%1s: Picture</string>
-    <string name="contacts_last_message_video" translatable="false">%1s: Video</string>
-    <string name="contacts_last_message_audio" translatable="false">%1s: Audio</string>
-    <string name="contacts_last_message_location">%1s: Location</string>
-    <string name="contacts_last_message_default">%1s: Message</string>
+    <string name="contacts_last_message_image">Picture</string>
+    <string name="contacts_last_message_video" translatable="false">Video</string>
+    <string name="contacts_last_message_audio" translatable="false">Audio</string>
+    <string name="contacts_last_message_location">Location</string>
+    <string name="contacts_last_message_default">Message</string>
 
     <string name="no_messages">No Messages</string>
     <string name="no_messages_description_one">When you have messages, you\'ll</string>
@@ -67,7 +66,7 @@
     <string name="link_title">Link</string>
     <string name="delivery_title">Delivery</string>
     <string name="schedule_title">ConversaTime</string>
-    <string name="open_on_title">Open on</string>
+    <string name="open_on_title">Open</string>
     <string name="locations_title">Locations</string>
     <string name="contact_number_title">Contact number</string>
 
@@ -262,5 +261,15 @@
     <string name="sett_help_terms">Terms of use</string>
     <string name="sett_help_help">Help</string>
     <string name="action_change">Change</string>
+    <string name="profile_delivery_yes">Yep, we got!</string>
+    <string name="profile_delivery_no">Not yet but soon</string>
+    <string name="profile_status_online">Online</string>
+    <string name="profile_status_offline">Offline</string>
+    <string name="profile_status_away">Away</string>
+    <string name="profile_status_away_description">I\'ll be back, oh wait, I\'m not Terminator</string>
+    <string name="profile_status_offline_description">We\'ll answer as soon as possible</string>
+    <string name="profile_status_online_description">You get answers almost instantly, this is Conversa baby</string>
+    <string name="dialog_profile_status_understood">Understood</string>
+    <string name="parse_logout_reason">This session was terminated because another device started session</string>
 
 </resources>

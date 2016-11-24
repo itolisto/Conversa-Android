@@ -54,8 +54,6 @@ public class dbBusiness implements Parcelable {
 
     public dbBusiness() {
         this.mId = -1;
-        this.mComposingMessageString = "";
-        this.mAvatarThumbFileId = "";
         this.mCreated = System.currentTimeMillis();
         this.mRecent = this.mCreated;
     }

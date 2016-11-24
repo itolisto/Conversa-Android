@@ -11,6 +11,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import ee.app.conversa.ActivityMain;
+import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.model.database.NotificationInformation;
 import ee.app.conversa.model.database.dbMessage;
@@ -25,10 +26,8 @@ public class PushNotification {
 
     public static void showMessageNotification(Context context, String from, String jsonData, dbMessage message, NotificationInformation summary) {
         // Press intent
-        Intent intent = new Intent(context, NotificationPressed.class);
+        Intent intent = new Intent(context, ActivityMain.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("notificationId", summary.getNotificationId());
-        intent.putExtra("data", jsonData);
         // The stack builder object will contain an artificial back stack for `the
         // started Activity.
         // This ensures that navigating backward from the Activity leads out of
@@ -38,6 +37,13 @@ public class PushNotification {
         stackBuilder.addParentStack(ActivityMain.class);
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(intent);
+
+        Intent intentChatWallView = new Intent (context, NotificationPressed.class);
+        intentChatWallView.putExtra("notificationId", summary.getNotificationId());
+        intentChatWallView.putExtra("data", jsonData);
+        intentChatWallView.putExtra("count", summary.getCount());
+        stackBuilder.addNextIntent(intentChatWallView);
+
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Delete intent
@@ -46,16 +52,19 @@ public class PushNotification {
         PendingIntent delPendingIntent = PendingIntent.getBroadcast(context, 0 /* Request code */, delIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setGroup(summary.getGroupId())
                 .setContentTitle(from)
                 .setContentText(getMessage(context, message))
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
                 .setDeleteIntent(delPendingIntent)
                 .setContentIntent(pendingIntent);
+
+        if (ConversaApp.getInstance(context).getPreferences().getPushNotificationSound()) {
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            notificationBuilder.setSound(defaultSoundUri);
+        }
 
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

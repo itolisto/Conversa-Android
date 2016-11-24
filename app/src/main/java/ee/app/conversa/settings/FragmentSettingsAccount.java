@@ -1,30 +1,22 @@
 package ee.app.conversa.settings;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 
-import com.onesignal.OneSignal;
 import com.parse.ParseException;
 import com.parse.SaveCallback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import ee.app.conversa.ActivitySignIn;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
-import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Utils;
 
 /**
@@ -60,11 +52,11 @@ public class FragmentSettingsAccount extends PreferenceFragment implements Prefe
         switch (preference.getKey()) {
             case PreferencesKeys.ACCOUNT_EMAIL_KEY: {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.edittext_dialog, null);
-                dialogBuilder.setView(dialogView);
 
-                final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_settings_account, null);
+                final TextInputEditText edt = (TextInputEditText) dialogView.findViewById(R.id.edit1);
+                edt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
                 dialogBuilder.setTitle(getString(R.string.sett_account_email_title));
                 dialogBuilder.setPositiveButton(getString(R.string.action_change), new DialogInterface.OnClickListener() {
@@ -77,18 +69,18 @@ public class FragmentSettingsAccount extends PreferenceFragment implements Prefe
                         dialog.dismiss();
                     }
                 });
+                dialogBuilder.setView(dialogView);
                 AlertDialog b = dialogBuilder.create();
                 b.show();
                 break;
             }
             case PreferencesKeys.ACCOUNT_PASSWORD_KEY: {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.edittext_dialog, null);
-                dialogBuilder.setView(dialogView);
 
-                final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
-                edt.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_settings_account, null);
+                final TextInputEditText edt = (TextInputEditText) dialogView.findViewById(R.id.edit1);
+                edt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
                 dialogBuilder.setTitle(getString(R.string.sett_account_password_title));
                 dialogBuilder.setPositiveButton(getString(R.string.action_change), new DialogInterface.OnClickListener() {
@@ -101,6 +93,7 @@ public class FragmentSettingsAccount extends PreferenceFragment implements Prefe
                         dialog.dismiss();
                     }
                 });
+                dialogBuilder.setView(dialogView);
                 AlertDialog b = dialogBuilder.create();
                 b.show();
                 break;
@@ -142,7 +135,7 @@ public class FragmentSettingsAccount extends PreferenceFragment implements Prefe
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                appLogout();
+                                AppActions.appLogout(getActivity(), true);
                             }
                         });
 
@@ -262,30 +255,6 @@ public class FragmentSettingsAccount extends PreferenceFragment implements Prefe
 
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-    private void appLogout() {
-        if (ConversaApp.getInstance(getActivity()).getDB().deleteDatabase())
-            Logger.error("Logout", "Database removed");
-        else
-            Logger.error("Logout", "An error has occurred while removing databased. Database not removed");
-
-        Collection<String> tempList = new ArrayList<>(2);
-        tempList.add("upbc");
-        tempList.add("upvt");
-        OneSignal.deleteTags(tempList);
-        OneSignal.clearOneSignalNotifications();
-        OneSignal.setSubscription(false);
-        AblyConnection.getInstance().disconnectAbly();
-
-        Account.logOut();
-        AppCompatActivity fromActivity = (AppCompatActivity) getActivity();
-        Intent goToSignIn = new Intent(fromActivity, ActivitySignIn.class);
-        goToSignIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        goToSignIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        ConversaApp.getInstance(getActivity()).getPreferences().cleanSharedPreferences();
-        fromActivity.startActivity(goToSignIn);
-        fromActivity.finish();
     }
 
 }

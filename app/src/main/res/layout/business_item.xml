@@ -23,9 +23,6 @@
         fresco:failureImageScaleType="centerInside"
         fresco:retryImage="@drawable/business_default"
         fresco:retryImageScaleType="centerInside"
-        fresco:progressBarImage="@drawable/rotate_loading"
-        fresco:progressBarImageScaleType="centerInside"
-        fresco:progressBarAutoRotateInterval="1000"
         fresco:roundAsCircle="true" />
 
     <View
@@ -41,6 +38,7 @@
         android:maxLines="1"
         android:ellipsize="end"
         android:textSize="18sp"
+        android:singleLine="true"
         android:id="@+id/mtvDisplayName"
         android:layout_above="@id/vDivider"
         android:layout_width="wrap_content"
@@ -53,6 +51,7 @@
         android:maxLines="1"
         android:textSize="14sp"
         android:ellipsize="end"
+        android:singleLine="true"
         android:id="@+id/ltvConversaId"
         android:layout_below="@id/vDivider"
         android:layout_width="wrap_content"

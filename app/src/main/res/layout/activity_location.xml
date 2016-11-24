@@ -29,8 +29,5 @@
 
     <include layout="@layout/push_notification"
         android:id="@+id/rlPushNotification"
-        android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:visibility="gone" />
 </RelativeLayout>

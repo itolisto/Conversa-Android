@@ -93,11 +93,9 @@
 			android:textSize="20sp"
 			android:background="@drawable/button_shape_white" />
 
-		<include android:id="@+id/rlNoInternetNotification"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:visibility="gone"
-			layout="@layout/no_internet_notification" />
+		<include layout="@layout/no_internet_notification"
+			android:id="@+id/rlNoInternetNotification"
+			android:visibility="gone" />
 
 	</RelativeLayout>
 </ScrollView>

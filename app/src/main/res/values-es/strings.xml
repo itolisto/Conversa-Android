@@ -37,9 +37,9 @@
     <string name="close">cerrar</string>
     <string name="confirm_email">¿Seguro que este es tu correo electrónico? %1s Enviaremos un correo para cambiar tu contraseña, ten cuidado</string>
     <string name="contact_number_title">Número de contacto</string>
-    <string name="contacts_last_message_default">%1s: Mensaje</string>
-    <string name="contacts_last_message_image">%1s: Imagen</string>
-    <string name="contacts_last_message_location">%1s: Ubicación</string>
+    <string name="contacts_last_message_default">Mensaje</string>
+    <string name="contacts_last_message_image">Imagen</string>
+    <string name="contacts_last_message_location">Ubicación</string>
     <string name="cr4ZYMKINHp">Ropa de mujer</string>
     <string name="cuRzYgo8krw">Zapatos para mujer</string>
     <string name="cydPTRrUJye">Salud</string>
@@ -76,7 +76,7 @@
     <string name="no_user_registered">No hay usuario registrado con esta combinación de correo electrónico o contraseña</string>
     <string name="no_wall_messages">Sin mensajes</string>
     <string name="number_of_followers">Seguidores</string>
-    <string name="open_on_title">Abierto los</string>
+    <string name="open_on_title">Abierto</string>
     <string name="password">contraseña</string>
     <string name="picture">Imagen</string>
     <string name="posted_less_than_a_minute_ago">Hace menos de un minuto</string>
@@ -195,4 +195,14 @@
     <string name="sett_help_licences">Licencias</string>
     <string name="sett_help_terms">Términos de uso</string>
     <string name="action_change">Cambiar</string>
+    <string name="profile_delivery_no">Todavía no pero pronto</string>
+    <string name="profile_delivery_yes">Sí, sí tenemos :)</string>
+    <string name="profile_status_away">Fuera</string>
+    <string name="profile_status_offline">Desconectado</string>
+    <string name="profile_status_online">Conectado</string>
+    <string name="profile_status_online_description">Obtienes respuestas casi al instante, esto es Conversa</string>
+    <string name="profile_status_offline_description">Responderemos tan pronto como sea posible</string>
+    <string name="profile_status_away_description">Están de descanso...clásico</string>
+    <string name="dialog_profile_status_understood">Entendido</string>
+    <string name="parse_logout_reason">Esta sesión fue terminada porque otro dispositivo inicio sesión</string>
 </resources>

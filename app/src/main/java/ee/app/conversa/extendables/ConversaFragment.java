@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import ee.app.conversa.contact.ContactUpdateReason;
 import ee.app.conversa.events.TypingEvent;
 import ee.app.conversa.events.contact.ContactDeleteEvent;
 import ee.app.conversa.events.contact.ContactRetrieveEvent;
@@ -58,6 +59,12 @@ public class ConversaFragment extends Fragment implements OnContactTaskCompleted
         super.onStop();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTypingEvent(TypingEvent event) {
         onTypingMessage(event.getFrom(), event.isTyping());
@@ -90,7 +97,7 @@ public class ConversaFragment extends Fragment implements OnContactTaskCompleted
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onContactUpdateEvent(ContactUpdateEvent event) {
-        ContactUpdated(event.getContact());
+        ContactUpdated(event.getContact(), event.getReason());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -119,7 +126,7 @@ public class ConversaFragment extends Fragment implements OnContactTaskCompleted
     }
 
     @Override
-    public void ContactUpdated(dbBusiness response) {
+    public void ContactUpdated(dbBusiness response, ContactUpdateReason reason) {
         /* Child activities override this method */
     }
 

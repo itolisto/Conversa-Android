@@ -446,4 +446,5 @@ public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouc
 
 		return mBitmap;
 	}
+
 }

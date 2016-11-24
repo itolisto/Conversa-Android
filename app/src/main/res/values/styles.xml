@@ -14,7 +14,7 @@
 
         <item name="colorPrimary">@color/default_green</item>
         <!--   darker variant for the status bar and contextual app bars -->
-        <item name="colorPrimaryDark">@color/default_green_darker</item>
+        <item name="colorPrimaryDark">@color/status_bar_default</item>
         <!--   theme UI controls like checkboxes and text fields e.g. FloatActionButton -->
         <item name="colorAccent">@color/colorAccent</item>
 
@@ -27,6 +27,14 @@
 
         <!-- For preferences -->
         <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
+    </style>
+
+    <style name="ChatWallTheme" parent="AppTheme">
+        <item name="colorPrimary">@android:color/holo_blue_dark</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/status_bar_chat</item>
+        <!--   theme UI controls like checkboxes and text fields e.g. FloatActionButton -->
+        <item name="colorAccent">@android:color/holo_blue_dark</item>
     </style>
 
     <style name="TransparentDialogTheme" parent="android:Theme.Dialog">

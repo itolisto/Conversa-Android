@@ -94,11 +94,4 @@
         app:floatingSearch_close_search_on_keyboard_dismiss="true"/>
     <!--app:floatingSearch_menu="@menu/menu_main"-->
 
-    <include android:id="@+id/rlPushNotification"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentTop="true"
-        android:visibility="gone"
-        layout="@layout/push_notification" />
-
 </RelativeLayout>

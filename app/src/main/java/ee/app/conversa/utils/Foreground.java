@@ -44,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Foreground implements Application.ActivityLifecycleCallbacks {
 
-    public static final long CHECK_DELAY = 600;
+    public static final long CHECK_DELAY = 650;
     public static final String TAG = Foreground.class.getSimpleName();
 
     public interface Listener {
@@ -143,7 +143,7 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
     }
 
     @Override
-    public void onActivityPaused(Activity activity) {
+    public void onActivityPaused(final Activity activity) {
         paused = true;
 
         if (check != null)
@@ -153,6 +153,8 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
             @Override
             public void run() {
                 if (foreground && paused) {
+//                    Logger.error(TAG, "\nActivity name: " + activity.getClass().getSimpleName() + "\nCalling package: " + activity.getCallingPackage()
+//                            + "\nLocal class name: " + activity.getLocalClassName() + "\nIntent: " + activity.getIntent().toString());
                     foreground = false;
                     Logger.error(TAG, "went background");
                     for (Listener l : listeners) {

@@ -12,10 +12,10 @@ import com.parse.ParseException;
 import java.util.HashMap;
 
 import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.AppActions;
 
 import static com.parse.ParseException.CONNECTION_FAILED;
 import static com.parse.ParseException.INTERNAL_SERVER_ERROR;
-import static com.parse.ParseException.INVALID_SESSION_TOKEN;
 
 /**
  * Created by edgargomez on 10/12/16.
@@ -64,9 +64,11 @@ public class FavoriteJob extends Job {
             Logger.error(TAG, exception.getMessage());
 
             if (exception.getCode() == INTERNAL_SERVER_ERROR ||
-                    exception.getCode() == CONNECTION_FAILED ||
-                    exception.getCode() == INVALID_SESSION_TOKEN )
+                    exception.getCode() == CONNECTION_FAILED )
             {
+                return RetryConstraint.CANCEL;
+            } else {
+                AppActions.validateParseException(getApplicationContext(), (ParseException) throwable);
                 return RetryConstraint.CANCEL;
             }
         }

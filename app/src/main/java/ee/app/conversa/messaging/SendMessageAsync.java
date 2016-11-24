@@ -60,7 +60,12 @@ public class SendMessageAsync {
 		}
 	}
 
-	public static void sendImageMessage(Context context, String path, int width, int height, int size, boolean addContact, dbBusiness business) {
+	public static void sendImageMessage(Context context, String path, int width, int height,
+										long size, boolean addContact, dbBusiness business) {
+		if (width <= 0 || height <= 0) {
+			return;
+		}
+
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getCustomerId());

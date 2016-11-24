@@ -28,7 +28,6 @@ import okhttp3.Response;
 /**
  * Created by edgargomez on 10/12/16.
  */
-
 public class DownloadFileJob extends Job {
 
     private final String TAG = DownloadFileJob.class.getSimpleName();

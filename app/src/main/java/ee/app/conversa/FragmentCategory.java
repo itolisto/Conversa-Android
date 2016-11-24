@@ -16,8 +16,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,17 +32,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import ee.app.conversa.adapters.CategoryAdapter;
 import ee.app.conversa.extendables.BaseActivity;
+import ee.app.conversa.interfaces.OnCategoryClickListener;
 import ee.app.conversa.model.nCategory;
 import ee.app.conversa.model.nHeaderTitle;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 
-public class FragmentCategory extends Fragment implements CategoryAdapter.OnItemClickListener, View.OnClickListener{
+public class FragmentCategory extends Fragment implements OnCategoryClickListener, View.OnClickListener {
 
     private RelativeLayout mRlNoConnection;
     private RecyclerView mRvCategory;
@@ -63,7 +66,7 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
         mRvCategory = (RecyclerView) rootView.findViewById(R.id.rvCategories);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.srlCategories);
         mPbLoadingCategories = (AVLoadingIndicatorView) rootView.findViewById(R.id.pbLoadingCategories);
-        Button mBtnRetry = (Button) rootView.findViewById(R.id.btnRetry);
+        Button mBtnRetry = (Button) rootView.findViewById(R.id.btnRetryResult);
 
         mBtnRetry.setOnClickListener(this);
 
@@ -92,50 +95,57 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_category, menu);
-        MenuItem searchItem = menu.findItem(R.id.grid_default_search);
-        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = new Intent(getActivity(), ActivitySearch.class);
-                startActivity(intent);
-                return false;
-            }
-        });
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            Intent intent = new Intent(getActivity(), ActivitySearch.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void getCategoriesAsync() {
-        mSwipeRefreshLayout.setEnabled(false);
-
         if (((BaseActivity)getActivity()).hasInternetConnection()) {
+            mSwipeRefreshLayout.setEnabled(false);
             mRvCategory.setVisibility(View.GONE);
             mRlNoConnection.setVisibility(View.GONE);
             mPbLoadingCategories.smoothToShow();
 
+            String language = ConversaApp.getInstance(getActivity()).getPreferences().getLanguage();
+
+            if (language.equals("zz")) {
+                if (Locale.getDefault().getLanguage().startsWith("es")) {
+                    language = "es";
+                } else {
+                    language = "en";
+                }
+            }
+
             // Call Parse for registry
             HashMap<String, Object> params = new HashMap<>(1);
-            params.put("skip", 0);
+            params.put("language", language);
             ParseCloud.callFunctionInBackground("getCategories", params, new FunctionCallback<String>() {
                 @Override
                 public void done(String result, ParseException e) {
                     if (e == null) {
                         parseResult(result, true);
                     } else {
+                        AppActions.validateParseException(getActivity(), e);
                         parseResult("", true);
                     }
                 }
             });
         } else {
-            if (mRlNoConnection.getVisibility() != View.VISIBLE) {
+            if (mRlNoConnection.getVisibility() == View.GONE) {
+                mSwipeRefreshLayout.setEnabled(false);
                 parseResult("", false);
             }
         }
     }
 
     @Override
-    public void onItemClick(View itemView, int position, nCategory category) {
+    public void onCategoryClick(nCategory category, View itemView, int position) {
         FragmentManager fm = getFragmentManager();
 
         if (fm != null) {
@@ -178,45 +188,79 @@ public class FragmentCategory extends Fragment implements CategoryAdapter.OnItem
                 JSONArray categories = jsonRootObject.optJSONArray("results");
 
                 int size = categories.length();
-                List<nCategory> categoryList = new ArrayList<>(30);
-                List<nHeaderTitle> headerList = new ArrayList<>(2);
+                List<nCategory> alphabetically = null;
+                List<Object> categoriesList = new ArrayList<>(30);
 
                 for (int i = 0; i < size; i++) {
                     JSONObject jsonCategory = categories.getJSONObject(i);
-                    String headerTitle = jsonCategory.optString("tn", "");
+                    String headerTitle = jsonCategory.optString("tn", null);
 
-                    if (headerTitle.isEmpty()) {
-                        String objectId = jsonCategory.optString("oj", "");
+                    if (headerTitle != null) {
                         int relevance = jsonCategory.optInt("re", 0);
-                        int position = jsonCategory.optInt("po", 0);
-                        String avatarUrl = jsonCategory.optString("th", "");
-                        categoryList.add(new nCategory(objectId, relevance, position, avatarUrl));
+                        categoriesList.add(new nHeaderTitle(headerTitle, relevance));
+
+                        if (jsonCategory.optBoolean("al", false)) {
+                            alphabetically = new ArrayList<>(1);
+                        }
                     } else {
-                        int relevance = jsonCategory.optInt("re", 0);
-                        headerList.add(new nHeaderTitle(headerTitle, relevance));
+                        nCategory category = new nCategory(
+                                jsonCategory.optString("ob", ""),
+                                jsonCategory.optString("th", ""));
+
+                        if (alphabetically != null) {
+                            alphabetically.add(category);
+
+                            if (i + 1 < size) {
+                                jsonCategory = categories.getJSONObject(i + 1);
+
+                                if (jsonCategory.optString("tn", null) != null) {
+                                    Collections.sort(alphabetically, new Comparator<nCategory>() {
+                                        @Override
+                                        public int compare(final nCategory object1, final nCategory object2) {
+                                            return object1.getCategoryName(getActivity()).compareTo(object2.getCategoryName(getActivity()));
+                                        }
+                                    });
+                                    categoriesList.addAll(alphabetically);
+                                    alphabetically.clear();
+                                    alphabetically = null;
+                                }
+                            } else {
+                                Collections.sort(alphabetically, new Comparator<nCategory>() {
+                                    @Override
+                                    public int compare(final nCategory object1, final nCategory object2) {
+                                        return object1.getCategoryName(getActivity()).compareTo(object2.getCategoryName(getActivity()));
+                                    }
+                                });
+                                categoriesList.addAll(alphabetically);
+                                alphabetically.clear();
+                                alphabetically = null;
+                            }
+                        } else {
+                            categoriesList.add(category);
+                        }
                     }
                 }
 
-                mCategoryListAdapter.addItems(categoryList, headerList);
+                mCategoryListAdapter.addItems(categoriesList);
                 mRvCategory.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
             Logger.error("parseResult", e.getMessage());
         } finally {
             mPbLoadingCategories.smoothToHide();
-            mSwipeRefreshLayout.setEnabled(true);
 
-            if (!connected) {
-                mRlNoConnection.setVisibility(View.VISIBLE);
-            } else {
+            if (connected) {
+                mSwipeRefreshLayout.setEnabled(true);
                 mRlNoConnection.setVisibility(View.GONE);
+            } else {
+                mRlNoConnection.setVisibility(View.VISIBLE);
             }
         }
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.btnRetry) {
+        if (v.getId() == R.id.btnRetryResult) {
             getCategoriesAsync();
         }
     }

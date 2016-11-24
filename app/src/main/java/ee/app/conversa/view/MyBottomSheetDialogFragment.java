@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.content.ContextCompat;
@@ -24,6 +23,8 @@ import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ActivityLocation;
 import ee.app.conversa.R;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.Utils;
 
 //import com.afollestad.materialcamera.MaterialCamera;
 
@@ -78,10 +79,14 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
             case R.id.btnCamera: {
                 File saveDir = null;
 
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     // Only use external storage directory if permission is granted, otherwise cache directory is used by default
-                    saveDir = new File(Environment.getExternalStorageDirectory(), "MaterialCamera");
-                    saveDir.mkdirs();
+                    try {
+                        saveDir = Utils.getMediaDirectory(getActivity(), "images");
+                    } catch (Exception e) {
+                        Logger.error("onGetCameraDirectory", e.getMessage());
+                    }
                 }
 
 //                Intent intent = new Intent(mActivity.get(), ActivityCameraCrop.class);
@@ -92,7 +97,8 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
                         .allowRetry(true)
                         .autoSubmit(false)
                         .stillShot()
-                        .labelConfirm(R.string.logout_ok);
+                        .qualityProfile(MaterialCamera.QUALITY_480P)
+                        .labelConfirm(R.string.SEND);
                 materialCamera.start(ActivityChatWall.CAMERA_RQ);
                 break;
             }

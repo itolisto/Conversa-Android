@@ -33,16 +33,18 @@ import java.util.concurrent.TimeoutException;
 
 import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
+import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbSearch;
 import ee.app.conversa.model.nHeaderTitle;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.AppActions;
 
 /**
  * Created by edgargomez on 7/12/16.
  */
-public class ActivitySearch extends ConversaActivity implements BusinessAdapter.OnLocalItemClickListener {
+public class ActivitySearch extends ConversaActivity implements OnContactClickListener {
 
     private boolean isLoading;
 
@@ -119,6 +121,7 @@ public class ActivitySearch extends ConversaActivity implements BusinessAdapter.
         mRvSearchResults = (RecyclerView) findViewById(R.id.rvSearchResults);
 
         mBusinessListAdapter= new BusinessAdapter(this, this);
+        mRvSearchResults.setHasFixedSize(true);
         mRvSearchResults.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRvSearchResults.setAdapter(mBusinessListAdapter);
         mRvSearchResults.setItemAnimator(new DefaultItemAnimator());
@@ -161,6 +164,7 @@ public class ActivitySearch extends ConversaActivity implements BusinessAdapter.
                 try {
                     return ParseCloud.callFunction("searchBusiness", params);
                 } catch (ParseException e) {
+                    AppActions.validateParseException(getApplicationContext(), e);
                     Logger.error("Future task error: ", e.getMessage());
                     return "";
                 }
@@ -255,14 +259,10 @@ public class ActivitySearch extends ConversaActivity implements BusinessAdapter.
     }
 
     @Override
-    public void onItemClick(View itemView, int position, final dbBusiness business) {
-        final dbBusiness dbbusiness = ConversaApp.getInstance(this)
-                .getDB()
-                .isContact(business.getBusinessId());
-
+    public void onContactClick(final dbBusiness business, View itemView, int position) {
         Intent intent = new Intent(this, ActivityProfile.class);
 
-        if (dbbusiness == null) {
+        if (business.getId() < 0) {
             intent.putExtra(Const.iExtraAddBusiness, true);
         } else {
             intent.putExtra(Const.iExtraAddBusiness, false);
@@ -275,7 +275,7 @@ public class ActivitySearch extends ConversaActivity implements BusinessAdapter.
                 ConversaApp.getInstance(getApplicationContext())
                         .getDB()
                         .addSearch(new dbSearch(
-                                business.getId(),
+                                -1,
                                 business.getBusinessId(),
                                 business.getDisplayName(),
                                 business.getConversaId(),
@@ -302,13 +302,12 @@ public class ActivitySearch extends ConversaActivity implements BusinessAdapter.
 
                 if (business == null) {
                     business = new dbBusiness();
-                    business.setId(search.getID());
                     business.setBusinessId(search.getBusinessId());
-                    business.setDisplayName(search.getDisplayName());
-                    business.setConversaId(search.getConversaId());
-                    business.setAvatarThumbFileId(search.getAvatarUrl());
                 }
 
+                business.setDisplayName(search.getDisplayName());
+                business.setConversaId(search.getConversaId());
+                business.setAvatarThumbFileId(search.getAvatarUrl());
                 searches.add(business);
             }
 
@@ -336,6 +335,10 @@ public class ActivitySearch extends ConversaActivity implements BusinessAdapter.
                     mLlErrorContainer.setVisibility(View.GONE);
                     mRvSearchResults.setVisibility(View.VISIBLE);
                 }
+            } else {
+                mLlNoResultsContainer.setVisibility(View.GONE);
+                mLlErrorContainer.setVisibility(View.GONE);
+                mRvSearchResults.setVisibility(View.GONE);
             }
         }
     }

@@ -47,19 +47,7 @@ public class FragmentSettingsChat extends PreferenceFragment implements Preferen
     public boolean onPreferenceClick(Preference preference) {
         switch (preference.getKey()) {
             case PreferencesKeys.CHAT_QUALITY_KEY:
-                final int index;
-
-                switch(ConversaApp.getInstance(getActivity()).getPreferences().getUploadQualityEntry()) {
-                    case "1":
-                        index = 1;
-                        break;
-                    case "2":
-                        index = 2;
-                        break;
-                    default:
-                        index = 0;
-                        break;
-                }
+                final int index = ConversaApp.getInstance(getActivity()).getPreferences().getUploadQualityPosition();
 
                 AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
                 b.setTitle(R.string.sett_chat_quality_title);
@@ -68,9 +56,8 @@ public class FragmentSettingsChat extends PreferenceFragment implements Preferen
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         if (which != index)
-                            ConversaApp.getInstance(getActivity()).getPreferences().setQuality(
-                                    Integer.toString(which)
-                            );
+                            ConversaApp.getInstance(getActivity())
+                                    .getPreferences().setUploadQuality(which);
                     }
                 });
                 b.show();
@@ -87,9 +74,10 @@ public class FragmentSettingsChat extends PreferenceFragment implements Preferen
                     .setSummary(ConversaApp.getInstance(getActivity())
                             .getPreferences().getUploadQualityFromNewValue(
                                     ConversaApp.getInstance(getActivity())
-                                            .getPreferences().getUploadQualityEntry()
+                                            .getPreferences().getUploadQualityPosition()
                             )
                     );
         }
     }
+
 }

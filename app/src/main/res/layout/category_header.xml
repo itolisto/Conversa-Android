@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#fafafa"
+    android:layout_width="match_parent"
+    android:layout_height="35dp">
+
+    <ee.app.conversa.view.MediumTextView
+        android:id="@+id/rtvHeader"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_centerVertical="true"
+        android:textColor="@color/default_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/category_item_divider_height" />
+
+</RelativeLayout>

@@ -28,13 +28,15 @@ import java.util.List;
 
 import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.extendables.BaseActivity;
+import ee.app.conversa.interfaces.OnBusinessClickListener;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.model.parse.BusinessCategory;
 import ee.app.conversa.model.parse.bCategory;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 
-public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItemClickListener {
+public class FragmentBusiness extends Fragment implements OnBusinessClickListener {
 
     private RelativeLayout mRlNoConnection;
     private AVLoadingIndicatorView mPbLoadingCategory;
@@ -79,8 +81,8 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
         mRvBusiness = (RecyclerView) rootView.findViewById(R.id.rvBusiness);
 
         mBusinessListAdapter= new BusinessAdapter((AppCompatActivity)getActivity(), this);
-        mRvBusiness.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvBusiness.setHasFixedSize(true);
+        mRvBusiness.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvBusiness.setAdapter(mBusinessListAdapter);
         mRvBusiness.setItemAnimator(new DefaultItemAnimator());
 
@@ -133,8 +135,8 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
                 query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
                 query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
                 query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
-                query.setLimit(15);
-                query.setSkip(page * 15);
+                query.setLimit(25);
+                query.setSkip(page * 25);
 
                 mPbLoadingCategory.smoothToShow();
 
@@ -142,6 +144,10 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
 
                     @Override
                     public void done(List<BusinessCategory> objects, ParseException e) {
+                        if (e != null) {
+                            AppActions.validateParseException(getActivity(), e);
+                        }
+
                         if (objects != null && objects.size() > 0) {
                             List<Business> business = new ArrayList<>(objects.size());
                             final int size = objects.size();
@@ -164,6 +170,8 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
                             }
 
                             page++;
+                        } else {
+                            mPbLoadingCategory.smoothToHide();
                         }
                     }
                 });
@@ -176,7 +184,7 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
     }
 
     @Override
-    public void onItemClick(View itemView, int position, Business business) {
+    public void onBusinessClick(Business business, View itemView, int position) {
         dbBusiness dbBusiness = ConversaApp.getInstance(getActivity()).getDB().isContact(business.getObjectId());
         Intent intent = new Intent(getActivity(), ActivityProfile.class);
 
@@ -191,16 +199,13 @@ public class FragmentBusiness extends Fragment implements BusinessAdapter.OnItem
             intent.putExtra(Const.iExtraAddBusiness, false);
         }
 
-        try {
-            if(business.getAvatar() != null && !business.getAvatar().getUrl().isEmpty()) {
-                if (dbBusiness.getAvatarThumbFileId().isEmpty()) {
+        if(business.getAvatar() != null && !TextUtils.isEmpty(business.getAvatar().getUrl())) {
+            if (!TextUtils.isEmpty(dbBusiness.getAvatarThumbFileId())) {
+                if (!dbBusiness.getAvatarThumbFileId().equals(business.getAvatar().getUrl())) {
+                    // Update avatar
                     dbBusiness.setAvatarThumbFileId(business.getAvatar().getUrl());
                 }
-            } else {
-                dbBusiness.setAvatarThumbFileId("");
             }
-        } catch (IllegalStateException e) {
-            dbBusiness.setAvatarThumbFileId("");
         }
 
         intent.putExtra(Const.iExtraBusiness, dbBusiness);

@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:elevation="7dp"
+    android:layout_alignParentTop="true"
     android:background="@color/push_notification_background"
-    android:clickable="true"
     android:padding="2dp" >
 
     <com.facebook.drawee.view.SimpleDraweeView
@@ -19,16 +19,14 @@
         android:layout_marginLeft="6dp"
         android:layout_marginStart="6dp"
         fresco:fadeDuration="300"
-        fresco:actualImageScaleType="focusCrop"
+        fresco:actualImageScaleType="fitCenter"
         fresco:placeholderImage="@drawable/business_default"
         fresco:placeholderImageScaleType="fitCenter"
-        fresco:failureImage="@drawable/username_icon"
+        fresco:failureImage="@drawable/business_default"
         fresco:failureImageScaleType="centerInside"
-        fresco:retryImage="@drawable/refresh_icon"
-        fresco:retryImageScaleType="centerCrop"
-        fresco:progressBarImage="@drawable/rotate_loading"
-        fresco:progressBarImageScaleType="centerInside"
-        fresco:progressBarAutoRotateInterval="1000" />
+        fresco:retryImage="@drawable/business_default"
+        fresco:retryImageScaleType="fitCenter"
+        fresco:roundAsCircle="true" />
 
     <ImageButton
         android:id="@+id/btnClose"
@@ -44,39 +42,52 @@
         android:src="@drawable/close_icon"
         android:clickable="true" />
 
+    <View
+        android:id="@+id/vDivider"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerVertical="true"/>
+
     <ee.app.conversa.view.MediumTextView
         android:id="@+id/tvUserName"
         style="@style/TransparentDialogTheme"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/sdvPushAvatar"
-        android:layout_marginLeft="6dp"
-        android:layout_marginStart="6dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="7dp"
+        android:layout_marginRight="7dp"
         android:layout_toLeftOf="@id/btnClose"
         android:layout_toStartOf="@id/btnClose"
         android:layout_toRightOf="@id/sdvPushAvatar"
         android:layout_toEndOf="@id/sdvPushAvatar"
-        android:gravity="start|bottom"
+        android:layout_above="@id/vDivider"
+        android:gravity="start|center_vertical"
         android:singleLine="true"
-        android:text="@string/test_string"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:textColor="@android:color/white"
-        android:textSize="17sp" />
+        android:textSize="16sp" />
 
     <ee.app.conversa.view.RegularTextView
         android:id="@+id/tvNotification"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tvUserName"
-        android:layout_marginLeft="6dp"
-        android:layout_marginStart="6dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="7dp"
+        android:layout_marginRight="7dp"
         android:layout_toLeftOf="@id/btnClose"
         android:layout_toStartOf="@id/btnClose"
         android:layout_toRightOf="@id/sdvPushAvatar"
         android:layout_toEndOf="@id/sdvPushAvatar"
-        android:gravity="start|bottom"
+        android:layout_below="@id/vDivider"
+        android:gravity="start|center_vertical"
         android:singleLine="true"
-        android:text="@string/test_string"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:textColor="@android:color/white"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
 </RelativeLayout>

@@ -96,25 +96,28 @@ public class Preferences {
         }
     }
 
-    public String getUploadQualityEntry() {
-        return getStringPreference(PreferencesKeys.CHAT_QUALITY_KEY, "1");
-    }
-
-    public String getUploadQuality() {
-        String position = getStringPreference(PreferencesKeys.CHAT_QUALITY_KEY, "1");
-        try {
-            int i = Integer.parseInt(position);
-            return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[i];
-        } catch (NumberFormatException e) {
-            return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[1];
+    public int getUploadQualityPosition() {
+        int position = getIntegerPreference(PreferencesKeys.CHAT_QUALITY_KEY, -1);
+        if (position == -1) {
+            return 1;
+        } else {
+            return position;
         }
     }
 
-    public String getUploadQualityFromNewValue(String position) {
-        try {
-            int i = Integer.parseInt(position);
+    public String getUploadQuality() {
+        int i = getIntegerPreference(PreferencesKeys.CHAT_QUALITY_KEY, -1);
+        if (i == -1) {
+            return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[1];
+        } else {
             return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[i];
-        } catch (NumberFormatException e) {
+        }
+    }
+
+    public String getUploadQualityFromNewValue(int position) {
+        if (position >= 0 || position < context.getResources().getStringArray(R.array.sett_chat_quality_entries).length) {
+            return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[position];
+        } else {
             return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[1];
         }
     }
@@ -131,7 +134,7 @@ public class Preferences {
         return getBooleanPreference(PreferencesKeys.CHAT_SOUND_RECEIVING_KEY, true);
     }
 
-    public boolean getPlayPushNotificationSound() {
+    public boolean getPushNotificationSound() {
         return getBooleanPreference(PreferencesKeys.NOTIFICATION_SOUND_KEY, true);
     }
 
@@ -139,7 +142,7 @@ public class Preferences {
         return getBooleanPreference(PreferencesKeys.NOTIFICATION_PREVIEW_KEY, true);
     }
 
-    public boolean getPlayInAppNotificationSound() {
+    public boolean getInAppNotificationSound() {
         return getBooleanPreference(PreferencesKeys.NOTIFICATION_INAPP_SOUND_KEY, true);
     }
 
@@ -184,8 +187,12 @@ public class Preferences {
         setStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, language);
     }
 
-    public void setQuality(String quality) {
-        setStringPreference(PreferencesKeys.CHAT_QUALITY_KEY, quality);
+    public void setUploadQuality(int position) {
+        if (position >= 0 && position < context.getResources().getStringArray(R.array.sett_chat_quality_entries).length) {
+            setIntegerPrefrence(PreferencesKeys.CHAT_QUALITY_KEY, position);
+        } else {
+            setIntegerPrefrence(PreferencesKeys.CHAT_QUALITY_KEY, 1);
+        }
     }
 
     /* ******************************************************************************** */

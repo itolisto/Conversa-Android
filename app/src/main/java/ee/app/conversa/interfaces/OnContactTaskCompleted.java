@@ -4,6 +4,7 @@ import android.support.annotation.UiThread;
 
 import java.util.List;
 
+import ee.app.conversa.contact.ContactUpdateReason;
 import ee.app.conversa.model.database.dbBusiness;
 
 /**
@@ -14,5 +15,5 @@ public interface OnContactTaskCompleted {
     void ContactGetAll(List<dbBusiness> response);
     void ContactAdded(dbBusiness response);
     void ContactDeleted(List<String> response);
-    void ContactUpdated(dbBusiness response);
+    void ContactUpdated(dbBusiness response, ContactUpdateReason reason);
 }

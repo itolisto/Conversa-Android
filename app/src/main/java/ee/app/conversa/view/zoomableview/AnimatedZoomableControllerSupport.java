@@ -12,15 +12,15 @@
 
 package ee.app.conversa.view.zoomableview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.graphics.Matrix;
 import android.support.annotation.Nullable;
 import android.view.animation.DecelerateInterpolator;
 
 import com.facebook.common.internal.Preconditions;
 import com.facebook.common.logging.FLog;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorListenerAdapter;
-import com.nineoldandroids.animation.ValueAnimator;
 
 
 /**

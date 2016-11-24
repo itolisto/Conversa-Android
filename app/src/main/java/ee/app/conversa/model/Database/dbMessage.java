@@ -56,7 +56,7 @@ public class dbMessage implements Parcelable {
 	private int mWidth;
 	private int mHeight;
 	private int mDuration;
-	private int mBytes;
+	private long mBytes;
 	private int mProgress;
 
 	public dbMessage() {
@@ -98,7 +98,7 @@ public class dbMessage implements Parcelable {
 	public int getWidth() { return mWidth; }
 	public int getHeight() { return mHeight; }
 	public int getDuration() { return mDuration; }
-	public int getBytes() { return mBytes; }
+	public long getBytes() { return mBytes; }
 	public int getProgress() { return mProgress; }
 
 	public void setId(long id) { this.mId = id; }
@@ -118,7 +118,7 @@ public class dbMessage implements Parcelable {
 	public void setWidth(int mWidth) { this.mWidth = mWidth; }
 	public void setHeight(int mHeight) { this.mHeight = mHeight; }
 	public void setDuration(int mDuration) { this.mDuration = mDuration; }
-	public void setBytes(int mBytes) { this.mBytes = mBytes; }
+	public void setBytes(long mBytes) { this.mBytes = mBytes; }
 	public void setProgress(int mProgress) { this.mProgress = mProgress; }
 
 	/* ******************************************************************************************* */
@@ -185,7 +185,7 @@ public class dbMessage implements Parcelable {
 		dest.writeInt(this.mWidth);
 		dest.writeInt(this.mHeight);
 		dest.writeInt(this.mDuration);
-		dest.writeInt(this.mBytes);
+		dest.writeLong(this.mBytes);
 		dest.writeInt(this.mProgress);
 	}
 
@@ -207,7 +207,7 @@ public class dbMessage implements Parcelable {
 		this.mWidth = in.readInt();
 		this.mHeight = in.readInt();
 		this.mDuration = in.readInt();
-		this.mBytes = in.readInt();
+		this.mBytes = in.readLong();
 		this.mProgress = in.readInt();
 	}
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle" >
+            <solid android:color="@color/default_light_gray" />
+            <size android:height="450dp"
+                android:width="450dp" />
+        </shape>
+    </item>
+    <item >
+        <bitmap android:gravity="center"
+            android:src="@drawable/sad_face"/>
+    </item>
+</layer-list>

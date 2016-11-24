@@ -1,5 +1,7 @@
 package ee.app.conversa;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,10 +31,12 @@ import ee.app.conversa.utils.Utils;
 
 public class ActivityMain extends ConversaActivity implements Foreground.Listener {
 
+    private final String TAG = ActivityMain.class.getSimpleName();
     private ViewPager mViewPager;
     private TabLayout tabLayout;
     private String titles[];
     private boolean insideCategory;
+    private boolean resetNotifications;
 
     private final int[] tabIcons = {
             R.drawable.tab_chat_inactive,
@@ -69,6 +74,7 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         }
 
         insideCategory = false;
+        resetNotifications = true;
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setCurrentCategory("", false);
 
         tabLayout.getTabAt(0).setIcon(tabSelectedIcons[0]);
@@ -89,7 +95,8 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                 int position = tab.getPosition();
 
                 if (position == 0) {
-                    ((FragmentUsersChat)mPagerAdapter.getRegisteredFragment(0)).finishActionMode();
+                    if (mPagerAdapter.getRegisteredFragment(0) != null)
+                        ((FragmentUsersChat)mPagerAdapter.getRegisteredFragment(0)).finishActionMode();
                 }
 
                 tab.setIcon(tabIcons[position]);
@@ -133,6 +140,27 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Clear notifications
+        if (resetNotifications) {
+            resetNotifications = false;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Logger.error(TAG, "Resetting counts and clear all notifications");
+                    ConversaApp.getInstance(getApplicationContext())
+                            .getDB()
+                            .resetAllCounts();
+                    NotificationManager notificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancelAll();
+                }
+            }).start();
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         if(mViewPager.getCurrentItem() == 1) {
             if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
@@ -144,23 +172,41 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.onBackPressed();
     }
 
+    /*
+     * 1. Add setHasOptionsMenu(true) method in your Fragment's onCreate(Bundle savedInstanceState) method.
+     * 2. Override onCreateOptionsMenu(Menu menu) (if you want to do something different in your Fragment's menu)
+     * and onOptionsItemSelected(MenuItem item) methods in your Fragment.
+     * 3. Inside your onOptionsItemSelected(MenuItem item) Activity's method, make sure you return false when the
+     * menu item action would be implemented in onOptionsItemSelected(MenuItem item) Fragment's method.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        MenuItem item = menu.findItem(R.id.grid_default_search);
-
         switch (mViewPager.getCurrentItem()) {
-            case 1:
-                if (item != null) {
-                    item.setVisible(true);
-                }
-                return true;
-            default:
-                if (item != null) {
-                    item.setVisible(false);
-                }
-                return true;
+            case 1: {
+                menu.findItem(R.id.action_search).setVisible(true);
+                menu.findItem(R.id.action_settings).setVisible(false);
+                break;
+            }
+            default: {
+                menu.findItem(R.id.action_search).setVisible(false);
+                menu.findItem(R.id.action_settings).setVisible(true);
+                break;
+            }
         }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return false;
     }
 
     public void onBackPressedFromCategory() {

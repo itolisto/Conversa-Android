@@ -1,5 +1,6 @@
 package ee.app.conversa.events.contact;
 
+import ee.app.conversa.contact.ContactUpdateReason;
 import ee.app.conversa.model.database.dbBusiness;
 
 /**
@@ -9,13 +10,19 @@ import ee.app.conversa.model.database.dbBusiness;
 public class ContactUpdateEvent {
 
     private final dbBusiness contact;
+    private final ContactUpdateReason reason;
 
-    public ContactUpdateEvent(dbBusiness contact) {
+    public ContactUpdateEvent(dbBusiness contact, ContactUpdateReason reason) {
         this.contact = contact;
+        this.reason = reason;
     }
 
     public dbBusiness getContact() {
         return contact;
+    }
+
+    public ContactUpdateReason getReason() {
+        return reason;
     }
 
 }

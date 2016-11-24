@@ -134,7 +134,7 @@ public class MySQLiteHelper {
             + "\"" + sSearchBusinessId + "\" TEXT NOT NULL, "
             + "\"" + sSearchDisplayName + "\" TEXT NOT NULL, "
             + "\"" + sSearchConversaId + "\" TEXT NOT NULL, "
-            + "\"" + sSearchAvatarUrl + "\" TEXT NOT NULL DEFAULT 0, "
+            + "\"" + sSearchAvatarUrl + "\" TEXT DEFAULT 0, "
             + "\"" + sSearchCreatedAt + "\" INTEGER NOT NULL );";
 
     // NOTIFICATIONS
@@ -180,7 +180,7 @@ public class MySQLiteHelper {
         openDatabase();
     }
 
-    public SQLiteDatabase openDatabase() throws SQLException {
+    SQLiteDatabase openDatabase() throws SQLException {
         return myDbHelper.getWritableDatabase();
     }
 
@@ -344,6 +344,22 @@ public class MySQLiteHelper {
         return contact;
     }
 
+    public dbBusiness getContactById(long id) {
+        Cursor cursor = openDatabase().query(TABLE_CV_CONTACTS, null, COLUMN_ID + " = ?",
+                new String[]{Long.toString(id)}, null, null, null);
+        cursor.moveToFirst();
+        dbBusiness contact = null;
+
+        while (!cursor.isAfterLast()) {
+            contact = cursorToUser(cursor);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+        return contact;
+    }
+
     private dbBusiness cursorToUser(Cursor cursor) {
         dbBusiness contact = new dbBusiness();
         contact.setId(cursor.getLong(0));
@@ -443,44 +459,42 @@ public class MySQLiteHelper {
     public nChatItem getLastMessageAndUnredCount(String fromId) {
         String id = ConversaApp.getInstance(context).getPreferences().getCustomerId();
 
-        StringBuilder sbQuery = new StringBuilder(565);
-        sbQuery.append("SELECT *, ");
-        sbQuery.append("(");
-        sbQuery.append("SELECT COUNT(*) FROM ");
-        sbQuery.append(TABLE_MESSAGES);
-        sbQuery.append(" WHERE ");
-        sbQuery.append(sMessageFromUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(fromId);
-        sbQuery.append("\' AND ");
-        sbQuery.append(sMessageViewAt);
-        sbQuery.append(" = 0) FROM (");
-        sbQuery.append("SELECT * FROM ");
-        sbQuery.append(TABLE_MESSAGES);
-        sbQuery.append(" WHERE ");
-        sbQuery.append(sMessageFromUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(fromId);
-        sbQuery.append("\' AND ");
-        sbQuery.append(sMessageToUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(id);
-        sbQuery.append("\'");
-        sbQuery.append(" OR ");
-        sbQuery.append(sMessageFromUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(id);
-        sbQuery.append("\' AND ");
-        sbQuery.append(sMessageToUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(fromId);
-        sbQuery.append("\'");
-        sbQuery.append(" ORDER BY ");
-        sbQuery.append(sMessageCreatedAt);
-        sbQuery.append(" DESC LIMIT 1 ");
-        sbQuery.append(")");
+        String query = "SELECT *, " +
+                "(" +
+                "SELECT COUNT(*) FROM " +
+                TABLE_MESSAGES +
+                " WHERE " +
+                sMessageFromUserId +
+                " = \'" +
+                fromId +
+                "\' AND " +
+                sMessageViewAt +
+                " = 0) FROM (" +
+                "SELECT * FROM " +
+                TABLE_MESSAGES +
+                " WHERE " +
+                sMessageFromUserId +
+                " = \'" +
+                fromId +
+                "\' AND " +
+                sMessageToUserId +
+                " = \'" +
+                id +
+                "\'" +
+                " OR " +
+                sMessageFromUserId +
+                " = \'" +
+                id +
+                "\' AND " +
+                sMessageToUserId +
+                " = \'" +
+                fromId +
+                "\'" +
+                " ORDER BY " +
+                sMessageCreatedAt +
+                " DESC LIMIT 1 " +
+                ")";
 
-        String query = sbQuery.toString();
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
         dbMessage message = null;
@@ -593,7 +607,7 @@ public class MySQLiteHelper {
         message.setWidth(cursor.getInt(14));
         message.setHeight(cursor.getInt(15));
         message.setDuration(cursor.getInt(16));
-        message.setBytes(cursor.getInt(17));
+        message.setBytes(cursor.getLong(17));
         message.setProgress(cursor.getInt(18));
         return message;
     }
@@ -734,7 +748,7 @@ public class MySQLiteHelper {
         return information;
     }
 
-    public NotificationInformation incrementGroupCount(NotificationInformation information, boolean create) {
+    public void incrementGroupCount(NotificationInformation information, boolean create) {
         if (create) {
             // Create record
             ContentValues record = new ContentValues();
@@ -744,11 +758,10 @@ public class MySQLiteHelper {
             information.setNotificationId(openDatabase().insert(TABLE_NOTIFICATION, null, record));
         } else {
             // Update record
+            information.setCount(information.getCount() + 1);
             openDatabase().execSQL(String.format(Locale.US, "UPDATE %s SET %s = (%s + 1) WHERE %s = %d;",
                     TABLE_NOTIFICATION, sNotificationCount, sNotificationCount, COLUMN_ID, information.getNotificationId()));
         }
-
-        return information;
     }
 
     public void resetGroupCount(long notificationId) {

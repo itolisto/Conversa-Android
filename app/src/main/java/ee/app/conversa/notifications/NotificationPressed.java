@@ -60,12 +60,15 @@ public class NotificationPressed extends AppCompatActivity {
                     break;
                 }
 
+                int count = intent.getExtras().getInt("count", 1);
+
                 dbBusiness user = ConversaApp.getInstance(this).getDB().isContact(contactId);
                 if (user != null) {
                     // Set extras
                     intent = new Intent(this, ActivityChatWall.class);
                     intent.putExtra(Const.iExtraBusiness, user);
                     intent.putExtra(Const.iExtraAddBusiness, false);
+                    intent.putExtra(Const.kAppVersionKey, count);
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
                 }
                 break;

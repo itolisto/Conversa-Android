@@ -7,7 +7,7 @@
 	android:background="@color/default_white"
 	tools:context="ee.app.conversa.ActivitySignUp" >
 
-	<LinearLayout
+	<RelativeLayout
 		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content" >
@@ -17,6 +17,8 @@
 			android:text="@string/SIGN_UP"
 			android:layout_marginTop="40dp"
 			android:textSize="18sp"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
 			android:layout_gravity="center_horizontal"
 			android:textColor="@color/default_black"
 			android:layout_width="wrap_content"
@@ -25,6 +27,7 @@
 		<android.support.design.widget.TextInputLayout
 			android:layout_marginTop="14dp"
 			android:id="@+id/tilEmailSignUp"
+			android:layout_below="@id/btvTitle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:padding="14dp" >
@@ -46,6 +49,7 @@
 			android:id="@+id/tilPasswordSignUp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_below="@id/tilEmailSignUp"
 			android:padding="14dp" >
 
 			<EditText
@@ -65,6 +69,7 @@
 			android:id="@+id/tilBirthdaySignUp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_below="@id/tilPasswordSignUp"
 			android:padding="14dp" >
 
 			<EditText
@@ -84,6 +89,7 @@
 		</android.support.design.widget.TextInputLayout>
 
 		<RadioGroup
+			android:layout_below="@id/tilBirthdaySignUp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="14dp"
@@ -120,16 +126,16 @@
 			android:gravity="center"
 			android:enabled="false"
 			android:text="@string/SIGN_UP"
+			android:layout_below="@id/rgGender"
+			android:layout_centerHorizontal="true"
 			android:textColor="@drawable/textcolor_white_state"
 			android:textSize="20sp"
 			android:background="@drawable/button_shape_white" />
 
-		<include android:id="@+id/rlNoInternetNotification"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:visibility="gone"
-			layout="@layout/no_internet_notification" />
+		<include layout="@layout/no_internet_notification"
+			android:id="@+id/rlNoInternetNotification"
+			android:visibility="gone" />
 
-	</LinearLayout>
+	</RelativeLayout>
 
 </ScrollView>

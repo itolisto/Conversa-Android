@@ -47,7 +47,7 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
             mTilForgotPassword.setOnClickListener(this);
         }
 
-        if(mBtnSendPassword != null) {
+        if (mBtnSendPassword != null) {
             mBtnSendPassword.setOnClickListener(this);
             mBtnSendPassword.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
         }
@@ -56,7 +56,9 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
     @Override
     public void yesInternetConnection() {
         super.yesInternetConnection();
-        mBtnSendPassword.setEnabled(true);
+        if (validateForm()) {
+            mBtnSendPassword.setEnabled(true);
+        }
     }
 
     @Override

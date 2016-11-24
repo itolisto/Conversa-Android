@@ -17,7 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import ee.app.conversa.extendables.BaseActivity;
-import ee.app.conversa.utils.Utils;
+import ee.app.conversa.utils.Const;
 import ee.app.conversa.view.LightTextView;
 
 /**
@@ -33,13 +33,28 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        checkInternetConnection = false;
 		initialization();
 	}
 
     @Override
     protected void onResume() {
         super.onResume();
-        Utils.hideKeyboard(this);
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            if (intent.getExtras().getInt(Const.ACTION, -1) != -1) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                dialogBuilder.setTitle(getString(R.string.sett_account_logout_title));
+                dialogBuilder.setMessage(getString(R.string.parse_logout_reason));
+                dialogBuilder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog b = dialogBuilder.create();
+                b.show();
+            }
+        }
     }
 
     protected void initialization() {
