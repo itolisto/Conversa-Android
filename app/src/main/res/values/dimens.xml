@@ -16,7 +16,14 @@
     <dimen name="message_image_height">165dp</dimen>
     <dimen name="message_image_width">200dp</dimen>
     <!-- General -->
-    <dimen name="message_map_height">100dp</dimen>
+    <dimen name="message_map_height">150dp</dimen>
     <dimen name="message_map_width">200dp</dimen>
+
+    <!-- Settings -->
+    <dimen name="settings_title_divider_height">1dp</dimen>
+    <dimen name="settings_divider_height">0.5dp</dimen>
+    <dimen name="settings_main_height">65dp</dimen>
+    <dimen name="settings_main_avatar_size">21dp</dimen>
+    <dimen name="settings_main_next_size">14dp</dimen>
 
 </resources>

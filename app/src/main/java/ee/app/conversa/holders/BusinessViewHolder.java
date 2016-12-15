@@ -45,17 +45,17 @@ public class BusinessViewHolder extends BaseHolder {
 
         Business temp = (Business) object;
         this.tvBusiness.setText(temp.getDisplayName());
-        this.tvConversaId.setText(temp.getConversaID());
+        this.tvConversaId.setText("@".concat(temp.getConversaID()));
         Uri uri;
 
         if (temp.getAvatar() != null) {
             uri = Utils.getUriFromString(temp.getAvatar().getUrl());
 
             if (uri == null) {
-                uri = Utils.getDefaultImage(activity, R.drawable.business_default);
+                uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
             }
         } else {
-            uri = Utils.getDefaultImage(activity, R.drawable.business_default);
+            uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
         }
 
         this.sdvCategoryImage.setImageURI(uri);
@@ -68,12 +68,12 @@ public class BusinessViewHolder extends BaseHolder {
 
         dbBusiness business = (dbBusiness) object;
         this.tvBusiness.setText(business.getDisplayName());
-        this.tvConversaId.setText(business.getConversaId());
+        this.tvConversaId.setText("@".concat(business.getConversaId()));
 
         Uri uri = Utils.getUriFromString(business.getAvatarThumbFileId());
 
         if (uri == null) {
-            uri = Utils.getDefaultImage(activity, R.drawable.business_default);
+            uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
         }
 
         this.sdvCategoryImage.setImageURI(uri);

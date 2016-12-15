@@ -27,11 +27,9 @@
         android:layout_height="match_parent"
         fresco:fadeDuration="300"
         fresco:actualImageScaleType="fitCenter"
-        fresco:placeholderImage="@drawable/business_default"
+        fresco:placeholderImage="@drawable/ic_business_default"
         fresco:placeholderImageScaleType="fitCenter"
-        fresco:failureImage="@drawable/business_default"
-        fresco:failureImageScaleType="fitCenter"
-        fresco:retryImage="@drawable/refresh_icon"
-        fresco:retryImageScaleType="centerCrop" />
+        fresco:failureImage="@drawable/ic_business_default"
+        fresco:failureImageScaleType="fitCenter" />
 
 </FrameLayout>

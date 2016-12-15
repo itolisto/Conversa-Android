@@ -5,11 +5,11 @@ ext {
     PUBLISH_ARTIFACT_ID = 'material-camera'
     PUBLISH_VERSION = '0.4.2'
     PUBLISH_VERSION_CODE = 25
-    SUPPORT_LIB_VERSION = '24.2.1'
+    SUPPORT_LIB_VERSION = '25.0.1'
     VIDEO_PLAYER_VERSION = '0.2.13'
     MD_VERSION = '0.9.0.2'
-    TARGET_SDK = 24
-    BUILD_TOOLS = "24.0.3"
+    TARGET_SDK = 25
+    BUILD_TOOLS = "25.0.1"
 }
 
 android {

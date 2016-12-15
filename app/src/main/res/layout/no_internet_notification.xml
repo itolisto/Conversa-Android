@@ -7,25 +7,13 @@
     android:elevation="1dp"
     android:padding="2dp"
     android:gravity="center" >
-    
-    <ImageView 
-       android:id="@+id/ivNoInternet"
-       android:layout_height="15dp"
-       android:layout_width="15dp"
-       android:contentDescription="@null"
-       android:src="@drawable/no_internet_connection_icon"
-       android:scaleType="fitCenter"
-       android:layout_centerVertical="true"/>
 
     <ee.app.conversa.view.BoldTextView
         android:id="@+id/tvNoInternet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/ivNoInternet"
-        android:layout_toEndOf="@+id/ivNoInternet"
         android:layout_marginLeft="7dp"
         android:layout_marginStart="7dp"
-        android:textAllCaps="true"
         android:text="@string/no_internet_connection"
         android:textColor="@android:color/white"
         android:textSize="14sp"

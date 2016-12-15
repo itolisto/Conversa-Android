@@ -76,19 +76,23 @@
 
         <activity
             android:name="ee.app.conversa.ActivityLogIn"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
 
         <activity
             android:name="ee.app.conversa.ActivitySignUp"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
 
         <activity
             android:name="ee.app.conversa.ActivityForgotPassword"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop" />
+
+        <activity android:name="ee.app.conversa.ActivityBusiness"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
 
@@ -97,16 +101,9 @@
             android:launchMode="singleTop" />
 
         <activity android:name="ee.app.conversa.ActivityProfile"
+            android:theme="@style/Theme.AppCompat.Translucent"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:parentActivityName="ee.app.conversa.ActivityMain" >
-            <intent-filter>
-                <data android:scheme="conversappbranch" android:host="open" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-        </activity>
+            android:launchMode="singleTop" />
 
         <activity
             android:name="ee.app.conversa.ActivityChatWall"
@@ -133,7 +130,30 @@
             android:launchMode="singleTop" />
 
         <activity
-            android:name="ee.app.conversa.settings.ActivityPreferences"
+            android:name="ee.app.conversa.browser.WebViewActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name="ee.app.conversa.settings.ActivitySettingsAccount"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            android:parentActivityName="ee.app.conversa.ActivityMain" />
+
+        <activity
+            android:name="ee.app.conversa.settings.ActivitySettingsChat"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            android:parentActivityName="ee.app.conversa.ActivityMain" />
+
+        <activity
+            android:name="ee.app.conversa.settings.ActivitySettingsNotifications"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            android:parentActivityName="ee.app.conversa.ActivityMain" />
+
+        <activity
+            android:name="ee.app.conversa.settings.ActivitySettingsHelp"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:parentActivityName="ee.app.conversa.ActivityMain" />

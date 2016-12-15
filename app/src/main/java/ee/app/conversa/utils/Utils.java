@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -206,12 +205,13 @@ public class Utils {
 	{
 		Calendar cal = Calendar.getInstance(Locale.getDefault());
 		cal.setTimeInMillis(time);
+		String pattern;
 
 		if (isDate) {
 			if (withYear) {
-				return DateFormat.format("dd/MM/yyyy", cal).toString();
+				pattern = "dd/MM/yyyy";
 			} else {
-				return DateFormat.format("dd/MM", cal).toString();
+				pattern = "dd/MM";
 			}
 		} else {
 			if (onlyDay) {
@@ -231,12 +231,15 @@ public class Utils {
 					case Calendar.SATURDAY:
 						return context.getString(R.string.chat_date_saturday);
 					default:
-						return DateFormat.format("HH:mm", cal).toString();
+						pattern = "HH:mm";
 				}
 			} else {
-				return DateFormat.format("HH:mm", cal).toString();
+				pattern = "HH:mm";
 			}
 		}
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+		return dateFormat.format(cal.getTime());
 	}
 
 	public static File getMediaDirectory(Context context, String folder) throws Exception {

@@ -37,9 +37,9 @@ import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbSearch;
 import ee.app.conversa.model.nHeaderTitle;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
-import ee.app.conversa.utils.AppActions;
 
 /**
  * Created by edgargomez on 7/12/16.
@@ -286,6 +286,9 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
 
         intent.putExtra(Const.iExtraBusiness, business);
         startActivity(intent);
+        // Override transitions: we don't want the normal window animation in addition
+        // to our custom one
+        overridePendingTransition(0, 0);
     }
 
     AsyncTask<Void, Void, List<dbBusiness>> recent = new AsyncTask<Void, Void, List<dbBusiness>>() {

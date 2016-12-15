@@ -22,7 +22,7 @@ public class SendMessageAsync {
 	public static void sendTextMessage(Context context, String text, boolean addContact, dbBusiness business) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
-		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getCustomerId());
+		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getAccountCustomerId());
 		message.setToUserId(business.getBusinessId());
 		message.setMessageType(Const.kMessageTypeText);
 		message.setDeliveryStatus(DeliveryStatus.statusUploading);
@@ -42,7 +42,7 @@ public class SendMessageAsync {
 	public static void sendLocationMessage(Context context, double lat, double lon, boolean addContact, dbBusiness business) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
-		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getCustomerId());
+		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getAccountCustomerId());
 		message.setToUserId(business.getBusinessId());
 		message.setMessageType(Const.kMessageTypeLocation);
 		message.setDeliveryStatus(DeliveryStatus.statusUploading);
@@ -68,7 +68,7 @@ public class SendMessageAsync {
 
 		// 1. Create local message
 		dbMessage message = new dbMessage();
-		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getCustomerId());
+		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getAccountCustomerId());
 		message.setToUserId(business.getBusinessId());
 		message.setMessageType(Const.kMessageTypeImage);
 		message.setDeliveryStatus(DeliveryStatus.statusUploading);

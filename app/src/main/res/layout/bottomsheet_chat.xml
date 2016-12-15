@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:layout_weight="1"
-        android:src="@drawable/camera_more_icon"
+        android:src="@drawable/ic_camara"
         style="?android:attr/buttonBarButtonStyle" />
 
     <ImageButton
@@ -21,7 +21,7 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:layout_weight="1"
-        android:src="@drawable/albums_more_icon"
+        android:src="@drawable/ic_album"
         style="?android:attr/buttonBarButtonStyle" />
 
     <ImageButton

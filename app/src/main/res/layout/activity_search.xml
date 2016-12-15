@@ -28,7 +28,7 @@
                 android:layout_height="100dp"
                 android:scaleType="centerCrop"
                 android:contentDescription="@null"
-                android:background="@drawable/sad_face" />
+                android:background="@drawable/ic_sad_face" />
 
             <ee.app.conversa.view.LightTextView
                 android:layout_marginTop="7dp"
@@ -50,7 +50,7 @@
                 android:layout_height="100dp"
                 android:scaleType="centerCrop"
                 android:contentDescription="@null"
-                android:background="@drawable/sad_face" />
+                android:background="@drawable/ic_sad_face" />
 
             <ee.app.conversa.view.LightTextView
                 android:layout_marginTop="7dp"

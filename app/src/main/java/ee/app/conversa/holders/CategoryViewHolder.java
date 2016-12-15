@@ -57,7 +57,7 @@ public class CategoryViewHolder extends BaseHolder {
         Uri uri;
 
         if(category.getAvatarUrl().isEmpty()) {
-            uri = Utils.getDefaultImage(activity, R.drawable.business_default);
+            uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
         } else {
             uri = Uri.parse(category.getAvatarUrl());
         }

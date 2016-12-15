@@ -28,7 +28,6 @@ import ee.app.conversa.interfaces.OnContactLongClickListener;
 import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
-import ee.app.conversa.settings.ActivityPreferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.view.BoldTextView;
 
@@ -69,19 +68,7 @@ public class FragmentUsersChat extends ConversaFragment implements OnContactClic
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
         dbBusiness.getAllContacts(getContext());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
-            Intent preferencesIntent = new Intent(getActivity(), ActivityPreferences.class);
-            startActivity(preferencesIntent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

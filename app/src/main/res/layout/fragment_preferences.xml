@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/settings_item_header" />
+
+        <View
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_title_divider_height" />
+
+        <RelativeLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/rlAccountContainer"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+            <ImageView
+                android:src="@drawable/ic_account"
+                android:id="@+id/ivAvatarAccount"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_avatar_size"
+                android:layout_height="@dimen/settings_main_avatar_size" />
+            <ee.app.conversa.view.RegularTextView
+                android:layout_marginLeft="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_toEndOf="@id/ivAvatarAccount"
+                android:layout_toRightOf="@id/ivAvatarAccount"
+                android:text="@string/preferences__account"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:src="@drawable/ic_arrow_right"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_divider_height" />
+        <RelativeLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/rlNotificationContainer"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+            <ImageView
+                android:src="@drawable/ic_notifications"
+                android:id="@+id/ivNotificationAccount"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_avatar_size"
+                android:layout_height="@dimen/settings_main_avatar_size" />
+            <ee.app.conversa.view.RegularTextView
+                android:layout_marginLeft="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_toEndOf="@id/ivNotificationAccount"
+                android:layout_toRightOf="@id/ivNotificationAccount"
+                android:text="@string/preferences__notifications"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:src="@drawable/ic_arrow_right"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_divider_height" />
+        <RelativeLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/rlChatContainer"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+            <ImageView
+                android:src="@drawable/ic_forum"
+                android:id="@+id/ivChatsAccount"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_avatar_size"
+                android:layout_height="@dimen/settings_main_avatar_size" />
+            <ee.app.conversa.view.RegularTextView
+                android:layout_marginLeft="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_toEndOf="@id/ivChatsAccount"
+                android:layout_toRightOf="@id/ivChatsAccount"
+                android:text="@string/preferences__chats"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:src="@drawable/ic_arrow_right"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_divider_height" />
+        <RelativeLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/rlLanguageContainer"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+            <ImageView
+                android:src="@drawable/ic_language_light"
+                android:id="@+id/ivLanguageAccount"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_avatar_size"
+                android:layout_height="@dimen/settings_main_avatar_size" />
+            <ee.app.conversa.view.RegularTextView
+                android:layout_marginLeft="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_toEndOf="@id/ivLanguageAccount"
+                android:layout_toRightOf="@id/ivLanguageAccount"
+                android:text="@string/preferences__language"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:src="@drawable/ic_arrow_right"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_divider_height" />
+        <RelativeLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/rlShareContainer"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+            <ImageView
+                android:src="@drawable/ic_share_setting"
+                android:id="@+id/ivShareAccount"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_avatar_size"
+                android:layout_height="@dimen/settings_main_avatar_size" />
+            <ee.app.conversa.view.RegularTextView
+                android:layout_marginLeft="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_toEndOf="@id/ivShareAccount"
+                android:layout_toRightOf="@id/ivShareAccount"
+                android:text="@string/preferences__share"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:src="@drawable/ic_arrow_right"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_divider_height" />
+        <RelativeLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/rlHelpContainer"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+            <ImageView
+                android:src="@drawable/ic_help"
+                android:id="@+id/ivHelpAccount"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_avatar_size"
+                android:layout_height="@dimen/settings_main_avatar_size" />
+            <ee.app.conversa.view.RegularTextView
+                android:layout_marginLeft="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_toEndOf="@id/ivHelpAccount"
+                android:layout_toRightOf="@id/ivHelpAccount"
+                android:text="@string/preferences__help"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:src="@drawable/ic_arrow_right"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

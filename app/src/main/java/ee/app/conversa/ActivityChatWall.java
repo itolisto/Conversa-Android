@@ -24,7 +24,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.afollestad.materialcamera.MaterialCamera;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -64,7 +63,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private Handler isUserTypingHandler = new Handler();
 	private LightTextView mSubTitleTextView;
 	private RecyclerView mRvWallMessages;
-	private TextView mTvNoMessages;
 	private EditText mEtMessageText;
 	private BottomSheetDialogFragment myBottomSheet;
 	private ImageButton mBtnWallSend;
@@ -141,7 +139,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				Uri uri = Utils.getUriFromString(business.getAvatarThumbFileId());
 
 				if (uri == null) {
-					uri = Utils.getDefaultImage(this, R.drawable.business_default);
+					uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
 				}
 
 				ivContactAvatar.setImageURI(uri);
@@ -265,7 +263,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
 		if (uri == null) {
-			uri = Utils.getDefaultImage(this, R.drawable.business_default);
+			uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
 		}
 
 		ivContactAvatar.setImageURI(uri);
@@ -274,7 +272,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		setSupportActionBar(toolbar);
 
 		mRvWallMessages = (RecyclerView) findViewById(R.id.rvWallMessages);
-		mTvNoMessages = (TextView) findViewById(R.id.tvNoMessages);
 		mEtMessageText = (EditText) findViewById(R.id.etWallMessage);
 		mBtnWallSend = (ImageButton) findViewById(R.id.btnWallSend);
 
@@ -286,7 +283,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		mEtMessageText.addTextChangedListener(isUserTypingTextWatcher);
 
 		gMessagesAdapter = new MessagesAdapter(this,
-				ConversaApp.getInstance(this).getPreferences().getCustomerId(),
+				ConversaApp.getInstance(this).getPreferences().getAccountCustomerId(),
 				this);
 		LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 		manager.setReverseLayout(true);
@@ -525,7 +522,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				// Set messages
 				gMessagesAdapter.setMessages(messages);
 				// As this is the first time we load messages, change visibility
-				mTvNoMessages.setVisibility(View.GONE);
 				mRvWallMessages.setVisibility(View.VISIBLE);
 			}
 
@@ -557,8 +553,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	@Override
 	public void MessageSent(dbMessage response) {
 		// 1. Check visibility
-		if (mTvNoMessages.getVisibility() == View.VISIBLE) {
-			mTvNoMessages.setVisibility(View.GONE);
+		if (mRvWallMessages.getVisibility() == View.GONE) {
 			mRvWallMessages.setVisibility(View.VISIBLE);
 		}
 
@@ -602,8 +597,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			dbMessage.updateViewMessages(this, businessObject.getBusinessId());
 
 			// 2. Check visibility
-			if (mTvNoMessages.getVisibility() == View.VISIBLE) {
-				mTvNoMessages.setVisibility(View.GONE);
+			if (mRvWallMessages.getVisibility() == View.GONE) {
 				mRvWallMessages.setVisibility(View.VISIBLE);
 			}
 

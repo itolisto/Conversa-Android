@@ -3,20 +3,20 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
-	android:focusableInTouchMode="true"
 	android:background="@color/default_white"
 	tools:context="ee.app.conversa.ActivitySignUp" >
 
 	<RelativeLayout
-		android:orientation="vertical"
+		android:focusableInTouchMode="true"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" >
+		android:layout_height="wrap_content">
 
 		<ee.app.conversa.view.BoldTextView
 			android:id="@+id/btvTitle"
 			android:text="@string/SIGN_UP"
 			android:layout_marginTop="40dp"
 			android:textSize="18sp"
+			android:textAllCaps="true"
 			android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true"
 			android:layout_gravity="center_horizontal"
@@ -30,15 +30,16 @@
 			android:layout_below="@id/btvTitle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:theme="@style/MyTheme.Blue"
 			android:padding="14dp" >
 
 			<EditText
 				android:id="@+id/etSignUpEmail"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@null"
 				android:gravity="bottom"
 				android:hint="@string/email"
+				android:textCursorDrawable="@null"
 				android:inputType="textEmailAddress"
 				android:textColor="@color/default_black"
 				android:textColorHint="@color/default_gray"
@@ -50,15 +51,16 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/tilEmailSignUp"
+			android:theme="@style/MyTheme.Blue"
 			android:padding="14dp" >
 
 			<EditText
 				android:id="@+id/etSignUpPassword"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@null"
 				android:gravity="bottom"
 				android:hint="@string/password"
+				android:textCursorDrawable="@null"
 				android:inputType="textPassword"
 				android:textColor="@color/default_black"
 				android:textColorHint="@color/default_gray"
@@ -70,6 +72,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/tilPasswordSignUp"
+			android:theme="@style/MyTheme.Blue"
 			android:padding="14dp" >
 
 			<EditText
@@ -98,6 +101,7 @@
 			android:layout_marginRight="14dp"
 			android:layout_marginEnd="14dp"
 			android:weightSum="2"
+			android:theme="@style/MyTheme.Blue"
 			android:checkedButton="@+id/rbFemale"
 			android:orientation="horizontal"
 			android:id="@+id/rgGender">
@@ -129,8 +133,21 @@
 			android:layout_below="@id/rgGender"
 			android:layout_centerHorizontal="true"
 			android:textColor="@drawable/textcolor_white_state"
-			android:textSize="20sp"
+			android:textSize="14sp"
 			android:background="@drawable/button_shape_white" />
+
+		<ee.app.conversa.view.LightTextView
+			android:maxLines="2"
+			android:textSize="12sp"
+			android:gravity="center"
+			android:layout_marginTop="35dp"
+			android:layout_marginBottom="16dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/signup_warning"
+			android:layout_centerHorizontal="true"
+			android:layout_below="@id/btnSignUpUp"
+			android:textColor="@color/default_gray"/>
 
 		<include layout="@layout/no_internet_notification"
 			android:id="@+id/rlNoInternetNotification"

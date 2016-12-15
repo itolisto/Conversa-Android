@@ -80,7 +80,7 @@ public class FragmentImageDetail extends Fragment {
         Uri uri = Utils.getUriFromString(mImageUrl);
 
         if (uri == null) {
-            uri = Utils.getDefaultImage(getActivity(), R.drawable.business_default);
+            uri = Utils.getDefaultImage(getActivity(), R.drawable.ic_business_default);
         }
 
         mImageView.setAllowTouchInterceptionWhileZoomed(true);

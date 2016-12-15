@@ -8,15 +8,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -90,19 +86,7 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
         getCategoriesAsync();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_search) {
-            Intent intent = new Intent(getActivity(), ActivitySearch.class);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void getCategoriesAsync() {
@@ -146,33 +130,11 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
 
     @Override
     public void onCategoryClick(nCategory category, View itemView, int position) {
-        FragmentManager fm = getFragmentManager();
-
-        if (fm != null) {
-            FragmentTransaction transaction = fm.beginTransaction();
-            /*
-             * When this container fragment is created, we fill it with our first
-             * "real" fragment
-             */
-            FragmentBusiness fragment = new FragmentBusiness();
-            Bundle b = new Bundle();
-            b.putString(Const.kObjectRowObjectIdKey, category.getObjectId());
-            String categoryName = category.getCategoryName(getActivity());
-            b.putString(Const.kClassCategory, categoryName);
-            ConversaApp.getInstance(getActivity()).getPreferences().setCurrentCategory(categoryName, true);
-            fragment.setArguments(b);
-            transaction.add(R.id.root_frame, fragment).hide(this);
-            /*
-             * IMPORTANT: The following lines allow us to add the fragment
-             * to the stack and return to it later, by popBackStack
-             */
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            transaction.addToBackStack("FragmentCategory");
-            transaction.commit();
-            ((ActivityMain) getActivity()).toggleTabLayoutVisibility();
-        } else {
-            Log.e("onItemClick", "Fragmento no se pudo reemplazar");
-        }
+        Intent intent = new Intent(getContext(), ActivityBusiness.class);
+        intent.putExtra(Const.kObjectRowObjectIdKey, category.getObjectId());
+        String categoryName = category.getCategoryName(getActivity());
+        intent.putExtra(Const.kClassCategory, categoryName);
+        startActivity(intent);
     }
 
     private void parseResult(String result, boolean connected) {

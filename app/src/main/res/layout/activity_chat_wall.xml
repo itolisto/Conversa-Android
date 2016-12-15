@@ -81,14 +81,6 @@
             android:visibility="gone"
             android:transcriptMode="disabled" />
 
-        <ee.app.conversa.view.RegularTextView
-            android:id="@+id/tvNoMessages"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="@string/no_wall_messages"
-            android:textColor="@color/text_gray" />
-
         <View android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_alignParentTop="true"

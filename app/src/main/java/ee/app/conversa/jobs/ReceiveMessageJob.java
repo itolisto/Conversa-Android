@@ -119,7 +119,7 @@ public class ReceiveMessageJob extends Job {
         // 2. Save to Local Database
         dbMessage dbmessage = new dbMessage();
         dbmessage.setFromUserId(contactId);
-        dbmessage.setToUserId(ConversaApp.getInstance(getApplicationContext()).getPreferences().getCustomerId());
+        dbmessage.setToUserId(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountCustomerId());
         dbmessage.setMessageType(messageType);
         dbmessage.setDeliveryStatus(DeliveryStatus.statusAllDelivered);
         dbmessage.setMessageId(messageId);

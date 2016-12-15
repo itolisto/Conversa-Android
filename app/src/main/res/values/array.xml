@@ -13,11 +13,6 @@
         <item>2</item>
     </string-array>
 
-    <string-array name="categories_titles">
-        <item name="Chats">Chats</item>
-        <item name="Explore">Explore</item>
-    </string-array>
-
     <string-array name="language_entries">
         <item>@string/sett_language_default_option</item>
         <item>English</item>
@@ -29,4 +24,5 @@
         <item>en</item>
         <item>es</item>
     </string-array>
+
 </resources>

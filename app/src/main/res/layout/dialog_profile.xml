@@ -1,0 +1,205 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    style="@style/Transparent"
+    android:id="@+id/topLevelLayout"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="282dp"
+        android:id="@+id/cvContainer"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        card_view:contentPadding="0dp"
+        card_view:cardCornerRadius="8dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardPreventCornerOverlap="false" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/rlcontainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:layout_height="155dp"
+                    android:id="@+id/sdvProfileHeader"
+                    android:layout_width="match_parent"
+                    fresco:fadeDuration="300"
+                    fresco:roundTopLeft="true"
+                    fresco:roundTopRight="true"
+                    fresco:roundBottomLeft="false"
+                    fresco:roundBottomRight="false"
+                    fresco:roundedCornerRadius="8dp"
+                    fresco:actualImageScaleType="fitXY"
+                    fresco:placeholderImage="@drawable/im_help_pattern"
+                    fresco:placeholderImageScaleType="centerCrop" />
+                <RelativeLayout
+                    android:layout_height="155dp"
+                    android:layout_width="match_parent"
+                    android:layout_below="@id/sdvProfileHeader">
+
+                    <ee.app.conversa.view.MediumTextView
+                        android:id="@+id/mtvBusinessName"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textSize="18sp"
+                        android:maxWidth="220dp"
+                        android:singleLine="true"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginTop="60dp"
+                        android:layout_marginRight="3dp"
+                        android:gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/default_black" />
+
+                    <ee.app.conversa.view.RegularTextView
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textSize="13sp"
+                        android:maxWidth="220dp"
+                        android:singleLine="true"
+                        android:id="@+id/rtvConversaId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/default_black"
+                        android:layout_below="@id/mtvBusinessName" />
+
+                    <ee.app.conversa.view.RegularTextView
+                        android:maxLines="1"
+                        android:textSize="13sp"
+                        android:singleLine="true"
+                        android:layout_above="@id/vDivider"
+                        android:id="@+id/rtvFollowersTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/rtvConversaId"
+                        android:textColor="@color/default_black"
+                        android:text="@string/number_of_followers" />
+
+                    <ee.app.conversa.view.RegularTextView
+                        android:text="0"
+                        android:maxLines="1"
+                        android:textSize="13sp"
+                        android:singleLine="true"
+                        android:id="@+id/rtvFollowers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/default_black"
+                        android:layout_below="@id/rtvFollowersTitle" />
+
+                    <ImageButton
+                        android:scaleX="0.30"
+                        android:scaleY="0.30"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:id="@+id/btnCloseProfile"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/ic_close"/>
+                </RelativeLayout>
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:id="@+id/sdvProfileAvatar"
+                    android:layout_centerInParent="true"
+                    fresco:fadeDuration="300"
+                    fresco:actualImageScaleType="centerCrop"
+                    fresco:placeholderImage="@drawable/ic_business_default"
+                    fresco:placeholderImageScaleType="centerInside"
+                    fresco:failureImage="@drawable/ic_business_default"
+                    fresco:failureImageScaleType="centerInside"
+                    fresco:roundAsCircle="true"/>
+                <View
+                    android:id="@+id/vStatus"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginBottom="-115dp"
+                    android:layout_alignEnd="@id/sdvProfileAvatar"
+                    android:layout_alignRight="@id/sdvProfileAvatar"
+                    android:layout_alignBottom="@id/sdvProfileAvatar"
+                    android:background="@drawable/circular_status_offline" />
+            </RelativeLayout>
+            <LinearLayout
+                android:weightSum="3"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rlcontainer">
+
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:gravity="center_vertical" >
+
+                    <Button
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:id="@+id/btnFavorite"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/ic_fav_not"/>
+
+                    <ee.app.conversa.view.RegularTextView
+                        android:textSize="12sp"
+                        android:text="@string/profile_action_favorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btnFavorite"
+                        android:layout_centerHorizontal="true" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:gravity="center_vertical">
+                    <Button
+                        android:scaleX="0.90"
+                        android:scaleY="0.90"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:id="@+id/btnStartChat"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/ic_start_chat"/>
+                    <ee.app.conversa.view.RegularTextView
+                        android:textSize="12sp"
+                        android:text="@string/profile_action_chat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/btnStartChat" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:gravity="center_vertical">
+                    <Button
+                        android:scaleX="0.90"
+                        android:scaleY="0.90"
+                        android:id="@+id/btnShare"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/ic_share"/>
+                    <ee.app.conversa.view.RegularTextView
+                        android:textSize="12sp"
+                        android:text="@string/profile_action_share"
+                        android:layout_width="wrap_content"
+                        android:layout_below="@id/btnShare"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true" />
+                </RelativeLayout>
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

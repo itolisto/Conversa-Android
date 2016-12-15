@@ -12,15 +12,22 @@
     <color name="status_bar_default">#00C03E</color>
     <color name="status_bar_chat">#DEDEDE</color>
 
+    <!-- Status colors -->
+    <color name="status_offline">#F44336</color>
+    <color name="status_online">#00E676</color>
+    <color name="status_away">#FFC107</color>
+
     <!-- Tabs -->
     <color name="regular_tabs">#37FF77</color>
     <color name="settings_tab">#626663</color>
     <color name="tab_indicator">#6F726D</color>
 
     <!-- Backgrounds -->
+    <color name="setting_main_header">#FAF9F6</color>
     <color name="no_connection_background">#CDe81757</color>
     <color name="push_notification_background">#E61D1D1D</color>
     <color name="image_view_background">#000000</color>
+    <color name="profile_light_background">#80505050</color>
 
     <!-- TextViews -->
    	<color name="text_gray">#222222</color>
@@ -36,10 +43,5 @@
 	<!-- Others -->
     <color name="chat_bottom_bar">#ededed</color>
     <color name="hookup_positive">#2fcb72</color>
-
-    <!-- Status -->
-    <color name="online_status">#00E676</color>
-    <color name="away_status">#FFC107</color>
-    <color name="offline_status">#F44336</color>
 
 </resources>

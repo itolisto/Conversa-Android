@@ -35,7 +35,7 @@
     <string name="cgBcgtlLRVw">Joyería</string>
     <string name="chat_wall_message_hint">Escribe un mensaje</string>
     <string name="close">cerrar</string>
-    <string name="confirm_email">¿Seguro que este es tu correo electrónico? %1s Enviaremos un correo para cambiar tu contraseña, ten cuidado</string>
+    <string name="confirm_email">Te hemos enviado un correo a %1s para cambiar tu contraseña</string>
     <string name="contact_number_title">Número de contacto</string>
     <string name="contacts_last_message_default">Mensaje</string>
     <string name="contacts_last_message_image">Imagen</string>
@@ -74,7 +74,6 @@
     <string name="no_messages_description_one">Cuando tengas mensajes, los</string>
     <string name="no_messages_description_two">verás en este espacio</string>
     <string name="no_user_registered">No hay usuario registrado con esta combinación de correo electrónico o contraseña</string>
-    <string name="no_wall_messages">Sin mensajes</string>
     <string name="number_of_followers">Seguidores</string>
     <string name="open_on_title">Abierto</string>
     <string name="password">contraseña</string>
@@ -83,7 +82,7 @@
     <string name="preferences__account">Cuenta</string>
     <string name="preferences__help">Ayuda</string>
     <string name="preferences__notifications">Notificaciones</string>
-    <string name="preferences__share">Compartir</string>
+    <string name="preferences__share">¿Te gusta Conversa? Comparte :)</string>
     <string name="privacy_politics_preference">Políticas de privacidad</string>
     <string name="profile_conversa_time_info_message">ConversaTime es el horario en el cual te responderemos por chat sin embargo nuestro objetivo es servir las 24 horas del día</string>
     <string name="profile_conversa_time_info_title">¿Qué es ConversaTime?</string>
@@ -106,8 +105,8 @@
     <string name="string_signin_sign_up_business_two">NEGOCIO? PRESIONA AQUI</string>
     <string name="string_signin_sign_up_business_one">¿BUSCANDO REGISTRAR TU</string>
     <string name="string_signin_are_you_new">¿ERES NUEVO AQUI?</string>
-    <string name="string_signin_already_have_an_account">YA TENGO UNA CUENTA</string>
-    <string name="start_browsing"><u>Comienza a navegar</u></string>
+    <string name="string_signin_already_have_an_account">¿YA TIENES CUENTA?</string>
+    <string name="start_browsing">Comienza a navegar</string>
     <string name="special_promo_title">Promoción especial</string>
     <string name="signup_password_regex_error">Contraseña debe contener al menos una letra, un número y un caracter especial</string>
     <string name="signup_password_length_error">Contraseña debe contener al menos seis caracteres</string>
@@ -115,7 +114,7 @@
     <string name="sign_email_not_valid_error">Correo electrónico no es válido</string>
     <string name="sign_email_length_error">Correo electrónico requerido</string>
     <string name="settings_using_conversa">Estoy usando Conversa</string>
-    <string name="settings_title_menu">Ajustes</string>
+    <string name="settings_title_menu">Cuenta</string>
     <string name="settings_share_conversa">¿Cómo quieres compartir?</string>
     <string name="settings_password_succesful">Contraseña cambiada</string>
     <string name="settings_password_error">Lo sentimos, tu contraseña no se cambió. Intenta más tarde.</string>
@@ -125,6 +124,9 @@
     <string name="settings">Ajustes</string>
     <string name="sett_preferences_default_title">Título</string>
     <string name="sett_preferences_default_description">Descripción</string>
+    <string name="sett_help_feedback_title">Comentarios</string>
+    <string name="sett_help_support_title">Soporte técnico</string>
+    <string name="sett_help_terms_privacy_title">Términos &amp; Privacidad</string>
     <string name="sett_notification_sound_title">Sonido</string>
     <string name="sett_notification_sound_summary">Reproducir al recibir una notificación push</string>
     <string name="sett_notification_push_title">Notificaciones Push</string>
@@ -139,9 +141,9 @@
     <string name="sett_chat_message_sent_sound">Sonido al enviar</string>
     <string name="sett_chat_message_received_sound">Sonido al recibir</string>
     <string name="sett_account_privacy_title">Privacidad</string>
-    <string name="sett_account_password_title">Cambiar contraseña</string>
+    <string name="sett_account_password_title">Contraseña</string>
     <string name="sett_account_logout_title">Cerrar sesión</string>
-    <string name="sett_account_email_title">Cambiar correo electrónico</string>
+    <string name="sett_account_email_title">Correo electrónico</string>
     <string name="sett_account_email_summary">Correo electrónico emparejado a esta cuenta</string>
     <string name="sett_account_clear_recent_title">Limpiar búsquedas recientes</string>
     <string name="sett_account_blocked_title">Bloqueados</string>
@@ -191,7 +193,7 @@
     <string name="chat_date_wednesday">Miércoles</string>
     <string name="chat_day_yesterday">Ayer</string>
     <string name="chat_date_sunday">Domingo</string>
-    <string name="sett_help_help">Ayuda</string>
+    <string name="sett_help_help">Ayuda/Soporte</string>
     <string name="sett_help_licences">Licencias</string>
     <string name="sett_help_terms">Términos de uso</string>
     <string name="action_change">Cambiar</string>
@@ -205,4 +207,19 @@
     <string name="profile_status_away_description">Están de descanso...clásico</string>
     <string name="dialog_profile_status_understood">Entendido</string>
     <string name="parse_logout_reason">Esta sesión fue terminada porque otro dispositivo inicio sesión</string>
+    <string name="profile_action_chat">Chat</string>
+    <string name="profile_action_favorite">Favorito</string>
+    <string name="profile_action_share">Compartir</string>
+    <string name="signup_warning">AL REGISTRARTE ESTAS ACEPTANDO NUESTROS\nTERMINOS Y POLITICAS DE PRIVACIDAD</string>
+    <string name="sett_help_policies">Políticas de privacidad</string>
+    <string name="sett_help_dialog_title">Soporte</string>
+    <string name="sett_help_dialog_message">Buscando información de soporte</string>
+    <string name="sett_account_info_title">Información</string>
+    <string name="sett_account_name_title">Nombre</string>
+    <string name="sett_account_email_alert_title">Cambiar correo electrónico</string>
+    <string name="sett_account_name_alert_title">Cambiar nombre</string>
+    <string name="sett_account_password_alert_title">Cambiar contraseña</string>
+    <string name="sign_name_length_error">Nombre requerido</string>
+    <string name="settings_name_error">Lo sentimos, tu nombre no fue cambiado. Intenta más tarde.</string>
+    <string name="settings_name_succesful">Nombre cambiado</string>
 </resources>

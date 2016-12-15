@@ -19,12 +19,17 @@ public class ActivitySplashScreen extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash_screen);
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent(ActivitySplashScreen.this, ActivityMain.class);
-            startActivity(intent);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(ActivitySplashScreen.this, ActivityMain.class);
+                    startActivity(intent);
+                }
+            }, 1200);
         } else {
-            setContentView(R.layout.activity_splash_screen);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {

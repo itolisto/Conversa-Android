@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/default_green" >
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/ivConversa"
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:scaleType="fitCenter"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/im_logo_text_white"/>
+
+    <android.support.v7.widget.CardView
+        android:visibility="gone"
+        android:id="@+id/fsvSearch"
+        android:layout_margin="7dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ee.app.conversa.view.RegularTextView
+            android:text="@string/search_toolbar_hint"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </android.support.v7.widget.CardView>
+
+    <ee.app.conversa.view.MediumTextView
+        android:textSize="20sp"
+        android:visibility="visible"
+        android:id="@+id/rtvTitle"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/settings_title_menu" />
+
+</RelativeLayout>

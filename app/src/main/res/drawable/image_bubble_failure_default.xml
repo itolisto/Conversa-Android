@@ -9,6 +9,6 @@
     </item>
     <item >
         <bitmap android:gravity="center"
-            android:src="@drawable/sad_face"/>
+            android:src="@drawable/ic_sad_face"/>
     </item>
 </layer-list>

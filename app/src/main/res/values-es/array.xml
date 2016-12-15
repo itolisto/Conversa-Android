@@ -13,8 +13,4 @@
         <item>2</item>
     </string-array>
 
-    <string-array name="categories_titles">
-        <item name="Chats">Chats</item>
-        <item name="Explora">Explora</item>
-    </string-array>
 </resources>

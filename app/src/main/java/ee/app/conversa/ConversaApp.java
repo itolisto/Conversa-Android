@@ -57,7 +57,7 @@ import ee.app.conversa.notifications.onesignal.CustomNotificationOpenedHandler;
 import ee.app.conversa.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
-import ee.app.conversa.utils.Preferences;
+import ee.app.conversa.settings.Preferences;
 import io.branch.referral.Branch;
 
 /**

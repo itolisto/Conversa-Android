@@ -180,13 +180,16 @@ public class MySQLiteHelper {
         openDatabase();
     }
 
-    SQLiteDatabase openDatabase() throws SQLException {
+    private SQLiteDatabase openDatabase() throws SQLException {
         return myDbHelper.getWritableDatabase();
     }
 
     public boolean deleteDatabase() {
-        context.deleteDatabase(DATABASE_NAME);
-        return true;
+        return context.deleteDatabase(DATABASE_NAME);
+    }
+
+    public void refreshDbHelper() {
+        myDbHelper = new DatabaseHelper(context);
     }
 
     /************************************************************/
@@ -457,7 +460,7 @@ public class MySQLiteHelper {
     }
 
     public nChatItem getLastMessageAndUnredCount(String fromId) {
-        String id = ConversaApp.getInstance(context).getPreferences().getCustomerId();
+        String id = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
 
         String query = "SELECT *, " +
                 "(" +
@@ -516,7 +519,7 @@ public class MySQLiteHelper {
         ContentValues contentValues = new ContentValues();
         long currentTimestamp = System.currentTimeMillis();
         contentValues.put(sMessageViewAt, currentTimestamp);
-        String fromId = ConversaApp.getInstance(context).getPreferences().getCustomerId();
+        String fromId = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
         return openDatabase().update(TABLE_MESSAGES, contentValues,
                 "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
                 + " OR "
@@ -528,7 +531,7 @@ public class MySQLiteHelper {
         ContentValues contentValues = new ContentValues();
         long currentTimestamp = System.currentTimeMillis();
         contentValues.put(sMessageReadAt, currentTimestamp);
-        String fromId = ConversaApp.getInstance(context).getPreferences().getCustomerId();
+        String fromId = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
         return openDatabase().update(TABLE_MESSAGES, contentValues,
                 "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
                         + " OR "
@@ -537,7 +540,7 @@ public class MySQLiteHelper {
     }
 
     private int deleteAllMessagesById(String id) {
-        String fromId = ConversaApp.getInstance(context).getPreferences().getCustomerId();
+        String fromId = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
         int result = openDatabase().delete(TABLE_MESSAGES,
                 "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
                 + " OR "
@@ -548,7 +551,7 @@ public class MySQLiteHelper {
     }
 
     public List<dbMessage> getMessagesByContact(String id, int count, int offset) {
-        String fromId = ConversaApp.getInstance(context).getPreferences().getCustomerId();
+        String fromId = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
         String query = "SELECT m.* FROM "
                 + TABLE_MESSAGES + " m"
                 + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"

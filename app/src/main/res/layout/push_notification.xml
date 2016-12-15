@@ -19,13 +19,13 @@
         android:layout_marginLeft="6dp"
         android:layout_marginStart="6dp"
         fresco:fadeDuration="300"
-        fresco:actualImageScaleType="fitCenter"
-        fresco:placeholderImage="@drawable/business_default"
-        fresco:placeholderImageScaleType="fitCenter"
-        fresco:failureImage="@drawable/business_default"
+        fresco:actualImageScaleType="centerCrop"
+        fresco:placeholderImage="@drawable/ic_business_default"
+        fresco:placeholderImageScaleType="centerInside"
+        fresco:failureImage="@drawable/ic_business_default"
         fresco:failureImageScaleType="centerInside"
-        fresco:retryImage="@drawable/business_default"
-        fresco:retryImageScaleType="fitCenter"
+        fresco:retryImage="@drawable/ic_business_default"
+        fresco:retryImageScaleType="centerInside"
         fresco:roundAsCircle="true" />
 
     <ImageButton
@@ -39,7 +39,7 @@
         android:contentDescription="@null"
         android:padding="10dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/close_icon"
+        android:src="@drawable/ic_close"
         android:clickable="true" />
 
     <View
@@ -51,7 +51,6 @@
 
     <ee.app.conversa.view.MediumTextView
         android:id="@+id/tvUserName"
-        style="@style/TransparentDialogTheme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="7dp"

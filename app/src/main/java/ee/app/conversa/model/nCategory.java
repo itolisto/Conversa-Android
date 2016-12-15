@@ -36,6 +36,9 @@ public class nCategory {
     }
 
     public String getCategoryName(Context activity) {
+        if (activity == null)
+            return "";
+
         switch (getObjectId()) {
             case "0i96zRLFyw":
                 return activity.getString(R.string.c0i96zRLFyw);

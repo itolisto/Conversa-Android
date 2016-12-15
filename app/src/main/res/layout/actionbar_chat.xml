@@ -17,16 +17,13 @@
         android:layout_marginEnd="7dp"
         android:layout_centerVertical="true"
         fresco:fadeDuration="300"
-        fresco:actualImageScaleType="fitCenter"
-        fresco:placeholderImage="@drawable/business_default"
-        fresco:placeholderImageScaleType="fitCenter"
-        fresco:failureImage="@drawable/business_default"
-        fresco:failureImageScaleType="fitCenter"
-        fresco:retryImage="@drawable/business_default"
-        fresco:retryImageScaleType="fitCenter"
-        fresco:progressBarImage="@drawable/rotate_loading"
-        fresco:progressBarImageScaleType="centerInside"
-        fresco:progressBarAutoRotateInterval="1000"
+        fresco:actualImageScaleType="centerCrop"
+        fresco:placeholderImage="@drawable/ic_business_default"
+        fresco:placeholderImageScaleType="centerInside"
+        fresco:failureImage="@drawable/ic_business_default"
+        fresco:failureImageScaleType="centerInside"
+        fresco:retryImage="@drawable/ic_business_default"
+        fresco:retryImageScaleType="centerInside"
         fresco:roundAsCircle="true" />
 
     <FrameLayout

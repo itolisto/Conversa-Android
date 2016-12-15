@@ -1,30 +1,23 @@
 package ee.app.conversa;
 
-import android.app.TaskStackBuilder;
-import android.content.DialogInterface;
+import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.support.v7.widget.CardView;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -34,8 +27,6 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
-import com.like.LikeButton;
-import com.like.OnLikeListener;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -49,12 +40,10 @@ import java.util.HashMap;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.jobs.FavoriteJob;
 import ee.app.conversa.model.database.dbBusiness;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
-import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Utils;
-import ee.app.conversa.view.BoldTextView;
-import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.MediumTextView;
 import ee.app.conversa.view.RegularTextView;
 import io.branch.indexing.BranchUniversalObject;
@@ -65,61 +54,39 @@ import io.branch.referral.util.BranchEvent;
 import io.branch.referral.util.LinkProperties;
 import io.branch.referral.util.ShareSheetStyle;
 
-import static ee.app.conversa.R.id.rtvLocationDescription;
+/**
+ * Created by edgargomez on 11/24/16.
+ */
 
-public class ActivityProfile extends ConversaActivity implements
-        View.OnClickListener, OnLikeListener {
+public class ActivityProfile extends ConversaActivity implements View.OnClickListener {
 
     private final String TAG = ActivityProfile.class.getSimpleName();
 
+    private static final TimeInterpolator sDecelerator = new DecelerateInterpolator();
+    private static final TimeInterpolator sAccelerator = new AccelerateInterpolator();
+    static float sAnimatorScale = 2;
+
     // General
+    private ColorDrawable mBackground;
+    private CardView mCvContainer;
+    private View mVwStatus;
     private dbBusiness businessObject;
+    private JobManager jobManager;
     private boolean addAsContact;
+    private boolean liked;
     private int followers;
     private int rgb;
-    private Toolbar toolbar;
-    private JobManager jobManager;
-    private static final int PLACE_PICKER_FLAG = 1;
-    // Containers
-    private RelativeLayout mRlProfileHeader;
-    private LinearLayout mLlSpecialPromoContainer;
-    private LinearLayout mLlClosedOnContainer;
-    private LinearLayout mLlScheduleContainer;
-    private LinearLayout mLlDeliveryContainer;
-    private LinearLayout mLlLinkContainer;
-    private LinearLayout mLlContactNumberContainer;
-    private LinearLayout mLlAddressContainer;
+    private final int ANIM_DURATION = 500;
     // Profile views
-    private SimpleDraweeView mSdvBusinessImage;
-    private LikeButton mBtnFavorite;
-    private BoldTextView mBtvFollowers;
-    private View mIvStatus;
-    // Special promo
-    private RegularTextView mRtvSpecialPromo;
-    private SimpleDraweeView mSdvSpecialPromo;
-    // ClosedOn views
-    private LightTextView mLtvMonday;
-    private LightTextView mLtvTuesday;
-    private LightTextView mLtvWednesday;
-    private LightTextView mLtvThursday;
-    private LightTextView mLtvFriday;
-    private LightTextView mLtvSaturday;
-    private LightTextView mLtvSunday;
-    // Delivery
-    private ImageView mIvDelivery;
-    private LightTextView mLtvDelivery;
-    // Location views
-    private LightTextView mRtvLocationDescription;
-    private Button mBtnLocation;
-    // GeneralInfo views
-    private LightTextView mltvSchedule;
-    private LightTextView mltvLink;
-    private LightTextView mltvContactNumber;
+    private SimpleDraweeView mSdvBusinessHeader;
+    private RegularTextView mBtvFollowers;
+    // Action buttons
+    private Button mBtnFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.dialog_profile);
         checkInternetConnection = false;
 
         if (savedInstanceState == null) {
@@ -136,6 +103,76 @@ public class ActivityProfile extends ConversaActivity implements
         }
 
         initialization();
+
+        // Only run the animation if we're coming from the parent activity, not if
+        // we're recreated automatically by the window manager (e.g., device rotation)
+        if (savedInstanceState == null) {
+            ViewTreeObserver observer = mCvContainer.getViewTreeObserver();
+            observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mCvContainer.getViewTreeObserver().removeOnPreDrawListener(this);
+                    runEnterAnimation();
+                    return true;
+                }
+            });
+        }
+    }
+
+    /**
+     * The enter animation scales the picture in from its previous thumbnail
+     * size/location, colorizing it in parallel. In parallel, the background of the
+     * activity is fading in. When the pictue is in place, the text description
+     * drops down.
+     */
+    public void runEnterAnimation() {
+        final long duration = (long) (ANIM_DURATION * sAnimatorScale) / 2;
+
+        // Set starting values for properties we're going to animate. These
+        // values scale and position the full size version down to the thumbnail
+        // size/location, from which we'll animate it back up
+//        mCvContainer.setPivotX(0);
+//        mCvContainer.setPivotY(0);
+//        mCvContainer.setScaleX(1);
+//        mCvContainer.setScaleY(1);
+//        mCvContainer.setTranslationX(0);
+//        mCvContainer.setTranslationY(0);
+
+        // Animate scale and translation to go from thumbnail to full size
+        mCvContainer.animate().setDuration(duration).
+                scaleX(1).scaleY(1).
+                translationX(0).translationY(0).
+                setInterpolator(sDecelerator);
+
+        // Fade in the black background
+        ObjectAnimator bgAnim = ObjectAnimator.ofInt(mBackground, "alpha", 0, 255);
+        bgAnim.setDuration(duration);
+        bgAnim.start();
+    }
+
+    /**
+     * The exit animation is basically a reverse of the enter animation, except that if
+     * the orientation has changed we simply scale the picture back into the center of
+     * the screen.
+     *
+     * @param endAction This action gets run after the animation completes (this is
+     * when we actually switch activities)
+     */
+    public void runExitAnimation(final Runnable endAction) {
+        final long duration = (long) (ANIM_DURATION * sAnimatorScale) / 8;
+
+        // Fade out background
+        ObjectAnimator bgAnim = ObjectAnimator.ofInt(mBackground, "alpha", 0);
+        bgAnim.setDuration(duration);
+        bgAnim.start();
+
+        // First, slide/fade text out of the way
+        // Animate image back to thumbnail size/location
+        mCvContainer.animate().setDuration(duration).
+                scaleX(1).scaleY(1).
+                translationX(0).translationY(0).
+                setInterpolator(sAccelerator).
+                withEndAction(endAction);
     }
 
     @Override
@@ -149,69 +186,39 @@ public class ActivityProfile extends ConversaActivity implements
 
         if (businessObject == null) {
             finish();
+            return;
         }
 
-        rgb = -1;
+        rgb = -3;
+        liked = false;
+
         jobManager = ConversaApp.getInstance(this).getJobManager();
+        mCvContainer = (CardView) findViewById(R.id.cvContainer);
+        mVwStatus = findViewById(R.id.vStatus);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        FrameLayout mFlBack = (FrameLayout) toolbar.findViewById(R.id.flBack);
-        ImageButton mIbBack = (ImageButton) toolbar.findViewById(R.id.ibBack);
-        ImageButton mShareButton = (ImageButton) toolbar.findViewById(R.id.ibShare);
-        MediumTextView mTitle = (MediumTextView) toolbar.findViewById(R.id.mtvTitle);
-        mFlBack.setOnClickListener(this);
-        mIbBack.setOnClickListener(this);
-        mShareButton.setOnClickListener(this);
-        mTitle.setText(businessObject.getDisplayName());
-        setSupportActionBar(toolbar);
+        //mCvContainer.setClipToOutline(true);
 
-        mRlProfileHeader = (RelativeLayout) findViewById(R.id.rlProfileHeader);
-        mLlSpecialPromoContainer = (LinearLayout) findViewById(R.id.llSpecialPromoContainer);
-        mLlClosedOnContainer = (LinearLayout) findViewById(R.id.llClosedOnContainer);
-        mLlScheduleContainer = (LinearLayout) findViewById(R.id.llScheduleContainer);
-        mLlDeliveryContainer = (LinearLayout) findViewById(R.id.llDeliveryContainer);
-        mLlLinkContainer = (LinearLayout) findViewById(R.id.llLinkContainer);
-        mLlContactNumberContainer = (LinearLayout) findViewById(R.id.llContactNumberContainer);
-        mLlAddressContainer = (LinearLayout) findViewById(R.id.llAddressContainer);
+        mBackground = new ColorDrawable(ResourcesCompat.getColor(getResources(),
+                R.color.profile_light_background, null));
+        findViewById(R.id.topLevelLayout).setBackground(mBackground);
+        findViewById(R.id.topLevelLayout).setOnClickListener(this);
+
         // Profile views
-        View mVNameContainer = findViewById(R.id.vNameContainer);
-        mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvBusinessImage);
-        mBtnFavorite = (LikeButton) findViewById(R.id.btnFavorite);
-        mBtvFollowers = (BoldTextView) findViewById(R.id.btvFollowers);
-        mIvStatus = findViewById(R.id.vStatus);
-        mIvStatus.setVisibility(View.GONE);
-        Button mBtnStartChat = (Button) findViewById(R.id.btnStartChat);
-        BoldTextView mBtvConversaId = (BoldTextView) findViewById(R.id.btvConversaId);
-        RegularTextView mMtvBusinessName = (RegularTextView) findViewById(R.id.rtvBusinessName);
-        // Special promo
-        mRtvSpecialPromo = (RegularTextView) findViewById(R.id.rtvSpecialPromo);
-        mSdvSpecialPromo = (SimpleDraweeView) findViewById(R.id.sdvSpecialPromo);
-        // ClosedOn views
-        mLtvMonday = (LightTextView) findViewById(R.id.ltvMonday);
-        mLtvTuesday = (LightTextView) findViewById(R.id.ltvTuesday);
-        mLtvWednesday = (LightTextView) findViewById(R.id.ltvWednesday);
-        mLtvThursday = (LightTextView) findViewById(R.id.ltvThursday);
-        mLtvFriday = (LightTextView) findViewById(R.id.ltvFriday);
-        mLtvSaturday = (LightTextView) findViewById(R.id.ltvSaturday);
-        mLtvSunday = (LightTextView) findViewById(R.id.ltvSunday);
-        // Delivery views
-        mIvDelivery = (ImageView) findViewById(R.id.ivDelivery);
-        mLtvDelivery = (LightTextView) findViewById(R.id.ltvDelivery);
-        // Location views
-        mRtvLocationDescription = (LightTextView) findViewById(rtvLocationDescription);
-        mBtnLocation = (Button) findViewById(R.id.btnLocation);
-        // GeneralInfo views
-        mltvSchedule = (LightTextView) findViewById(R.id.ltvSchedule);
-        mltvLink = (LightTextView) findViewById(R.id.ltvLink);
-        mltvContactNumber = (LightTextView) findViewById(R.id.ltvContactNumber);
+        mSdvBusinessHeader = (SimpleDraweeView) findViewById(R.id.sdvProfileHeader);
+        SimpleDraweeView mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvProfileAvatar);
+        MediumTextView mMtvBusinessName = (MediumTextView) findViewById(R.id.mtvBusinessName);
+        RegularTextView mBtvConversaId = (RegularTextView) findViewById(R.id.rtvConversaId);
+        mBtvFollowers = (RegularTextView) findViewById(R.id.rtvFollowers);
+        // Action buttons
+        mBtnFavorite = (Button) findViewById(R.id.btnFavorite);
 
         mMtvBusinessName.setText(businessObject.getDisplayName());
-        mBtvConversaId.setText(businessObject.getConversaId());
+        mBtvConversaId.setText("@".concat(businessObject.getConversaId()));
 
         Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
         if (uri == null) {
-            uri = Utils.getDefaultImage(this, R.drawable.business_default);
+            uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
         }
 
         Postprocessor redMeshPostprocessor = new BasePostprocessor() {
@@ -224,7 +231,7 @@ public class ActivityProfile extends ConversaActivity implements
             public void process(Bitmap bitmap) {
                 if (bitmap == null) {
                     bitmap = BitmapFactory.decodeResource(getResources(),
-                            R.drawable.business_default);
+                            R.drawable.ic_business_default);
                     rgb = -2;
                 }
 
@@ -243,30 +250,19 @@ public class ActivityProfile extends ConversaActivity implements
                         .build();
         mSdvBusinessImage.setController(controller);
 
-        mVNameContainer.setOnClickListener(this);
-        mBtnFavorite.setOnLikeListener(this);
-        mBtnStartChat.setOnClickListener(this);
-        mBtnLocation.setOnClickListener(this);
+        mBtnFavorite.setOnClickListener(this);
+        findViewById(R.id.btnStartChat).setOnClickListener(this);
+        findViewById(R.id.btnShare).setOnClickListener(this);
+        findViewById(R.id.btnCloseProfile).setOnClickListener(this);
         mBtnFavorite.setEnabled(false);
 
-        GradientDrawable drawable;
-        drawable = (GradientDrawable)mLtvMonday.getBackground();
-        drawable.setStroke(1, Color.RED); // set stroke width and stroke color
-        drawable = (GradientDrawable)mLtvTuesday.getBackground();
-        drawable.setStroke(1, Color.RED);
-        drawable = (GradientDrawable)mLtvWednesday.getBackground();
-        drawable.setStroke(1, Color.RED);
-        drawable = (GradientDrawable)mLtvThursday.getBackground();
-        drawable.setStroke(1, Color.RED);
-        drawable = (GradientDrawable)mLtvFriday.getBackground();
-        drawable.setStroke(1, Color.RED);
-        drawable = (GradientDrawable)mLtvSaturday.getBackground();
-        drawable.setStroke(1, Color.RED);
-        drawable = (GradientDrawable)mLtvSunday.getBackground();
-        drawable.setStroke(1, Color.RED);
-
-        mLlScheduleContainer.setOnClickListener(this);
-        mLlAddressContainer.setOnClickListener(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mBtnFavorite.setBackground
+                    (getResources().getDrawable(R.drawable.ic_fav_not, null));
+        } else {
+            mBtnFavorite.setBackground
+                    (getResources().getDrawable(R.drawable.ic_fav_not));
+        }
 
         // Call Parse for registry
         HashMap<String, String> params = new HashMap<>(1);
@@ -293,17 +289,6 @@ public class ActivityProfile extends ConversaActivity implements
             } else {
                 rgb = -1;
             }
-
-            if (rgb != -1 && rgb != -2) {
-                if (android.os.Build.VERSION.SDK_INT >= 21) {
-                    Window window = getWindow();
-                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                    window.setStatusBarColor(rgb);
-                }
-
-                toolbar.setBackgroundColor(rgb);
-            }
         }
     };
 
@@ -326,49 +311,50 @@ public class ActivityProfile extends ConversaActivity implements
     }
 
     @Override
-    public void onBackPressed() {
-        navigateUp();
-    }
-
-    private void navigateUp() {
-        Intent upIntent = NavUtils.getParentActivityIntent(this);
-        if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
-            // This activity is NOT part of this app's task, so create a new task
-            // when navigating up, with a synthesized back stack.
-            TaskStackBuilder.create(this)
-                    // Add all of this activity's parents to the back stack
-                    .addNextIntentWithParentStack(upIntent)
-                    // Navigate up to the closest parent
-                    .startActivities();
-        } else {
-            // This activity is part of this app's task, so simply
-            // navigate up to the logical parent activity.
-            NavUtils.navigateUpTo(this, upIntent);
-        }
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.vNameContainer: {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-                LayoutInflater inflater = getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.dialog_profile_status, null);
-                dialogBuilder.setView(dialogView);
-                dialogBuilder.setPositiveButton(getString(R.string.dialog_profile_status_understood), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog b = dialogBuilder.create();
-                b.show();
+            case R.id.topLevelLayout: {
+                onBackPressed();
                 break;
             }
-            case R.id.btnLocation: {
+            case R.id.btnFavorite: {
+                if (liked) {
+                    liked = false;
 
+                    jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), false));
+                    followers--;
+                    mBtvFollowers.setText(String.valueOf(followers));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mBtnFavorite.setBackground
+                                (getResources().getDrawable(R.drawable.ic_fav_not, null));
+                    } else {
+                        mBtnFavorite.setBackground
+                                (getResources().getDrawable(R.drawable.ic_fav_not));
+                    }
+                } else {
+                    liked = true;
+
+                    jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), true));
+                    followers++;
+                    mBtvFollowers.setText(String.valueOf(followers));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mBtnFavorite.setBackground
+                                (getResources().getDrawable(R.drawable.ic_fav, null));
+                    } else {
+                        mBtnFavorite.setBackground
+                                (getResources().getDrawable(R.drawable.ic_fav));
+                    }
+                }
                 break;
             }
-            case R.id.ibShare: {
+            case R.id.btnStartChat: {
+                Intent intent = new Intent(this, ActivityChatWall.class);
+                intent.putExtra(Const.iExtraBusiness, businessObject);
+                intent.putExtra(Const.iExtraAddBusiness, addAsContact);
+                startActivity(intent);
+                break;
+            }
+            case R.id.btnShare: {
                 Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
 
                 BranchUniversalObject branchUniversalObject = new BranchUniversalObject()
@@ -420,94 +406,36 @@ public class ActivityProfile extends ConversaActivity implements
                             public void onChannelSelected(String channelName) {
                             }
                         });
-
                 break;
             }
-            case R.id.flBack:
-            case R.id.ibBack: {
-                navigateUp();
-                break;
-            }
-            case R.id.btnStartChat: {
-                Intent intent = new Intent(this, ActivityChatWall.class);
-                intent.putExtra(Const.iExtraBusiness, businessObject);
-                intent.putExtra(Const.iExtraAddBusiness, addAsContact);
-                startActivity(intent);
-                break;
-            }
-            case R.id.llScheduleContainer: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.profile_conversa_time_info_message));
-
-                String positiveText = getString(android.R.string.ok);
-                builder.setPositiveButton(positiveText,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                break;
-            }
-            case R.id.llAddressContainer: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.profile_locations_info_message));
-
-                String positiveText = getString(android.R.string.ok);
-                builder.setPositiveButton(positiveText,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+            case R.id.btnCloseProfile: {
+                onBackPressed();
                 break;
             }
         }
     }
 
+    /**
+     * Overriding this method allows us to run our exit animation first, then exiting
+     * the activity when it is complete.
+     */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Make sure the request was successful
-        if (resultCode == RESULT_OK) {
-            // Check which request we're responding to
-            switch (requestCode) {
-                case ActivityProfile.PLACE_PICKER_FLAG: {
-
-                    break;
-                }
+    public void onBackPressed() {
+        runExitAnimation(new Runnable() {
+            public void run() {
+                // *Now* go ahead and exit the activity
+                finish();
             }
-        }
-    }
-
-    @Override
-    public void liked(final LikeButton likeButton) {
-        jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), true));
-        followers++;
-        mBtvFollowers.setText(String.valueOf(followers));
-        likeButton.setLiked(true);
-    }
-
-    @Override
-    public void unLiked(final LikeButton likeButton) {
-        jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), false));
-        followers--;
-        mBtvFollowers.setText(String.valueOf(followers));
-        likeButton.setLiked(false);
+        });
     }
 
     private void parseResult(String result) {
         try {
-            if (result.isEmpty()) {
-                mBtnFavorite.setLiked(false);
-            } else {
+            if (!result.isEmpty()) {
                 JSONObject jsonRootObject = new JSONObject(result);
 
                 followers = jsonRootObject.optInt("followers", 0);
+                String headerUrl = jsonRootObject.optString("header", null);
                 String daySpecial = jsonRootObject.optString("daySpecial", null);
                 String website = jsonRootObject.optString("website", null);
                 boolean delivery = jsonRootObject.optBoolean("delivery", false);
@@ -524,38 +452,26 @@ public class ActivityProfile extends ConversaActivity implements
                 boolean favorite = jsonRootObject.optBoolean("favorite", false);
                 int status = jsonRootObject.optInt("status", 0);
 
-                if (promo != null || promoBackground != null) {
-                    mLlSpecialPromoContainer.setVisibility(View.VISIBLE);
+                liked = favorite;
 
-                    if (promo != null) {
-                        mRtvSpecialPromo.setVisibility(View.VISIBLE);
-                        mSdvSpecialPromo.setVisibility(View.VISIBLE);
-
-                        if (promoTextColor != null) {
-                            try {
-                                mRtvSpecialPromo.setTextColor(Color.parseColor(promoTextColor));
-                            } catch (IllegalArgumentException e) {
-                                mRtvSpecialPromo.setTextColor(Color.WHITE);
-                            }
-                        }
-                    }
-
-                    if (promoBackground != null) {
-                        mSdvSpecialPromo.setVisibility(View.VISIBLE);
-
-                        Uri uri;
-
-                        if(promoBackground.isEmpty()) {
-                            uri = Utils.getDefaultImage(this, R.drawable.specialpromo_dropshadow);
-                        } else {
-                            uri = Uri.parse(promoBackground);
-                        }
-
-                        mSdvSpecialPromo.setImageURI(uri);
+                if (favorite) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mBtnFavorite.setBackground
+                                (getResources().getDrawable(R.drawable.ic_fav, null));
+                    } else {
+                        mBtnFavorite.setBackground
+                                (getResources().getDrawable(R.drawable.ic_fav));
                     }
                 }
 
-                // Status
+                mBtvFollowers.setText(String.valueOf(followers));
+
+                Uri uri = Utils.getUriFromString(headerUrl);
+
+                if (uri != null) {
+                    mSdvBusinessHeader.setImageURI(uri);
+                }
+
                 GradientDrawable shapeDrawable;
 
                 switch (status) {
@@ -585,86 +501,7 @@ public class ActivityProfile extends ConversaActivity implements
                     }
                 }
 
-                mIvStatus.setVisibility(View.VISIBLE);
-                mIvStatus.setBackground(shapeDrawable);
-
-                // Iterator
-                int i, size;
-
-                // Get open days
-                if (openOn != null) {
-                    size = openOn.length();
-                    for (i = 0; i < size; i++) {
-                        GradientDrawable drawable;
-                        switch (openOn.getInt(i)) {
-                            case 1:
-                                drawable = (GradientDrawable) mLtvMonday.getBackground();
-                                drawable.setStroke(1, Color.GREEN);
-                                break;
-                            case 2:
-                                drawable = (GradientDrawable) mLtvTuesday.getBackground();
-                                drawable.setStroke(1, Color.GREEN);
-                                break;
-                            case 3:
-                                drawable = (GradientDrawable) mLtvWednesday.getBackground();
-                                drawable.setStroke(1, Color.GREEN);
-                                break;
-                            case 4:
-                                drawable = (GradientDrawable) mLtvThursday.getBackground();
-                                drawable.setStroke(1, Color.GREEN);
-                                break;
-                            case 5:
-                                drawable = (GradientDrawable) mLtvFriday.getBackground();
-                                drawable.setStroke(1, Color.GREEN);
-                                break;
-                            case 6:
-                                drawable = (GradientDrawable) mLtvSaturday.getBackground();
-                                drawable.setStroke(1, Color.GREEN);
-                                break;
-                            case 7:
-                                drawable = (GradientDrawable) mLtvSunday.getBackground();
-                                drawable.setStroke(1, Color.GREEN);
-                                break;
-                        }
-                    }
-                }
-
-                mBtnFavorite.setLiked(favorite);
-                mBtvFollowers.setText(String.valueOf(followers));
-
-                if (website != null) {
-                    mltvLink.setText(website);
-                } else {
-                    mltvLink.setText(R.string.profile_no_website_message);
-                }
-
-                if (number != null) {
-                    mltvContactNumber.setText(number);
-                } else {
-                    mltvContactNumber.setText(R.string.profile_no_number_message);
-                }
-
-                if (delivery) {
-                    mIvDelivery.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_check));
-                    mLtvDelivery.setText(getString(R.string.profile_delivery_yes));
-                } else {
-                    mIvDelivery.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_cancel));
-                    mLtvDelivery.setText(getString(R.string.profile_delivery_no));
-                }
-
-                if (multiple) {
-                    // Multiple locations
-                    mRtvLocationDescription.setText(R.string.profile_location_multiple_location);
-                    //mBtnLocation.setVisibility(View.VISIBLE);
-                } else if (online) {
-                    // Just online
-                    mRtvLocationDescription.setText(R.string.profile_location_online_location);
-                    mBtnLocation.setVisibility(View.GONE);
-                } else {
-                    // One location
-                    mRtvLocationDescription.setText(R.string.profile_location_one_location);
-                    //mBtnLocation.setVisibility(View.VISIBLE);
-                }
+                mVwStatus.setBackground(shapeDrawable);
             }
         } catch (JSONException e) {
             Logger.error("parseResult", e.getMessage());

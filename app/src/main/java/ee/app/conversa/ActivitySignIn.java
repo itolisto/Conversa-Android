@@ -18,6 +18,7 @@ import android.widget.ImageView;
 
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Logger;
 import ee.app.conversa.view.LightTextView;
 
 /**
@@ -43,6 +44,16 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null) {
             if (intent.getExtras().getInt(Const.ACTION, -1) != -1) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.error("ActivitySignIn", "Refreshing database");
+                        ConversaApp.getInstance(getApplicationContext())
+                                .getDB()
+                                .refreshDbHelper();
+                    }
+                }).start();
+
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
                 dialogBuilder.setTitle(getString(R.string.sett_account_logout_title));
                 dialogBuilder.setMessage(getString(R.string.parse_logout_reason));

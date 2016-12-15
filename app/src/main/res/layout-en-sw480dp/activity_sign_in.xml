@@ -12,7 +12,7 @@
 		android:layout_marginTop="?attr/actionBarSize"
 		android:contentDescription="@null"
 		android:scaleType="centerInside"
-		android:src="@drawable/signin_image" />
+		android:src="@drawable/im_logo" />
 
 	<RelativeLayout
 		android:layout_below="@id/ivConversa"

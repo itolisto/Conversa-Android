@@ -173,7 +173,7 @@ public class InAppNotification implements OnClickListener {
 		Uri uri = Utils.getUriFromString(user.getAvatarThumbFileId());
 
 		if (uri == null) {
-			uri = Utils.getDefaultImage(mContext, R.drawable.business_default);
+			uri = Utils.getDefaultImage(mContext, R.drawable.ic_business_default);
 		}
 
 		mSdvAvatar.setImageURI(uri);

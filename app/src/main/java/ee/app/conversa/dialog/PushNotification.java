@@ -82,15 +82,15 @@ public class PushNotification {
             case Const.kMessageTypeText:
                 return message.getBody();
             case Const.kMessageTypeAudio:
-                return context.getString(R.string.google_app_id);
+                return context.getString(R.string.contacts_last_message_audio);
             case Const.kMessageTypeVideo:
-                return context.getString(R.string.google_app_id);
+                return context.getString(R.string.contacts_last_message_video);
             case Const.kMessageTypeImage:
-                return context.getString(R.string.google_app_id);
+                return context.getString(R.string.contacts_last_message_image);
             case Const.kMessageTypeLocation:
-                return context.getString(R.string.google_app_id);
+                return context.getString(R.string.contacts_last_message_location);
             default:
-                return context.getString(R.string.google_app_id);
+                return context.getString(R.string.contacts_last_message_default);
         }
     }
 

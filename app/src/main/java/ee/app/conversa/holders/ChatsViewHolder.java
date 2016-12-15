@@ -87,7 +87,7 @@ public class ChatsViewHolder extends BaseHolder {
         Uri uri = Utils.getUriFromString(user.getAvatarThumbFileId());
 
         if (uri == null) {
-            uri = Utils.getDefaultImage(activity, R.drawable.business_default);
+            uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
         }
 
         this.ivUserImage.setImageURI(uri);
@@ -160,10 +160,10 @@ public class ChatsViewHolder extends BaseHolder {
             this.ivUnread.setVisibility(View.VISIBLE);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 this.ivUnread.setBackground(activity.getResources()
-                        .getDrawable(R.drawable.notification, null));
+                        .getDrawable(R.drawable.ic_unread_message, null));
             } else {
                 this.ivUnread.setBackground(activity.getResources()
-                        .getDrawable(R.drawable.notification));
+                        .getDrawable(R.drawable.ic_unread_message));
             }
         } else {
             this.ivUnread.setVisibility(View.INVISIBLE);

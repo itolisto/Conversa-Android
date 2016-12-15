@@ -17,11 +17,11 @@
         android:layout_marginEnd="10dp"
         fresco:fadeDuration="300"
         fresco:actualImageScaleType="centerInside"
-        fresco:placeholderImage="@drawable/business_default"
+        fresco:placeholderImage="@drawable/ic_business_default"
         fresco:placeholderImageScaleType="centerInside"
-        fresco:failureImage="@drawable/business_default"
+        fresco:failureImage="@drawable/ic_business_default"
         fresco:failureImageScaleType="centerInside"
-        fresco:retryImage="@drawable/business_default"
+        fresco:retryImage="@drawable/ic_business_default"
         fresco:retryImageScaleType="centerInside"
         fresco:roundAsCircle="true" />
 
@@ -37,7 +37,7 @@
     <ee.app.conversa.view.MediumTextView
         android:maxLines="1"
         android:ellipsize="end"
-        android:textSize="18sp"
+        android:textSize="17sp"
         android:singleLine="true"
         android:id="@+id/mtvDisplayName"
         android:layout_above="@id/vDivider"
