@@ -12,12 +12,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
+        <View
+            android:id="@+id/vDivider"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:layout_centerInParent="true"/>
+
         <ee.app.conversa.view.MediumTextView
             android:id="@+id/tvNoMessages"
             android:text="@string/no_messages"
             android:textColor="@color/default_gray"
-            android:layout_centerInParent="true"
+            android:layout_above="@id/vDivider"
+            android:layout_centerHorizontal="true"
             android:textSize="24sp"
+            android:layout_marginBottom="7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -35,20 +43,10 @@
             android:id="@+id/tvNoMessagesDescription"
             android:text="@string/no_messages_description_one"
             android:textColor="@color/default_gray"
-            android:layout_centerInParent="true"
             android:textSize="14sp"
-            android:layout_marginTop="14dp"
-            android:layout_below="@id/tvNoMessages"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ee.app.conversa.view.LightTextView
-            android:id="@+id/tvNoMessagesDescriptionTwo"
-            android:text="@string/no_messages_description_two"
-            android:textColor="@color/default_gray"
-            android:layout_centerInParent="true"
-            android:textSize="14sp"
-            android:layout_below="@id/tvNoMessagesDescription"
+            android:gravity="center"
+            android:layout_below="@id/vDivider"
+            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -63,7 +61,7 @@
             android:layout_centerHorizontal="true"
             android:textColor="@color/default_green"
             android:background="@drawable/border_textview"
-            android:layout_below="@id/tvNoMessagesDescriptionTwo" />
+            android:layout_below="@id/tvNoMessagesDescription" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView

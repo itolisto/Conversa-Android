@@ -2,14 +2,15 @@ package ee.app.conversa.settings;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.view.LayoutInflater;
 import android.view.View;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -53,7 +54,6 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
         mLtvEmail.setText(Account.getCurrentUser().getEmail());
         mLtvName.setText(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountDisplayName());
 
-        findViewById(R.id.rlEmail).setOnClickListener(this);
         findViewById(R.id.rlName).setOnClickListener(this);
         findViewById(R.id.rlPassword).setOnClickListener(this);
         findViewById(R.id.rlCleanRecentSearches).setOnClickListener(this);
@@ -63,130 +63,98 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.rlEmail: {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_settings_account, null);
-                final TextInputEditText edt = (TextInputEditText) dialogView.findViewById(R.id.edit1);
-                edt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-
-                dialogBuilder.setTitle(getString(R.string.sett_account_email_alert_title));
-                dialogBuilder.setPositiveButton(getString(R.string.action_change), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        onPreferenceChange(PreferencesKeys.ACCOUNT_EMAIL_KEY, edt.getText().toString());
-                    }
-                });
-                dialogBuilder.setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.dismiss();
-                    }
-                });
-                dialogBuilder.setView(dialogView);
-                AlertDialog b = dialogBuilder.create();
-                b.show();
-                break;
-            }
             case R.id.rlName: {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_settings_account, null);
-                final TextInputEditText edt = (TextInputEditText) dialogView.findViewById(R.id.edit1);
-                edt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-
-                dialogBuilder.setTitle(getString(R.string.sett_account_name_alert_title));
-                dialogBuilder.setPositiveButton(getString(R.string.action_change), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        onPreferenceChange(PreferencesKeys.ACCOUNT_NAME_KEY, edt.getText().toString());
-                    }
-                });
-                dialogBuilder.setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.dismiss();
-                    }
-                });
-                dialogBuilder.setView(dialogView);
-                AlertDialog b = dialogBuilder.create();
-                b.show();
+                new MaterialDialog.Builder(this)
+                        .title(getString(R.string.sett_account_name_alert_title))
+                        .positiveText(getString(R.string.action_change))
+                        .positiveColorRes(R.color.default_green)
+                        .negativeText(getString(android.R.string.cancel))
+                        .negativeColorRes(R.color.default_black)
+                        .inputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+                        .input(getString(R.string.email), "", new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog dialog, CharSequence input) {
+                                dialog.dismiss();
+                                onPreferenceChange(PreferencesKeys.ACCOUNT_NAME_KEY, input.toString());
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
                 break;
             }
             case R.id.rlPassword: {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_settings_account, null);
-                final TextInputEditText edt = (TextInputEditText) dialogView.findViewById(R.id.edit1);
-                edt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-
-                dialogBuilder.setTitle(getString(R.string.sett_account_password_alert_title));
-                dialogBuilder.setPositiveButton(getString(R.string.action_change), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        onPreferenceChange(PreferencesKeys.ACCOUNT_PASSWORD_KEY, edt.getText().toString());
-                    }
-                });
-                dialogBuilder.setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.dismiss();
-                    }
-                });
-                dialogBuilder.setView(dialogView);
-                AlertDialog b = dialogBuilder.create();
-                b.show();
+                new MaterialDialog.Builder(this)
+                        .title(getString(R.string.sett_account_password_alert_title))
+                        .positiveText(getString(R.string.action_change))
+                        .positiveColorRes(R.color.default_green)
+                        .negativeText(getString(android.R.string.cancel))
+                        .negativeColorRes(R.color.default_black)
+                        .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                        .input(getString(R.string.password), "", new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog dialog, CharSequence input) {
+                                dialog.dismiss();
+                                onPreferenceChange(PreferencesKeys.ACCOUNT_PASSWORD_KEY, input.toString());
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
                 break;
             }
             case R.id.rlCleanRecentSearches: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.recent_searches_message));
-
-                String positiveText = getString(R.string.recent_searches_ok);
-                builder.setPositiveButton(positiveText,
-                        new DialogInterface.OnClickListener() {
+                new MaterialDialog.Builder(this)
+                        .content(getString(R.string.recent_searches_message))
+                        .positiveText(getString(R.string.recent_searches_ok))
+                        .negativeText(getString(android.R.string.no))
+                        .positiveColorRes(R.color.default_green)
+                        .negativeColorRes(R.color.default_black)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 ConversaApp.getInstance(getApplicationContext()).getDB().clearRecentSearches();
                                 dialog.dismiss();
                             }
-                        });
-
-                String negativeText = getString(android.R.string.no);
-                builder.setNegativeButton(negativeText,
-                        new DialogInterface.OnClickListener() {
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 dialog.dismiss();
                             }
-                        });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                        })
+                        .show();
                 break;
             }
             case R.id.rlLogOut: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.logout_message));
-
-                String positiveText = getString(R.string.logout_ok);
-                builder.setPositiveButton(positiveText,
-                        new DialogInterface.OnClickListener() {
+                new MaterialDialog.Builder(this)
+                        .content(getString(R.string.logout_message))
+                        .positiveText(getString(R.string.logout_ok))
+                        .negativeText(getString(android.R.string.no))
+                        .positiveColorRes(R.color.default_red)
+                        .negativeColorRes(R.color.default_black)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 dialog.dismiss();
                                 AppActions.appLogout(getApplicationContext(), true);
                             }
-                        });
-
-                String negativeText = getString(android.R.string.no);
-                builder.setNegativeButton(negativeText,
-                        new DialogInterface.OnClickListener() {
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 dialog.dismiss();
                             }
-                        });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                        })
+                        .show();
                 break;
             }
         }
@@ -195,37 +163,6 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
 
     public boolean onPreferenceChange(String key, String newValue) {
         switch (key) {
-            case PreferencesKeys.ACCOUNT_EMAIL_KEY: {
-                final String oldEmail = Account.getCurrentUser().getEmail();
-                String email = newValue;
-                email = email.replaceAll("\\t", "");
-                email = email.replaceAll("\\n", "");
-                email = email.replaceAll(" ", "");
-                final String newEmail = email;
-
-                if (newEmail.isEmpty()) {
-                    showErrorMessage(getString(R.string.sign_email_length_error));
-                } else {
-                    if (Utils.checkEmail(newEmail)) {
-                        Account.getCurrentUser().setEmail(newEmail);
-                        Account.getCurrentUser().saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    showSuccessMessage(getString(R.string.settings_email_succesful));
-                                } else {
-                                    Account.getCurrentUser().setEmail(oldEmail);
-                                    showErrorMessage(getString(R.string.settings_email_error));
-                                }
-                            }
-                        });
-                    } else {
-                        showErrorMessage(getString(R.string.sign_email_not_valid_error));
-                    }
-                }
-                // Return false as we don't wanna save/update this preference
-                return false;
-            }
             case PreferencesKeys.ACCOUNT_NAME_KEY: {
                 String name = newValue;
                 name = name.replaceAll("\\t", "");
@@ -237,7 +174,8 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                 } else {
                     HashMap<String, String> params = new HashMap<>();
                     params.put("displayName", newName);
-                    ParseCloud.callFunctionInBackground("updateDisplayName", params, new FunctionCallback<Integer>() {
+                    params.put("objectId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
+                    ParseCloud.callFunctionInBackground("updateCustomerName", params, new FunctionCallback<Integer>() {
                         @Override
                         public void done(Integer object, ParseException e) {
                             if (e == null) {

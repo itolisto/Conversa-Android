@@ -6,7 +6,11 @@ import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -562,6 +566,10 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			addAsContact = false;
 		}
 
+		if (ConversaApp.getInstance(this).getPreferences().getPlaySoundWhenSending()) {
+			playSound(true);
+		}
+
 		// 3. Add message to adapter
 		gMessagesAdapter.addMessage(response);
 		mRvWallMessages.scrollToPosition(0);
@@ -599,6 +607,10 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			// 2. Check visibility
 			if (mRvWallMessages.getVisibility() == View.GONE) {
 				mRvWallMessages.setVisibility(View.VISIBLE);
+			}
+
+			if (ConversaApp.getInstance(this).getPreferences().getPlaySoundWhenReceiving()) {
+				playSound(false);
 			}
 
 			// 3. Add to adapter
@@ -651,6 +663,37 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			mSubTitleTextView.setVisibility(View.VISIBLE);
 		} else {
 			mSubTitleTextView.setVisibility(View.GONE);
+		}
+	}
+
+	private void playSound(final boolean sound) {
+		final SoundPool sounds;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			AudioAttributes attributes = new AudioAttributes.Builder()
+					.setUsage(AudioAttributes.USAGE_NOTIFICATION)
+					.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+					.build();
+			sounds = new SoundPool.Builder()
+					.setAudioAttributes(attributes)
+					.build();
+		} else {
+			sounds = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
+		}
+
+		sounds.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+			@Override
+			public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
+				/** soundId for Later handling of sound pool **/
+				// in 2nd param u have to pass your desire ringtone
+				sounds.play(soundId, 0.99f, 0.99f, 1, 0, 0.99f);
+			}
+		});
+
+		if (sound) {
+			sounds.load(getApplicationContext(), R.raw.message_sent, 1);
+		} else {
+			sounds.load(getApplicationContext(), R.raw.message_received, 1);
 		}
 	}
 

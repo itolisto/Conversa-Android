@@ -3,6 +3,7 @@ package ee.app.conversa;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -28,19 +29,27 @@ import ee.app.conversa.settings.ActivitySettingsAccount;
 import ee.app.conversa.settings.ActivitySettingsChat;
 import ee.app.conversa.settings.ActivitySettingsHelp;
 import ee.app.conversa.settings.ActivitySettingsNotifications;
+import ee.app.conversa.settings.PreferencesKeys;
 import ee.app.conversa.view.LightTextView;
 
 /**
  * Created by edgargomez on 9/14/16.
  */
-public class FragmentPreferences extends ConversaFragment implements View.OnClickListener {
+public class FragmentPreferences extends ConversaFragment implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_preferences, container, false);
+        ConversaApp.getInstance(getActivity()).getPreferences().getSharePreferences().registerOnSharedPreferenceChangeListener(this);
         initialization(rootView);
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ConversaApp.getInstance(getActivity()).getPreferences().getSharePreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     public void initialization(View v) {
@@ -60,8 +69,7 @@ public class FragmentPreferences extends ConversaFragment implements View.OnClic
             mIvProfile.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_person));
         }
 
-        String mfasld = ConversaApp.getInstance(getActivity()).getPreferences().getAccountDisplayName();
-        mLtvWelcomeMessage.setText(mfasld);
+        mLtvWelcomeMessage.setText(getActivity().getString(R.string.sett_preferences_welcome, ConversaApp.getInstance(getActivity()).getPreferences().getAccountDisplayName()));
     }
 
     @Override
@@ -174,6 +182,22 @@ public class FragmentPreferences extends ConversaFragment implements View.OnClic
         }
 
         startActivity(intent);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(PreferencesKeys.ACCOUNT_DISPLAY_NAME_KEY)) {
+            LightTextView mLtvWelcomeMessage = (LightTextView) getView().findViewById(R.id.ltvWelcomeMessage);
+            mLtvWelcomeMessage.setText(getActivity().getString(R.string.sett_preferences_welcome, ConversaApp.getInstance(getActivity()).getPreferences().getAccountDisplayName()));
+        } else if (key.equals(PreferencesKeys.ACCOUNT_GENDER_KEY)) {
+            ImageView mIvProfile = (ImageView) getView().findViewById(R.id.ivProfile);
+            if (ConversaApp.getInstance(getContext()).getPreferences().getAccountGender() == 0) {
+                mIvProfile.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_person_female));
+            } else {
+                mIvProfile.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_person));
+            }
+        }
     }
 
     public class ArrayAdapterWithIcon extends ArrayAdapter<String> {

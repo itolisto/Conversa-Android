@@ -56,6 +56,10 @@ public class Preferences {
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    public SharedPreferences getSharePreferences() {
+        return sharedPreferences;
+    }
+
     public void cleanSharedPreferences() {
         sharedPreferences.edit().clear().apply();
     }

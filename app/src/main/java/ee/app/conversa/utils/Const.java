@@ -74,10 +74,6 @@ public class Const {
 	public static final String kBusinessCategoryPositionKey  = "position";
 	public static final String kBusinessCategoryActiveKey    = "active";
 
-	// Customer class
-	public static final String kClassCustomer       = "Customer";
-	public static final String kCustomerUserInfoKey = "userInfo";
-
 	// dbBusiness class
 	public static final String kBusinessBusinessInfoKey = "businessInfo";
 	public static final String kBusinessDisplayNameKey = "displayName";
@@ -88,7 +84,6 @@ public class Const {
 	public static final String kBusinessCountryKey      = "country";
 	public static final String kBusinessVerifiedKey     = "verified";
 	public static final String kBusinessBusinessKey     = "business";
-	public static final String kBusinessTagTagKey       = "tags";
 
 	// General
 	public static final String kObjectRowObjectIdKey  = "objectId";

@@ -21,10 +21,12 @@ import com.parse.ParseException;
 import com.parse.SignUpCallback;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.settings.language.DynamicLanguage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 
@@ -127,18 +129,18 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
                 user.setPassword(mEtSignUpPassword.getText().toString());
                 user.put(Const.kUserTypeKey, 1);
 
-//                    Calendar newDate = Calendar.getInstance();
-//                    newDate.set(mYear, mMonth, mDay);
-//                    user.put(Const.kUserBirthday, new SimpleDateFormat("dd-MM-yyyy",
-//                            DynamicLanguage.getSelectedLocale(getApplicationContext()))
-//                            .format(newDate.getTime()));
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(mYear, mMonth, mDay);
+                user.put(Const.kUserBirthday, new SimpleDateFormat("dd-MM-yyyy",
+                        DynamicLanguage.getSelectedLocale(getApplicationContext()))
+                        .format(newDate.getTime()));
 
                 int selectedId = radioSexGroup.getCheckedRadioButtonId();
 
                 if (findViewById(selectedId).getId() == R.id.rbMale) {
-                    // user.put(Const.kUserGender, selectedGender);
+                     user.put(Const.kUserGender, 1);
                 } else {
-                    // user.put(Const.kUserGender, selectedGender);
+                     user.put(Const.kUserGender, 0);
                 }
 
                 final ProgressDialog progress = new ProgressDialog(this);
@@ -265,7 +267,7 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     }
 
     public void AuthListener(boolean result, ParseException error) {
-        if(result) {
+        if (result) {
             Intent intent = new Intent(this, ActivityMain.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

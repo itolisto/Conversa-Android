@@ -24,10 +24,11 @@
 
 package ee.app.conversa;
 
-import android.app.Application;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.media.SoundPool;
 import android.os.StrictMode;
+import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
@@ -35,6 +36,8 @@ import android.util.Log;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.github.stkent.bugshaker.BugShaker;
 import com.github.stkent.bugshaker.flow.dialog.AlertDialogType;
@@ -55,17 +58,20 @@ import ee.app.conversa.model.parse.bCategory;
 import ee.app.conversa.model.parse.pMessage;
 import ee.app.conversa.notifications.onesignal.CustomNotificationOpenedHandler;
 import ee.app.conversa.notifications.onesignal.CustomNotificationReceivedHandler;
+import ee.app.conversa.settings.Preferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
-import ee.app.conversa.settings.Preferences;
 import io.branch.referral.Branch;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Basic Application class, holds references to often used single instance
  * objects and methods related to application like application background check.
  */
-public class ConversaApp extends Application {
+public class ConversaApp extends MultiDexApplication {
 
+	private SoundPool soundsSent;
+	private SoundPool soundsReceived;
 	private JobManager jobManager;
 	private Typeface mTfRalewayThin;
     private Typeface mTfRalewayLight;
@@ -95,6 +101,7 @@ public class ConversaApp extends Application {
 		AblyConnection.initAblyManager(this);
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
+		initializeFabric();
 		initializeBranch();
 		initializeOneSignal();
 		initializeParse();
@@ -103,6 +110,44 @@ public class ConversaApp extends Application {
 		initializeEventBus();
 		initializeBugShaker();
 		initializeTypefaces();
+
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//			AudioAttributes attributes = new AudioAttributes.Builder()
+//					.setUsage(AudioAttributes.USAGE_NOTIFICATION)
+//					.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+//					.build();
+//			soundsSent = new SoundPool.Builder()
+//					.setAudioAttributes(attributes)
+//					.build();
+//			soundsReceived = new SoundPool.Builder()
+//					.setAudioAttributes(attributes)
+//					.build();
+//		} else {
+//			soundsSent = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
+//			soundsReceived = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
+//		}
+//
+//		soundsSent.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+//			@Override
+//			public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+//				/** soundId for Later handling of sound pool **/
+//				// in 2nd param u have to pass your desire ringtone
+//				int soundId;
+//
+//				if (sound) {
+//					soundId = sounds.load(getApplicationContext(), R.raw.message_sent, 1);
+//				} else {
+//					soundId = sounds.load(getApplicationContext(), R.raw.message_received, 1);
+//				}
+//
+//				sounds.play(soundId, 0.99f, 0.99f, 1, 0, 0.99f);
+//			}
+//		});
+	}
+
+	private void initializeFabric() {
+		Fabric.with(this, new Crashlytics());
+		Fabric.with(this, new Answers());
 	}
 
 	private void initializeBranch() {

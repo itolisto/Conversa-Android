@@ -1,10 +1,10 @@
 package ee.app.conversa.dialog;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -62,8 +62,11 @@ public class PushNotification {
                 .setContentIntent(pendingIntent);
 
         if (ConversaApp.getInstance(context).getPreferences().getPushNotificationSound()) {
-            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            notificationBuilder.setSound(defaultSoundUri);
+            //Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            //notificationBuilder.setSound(defaultSoundUri);
+            Notification notification = notificationBuilder.build();
+            notification.sound = Uri.parse("android.resource://"
+                    + context.getPackageName() + "/" + R.raw.sound_notification);
         }
 
         NotificationManager notificationManager =
@@ -78,19 +81,23 @@ public class PushNotification {
     }
 
     private static String getMessage(Context context, dbMessage message) {
-        switch (message.getMessageType()) {
-            case Const.kMessageTypeText:
-                return message.getBody();
-            case Const.kMessageTypeAudio:
-                return context.getString(R.string.contacts_last_message_audio);
-            case Const.kMessageTypeVideo:
-                return context.getString(R.string.contacts_last_message_video);
-            case Const.kMessageTypeImage:
-                return context.getString(R.string.contacts_last_message_image);
-            case Const.kMessageTypeLocation:
-                return context.getString(R.string.contacts_last_message_location);
-            default:
-                return context.getString(R.string.contacts_last_message_default);
+        if (ConversaApp.getInstance(context).getPreferences().getPushNotificationPreview()) {
+            switch (message.getMessageType()) {
+                case Const.kMessageTypeText:
+                    return message.getBody();
+                case Const.kMessageTypeAudio:
+                    return context.getString(R.string.contacts_last_message_audio);
+                case Const.kMessageTypeVideo:
+                    return context.getString(R.string.contacts_last_message_video);
+                case Const.kMessageTypeImage:
+                    return context.getString(R.string.contacts_last_message_image);
+                case Const.kMessageTypeLocation:
+                    return context.getString(R.string.contacts_last_message_location);
+                default:
+                    return context.getString(R.string.contacts_last_message_default);
+            }
+        } else {
+            return null;
         }
     }
 

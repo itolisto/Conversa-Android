@@ -26,7 +26,11 @@ package ee.app.conversa.dialog;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -144,30 +148,61 @@ public class InAppNotification implements OnClickListener {
 		SimpleDraweeView mSdvAvatar = (SimpleDraweeView) mPushLayout.findViewById(R.id.sdvPushAvatar);
 		mTvUserName.setText(user.getDisplayName());
 
-		switch(message.getMessageType()) {
-			case Const.kMessageTypeImage:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_image));
-				break;
-			case Const.kMessageTypeLocation:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_location));
-				break;
-			case Const.kMessageTypeAudio:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_audio));
-				break;
-			case Const.kMessageTypeVideo:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_video));
-				break;
-			case Const.kMessageTypeText:
-				mTvNotification.setText(message.getBody().replaceAll("\\n", " "));
-				break;
-			default:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_default));
-				break;
+		if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationPreview()) {
+			switch (message.getMessageType()) {
+				case Const.kMessageTypeImage:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_image));
+					break;
+				case Const.kMessageTypeLocation:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_location));
+					break;
+				case Const.kMessageTypeAudio:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_audio));
+					break;
+				case Const.kMessageTypeVideo:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_video));
+					break;
+				case Const.kMessageTypeText:
+					mTvNotification.setText(message.getBody().replaceAll("\\n", " "));
+					break;
+				default:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_default));
+					break;
+			}
+		} else {
+			mTvNotification.setText("");
+		}
+
+		if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationSound()) {
+			final SoundPool sounds;
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				AudioAttributes attributes = new AudioAttributes.Builder()
+						.setUsage(AudioAttributes.USAGE_NOTIFICATION)
+						.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+						.build();
+				sounds = new SoundPool.Builder()
+						.setAudioAttributes(attributes)
+						.build();
+			} else {
+				sounds = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
+			}
+
+			sounds.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+				@Override
+				public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
+					/** soundId for Later handling of sound pool **/
+					// in 2nd param u have to pass your desire ringtone
+					sounds.play(soundId, 0.99f, 0.99f, 1, 0, 0.99f);
+				}
+			});
+
+			sounds.load(mContext, R.raw.message_received, 1);
 		}
 
 		Uri uri = Utils.getUriFromString(user.getAvatarThumbFileId());

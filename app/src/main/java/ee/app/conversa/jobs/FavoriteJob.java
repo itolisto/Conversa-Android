@@ -49,7 +49,7 @@ public class FavoriteJob extends Job {
             params.put("favorite", true);
         }
 
-        ParseCloud.callFunction("favorite", params);
+        ParseCloud.callFunction("setCustomerFavorite", params);
     }
 
     @Override

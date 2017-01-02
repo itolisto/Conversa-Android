@@ -1,13 +1,13 @@
 package ee.app.conversa.settings;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.CompoundButton;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
@@ -66,23 +66,26 @@ public class ActivitySettingsChat extends ConversaActivity implements View.OnCli
             case R.id.llQualityUpload:
                 final int index = ConversaApp.getInstance(this).getPreferences().getUploadQualityPosition();
 
-                AlertDialog.Builder b = new AlertDialog.Builder(this);
-                b.setTitle(R.string.sett_chat_quality_title);
-                b.setSingleChoiceItems(R.array.sett_chat_quality_entries, index, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        if (which != index) {
-                            ConversaApp.getInstance(getApplicationContext())
-                                    .getPreferences().setUploadQuality(which);
-
-                            mLtvQualitySummary.setText(
+                new MaterialDialog.Builder(this)
+                        .title(R.string.sett_chat_quality_title)
+                        .items(R.array.sett_chat_quality_entries)
+                        .alwaysCallSingleChoiceCallback()
+                        .itemsCallbackSingleChoice(index, new MaterialDialog.ListCallbackSingleChoice() {
+                            @Override
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                dialog.dismiss();
+                                if (which != index) {
                                     ConversaApp.getInstance(getApplicationContext())
-                                            .getPreferences().getUploadQuality());
-                        }
-                    }
-                });
-                b.show();
+                                            .getPreferences().setUploadQuality(which);
+
+                                    mLtvQualitySummary.setText(
+                                            ConversaApp.getInstance(getApplicationContext())
+                                                    .getPreferences().getUploadQuality());
+                                }
+                                return true;
+                            }
+                        })
+                        .show();
                 break;
         }
     }

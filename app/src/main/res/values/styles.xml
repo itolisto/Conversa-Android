@@ -75,6 +75,10 @@
         <item name="android:actionModeBackground">@color/default_green</item>
     </style>
 
+    <style name="MyTheme.Gray" parent="Base.AlertDialog.AppCompat.Light">
+        <item name="colorAccent">@color/default_gray</item>
+    </style>
+
     <style name="MyTheme.Blue" parent="AppTheme">
         <item name="colorAccent">@android:color/holo_blue_light</item>
     </style>

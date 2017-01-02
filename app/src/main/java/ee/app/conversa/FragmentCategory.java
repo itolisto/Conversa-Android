@@ -167,6 +167,7 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
                     } else {
                         nCategory category = new nCategory(
                                 jsonCategory.optString("ob", ""),
+                                jsonCategory.optString("na", ""),
                                 jsonCategory.optString("th", ""));
 
                         if (alphabetically != null) {

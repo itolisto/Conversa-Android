@@ -188,6 +188,10 @@
             android:name="io.branch.sdk.BranchKey"
             android:value="key_test_ndl297oYX8yqRLgyhnRoLpidDuc2i3tr" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="617c5ff8d2055123134c25a4b496d078123ef1da" />
+
         <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />

@@ -15,7 +15,6 @@
 #-keepclassmembers class fqcn.of.javascript.interfaces.for.webview {
 #   public *;
 #}
-
 #
 # EventBus
 #
@@ -33,3 +32,7 @@
 #Branch
 #
 -keep class com.google.android.gms.ads.identifier.** { *; }
+#
+#Fabric
+#
+#-keepattributes SourceFile,LineNumberTable

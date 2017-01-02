@@ -34,7 +34,7 @@
 			android:textColor="@color/default_gray"
 			android:textSize="15sp" />
 
-		<ee.app.conversa.view.BoldTextView
+		<ee.app.conversa.view.MediumTextView
 			android:id="@+id/btvSignUpInfo"
 			android:layout_below="@id/ltvSecondUnderTitle"
 			android:layout_width="match_parent"
@@ -66,7 +66,7 @@
 				android:background="@drawable/button_shape_white" />
 		</RelativeLayout>
 
-		<ee.app.conversa.view.BoldTextView
+		<ee.app.conversa.view.MediumTextView
 			android:id="@+id/tvAlready"
 			android:layout_below="@id/rlSignUpContainer"
 			android:layout_width="match_parent"

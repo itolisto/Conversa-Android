@@ -9,7 +9,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.contact.ContactUpdateReason;
 import ee.app.conversa.dialog.InAppNotification;
@@ -151,9 +150,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     public void MessageReceived(dbMessage response) {
         // Show in-app notification
         if (mRlPushNotification != null) {
-            if (ConversaApp.getInstance(this).getPreferences().getInAppNotificationPreview())
-                InAppNotification.make(this, mRlPushNotification)
-                        .show(response);
+            InAppNotification.make(this, mRlPushNotification).show(response);
         }
     }
 

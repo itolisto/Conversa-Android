@@ -86,7 +86,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_profile);
+        setContentView(R.layout.activity_profile);
         checkInternetConnection = false;
 
         if (savedInstanceState == null) {
@@ -267,7 +267,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         // Call Parse for registry
         HashMap<String, String> params = new HashMap<>(1);
         params.put("business", businessObject.getBusinessId());
-        ParseCloud.callFunctionInBackground("profileInfo", params, new FunctionCallback<String>() {
+        ParseCloud.callFunctionInBackground("getBusinessProfile", params, new FunctionCallback<String>() {
             @Override
             public void done(String result, ParseException e) {
                 if(e == null) {
