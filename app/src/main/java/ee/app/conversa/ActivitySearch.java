@@ -3,6 +3,7 @@ package ee.app.conversa;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,7 +47,12 @@ import ee.app.conversa.utils.Logger;
  */
 public class ActivitySearch extends ConversaActivity implements OnContactClickListener {
 
-    private boolean isLoading;
+    private int page;
+    private boolean loadingPage;
+    private boolean loadMore;
+    private String searchWith;
+    private Handler handler;
+    private Runnable runnable;
 
     private final ExecutorService tpe;
     private final ExecutorService callResults;
@@ -86,13 +92,29 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         checkInternetConnection = false;
-        isLoading = false;
         initialization();
     }
 
     @Override
     protected void initialization() {
         super.initialization();
+
+        page = 0;
+        loadingPage = false;
+        loadMore = true;
+        searchWith = "";
+
+        handler = new Handler();
+        runnable = new Runnable(){
+            @Override
+            public void run() {
+                page = 0;
+                loadingPage = false;
+                loadMore = true;
+                mBusinessListAdapter.clear();
+                searchBusiness();
+            }
+        };
 
         mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
         mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
@@ -102,7 +124,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                     finish();
                 } else {
                     mSearchView.clearQuery();
-                    isLoading = false;
+                    searchWith = "";
                     showRecents();
                 }
             }
@@ -111,7 +133,14 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
-                searchBusiness(newQuery, 0);
+                handler.removeCallbacks(runnable);
+                if (newQuery.length() > 0) {
+                    searchWith = newQuery;
+                    // Hide recyclerview and show loading view
+                    handler.postDelayed(runnable, 400);
+                } else {
+                    clear();
+                }
             }
         });
 
@@ -125,13 +154,39 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
         mRvSearchResults.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRvSearchResults.setAdapter(mBusinessListAdapter);
         mRvSearchResults.setItemAnimator(new DefaultItemAnimator());
+        mRvSearchResults.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                // 1. If load more is true retrieve more messages otherwise skip
+                if (loadMore) {
+                    if (searchWith.length() > 0) {
+                        final int lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                                .findLastCompletelyVisibleItemPosition();
+                        final int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+
+                        // 2. Check if app isn't checking for new messages and last visible item is on the top
+                        if (!loadingPage && lastVisibleItem == (totalItemCount - 1)) {
+                            loadingPage = true;
+                            mBusinessListAdapter.addLoad(true);
+                            searchBusiness();
+                        }
+                    }
+                }
+            }
+        });
 
         recentList.add(new nHeaderTitle(getString(R.string.recent_searches_title), 0));
-
         recent.execute();
     }
 
-    public synchronized void searchBusiness(final String text, final int skip) {
+    public void clear() {
+        mBusinessListAdapter.clear();
+        searchWith = "";
+        showRecents();
+    }
+
+    public void searchBusiness() {
+        Logger.error("searchBusiness", "SEARCH: " + searchWith);
         // future
         if (future != null) {
             future.cancel(true);
@@ -141,80 +196,82 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
             futureResult.cancel(true);
         }
 
-        if (text.isEmpty()) {
-            isLoading = false;
-            showRecents();
-            return;
-        }
-
-        if (skip == 0) {
-            mLlNoResultsContainer.setVisibility(View.GONE);
-            mLlErrorContainer.setVisibility(View.GONE);
-            mRvSearchResults.setVisibility(View.GONE);
-        }
-
-        mPbLoadingResults.smoothToShow();
-        isLoading = true;
-
-        future = tpe.submit(new Callable<String>() {
-            public String call() throws Exception {
-                HashMap<String, Object> params = new HashMap<>();
-                params.put("search", text);
-                params.put("skip", skip);
-                try {
-                    return ParseCloud.callFunction("searchBusiness", params);
-                } catch (ParseException e) {
-                    AppActions.validateParseException(getApplicationContext(), e);
-                    Logger.error("Future task error: ", e.getMessage());
-                    return "";
-                }
+        if (hasInternetConnection()) {
+            if (page == 0) {
+                mLlNoResultsContainer.setVisibility(View.GONE);
+                mLlErrorContainer.setVisibility(View.GONE);
+                mRvSearchResults.setVisibility(View.GONE);
+                mPbLoadingResults.smoothToShow();
             }
-        });
 
-        futureResult = callResults.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (!future.isCancelled()) {
-                        final String result = future.get(30, TimeUnit.SECONDS);
+            future = tpe.submit(new Callable<String>() {
+                public String call() throws Exception {
+                    HashMap<String, Object> params = new HashMap<>();
+                    params.put("search", searchWith);
+                    params.put("skip", page);
+                    try {
+                        return ParseCloud.callFunction("searchBusiness", params);
+                    } catch (ParseException e) {
+                        AppActions.validateParseException(getApplicationContext(), e);
+                        Logger.error("Future task error: ", e.getMessage());
+                        return "";
+                    }
+                }
+            });
+
+            futureResult = callResults.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (!future.isCancelled()) {
+                            final String result = future.get(30, TimeUnit.SECONDS);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showResults(result, false);
+                                }
+                            });
+                        }
+                    } catch (InterruptedException|ExecutionException|TimeoutException e) {
+                        Logger.error("Future task result error: ", e.getMessage());
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                showResults(result, false, skip);
+                                showResults("", true);
                             }
                         });
                     }
-                } catch (InterruptedException|ExecutionException|TimeoutException e) {
-                    Logger.error("Future task result error: ", e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showResults("", true, 0);
-                        }
-                    });
                 }
-            }
-        });
+            });
+        } else {
+            // Internet connection warning
+            //mPbLoadingCategory.smoothToHide();
+            //mRvBusiness.setVisibility(View.GONE);
+            //mRlNoConnection.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void showResults(String response, boolean error, int skip) {
-        JSONObject jsonRootObject;
+    private void showResults(String response, boolean error) {
+        if (page == 0) {
+            mPbLoadingResults.smoothToHide();
+        }
+
+        if (loadingPage) {
+            loadingPage = false;
+            mBusinessListAdapter.addLoad(false);
+        }
+
         boolean toJSONError = false;
 
         try {
             if (!error) {
-                jsonRootObject = new JSONObject(response);
+                JSONObject jsonRootObject = new JSONObject(response);
                 JSONArray results = jsonRootObject.optJSONArray("results");
                 int size = results.length();
 
-                if (size == 0) {
-                    mBusinessListAdapter.clear();
-                    return;
-                }
-
                 List<Object> allResults = new ArrayList<>(size);
 
-                if (skip == 0) {
+                if (page == 0) {
                     allResults.add(new nHeaderTitle(getString(R.string.searches_top_results_title), 0));
                 }
 
@@ -228,18 +285,24 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                     allResults.add(business);
                 }
 
-                if (skip == 0) {
-                    mBusinessListAdapter.setSearches(allResults, true);
+                if (size > 0) {
+                    if (size < 20) {
+                        loadMore = false;
+                    }
+
+                    mBusinessListAdapter.addSearches(allResults);
                 } else {
-                    //mBusinessListAdapter.addLocalItems(allResults, true);
+                    if (page == 0) {
+                        // Show empty view
+                    }
+                    loadMore = false;
                 }
+
+                page++;
             }
         } catch (JSONException e) {
             toJSONError = true;
         } finally {
-            mPbLoadingResults.smoothToHide();
-            isLoading = false;
-
             if (error || toJSONError) {
                 // Clear all results and show error
                 mLlNoResultsContainer.setVisibility(View.GONE);
@@ -328,21 +391,19 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
     };
 
     private void showRecents() {
-        if (!isLoading) {
-            if (recentList.size() > 1) {
-                mBusinessListAdapter.setRecents(recentList);
-                mPbLoadingResults.smoothToHide();
+        if (recentList.size() > 1) {
+            mBusinessListAdapter.addRecents(recentList);
+            mPbLoadingResults.smoothToHide();
 
-                if (mRvSearchResults.getVisibility() != View.VISIBLE) {
-                    mLlNoResultsContainer.setVisibility(View.GONE);
-                    mLlErrorContainer.setVisibility(View.GONE);
-                    mRvSearchResults.setVisibility(View.VISIBLE);
-                }
-            } else {
+            if (mRvSearchResults.getVisibility() != View.VISIBLE) {
                 mLlNoResultsContainer.setVisibility(View.GONE);
                 mLlErrorContainer.setVisibility(View.GONE);
-                mRvSearchResults.setVisibility(View.GONE);
+                mRvSearchResults.setVisibility(View.VISIBLE);
             }
+        } else {
+            mLlNoResultsContainer.setVisibility(View.GONE);
+            mLlErrorContainer.setVisibility(View.GONE);
+            mRvSearchResults.setVisibility(View.GONE);
         }
     }
 

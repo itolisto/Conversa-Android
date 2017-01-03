@@ -12,6 +12,7 @@ import ee.app.conversa.R;
 import ee.app.conversa.holders.BaseHolder;
 import ee.app.conversa.holders.BusinessViewHolder;
 import ee.app.conversa.holders.HeaderViewHolder;
+import ee.app.conversa.holders.LoaderViewHolder;
 import ee.app.conversa.interfaces.OnBusinessClickListener;
 import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.model.database.dbBusiness;
@@ -27,6 +28,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
 
     private final int HEADER_TYPE = 1;
     private final int BUSINESS_TYPE = 2;
+    private final int LOAD_TYPE = 3;
 
     public BusinessAdapter(AppCompatActivity activity, OnBusinessClickListener listener) {
         this.mActivity = activity;
@@ -42,7 +44,14 @@ public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return (mBusiness.get(position) instanceof nHeaderTitle) ? HEADER_TYPE : BUSINESS_TYPE;
+        Object object = mBusiness.get(position);
+        if (object instanceof nHeaderTitle) {
+            return HEADER_TYPE;
+        } else if (object instanceof Business || object instanceof dbBusiness) {
+            return BUSINESS_TYPE;
+        } else {
+            return LOAD_TYPE;
+        }
     }
 
     @Override
@@ -52,15 +61,20 @@ public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
 
     @Override
     public BaseHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == BUSINESS_TYPE) {
+        if (viewType == HEADER_TYPE) {
+            return new HeaderViewHolder(
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.category_header, parent, false),
+                    this.mActivity);
+        } else if (viewType == BUSINESS_TYPE) {
             return new BusinessViewHolder(
                     LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.business_item, parent, false),
                     this.mActivity);
         } else {
-            return new HeaderViewHolder(
+            return new LoaderViewHolder(
                     LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.category_header, parent, false),
+                            .inflate(R.layout.loader_item, parent, false),
                     this.mActivity);
         }
     }
@@ -73,46 +87,43 @@ public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
             ((BusinessViewHolder) holder).setBusiness(object, listener);
         } else if (object.getClass().equals(dbBusiness.class)) {
             ((BusinessViewHolder) holder).setBusiness(object, localListener);
-        } else {
+        } else if (object.getClass().equals(nHeaderTitle.class)) {
             ((HeaderViewHolder) holder).setHeaderTitle(((nHeaderTitle) object).getHeaderName());
         }
     }
 
-    public void setRecents(List<Object> business) {
+    public void addLoad(boolean show) {
+        int position = mBusiness.size();
+        if (show) {
+            mBusiness.add(position, new Object());
+            notifyItemInserted(position);
+        } else {
+            mBusiness.remove(position - 1);
+            notifyItemRemoved(position - 1);
+        }
+    }
+
+    public void addRecents(List<Object> business) {
         mBusiness.clear();
         mBusiness.addAll(business);
         notifyDataSetChanged();
     }
 
-    public void setSearches(List<Object> business, boolean clear) {
-        if (clear) {
-            mBusiness.clear();
-        }
-
+    public void addSearches(List<Object> business) {
         int position = mBusiness.size();
         mBusiness.addAll(business);
-
-        if (clear) {
-            this.notifyDataSetChanged();
-        } else {
-            this.notifyItemRangeInserted(position, business.size());
-        }
+        notifyItemRangeInserted(position, business.size());
     }
 
-    public void addItems(List<Business> business, boolean addLoadMoreCell) {
+    public void addItems(List<Business> business) {
         mBusiness.addAll(business);
-        this.notifyItemRangeInserted(mBusiness.size(), business.size());
-    }
-
-    public void addLocalItems(List<dbBusiness> business, boolean addLoadMoreCell) {
-        mBusiness.addAll(business);
-        this.notifyItemRangeInserted(mBusiness.size(), business.size());
+        notifyItemRangeInserted(mBusiness.size(), business.size());
     }
 
     public void clear() {
         int size = mBusiness.size();
         mBusiness.clear();
-        this.notifyItemRangeRemoved(0, size);
+        notifyItemRangeRemoved(0, size);
     }
 
 }

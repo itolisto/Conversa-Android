@@ -37,15 +37,13 @@ public class ActivityBusiness extends ConversaActivity implements OnBusinessClic
     private RelativeLayout mRlNoConnection;
     private AVLoadingIndicatorView mPbLoadingCategory;
     private RecyclerView mRvBusiness;
-
     private BusinessAdapter mBusinessListAdapter;
 
     private String categoryId;
-    private int page;
 
-    public ActivityBusiness() {
-        page = 0;
-    }
+    private int page;
+    private boolean loadingPage;
+    private boolean loadMore;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,36 +57,49 @@ public class ActivityBusiness extends ConversaActivity implements OnBusinessClic
     protected void initialization() {
         super.initialization();
 
-        if (getIntent().getExtras().containsKey(Const.kObjectRowObjectIdKey)) {
-            categoryId = getIntent().getExtras().getString(Const.kObjectRowObjectIdKey);
-        }
-
-        String title = "";
-
-        if (getIntent().getExtras().containsKey(Const.kClassCategory)) {
-            title = getIntent().getExtras().getString(Const.kClassCategory);
-        }
+        categoryId = getIntent().getExtras().getString(Const.kObjectRowObjectIdKey);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(title);
+            actionBar.setTitle(getIntent().getExtras().getString(Const.kClassCategory));
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        page = 0;
+        loadingPage = false;
+        loadMore = true;
 
         mRlNoConnection = (RelativeLayout) findViewById(R.id.rlNoConnection);
         mPbLoadingCategory = (AVLoadingIndicatorView) findViewById(R.id.pbLoadingCategory);
         mRvBusiness = (RecyclerView) findViewById(R.id.rvBusiness);
 
-        mBusinessListAdapter= new BusinessAdapter(this, this);
+        mBusinessListAdapter = new BusinessAdapter(this, this);
         mRvBusiness.setHasFixedSize(true);
         mRvBusiness.setLayoutManager(new LinearLayoutManager(this));
         mRvBusiness.setAdapter(mBusinessListAdapter);
         mRvBusiness.setItemAnimator(new DefaultItemAnimator());
+        mRvBusiness.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                // 1. If load more is true retrieve more messages otherwise skip
+                if (loadMore) {
+                    final int lastVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager())
+                            .findLastCompletelyVisibleItemPosition();
+                    final int totalItemCount = recyclerView.getLayoutManager().getItemCount();
 
-        page = 0;
+                    // 2. Check if app isn't checking for new messages and last visible item is on the top
+                    if (!loadingPage && lastVisibleItem == (totalItemCount - 1)) {
+                        loadingPage = true;
+                        mBusinessListAdapter.addLoad(true);
+                        getBusinessByCategoryAsync();
+                    }
+                }
+            }
+        });
+
         getBusinessByCategoryAsync();
     }
 
@@ -104,73 +115,80 @@ public class ActivityBusiness extends ConversaActivity implements OnBusinessClic
 
     private void getBusinessByCategoryAsync() {
         if (hasInternetConnection()) {
-            if(TextUtils.isEmpty(categoryId)) {
-                // This should never happen
-                mRlNoConnection.setVisibility(View.GONE);
-                mPbLoadingCategory.smoothToHide();
-                mRvBusiness.setVisibility(View.GONE);
-            } else {
-                ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
-                Collection<String> collection = new ArrayList<>();
-                collection.add(Const.kBusinessCategoryBusinessKey);
-                query.selectKeys(collection);
-
-                String cat = Const.kBusinessCategoryBusinessKey.concat(".").concat(Const.kBusinessBusinessInfoKey);
-                query.include(cat);
-                query.whereEqualTo(Const.kBusinessCategoryCategoryKey, ParseObject.createWithoutData(bCategory.class, categoryId));
-                query.whereEqualTo(Const.kBusinessCategoryActiveKey, true);
-
-                ParseQuery<Business> param1 = ParseQuery.getQuery(Business.class);
-                param1.whereEqualTo(Const.kBusinessActiveKey, true);
-                param1.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
-                param1.whereDoesNotExist(Const.kBusinessBusinessKey);
-
-                query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
-                query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
-                query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
-                query.setLimit(25);
-                query.setSkip(page * 25);
-
+            if (page == 0)
                 mPbLoadingCategory.smoothToShow();
 
-                query.findInBackground(new FindCallback<BusinessCategory>() {
+            ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
+            Collection<String> collection = new ArrayList<>();
+            collection.add(Const.kBusinessCategoryBusinessKey);
+            query.selectKeys(collection);
 
-                    @Override
-                    public void done(List<BusinessCategory> objects, ParseException e) {
-                        if (e != null) {
-                            AppActions.validateParseException(getApplicationContext(), e);
-                        }
+            String cat = Const.kBusinessCategoryBusinessKey.concat(".").concat(Const.kBusinessBusinessInfoKey);
+            query.include(cat);
+            query.whereEqualTo(Const.kBusinessCategoryCategoryKey, ParseObject.createWithoutData(bCategory.class, categoryId));
+            query.whereEqualTo(Const.kBusinessCategoryActiveKey, true);
 
-                        if (objects != null && objects.size() > 0) {
+            ParseQuery<Business> param1 = ParseQuery.getQuery(Business.class);
+            param1.whereEqualTo(Const.kBusinessActiveKey, true);
+            param1.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
+            param1.whereDoesNotExist(Const.kBusinessBusinessKey);
+
+            query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
+            query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
+            query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
+            query.setLimit(20);
+            query.setSkip(page * 20);
+
+            query.findInBackground(new FindCallback<BusinessCategory>() {
+
+                @Override
+                public void done(List<BusinessCategory> objects, ParseException e) {
+                    if (page == 0)
+                        mPbLoadingCategory.smoothToHide();
+
+                    if (loadingPage) {
+                        loadingPage = false;
+                        mBusinessListAdapter.addLoad(false);
+                    }
+
+                    if (e != null) {
+                        // Error view
+                        AppActions.validateParseException(getApplicationContext(), e);
+                    } else {
+                        final int size = objects.size();
+
+                        if (size > 0) {
                             List<Business> business = new ArrayList<>(objects.size());
-                            final int size = objects.size();
 
                             for (int i = 0; i < size; i++) {
                                 business.add(objects.get(i).getBusiness());
                             }
 
-                            boolean add = (size == 15);
-                            mBusinessListAdapter.addItems(business, add);
+                            if (size < 20) {
+                                loadMore = false;
+                            }
 
-                            mPbLoadingCategory.smoothToHide();
+                            mBusinessListAdapter.addItems(business);
 
                             if (mRlNoConnection.getVisibility() == View.VISIBLE) {
                                 mRlNoConnection.setVisibility(View.GONE);
                             }
 
-                            if(page == 0) {
+                            if (page == 0) {
                                 mRvBusiness.setVisibility(View.VISIBLE);
                             }
-
-                            page++;
                         } else {
-                            mPbLoadingCategory.smoothToHide();
+                            if (page == 0) {
+                                // Empty view
+                            }
+                            loadMore = false;
                         }
+
+                        page++;
                     }
-                });
-            }
+                }
+            });
         } else {
-            mPbLoadingCategory.smoothToHide();
             mRvBusiness.setVisibility(View.GONE);
             mRlNoConnection.setVisibility(View.VISIBLE);
         }
