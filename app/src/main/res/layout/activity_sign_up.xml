@@ -3,7 +3,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
-	android:background="@color/default_white"
+	android:background="@android:color/white"
 	tools:context="ee.app.conversa.ActivitySignUp" >
 
 	<RelativeLayout
@@ -24,7 +24,7 @@
 			android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true"
 			android:layout_gravity="center_horizontal"
-			android:textColor="@color/default_black"
+			android:textColor="@color/black"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
 
@@ -47,10 +47,11 @@
 				android:layout_height="wrap_content"
 				android:gravity="bottom"
 				android:hint="@string/email"
+				android:imeOptions="actionNext"
 				android:textCursorDrawable="@null"
 				android:inputType="textEmailAddress"
-				android:textColor="@color/default_black"
-				android:textColorHint="@color/default_gray"
+				android:textColor="@color/black"
+				android:textColorHint="@color/gray"
 				android:textSize="14sp" />
 		</android.support.design.widget.TextInputLayout>
 
@@ -72,10 +73,11 @@
 				android:layout_height="wrap_content"
 				android:gravity="bottom"
 				android:hint="@string/password"
+				android:imeOptions="actionNext"
 				android:textCursorDrawable="@null"
 				android:inputType="textPassword"
-				android:textColor="@color/default_black"
-				android:textColorHint="@color/default_gray"
+				android:textColor="@color/black"
+				android:textColorHint="@color/gray"
 				android:textSize="14sp" />
 		</android.support.design.widget.TextInputLayout>
 
@@ -101,8 +103,8 @@
 				android:textCursorDrawable="@null"
 				android:inputType="none"
 				android:clickable="true"
-				android:textColor="@color/default_black"
-				android:textColorHint="@color/default_gray"
+				android:textColor="@color/black"
+				android:textColorHint="@color/gray"
 				android:textSize="14sp" />
 		</android.support.design.widget.TextInputLayout>
 
@@ -163,7 +165,7 @@
 			android:text="@string/signup_warning"
 			android:layout_centerHorizontal="true"
 			android:layout_below="@id/btnSignUpUp"
-			android:textColor="@color/default_gray"/>
+			android:textColor="@color/gray"/>
 
 		<include layout="@layout/no_internet_notification"
 			android:id="@+id/rlNoInternetNotification"

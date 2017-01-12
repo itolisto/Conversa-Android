@@ -88,7 +88,9 @@ public class AvatarJob extends Job {
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
         if (throwable instanceof IOException) {
             Logger.error(TAG, "Image download error: " + throwable.getMessage());
-            return RetryConstraint.createExponentialBackoff(runCount, 1000);
+            RetryConstraint rtn = RetryConstraint.createExponentialBackoff(runCount, 1000);
+            rtn.setNewPriority(Priority.MID);
+            return rtn;
         }
 
         return RetryConstraint.CANCEL;

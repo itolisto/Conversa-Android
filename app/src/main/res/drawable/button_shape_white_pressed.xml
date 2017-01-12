@@ -5,5 +5,5 @@
 	<size android:width="5dp"
 		android:height="1dp" />
 	<stroke android:width="2dp"
-		android:color="@color/default_green" />
+		android:color="@color/green" />
 </shape>

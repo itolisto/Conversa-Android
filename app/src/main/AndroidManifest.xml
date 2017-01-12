@@ -182,7 +182,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAwg-G3VTF0jS_dyyTcfdZ6pDA2UK9rgYQ" />
+            android:value="AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY" />
 
         <meta-data
             android:name="io.branch.sdk.BranchKey"

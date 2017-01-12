@@ -30,10 +30,6 @@ import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Logger;
 
-import static com.parse.ParseException.CONNECTION_FAILED;
-import static com.parse.ParseException.INTERNAL_SERVER_ERROR;
-import static com.parse.ParseException.INVALID_SESSION_TOKEN;
-
 /**
  * Created by edgargomez on 9/6/16.
  */
@@ -86,7 +82,17 @@ public class ReceiveMessageJob extends Job {
             collection.add(Const.kBusinessAvatarKey);
             query.selectKeys(collection);
 
-            Business customer = query.get(contactId);
+            Business customer;
+
+            try {
+                customer = query.get(contactId);
+            } catch (ParseException e) {
+                if (AppActions.validateParseException(e)) {
+                    AppActions.appLogout(getApplicationContext(), true);
+                }
+
+                return;
+            }
 
             // 3. If Customer was found, save to Local Database
             dbbusiness = new dbBusiness();
@@ -121,28 +127,30 @@ public class ReceiveMessageJob extends Job {
         dbmessage.setFromUserId(contactId);
         dbmessage.setToUserId(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountCustomerId());
         dbmessage.setMessageType(messageType);
-        dbmessage.setDeliveryStatus(DeliveryStatus.statusAllDelivered);
+        dbmessage.setDeliveryStatus(DeliveryStatus.statusReceived);
         dbmessage.setMessageId(messageId);
 
         switch (messageType) {
             case Const.kMessageTypeText:
                 dbmessage.setBody(additionalData.optString("message", ""));
                 break;
+            case Const.kMessageTypeLocation:
+                dbmessage.setLatitude((float) additionalData.optDouble("latitude", 0));
+                dbmessage.setLongitude((float) additionalData.optDouble("longitude", 0));
+                break;
             case Const.kMessageTypeAudio:
             case Const.kMessageTypeVideo:
+                dbmessage.setDeliveryStatus(DeliveryStatus.statusDownloading);
                 dbmessage.setBytes(additionalData.optInt("size", 0));
                 dbmessage.setDuration(additionalData.optInt("duration", 0));
                 dbmessage.setRemoteUrl(additionalData.optString("file", ""));
                 break;
             case Const.kMessageTypeImage:
+                dbmessage.setDeliveryStatus(DeliveryStatus.statusDownloading);
                 dbmessage.setBytes(additionalData.optInt("size", 0));
                 dbmessage.setWidth(additionalData.optInt("width", 0));
                 dbmessage.setHeight(additionalData.optInt("height", 0));
                 dbmessage.setRemoteUrl(additionalData.optString("file", ""));
-                break;
-            case Const.kMessageTypeLocation:
-                dbmessage.setLatitude((float) additionalData.optDouble("latitude", 0));
-                dbmessage.setLongitude((float) additionalData.optDouble("longitude", 0));
                 break;
         }
 
@@ -203,29 +211,7 @@ public class ReceiveMessageJob extends Job {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        if (throwable instanceof ParseException) {
-            ParseException exception = (ParseException) throwable;
-            Logger.error(TAG, exception.getMessage());
-            AppActions.validateParseException(getApplicationContext(), exception);
-
-            if (exception.getCode() == INTERNAL_SERVER_ERROR ||
-                    exception.getCode() == CONNECTION_FAILED)
-            {
-                // An error occurred in onRun.
-                // Return value determines whether this job should retry or cancel. You can further
-                // specify a backoff strategy or change the job's priority. You can also apply the
-                // delay to the whole group to preserve jobs' running order.
-                RetryConstraint rtn = RetryConstraint.createExponentialBackoff(runCount, 1000);
-                rtn.setNewPriority(Priority.MID);
-                return rtn;
-            } else if (exception.getCode() == INVALID_SESSION_TOKEN) {
-                return RetryConstraint.CANCEL;
-            } else {
-                return RetryConstraint.CANCEL;
-            }
-        }
-
-        return RetryConstraint.RETRY;
+        return RetryConstraint.CANCEL;
     }
 
 }

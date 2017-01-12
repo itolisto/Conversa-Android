@@ -212,8 +212,10 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                     try {
                         return ParseCloud.callFunction("searchBusiness", params);
                     } catch (ParseException e) {
-                        AppActions.validateParseException(getApplicationContext(), e);
                         Logger.error("Future task error: ", e.getMessage());
+                        if (AppActions.validateParseException(e)) {
+                            AppActions.appLogout(getApplicationContext(), true);
+                        }
                         return "";
                     }
                 }
@@ -299,9 +301,12 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                 }
 
                 page++;
+            } else {
+                loadMore = false;
             }
         } catch (JSONException e) {
             toJSONError = true;
+            loadMore = false;
         } finally {
             if (error || toJSONError) {
                 // Clear all results and show error

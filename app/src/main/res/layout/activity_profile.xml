@@ -57,7 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
-                        android:textColor="@color/default_black" />
+                        android:textColor="@color/black" />
 
                     <ee.app.conversa.view.RegularTextView
                         android:maxLines="1"
@@ -69,7 +69,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
-                        android:textColor="@color/default_black"
+                        android:textColor="@color/black"
                         android:layout_below="@id/mtvBusinessName" />
 
                     <ee.app.conversa.view.RegularTextView
@@ -81,7 +81,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_below="@id/rtvConversaId"
-                        android:textColor="@color/default_black"
+                        android:textColor="@color/black"
                         android:text="@string/number_of_followers" />
 
                     <ee.app.conversa.view.RegularTextView
@@ -93,7 +93,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
-                        android:textColor="@color/default_black"
+                        android:textColor="@color/black"
                         android:layout_below="@id/rtvFollowersTitle" />
 
                     <ImageButton

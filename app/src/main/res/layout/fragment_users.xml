@@ -21,7 +21,7 @@
         <ee.app.conversa.view.MediumTextView
             android:id="@+id/tvNoMessages"
             android:text="@string/no_messages"
-            android:textColor="@color/default_gray"
+            android:textColor="@color/gray"
             android:layout_above="@id/vDivider"
             android:layout_centerHorizontal="true"
             android:textSize="24sp"
@@ -42,7 +42,7 @@
         <ee.app.conversa.view.LightTextView
             android:id="@+id/tvNoMessagesDescription"
             android:text="@string/no_messages_description_one"
-            android:textColor="@color/default_gray"
+            android:textColor="@color/gray"
             android:textSize="14sp"
             android:gravity="center"
             android:layout_below="@id/vDivider"
@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:text="@string/start_browsing"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/default_green"
+            android:textColor="@color/green"
             android:background="@drawable/border_textview"
             android:layout_below="@id/tvNoMessagesDescription" />
     </RelativeLayout>

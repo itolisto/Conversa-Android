@@ -48,7 +48,7 @@ public class CategoryViewHolder extends BaseHolder {
         if (category.getRemoveDividerMargin()) {
             params.setMargins(0, 0, 0, 0);
         } else {
-            params.setMargins(Utils.dpToPixels(activity, 35), 0, 0, 0);
+            params.setMargins(Utils.dpToPixels(activity, 97), 0, 0, 0);
         }
 
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);

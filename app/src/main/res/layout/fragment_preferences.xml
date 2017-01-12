@@ -169,12 +169,12 @@
             android:layout_height="@dimen/settings_divider_height" />
         <RelativeLayout
             android:background="?android:attr/selectableItemBackground"
-            android:id="@+id/rlShareContainer"
+            android:id="@+id/rlHelpContainer"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight">
             <ImageView
-                android:src="@drawable/ic_share_setting"
-                android:id="@+id/ivShareAccount"
+                android:src="@drawable/ic_help"
+                android:id="@+id/ivHelpAccount"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
@@ -183,9 +183,9 @@
             <ee.app.conversa.view.RegularTextView
                 android:layout_marginLeft="7dp"
                 android:layout_marginStart="7dp"
-                android:layout_toEndOf="@id/ivShareAccount"
-                android:layout_toRightOf="@id/ivShareAccount"
-                android:text="@string/preferences__share"
+                android:layout_toEndOf="@id/ivHelpAccount"
+                android:layout_toRightOf="@id/ivHelpAccount"
+                android:text="@string/preferences__help"
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -207,12 +207,12 @@
             android:layout_height="@dimen/settings_divider_height" />
         <RelativeLayout
             android:background="?android:attr/selectableItemBackground"
-            android:id="@+id/rlHelpContainer"
+            android:id="@+id/rlShareContainer"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight">
             <ImageView
-                android:src="@drawable/ic_help"
-                android:id="@+id/ivHelpAccount"
+                android:src="@drawable/ic_share_setting"
+                android:id="@+id/ivShareAccount"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
@@ -221,9 +221,9 @@
             <ee.app.conversa.view.RegularTextView
                 android:layout_marginLeft="7dp"
                 android:layout_marginStart="7dp"
-                android:layout_toEndOf="@id/ivHelpAccount"
-                android:layout_toRightOf="@id/ivHelpAccount"
-                android:text="@string/preferences__help"
+                android:layout_toEndOf="@id/ivShareAccount"
+                android:layout_toRightOf="@id/ivShareAccount"
+                android:text="@string/preferences__share"
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

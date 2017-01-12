@@ -20,11 +20,12 @@
 
             <ee.app.conversa.view.BoldTextView
                 android:text="@string/sett_account_info_title"
+                android:textAllCaps="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <View
-                android:background="@color/default_black"
+                android:background="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_title_divider_height" />
 
@@ -115,17 +116,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
+                    android:textColor="@color/light_gray"
+                    android:text="@string/sett_account_password_alert_title"
                     android:layout_toEndOf="@id/mtvPassword"
                     android:layout_toRightOf="@id/mtvPassword" />
             </RelativeLayout>
 
             <ee.app.conversa.view.BoldTextView
                 android:text="@string/sett_account_privacy_title"
+                android:textAllCaps="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <View
-                android:background="@color/default_black"
+                android:background="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_title_divider_height" />
 
@@ -167,7 +171,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:textColor="@color/default_red"
+                    android:textColor="@color/red"
                     android:text="@string/sett_account_logout_title" />
             </RelativeLayout>
         </LinearLayout>

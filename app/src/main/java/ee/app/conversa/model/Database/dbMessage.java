@@ -29,8 +29,9 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import ee.app.conversa.messaging.MessageIntentService;
 import ee.app.conversa.actions.MessageAction;
+import ee.app.conversa.delivery.DeliveryStatus;
+import ee.app.conversa.messaging.MessageIntentService;
 
 /**
  * dbMessage
@@ -43,7 +44,7 @@ public class dbMessage implements Parcelable {
 	private String mFromUserId;
 	private String mToUserId;
 	private String mMessageType;
-	private String mDeliveryStatus;
+	private int mDeliveryStatus;
 	private String mBody;
 	private String mLocalUrl;
 	private String mRemoteUrl;
@@ -64,7 +65,7 @@ public class dbMessage implements Parcelable {
 		this.mFromUserId = null;
 		this.mToUserId = null;
 		this.mMessageType = null;
-		this.mDeliveryStatus = null;
+		this.mDeliveryStatus = DeliveryStatus.statusUploading;
 		this.mBody = null;
 		this.mLocalUrl = null;
 		this.mRemoteUrl = null;
@@ -85,7 +86,7 @@ public class dbMessage implements Parcelable {
 	public String getFromUserId() { return mFromUserId; }
 	public String getToUserId() { return mToUserId; }
 	public String getMessageType() { return mMessageType; }
-	public String getDeliveryStatus() { return mDeliveryStatus; }
+	public int getDeliveryStatus() { return mDeliveryStatus; }
 	public String getBody() { return mBody; }
 	public String getLocalUrl() { return mLocalUrl; }
 	public String getRemoteUrl() { return mRemoteUrl; }
@@ -105,7 +106,7 @@ public class dbMessage implements Parcelable {
 	public void setFromUserId(String fromUserId) { this.mFromUserId = fromUserId; }
 	public void setToUserId(String toUserId) { this.mToUserId = toUserId; }
 	public void setMessageType(String type) { this.mMessageType = type; }
-	public void setDeliveryStatus(String status) { this.mDeliveryStatus = status; }
+	public void setDeliveryStatus(int status) { this.mDeliveryStatus = status; }
 	public void setBody(String body) { this.mBody = body; }
 	public void setLocalUrl(String mFileId) { this.mLocalUrl = mFileId; }
 	public void setRemoteUrl(String mRemoteUrl) { this.mRemoteUrl = mRemoteUrl; }
@@ -123,23 +124,15 @@ public class dbMessage implements Parcelable {
 
 	/* ******************************************************************************************* */
 	/* ******************************************************************************************* */
-    public void updateMessageStatus(Context context, String status) {
-		if (context == null) {
-			return;
-		}
-
+	public void updateMessageStatus(Context context, int status) {
 		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, this);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageAction.ACTION_MESSAGE_UPDATE_STATUS);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_UPDATE_STATUS, status);
 		context.startService(broadcastIntent);
-    }
+	}
 
     public static void getAllMessageForChat(Context context, String businessId, int count, int skip) {
-		if (context == null) {
-			return;
-		}
-
 		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageAction.ACTION_MESSAGE_RETRIEVE_ALL);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_CONTACT_ID, businessId);
@@ -149,10 +142,6 @@ public class dbMessage implements Parcelable {
     }
 
     public static void updateViewMessages(Context context, String businessId) {
-		if (context == null) {
-			return;
-		}
-
 		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageAction.ACTION_MESSAGE_UPDATE_VIEW);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_CONTACT_ID, businessId);
@@ -172,7 +161,7 @@ public class dbMessage implements Parcelable {
 		dest.writeString(this.mFromUserId);
 		dest.writeString(this.mToUserId);
 		dest.writeString(this.mMessageType);
-		dest.writeString(this.mDeliveryStatus);
+		dest.writeInt(this.mDeliveryStatus);
 		dest.writeString(this.mBody);
 		dest.writeString(this.mLocalUrl);
 		dest.writeString(this.mRemoteUrl);
@@ -194,7 +183,7 @@ public class dbMessage implements Parcelable {
 		this.mFromUserId = in.readString();
 		this.mToUserId = in.readString();
 		this.mMessageType = in.readString();
-		this.mDeliveryStatus = in.readString();
+		this.mDeliveryStatus = in.readInt();
 		this.mBody = in.readString();
 		this.mLocalUrl = in.readString();
 		this.mRemoteUrl = in.readString();

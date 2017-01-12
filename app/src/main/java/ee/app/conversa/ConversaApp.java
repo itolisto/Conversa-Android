@@ -53,9 +53,7 @@ import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.model.parse.BusinessCategory;
-import ee.app.conversa.model.parse.Customer;
 import ee.app.conversa.model.parse.bCategory;
-import ee.app.conversa.model.parse.pMessage;
 import ee.app.conversa.notifications.onesignal.CustomNotificationOpenedHandler;
 import ee.app.conversa.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversa.settings.Preferences;
@@ -180,8 +178,6 @@ public class ConversaApp extends MultiDexApplication {
 		ParseObject.registerSubclass(Account.class);
 		ParseObject.registerSubclass(bCategory.class);
 		ParseObject.registerSubclass(Business.class);
-		ParseObject.registerSubclass(Customer.class);
-		ParseObject.registerSubclass(pMessage.class);
 		ParseObject.registerSubclass(BusinessCategory.class);
 
 		// Initialize Parse.
@@ -280,11 +276,11 @@ public class ConversaApp extends MultiDexApplication {
 	}
 
 	private void initializeTypefaces() {
-		setTfRalewayThin(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf"));
-		setTfRalewayLight(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Light.ttf"));
-		setTfRalewayRegular(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf"));
-		setTfRalewayMedium(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf"));
-		setTfRalewayBold(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf"));
+		mTfRalewayThin = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf");
+		mTfRalewayLight = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Light.ttf");
+		mTfRalewayRegular = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf");
+		mTfRalewayMedium = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf");
+		mTfRalewayBold = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf");
 	}
 
 	/* ************************************************************************************************ */
@@ -335,13 +331,5 @@ public class ConversaApp extends MultiDexApplication {
 	public Typeface getTfRalewayBold() {
 		return mTfRalewayBold;
 	}
-
-    /* ************************************************************************************************ */
-
-	private void setTfRalewayThin(Typeface tfRaleway) { mTfRalewayThin = tfRaleway; }
-    private void setTfRalewayLight(Typeface tfRaleway) { mTfRalewayLight = tfRaleway; }
-    private void setTfRalewayRegular(Typeface tfRaleway) { mTfRalewayRegular = tfRaleway; }
-    private void setTfRalewayMedium(Typeface tfRaleway) { mTfRalewayMedium = tfRaleway; }
-    private void setTfRalewayBold(Typeface tfRaleway) { mTfRalewayBold = tfRaleway; }
 
 }

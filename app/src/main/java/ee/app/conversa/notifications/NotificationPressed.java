@@ -69,7 +69,7 @@ public class NotificationPressed extends AppCompatActivity {
                     intent.putExtra(Const.iExtraBusiness, user);
                     intent.putExtra(Const.iExtraAddBusiness, false);
                     intent.putExtra(Const.kAppVersionKey, count);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 }
                 break;
             default:

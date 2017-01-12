@@ -12,11 +12,11 @@
         <item name="actionModeStyle">@style/MyTheme.ActionMode</item>
         <item name="android:actionModeStyle">@style/MyTheme.ActionMode</item>
 
-        <item name="colorPrimary">@color/default_green</item>
+        <item name="colorPrimary">@color/green</item>
         <!--   darker variant for the status bar and contextual app bars -->
-        <item name="colorPrimaryDark">@color/status_bar_default</item>
+        <item name="colorPrimaryDark">@color/green_darker</item>
         <!--   theme UI controls like checkboxes and text fields e.g. FloatActionButton -->
-        <item name="colorAccent">@color/default_green</item>
+        <item name="colorAccent">@color/green</item>
 
         <!-- Title Text Color -->
         <!--<item name="android:textColorPrimary">@color/my_primary_text</item>-->
@@ -64,19 +64,19 @@
 
     <!-- ToolBar -->
     <style name="ToolBarStyle" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="actionModeBackground">@color/default_green</item>
+        <item name="actionModeBackground">@color/green</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
-        <item name="android:actionModeBackground">@color/default_green</item>
+        <item name="android:actionModeBackground">@color/green</item>
     </style>
 
     <style name="MyTheme.ActionMode" parent="@android:style/Theme.Holo.Light">
-        <item name="actionModeBackground">@color/default_green</item>
-        <item name="android:actionModeBackground">@color/default_green</item>
+        <item name="actionModeBackground">@color/green</item>
+        <item name="android:actionModeBackground">@color/green</item>
     </style>
 
     <style name="MyTheme.Gray" parent="Base.AlertDialog.AppCompat.Light">
-        <item name="colorAccent">@color/default_gray</item>
+        <item name="colorAccent">@color/gray</item>
     </style>
 
     <style name="MyTheme.Blue" parent="AppTheme">

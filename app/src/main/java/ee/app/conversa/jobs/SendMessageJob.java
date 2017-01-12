@@ -97,8 +97,11 @@ public class SendMessageJob extends Job {
             ParseCloud.callFunction("sendUserMessage", params);
             message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusAllDelivered);
         } catch (ParseException e) {
-            message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusParseError);
-            AppActions.validateParseException(getApplicationContext(), e);
+            if (AppActions.validateParseException(e)) {
+                AppActions.appLogout(getApplicationContext(), true);
+            } else {
+                message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusParseError);
+            }
         }
     }
 

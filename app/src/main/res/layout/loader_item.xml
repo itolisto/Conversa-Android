@@ -13,6 +13,6 @@
         android:layout_gravity="center"
         style="@style/AVLoadingIndicatorView"
         app:indicatorName="PacmanIndicator"
-        app:indicatorColor="@color/default_black"/>
+        app:indicatorColor="@color/black"/>
 
 </LinearLayout>

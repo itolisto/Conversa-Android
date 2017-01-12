@@ -152,8 +152,9 @@ public class ActivityBusiness extends ConversaActivity implements OnBusinessClic
                     }
 
                     if (e != null) {
-                        // Error view
-                        AppActions.validateParseException(getApplicationContext(), e);
+                        if (AppActions.validateParseException(e)) {
+                            AppActions.appLogout(getApplicationContext(), true);
+                        }
                     } else {
                         final int size = objects.size();
 

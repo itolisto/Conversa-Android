@@ -73,7 +73,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private SimpleDraweeView ivContactAvatar;
 	private MediumTextView mTitleTextView;
 
-	private Timer timer;
 	private Timer typingTimer;
 
 	public final static int CAMERA_RQ = 6969;
@@ -132,6 +131,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		} else {
 			addAsContact = intent.getBooleanExtra(Const.iExtraAddBusiness, false);
 			itemPosition = intent.getIntExtra(Const.iExtraPosition, -1);
+			typingFlag = false;
 
 			if (business.getBusinessId().equals(businessObject.getBusinessId())) {
 				// Call for new messages
@@ -157,18 +157,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				dbMessage.getAllMessageForChat(this, business.getBusinessId(), 20, 0);
 			}
 		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		startTimer();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		stoptimertask();
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -214,49 +202,11 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		}
 	};
 
-	public void startTimer() {
-		if (loading || timer != null) {
-			return;
-		}
-
-		//set a new Timer
-		timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
-			public void run() {
-				if (gMessagesAdapter != null && mRvWallMessages != null) {
-					final int firstVisibleItem = ((LinearLayoutManager)mRvWallMessages.
-							getLayoutManager()).findFirstCompletelyVisibleItemPosition();
-					final int lastVisibleItem = ((LinearLayoutManager)mRvWallMessages.
-							getLayoutManager()).findLastCompletelyVisibleItemPosition();
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							gMessagesAdapter.updateTime(firstVisibleItem,
-									(lastVisibleItem - firstVisibleItem) + 1);
-						}
-					});
-				}
-			}
-		}, 0, 60000);
-	}
-
-	public void restartTimer() {
-		stoptimertask();
-		startTimer();
-	}
-
-	public void stoptimertask() {
-		//stop the timer, if it's not already null
-		if (timer != null) {
-			timer.cancel();
-			timer = null;
-		}
-	}
-
 	@Override
 	@SuppressWarnings("ConstantConditions")
 	protected void initialization() {
 		super.initialization();
+
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		mTitleTextView = (MediumTextView) toolbar.findViewById(R.id.tvChatName);
 		FrameLayout mBackButton = (FrameLayout) toolbar.findViewById(R.id.flBack);
@@ -290,22 +240,21 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				ConversaApp.getInstance(this).getPreferences().getAccountCustomerId(),
 				this);
 		LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-		manager.setReverseLayout(true);
 		mRvWallMessages.setLayoutManager(manager);
 		mRvWallMessages.setOnTouchListener(this);
+		mRvWallMessages.setAdapter(gMessagesAdapter);
 		mRvWallMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-				final int lastVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager())
-						.findLastCompletelyVisibleItemPosition();
-				final int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+				// 1. If load more is true retrieve more messages otherwise skip
+				if (loadMore) {
+					final int lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager())
+							.findFirstCompletelyVisibleItemPosition();
+					final int totalItemCount = recyclerView.getLayoutManager().getItemCount();
 
-				// 1. Check if app isn't checking for new messages and last visible item is on the top
-				if (!loading && lastVisibleItem == (totalItemCount - 1)) {
-					// 2. If load more is true retrieve more messages otherwise skip
-					if (loadMore) {
+					// 2. Check if app isn't checking for new messages and last visible item is on the top
+					if (!loading && lastVisibleItem == 0) {
 						gMessagesAdapter.addLoad(true);
-						mRvWallMessages.scrollToPosition(totalItemCount);
 						new Handler().postDelayed(new Runnable() {
 							@Override
 							public void run() {
@@ -318,8 +267,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				}
 			}
 		});
-
-		mRvWallMessages.setAdapter(gMessagesAdapter);
 
 		mBtnWallSend.setOnClickListener(this);
 		mBtnOpenSlidingDrawer.setOnClickListener(this);
@@ -527,16 +474,18 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				gMessagesAdapter.setMessages(messages);
 				// As this is the first time we load messages, change visibility
 				mRvWallMessages.setVisibility(View.VISIBLE);
+				mRvWallMessages.scrollToPosition(gMessagesAdapter.getItemCount() - 1);
 			}
 
 			// Check if we need to load more messages
 			if (messages.size() < 20) {
 				loadMore = false;
 			}
+
 		} else {
 			if (newMessagesFromNewIntent) {
 				newMessagesFromNewIntent = false;
-				gMessagesAdapter.addMessages(messages, 0);
+				gMessagesAdapter.addMessages(messages);
 			} else {
 				gMessagesAdapter.addLoad(false);
 
@@ -551,11 +500,10 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		// 2. Set loading as completed
 		loading = false;
-		startTimer();
 	}
 
 	@Override
-	public void MessageSent(dbMessage response) {
+	public void MessageSent(dbMessage message) {
 		// 1. Check visibility
 		if (mRvWallMessages.getVisibility() == View.GONE) {
 			mRvWallMessages.setVisibility(View.VISIBLE);
@@ -571,8 +519,10 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		}
 
 		// 3. Add message to adapter
-		gMessagesAdapter.addMessage(response);
-		mRvWallMessages.scrollToPosition(0);
+		int visibleItemCount = mRvWallMessages.getChildCount();
+		int firstVisibleItem = ((LinearLayoutManager) mRvWallMessages.getLayoutManager()).findFirstVisibleItemPosition();
+		gMessagesAdapter.addMessage(message, firstVisibleItem, visibleItemCount);
+		mRvWallMessages.scrollToPosition(gMessagesAdapter.getItemCount() - 1);
 	}
 
 	@Override
@@ -614,8 +564,10 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			}
 
 			// 3. Add to adapter
-			gMessagesAdapter.addMessage(message);
-			mRvWallMessages.scrollToPosition(0);
+			int visibleItemCount = mRvWallMessages.getChildCount();
+			int firstVisibleItem = ((LinearLayoutManager) mRvWallMessages.getLayoutManager()).findFirstVisibleItemPosition();
+			gMessagesAdapter.addMessage(message, firstVisibleItem, visibleItemCount);
+			mRvWallMessages.scrollToPosition(gMessagesAdapter.getItemCount() - 1);
 
 			// 4. Update is typing
 			onTypingMessage(businessObject.getBusinessId(), false);
@@ -627,14 +579,12 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	@Override
 	public void onTypingMessage(String from, boolean isTyping) {
 		if (from.equals(businessObject.getBusinessId())) {
+			if (typingTimer != null) {
+				typingTimer.cancel();
+				typingTimer = null;
+			}
+
 			if (isTyping) {
-				showIsTyping(true);
-
-				if (typingTimer != null) {
-					typingTimer.cancel();
-					typingTimer = null;
-				}
-
 				typingTimer = new Timer();
 				typingTimer.schedule(new TimerTask() {
 					public void run() {
@@ -646,14 +596,9 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 						});
 					}
 				}, 6000);
-			} else {
-				if (typingTimer != null) {
-					typingTimer.cancel();
-					typingTimer = null;
-				}
-
-				showIsTyping(false);
 			}
+
+			showIsTyping(isTyping);
 		}
 	}
 

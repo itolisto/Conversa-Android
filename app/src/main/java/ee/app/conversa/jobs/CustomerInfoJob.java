@@ -21,10 +21,6 @@ import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
 
-import static com.parse.ParseException.CONNECTION_FAILED;
-import static com.parse.ParseException.INTERNAL_SERVER_ERROR;
-import static com.parse.ParseException.INVALID_SESSION_TOKEN;
-
 /**
  * Created by edgargomez on 10/12/16.
  */
@@ -79,29 +75,19 @@ public class CustomerInfoJob extends Job {
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
         if (throwable instanceof ParseException) {
-            ParseException exception = (ParseException) throwable;
-            Logger.error(TAG, exception.getMessage());
-
-            if (exception.getCode() == INTERNAL_SERVER_ERROR ||
-                    exception.getCode() == CONNECTION_FAILED)
-            {
-                // An error occurred in onRun.
-                // Return value determines whether this job should retry or cancel. You can further
-                // specify a backoff strategy or change the job's priority. You can also apply the
-                // delay to the whole group to preserve jobs' running order.
-                RetryConstraint rtn = RetryConstraint.createExponentialBackoff(runCount, 1000);
-                rtn.setNewPriority(Priority.MID);
-                return rtn;
-            } else if (exception.getCode() == INVALID_SESSION_TOKEN) {
-                AppActions.validateParseException(getApplicationContext(), exception);
-                return RetryConstraint.CANCEL;
-            } else {
-                AppActions.validateParseException(getApplicationContext(), exception);
+            if (AppActions.validateParseException((ParseException) throwable)) {
+                AppActions.appLogout(getApplicationContext(), true);
                 return RetryConstraint.CANCEL;
             }
         }
 
-        return RetryConstraint.RETRY;
+        // An error occurred in onRun.
+        // Return value determines whether this job should retry or cancel. You can further
+        // specify a backoff strategy or change the job's priority. You can also apply the
+        // delay to the whole group to preserve jobs' running order.
+        RetryConstraint rtn = RetryConstraint.createExponentialBackoff(runCount, 1000);
+        rtn.setNewPriority(Priority.MID);
+        return rtn;
     }
 
 }

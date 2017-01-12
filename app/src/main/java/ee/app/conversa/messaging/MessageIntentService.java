@@ -71,7 +71,7 @@ public class MessageIntentService extends IntentService {
                     break;
                 }
                 case ACTION_MESSAGE_UPDATE_STATUS: {
-                    String status = intent.getExtras().getString(INTENT_EXTRA_UPDATE_STATUS, DeliveryStatus.statusParseError);
+                    int status = intent.getExtras().getInt(INTENT_EXTRA_UPDATE_STATUS, DeliveryStatus.statusParseError);
                     ConversaApp.getInstance(this).getDB().updateDeliveryStatus(message.getId(), status);
                     message.setDeliveryStatus(status);
                     EventBus.getDefault().post(

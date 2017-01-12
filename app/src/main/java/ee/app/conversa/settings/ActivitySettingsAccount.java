@@ -1,6 +1,7 @@
 package ee.app.conversa.settings;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,13 +30,34 @@ import ee.app.conversa.view.LightTextView;
 /**
  * Created by edgargomez on 9/9/16.
  */
-public class ActivitySettingsAccount extends ConversaActivity implements View.OnClickListener {
+public class ActivitySettingsAccount extends ConversaActivity implements View.OnClickListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private LightTextView mLtvName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_account);
         initialization();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ConversaApp.getInstance(this)
+                .getPreferences()
+                .getSharePreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ConversaApp.getInstance(this)
+                .getPreferences()
+                .getSharePreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -49,7 +71,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         LightTextView mLtvEmail = (LightTextView) findViewById(R.id.ltvEmail);
-        LightTextView mLtvName = (LightTextView) findViewById(R.id.ltvName);
+        mLtvName = (LightTextView) findViewById(R.id.ltvName);
 
         mLtvEmail.setText(Account.getCurrentUser().getEmail());
         mLtvName.setText(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountDisplayName());
@@ -67,11 +89,11 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                 new MaterialDialog.Builder(this)
                         .title(getString(R.string.sett_account_name_alert_title))
                         .positiveText(getString(R.string.action_change))
-                        .positiveColorRes(R.color.default_green)
+                        .positiveColorRes(R.color.green)
                         .negativeText(getString(android.R.string.cancel))
-                        .negativeColorRes(R.color.default_black)
+                        .negativeColorRes(R.color.black)
                         .inputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-                        .input(getString(R.string.email), "", new MaterialDialog.InputCallback() {
+                        .input(getString(R.string.name), "", new MaterialDialog.InputCallback() {
                             @Override
                             public void onInput(MaterialDialog dialog, CharSequence input) {
                                 dialog.dismiss();
@@ -91,9 +113,9 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                 new MaterialDialog.Builder(this)
                         .title(getString(R.string.sett_account_password_alert_title))
                         .positiveText(getString(R.string.action_change))
-                        .positiveColorRes(R.color.default_green)
+                        .positiveColorRes(R.color.green)
                         .negativeText(getString(android.R.string.cancel))
-                        .negativeColorRes(R.color.default_black)
+                        .negativeColorRes(R.color.black)
                         .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)
                         .input(getString(R.string.password), "", new MaterialDialog.InputCallback() {
                             @Override
@@ -116,8 +138,8 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                         .content(getString(R.string.recent_searches_message))
                         .positiveText(getString(R.string.recent_searches_ok))
                         .negativeText(getString(android.R.string.no))
-                        .positiveColorRes(R.color.default_green)
-                        .negativeColorRes(R.color.default_black)
+                        .positiveColorRes(R.color.green)
+                        .negativeColorRes(R.color.black)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -139,13 +161,13 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                         .content(getString(R.string.logout_message))
                         .positiveText(getString(R.string.logout_ok))
                         .negativeText(getString(android.R.string.no))
-                        .positiveColorRes(R.color.default_red)
-                        .negativeColorRes(R.color.default_black)
+                        .positiveColorRes(R.color.red)
+                        .negativeColorRes(R.color.black)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 dialog.dismiss();
-                                AppActions.appLogout(getApplicationContext(), true);
+                                AppActions.appLogout(getApplicationContext(), false);
                             }
                         })
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -170,7 +192,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                 final String newName = name;
 
                 if (newName.isEmpty()) {
-                    showErrorMessage(getString(R.string.sign_name_length_error));
+                    showErrorMessage(getString(R.string.common_field_required));
                 } else {
                     HashMap<String, String> params = new HashMap<>();
                     params.put("displayName", newName);
@@ -194,7 +216,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
             }
             case PreferencesKeys.ACCOUNT_PASSWORD_KEY: {
                 if (newValue.isEmpty()) {
-                    showErrorMessage(getString(R.string.signup_password_empty_error));
+                    showErrorMessage(getString(R.string.common_field_required));
                 } else {
                     if (Utils.checkPassword(newValue)) {
                         Account.getCurrentUser().setPassword(newValue);
@@ -254,4 +276,12 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
         dialog.show();
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(PreferencesKeys.ACCOUNT_DISPLAY_NAME_KEY)) {
+            mLtvName.setText(ConversaApp.getInstance(getApplicationContext())
+                    .getPreferences()
+                    .getAccountDisplayName());
+        }
+    }
 }

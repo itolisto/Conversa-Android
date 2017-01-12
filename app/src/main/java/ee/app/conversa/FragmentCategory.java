@@ -115,8 +115,11 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
                     if (e == null) {
                         parseResult(result, true);
                     } else {
-                        AppActions.validateParseException(getActivity(), e);
-                        parseResult("", true);
+                        if (AppActions.validateParseException(e)) {
+                            AppActions.appLogout(getActivity(), true);
+                        } else {
+                            parseResult("", true);
+                        }
                     }
                 }
             });

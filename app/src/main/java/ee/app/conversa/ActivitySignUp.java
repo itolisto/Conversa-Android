@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -36,16 +34,12 @@ import static ee.app.conversa.R.id.tilBirthdaySignUp;
 /**
  * Created by edgargomez on 8/12/16.
  */
-public class ActivitySignUp extends BaseActivity implements View.OnClickListener,
-        View.OnFocusChangeListener {
+public class ActivitySignUp extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
     private Button mBtnSignUpUp;
     private EditText mEtSignUpEmail;
     private EditText mEtSignUpPassword;
     private EditText mEtSignUpBirthday;
-    private TextInputLayout mTilSignUpEmail;
-    private TextInputLayout mTilSignUpPassword;
-    private TextInputLayout mTilSignUpBirthday;
 
     private RadioGroup radioSexGroup;
 
@@ -63,27 +57,21 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     @Override
     protected void initialization() {
         super.initialization();
+        mBtnSignUpUp = (Button) findViewById(btnSignUpUp);
+        radioSexGroup = (RadioGroup)findViewById(R.id.rgGender);
         mEtSignUpEmail = (EditText) findViewById(R.id.etSignUpEmail);
         mEtSignUpPassword = (EditText) findViewById(R.id.etSignUpPassword);
         mEtSignUpBirthday = (EditText) findViewById(R.id.etSignUpBirthday);
 
-        mTilSignUpEmail = (TextInputLayout) findViewById(R.id.tilEmailSignUp);
-        mTilSignUpPassword = (TextInputLayout) findViewById(R.id.tilPasswordSignUp);
-        mTilSignUpBirthday = (TextInputLayout) findViewById(tilBirthdaySignUp);
-
-        mBtnSignUpUp = (Button) findViewById(btnSignUpUp);
-
-        mEtSignUpEmail.addTextChangedListener(new MyTextWatcher(mEtSignUpEmail));
-        mEtSignUpPassword.addTextChangedListener(new MyTextWatcher(mEtSignUpPassword));
-        mEtSignUpBirthday.addTextChangedListener(new MyTextWatcher(mEtSignUpBirthday));
+        TextInputLayout mTilSignUpEmail = (TextInputLayout) findViewById(R.id.tilEmailSignUp);
+        TextInputLayout mTilSignUpPassword = (TextInputLayout) findViewById(R.id.tilPasswordSignUp);
+        TextInputLayout mTilSignUpBirthday = (TextInputLayout) findViewById(tilBirthdaySignUp);
 
         mTilSignUpEmail.setOnClickListener(this);
         mTilSignUpPassword.setOnClickListener(this);
         mTilSignUpBirthday.setOnClickListener(this);
         mEtSignUpBirthday.setOnClickListener(this);
         mEtSignUpBirthday.setOnFocusChangeListener(this);
-
-        radioSexGroup = (RadioGroup)findViewById(R.id.rgGender);
 
         mBtnSignUpUp.setOnClickListener(this);
         mBtnSignUpUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
@@ -92,9 +80,7 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     @Override
     public void yesInternetConnection() {
         super.yesInternetConnection();
-        if (validateForm()) {
-            mBtnSignUpUp.setEnabled(true);
-        }
+        mBtnSignUpUp.setEnabled(true);
     }
 
     @Override
@@ -120,45 +106,47 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
                 break;
             }
             case btnSignUpUp: {
-                Account user = new Account();
+                if (validateForm()) {
+                    Account user = new Account();
 
-                String username = TextUtils.split(mEtSignUpEmail.getText().toString(), "@")[0];
+                    String username = TextUtils.split(mEtSignUpEmail.getText().toString(), "@")[0];
 
-                user.setEmail(mEtSignUpEmail.getText().toString());
-                user.setUsername(username);
-                user.setPassword(mEtSignUpPassword.getText().toString());
-                user.put(Const.kUserTypeKey, 1);
+                    user.setEmail(mEtSignUpEmail.getText().toString());
+                    user.setUsername(username);
+                    user.setPassword(mEtSignUpPassword.getText().toString());
+                    user.put(Const.kUserTypeKey, 1);
 
-                Calendar newDate = Calendar.getInstance();
-                newDate.set(mYear, mMonth, mDay);
-                user.put(Const.kUserBirthday, new SimpleDateFormat("dd-MM-yyyy",
-                        DynamicLanguage.getSelectedLocale(getApplicationContext()))
-                        .format(newDate.getTime()));
+                    Calendar newDate = Calendar.getInstance();
+                    newDate.set(mYear, mMonth, mDay);
+                    user.put(Const.kUserBirthday, new SimpleDateFormat("dd-MM-yyyy",
+                            DynamicLanguage.getSelectedLocale(getApplicationContext()))
+                            .format(newDate.getTime()));
 
-                int selectedId = radioSexGroup.getCheckedRadioButtonId();
+                    int selectedId = radioSexGroup.getCheckedRadioButtonId();
 
-                if (findViewById(selectedId).getId() == R.id.rbMale) {
-                     user.put(Const.kUserGender, 1);
-                } else {
-                     user.put(Const.kUserGender, 0);
-                }
-
-                final ProgressDialog progress = new ProgressDialog(this);
-                progress.show();
-
-                user.signUpInBackground(new SignUpCallback() {
-                    public void done(ParseException e) {
-                        progress.dismiss();
-                        if (e == null) {
-                            // Hooray! Let them use the app now.
-                            AuthListener(true, null);
-                        } else {
-                            // Sign up didn't succeed. Look at the ParseException
-                            // to figure out what went wrong
-                            AuthListener(false, e);
-                        }
+                    if (findViewById(selectedId).getId() == R.id.rbMale) {
+                        user.put(Const.kUserGender, 1);
+                    } else {
+                        user.put(Const.kUserGender, 0);
                     }
-                });
+
+                    final ProgressDialog progress = new ProgressDialog(this);
+                    progress.show();
+
+                    user.signUpInBackground(new SignUpCallback() {
+                        public void done(ParseException e) {
+                            progress.dismiss();
+                            if (e == null) {
+                                // Hooray! Let them use the app now.
+                                AuthListener(true, null);
+                            } else {
+                                // Sign up didn't succeed. Look at the ParseException
+                                // to figure out what went wrong
+                                AuthListener(false, e);
+                            }
+                        }
+                    });
+                }
                 break;
             }
         }
@@ -192,78 +180,47 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     }
 
     private boolean validateForm() {
-        if (mEtSignUpEmail.getText().toString().isEmpty() || mEtSignUpPassword.getText().toString().isEmpty()
-                || mEtSignUpBirthday.getText().toString().isEmpty()) {
-            mBtnSignUpUp.setEnabled(false);
-        } else if (mTilSignUpEmail.isErrorEnabled() || mTilSignUpPassword.isErrorEnabled() ||
-                mTilSignUpBirthday.isErrorEnabled()) {
-            mBtnSignUpUp.setEnabled(false);
+        String title = null;
+        EditText select = null;
+
+        if (mEtSignUpEmail.getText().toString().isEmpty()) {
+            select = mEtSignUpEmail;
+            title = getString(R.string.common_field_required);
+        } else if (!Utils.checkEmail(mEtSignUpEmail.getText().toString())) {
+            select = mEtSignUpEmail;
+            title = getString(R.string.common_field_invalid);
+        } else if (mEtSignUpPassword.getText().toString().isEmpty()) {
+            select = mEtSignUpPassword;
+            title = getString(R.string.common_field_required);
+        } else if (mEtSignUpBirthday.getText().toString().isEmpty()) {
+            select = mEtSignUpBirthday;
+            title = getString(R.string.common_field_required);
         } else {
-            mBtnSignUpUp.setEnabled(true);
-            return true;
-        }
-
-        return false;
-    }
-
-    private void isEmailValid(String email) {
-        TextInputLayout layout = mTilSignUpEmail;
-
-        if (email.isEmpty()) {
-            layout.setErrorEnabled(true);
-            layout.setError(getString(R.string.sign_email_length_error));
-        } else {
-            if (Utils.checkEmail(email)) {
-                layout.setErrorEnabled(false);
-                layout.setError("");
-            } else {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.sign_email_not_valid_error));
+            int result = Utils.checkDate(mEtSignUpBirthday.getText().toString(), this);
+            if (result == 1) {
+                title = getString(R.string.common_field_invalid);
+            } else if (result == 2) {
+                title = getString(R.string.signup_birthday_old_error);
             }
         }
-    }
 
-    private void isPasswordValid(String password) {
-        TextInputLayout layout = mTilSignUpPassword;
-
-        if (password.isEmpty()) {
-            layout.setErrorEnabled(true);
-            layout.setError(getString(R.string.signup_password_empty_error));
-        } else {
-            if (password.length() < 6) {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.signup_password_length_error));
-            } else {
-                if (Utils.checkPassword(password)) {
-                    layout.setErrorEnabled(false);
-                    layout.setError("");
-                } else {
-                    layout.setErrorEnabled(true);
-                    layout.setError(getString(R.string.signup_password_regex_error));
-                }
-            }
+        if (title != null) {
+            final EditText active = select;
+            new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            if (active != null)
+                                active.requestFocus();
+                        }
+                    })
+                    .show();
+            return false;
         }
-    }
 
-    private void isBirthdayValid(String birthday) {
-        TextInputLayout layout = mTilSignUpBirthday;
-
-        if (birthday.isEmpty()) {
-            layout.setErrorEnabled(true);
-            layout.setError(getString(R.string.signup_birthday_empty_error));
-        } else {
-            int result = Utils.checkDate(birthday, this);
-            if (result == 0) {
-                layout.setErrorEnabled(false);
-                layout.setError("");
-            } else if (result == 1) {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.signup_birthday_invalid_error));
-            } else {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.signup_birthday_old_error));
-            }
-        }
+        return true;
     }
 
     public void AuthListener(boolean result, ParseException error) {
@@ -303,32 +260,4 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
         }
     }
 
-    private class MyTextWatcher implements TextWatcher {
-
-        private View view;
-
-        private MyTextWatcher(View view) {
-            this.view = view;
-        }
-
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-        public void afterTextChanged(Editable editable) {
-            switch (view.getId()) {
-                case R.id.etSignUpEmail:
-                    isEmailValid(editable.toString());
-                    break;
-                case R.id.etSignUpPassword:
-                    isPasswordValid(editable.toString());
-                    break;
-                case R.id.etSignUpBirthday:
-                    isBirthdayValid(editable.toString());
-                    break;
-            }
-
-            validateForm();
-        }
-    }
 }

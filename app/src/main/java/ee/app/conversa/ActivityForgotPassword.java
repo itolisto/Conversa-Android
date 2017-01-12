@@ -5,12 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -26,7 +23,6 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
 
     private Button mBtnSendPassword;
     private EditText mEtSendPasswordEmail;
-    private TextInputLayout mTilForgotPassword;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,13 +35,10 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
     protected void initialization() {
         super.initialization();
         mEtSendPasswordEmail = (EditText) findViewById(R.id.etSendEmail);
-        mTilForgotPassword = (TextInputLayout) findViewById(R.id.tilPasswordForgot);
         mBtnSendPassword = (Button) findViewById(R.id.btnSendPassword);
-        mEtSendPasswordEmail.addTextChangedListener(new MyTextWatcher(mEtSendPasswordEmail));
 
-        if (mTilForgotPassword != null) {
-            mTilForgotPassword.setOnClickListener(this);
-        }
+        TextInputLayout mTilForgotPassword = (TextInputLayout) findViewById(R.id.tilPasswordForgot);
+        mTilForgotPassword.setOnClickListener(this);
 
         if (mBtnSendPassword != null) {
             mBtnSendPassword.setOnClickListener(this);
@@ -56,9 +49,7 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
     @Override
     public void yesInternetConnection() {
         super.yesInternetConnection();
-        if (validateForm()) {
-            mBtnSendPassword.setEnabled(true);
-        }
+        mBtnSendPassword.setEnabled(true);
     }
 
     @Override
@@ -74,82 +65,70 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
                 mEtSendPasswordEmail.requestFocus();
                 break;
             case R.id.btnSendPassword:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.confirm_email, mEtSendPasswordEmail.getText().toString()))
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                String sentToEmail = mEtSendPasswordEmail.getText().toString();
-                                ParseUser.requestPasswordResetInBackground(sentToEmail, new RequestPasswordResetCallback() {
-                                    public void done(ParseException e) {
-                                        if(e == null) {
-                                            Toast.makeText(getApplicationContext(), getString(R.string.email_sent), Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(getApplicationContext(), getString(R.string.email_fail_sent), Toast.LENGTH_SHORT).show();
+                if (validateForm()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage(getString(R.string.confirm_email, mEtSendPasswordEmail.getText().toString()))
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    String sentToEmail = mEtSendPasswordEmail.getText().toString();
+                                    ParseUser.requestPasswordResetInBackground(sentToEmail, new RequestPasswordResetCallback() {
+                                        public void done(ParseException e) {
+                                            String title;
+
+                                            if (e == null) {
+                                                title = getString(R.string.email_sent);
+                                            } else {
+                                                title = getString(R.string.email_fail_sent);
+                                            }
+
+                                            new AlertDialog.Builder(getApplicationContext())
+                                                    .setTitle(title)
+                                                    .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            dialog.dismiss();
+                                                        }
+                                                    })
+                                                    .show();
                                         }
-                                    }
-                                });
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
-                builder.show();
+                                    });
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    builder.show();
+                }
                 break;
         }
     }
 
-    private void isEmailValid(String email) {
-        TextInputLayout layout = mTilForgotPassword;
-
-        if (email.isEmpty()) {
-            layout.setErrorEnabled(true);
-            layout.setError(getString(R.string.sign_email_length_error));
-        } else {
-            if (Utils.checkEmail(email)) {
-                layout.setErrorEnabled(false);
-                layout.setError("");
-            } else {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.sign_email_not_valid_error));
-            }
-        }
-    }
-
     private boolean validateForm() {
+        String title = null;
+
         if (mEtSendPasswordEmail.getText().toString().isEmpty()) {
-            mBtnSendPassword.setEnabled(false);
-        } else if (mTilForgotPassword.isErrorEnabled()) {
-            mBtnSendPassword.setEnabled(false);
-        } else {
-            mBtnSendPassword.setEnabled(true);
-            return true;
+            title = getString(R.string.common_field_required);
+        } else if (!Utils.checkEmail(mEtSendPasswordEmail.getText().toString())) {
+            title = getString(R.string.common_field_invalid);
         }
 
-        return false;
+        if (title != null) {
+            new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            mEtSendPasswordEmail.requestFocus();
+                        }
+                    })
+                    .show();
+            return false;
+        }
+
+        return true;
     }
 
-    private class MyTextWatcher implements TextWatcher {
-
-        private View view;
-
-        private MyTextWatcher(View view) {
-            this.view = view;
-        }
-
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-        public void afterTextChanged(Editable editable) {
-            switch (view.getId()) {
-                case R.id.etSendEmail:
-                    isEmailValid(editable.toString());
-                    break;
-            }
-
-            validateForm();
-        }
-    }
 }

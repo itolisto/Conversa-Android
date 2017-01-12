@@ -2,7 +2,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/default_white"
+	android:background="@android:color/white"
 	tools:context="ee.app.conversa.ActivitySignIn" >
 
 	<ImageView
@@ -31,7 +31,7 @@
 			android:gravity="center"
 			android:textAllCaps="true"
 			android:text="@string/string_signin_title_two"
-			android:textColor="@color/default_gray"
+			android:textColor="@color/gray"
 			android:textSize="15sp" />
 
 		<ee.app.conversa.view.MediumTextView
@@ -42,7 +42,7 @@
 			android:layout_marginTop="30dp"
 			android:gravity="center"
 			android:text="@string/string_signin_are_you_new"
-			android:textColor="@color/default_black"
+			android:textColor="@color/gray"
 			android:textSize="13.5sp" />
 
 		<RelativeLayout
@@ -75,7 +75,7 @@
 			android:gravity="center"
 			android:maxLines="1"
 			android:text="@string/string_signin_already_have_an_account"
-			android:textColor="@color/default_black"
+			android:textColor="@color/black"
 			android:textSize="13.5sp" />
 
 		<RelativeLayout

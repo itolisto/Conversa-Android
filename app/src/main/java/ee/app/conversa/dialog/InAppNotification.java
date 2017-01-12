@@ -100,15 +100,12 @@ public class InAppNotification implements OnClickListener {
 	}
 
 	private void showNotification(dbMessage message, int duration, int timeBeforeHiding) {
-		if (message == null) {
-			Logger.error(TAG, "Message cannot be null nor empty");
-			return;
+		if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationPreview()) {
+			addView(message);
+			setDuration(duration);
+			setTranslateAnimations(timeBeforeHiding);
+			startTranslateAnimations();
 		}
-
-		addView(message);
-		setDuration(duration);
-		setTranslateAnimations(timeBeforeHiding);
-		startTranslateAnimations();
 	}
 
 	private void setDuration(int duration) {
@@ -142,40 +139,35 @@ public class InAppNotification implements OnClickListener {
 			return;
 		}
 
-
 		TextView mTvUserName = (TextView) mPushLayout.findViewById(R.id.tvUserName);
 		TextView mTvNotification = (TextView) mPushLayout.findViewById(R.id.tvNotification);
 		SimpleDraweeView mSdvAvatar = (SimpleDraweeView) mPushLayout.findViewById(R.id.sdvPushAvatar);
 		mTvUserName.setText(user.getDisplayName());
 
-		if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationPreview()) {
-			switch (message.getMessageType()) {
-				case Const.kMessageTypeImage:
-					mTvNotification.setText(mContext
-							.getString(R.string.contacts_last_message_image));
-					break;
-				case Const.kMessageTypeLocation:
-					mTvNotification.setText(mContext
-							.getString(R.string.contacts_last_message_location));
-					break;
-				case Const.kMessageTypeAudio:
-					mTvNotification.setText(mContext
-							.getString(R.string.contacts_last_message_audio));
-					break;
-				case Const.kMessageTypeVideo:
-					mTvNotification.setText(mContext
-							.getString(R.string.contacts_last_message_video));
-					break;
-				case Const.kMessageTypeText:
-					mTvNotification.setText(message.getBody().replaceAll("\\n", " "));
-					break;
-				default:
-					mTvNotification.setText(mContext
-							.getString(R.string.contacts_last_message_default));
-					break;
-			}
-		} else {
-			mTvNotification.setText("");
+		switch (message.getMessageType()) {
+			case Const.kMessageTypeImage:
+				mTvNotification.setText(mContext
+						.getString(R.string.contacts_last_message_image));
+				break;
+			case Const.kMessageTypeLocation:
+				mTvNotification.setText(mContext
+						.getString(R.string.contacts_last_message_location));
+				break;
+			case Const.kMessageTypeAudio:
+				mTvNotification.setText(mContext
+						.getString(R.string.contacts_last_message_audio));
+				break;
+			case Const.kMessageTypeVideo:
+				mTvNotification.setText(mContext
+						.getString(R.string.contacts_last_message_video));
+				break;
+			case Const.kMessageTypeText:
+				mTvNotification.setText(message.getBody().replaceAll("\\n", " "));
+				break;
+			default:
+				mTvNotification.setText(mContext
+						.getString(R.string.contacts_last_message_default));
+				break;
 		}
 
 		if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationSound()) {
@@ -202,7 +194,7 @@ public class InAppNotification implements OnClickListener {
 				}
 			});
 
-			sounds.load(mContext, R.raw.message_received, 1);
+			sounds.load(mContext, R.raw.sound_notification, 1);
 		}
 
 		Uri uri = Utils.getUriFromString(user.getAvatarThumbFileId());

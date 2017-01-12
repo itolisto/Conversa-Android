@@ -74,7 +74,7 @@ public class MySQLiteHelper {
             + "\"" + sMessageFromUserId + "\" CHAR(14) NOT NULL, "
             + "\"" + sMessageToUserId + "\" CHAR(14) NOT NULL, "
             + "\"" + sMessageType + "\" CHAR(1) NOT NULL, "
-            + "\"" + sMessageDeliveryStatus + "\" CHAR(1) NOT NULL, "
+            + "\"" + sMessageDeliveryStatus + "\" INTEGER NOT NULL, "
             + "\"" + sMessageBody + "\" TEXT, "
             + "\"" + sMessageLocalUrl + "\" TEXT, "
             + "\"" + sMessageRemoteUrl + "\" TEXT, "
@@ -447,7 +447,7 @@ public class MySQLiteHelper {
         db.close();
     }
 
-    public int updateDeliveryStatus(long messageId, String status) {
+    public int updateDeliveryStatus(long messageId, int status) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(sMessageDeliveryStatus, status);
         return openDatabase().update(TABLE_MESSAGES, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(messageId)});
@@ -561,13 +561,13 @@ public class MySQLiteHelper {
                 + " WHERE p." + sMessageFromUserId + " = \'" + fromId + "\' AND p." + sMessageToUserId + " = \'" + id + "\'"
                 + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT " + count + " OFFSET " + offset;
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
-        cursor.moveToFirst();
+        cursor.moveToLast();
         ArrayList<dbMessage> messages = new ArrayList<>(cursor.getCount());
 
-        while (!cursor.isAfterLast()) {
+        while (!cursor.isBeforeFirst()) {
             dbMessage contact = cursorToMessage(cursor);
             messages.add(contact);
-            cursor.moveToNext();
+            cursor.moveToPrevious();
         }
         // make sure to close the cursor
         cursor.close();
@@ -597,7 +597,7 @@ public class MySQLiteHelper {
         message.setFromUserId(cursor.getString(1));
         message.setToUserId(cursor.getString(2));
         message.setMessageType(cursor.getString(3));
-        message.setDeliveryStatus(cursor.getString(4));
+        message.setDeliveryStatus(cursor.getInt(4));
         message.setBody(cursor.getString(5));
         message.setLocalUrl(cursor.getString(6));
         message.setRemoteUrl(cursor.getString(7));

@@ -3,25 +3,23 @@ package ee.app.conversa.utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.annotation.AnyRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.onesignal.OneSignal;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,8 +36,6 @@ import java.util.regex.Pattern;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.contact.ContactUpdateReason;
-import ee.app.conversa.events.contact.ContactUpdateEvent;
 
 import static ee.app.conversa.settings.language.DynamicLanguage.getSelectedLocale;
 
@@ -83,7 +79,14 @@ public class Utils {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(dDate);
 
-			if (getAge(calendar)) {
+			Calendar today = Calendar.getInstance();
+			int age = today.get(Calendar.YEAR) - calendar.get(Calendar.YEAR);
+
+			if (today.get(Calendar.DAY_OF_YEAR) < calendar.get(Calendar.DAY_OF_YEAR)){
+				age--;
+			}
+
+			if (age >= 13) {
 				return 0;
 			}
 
@@ -91,17 +94,6 @@ public class Utils {
 		} catch (NullPointerException|IllegalArgumentException|ParseException e) {
 			return 1;
 		}
-	}
-
-	private static boolean getAge(Calendar dob) {
-		Calendar today = Calendar.getInstance();
-		int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
-
-		if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)){
-			age--;
-		}
-
-		return (age >= 18);
 	}
 
     public static boolean checkEmail(String email) {
@@ -116,20 +108,13 @@ public class Utils {
 	public static void subscribeToTags(String channelName) {
 		JSONObject tags = new JSONObject();
 		try {
+			tags.put("upbc", channelName);
 			tags.put("upvt", channelName);
-			tags.put("UserType", 1);
+			tags.put("usertype", 1);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		OneSignal.sendTags(tags);
-	}
-
-	public static int getCurrentApkReleaseVersion(Context context) {
-		try {
-			return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-		} catch (PackageManager.NameNotFoundException e) {
-			throw new AssertionError(e);
-		}
 	}
 
 	public static Uri getUriFromString(String path) {
@@ -179,19 +164,6 @@ public class Utils {
 		return (int) (dp * context.getResources().getDisplayMetrics().density + 0.5f);
 	}
 
-	public static int dpToPixels(Context context, float dp) {
-		return (int) (dp * context.getResources().getDisplayMetrics().density + 0.5f);
-//		return  (int) TypedValue.applyDimension(
-//				TypedValue.COMPLEX_UNIT_DIP,
-//				dp,
-//				context.getResources().getDisplayMetrics()
-//		);
-	}
-
-	public static int dpFromPx(final Context context, final int px) {
-		return Math.round((px - 0.5f) / context.getResources().getDisplayMetrics().density);
-	}
-
 	public static String getTimeOrDay(Context context, long time, boolean onlyDay) {
 		return getDateOrTime(context, time, false, false, onlyDay);
 	}
@@ -205,13 +177,12 @@ public class Utils {
 	{
 		Calendar cal = Calendar.getInstance(Locale.getDefault());
 		cal.setTimeInMillis(time);
-		String pattern;
 
 		if (isDate) {
 			if (withYear) {
-				pattern = "dd/MM/yyyy";
+				return DateFormat.format("dd/MM/yyyy", cal).toString();
 			} else {
-				pattern = "dd/MM";
+				return DateFormat.format("dd/MM", cal).toString();
 			}
 		} else {
 			if (onlyDay) {
@@ -231,15 +202,12 @@ public class Utils {
 					case Calendar.SATURDAY:
 						return context.getString(R.string.chat_date_saturday);
 					default:
-						pattern = "HH:mm";
+						return DateFormat.format("KK:mm a", cal).toString();
 				}
 			} else {
-				pattern = "HH:mm";
+				return DateFormat.format("KK:mm a", cal).toString();
 			}
 		}
-
-		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
-		return dateFormat.format(cal.getTime());
 	}
 
 	public static File getMediaDirectory(Context context, String folder) throws Exception {
@@ -297,50 +265,6 @@ public class Utils {
 
 		// Update contact url
 		ConversaApp.getInstance(context).getDB().updateContactAvatar(id, path);
-	}
-
-	public static void saveAvatarToInternalStorageAsync(Context context, Bitmap bitmapImage, long id) {
-		new AsyncTask<Object, Void, Bitmap>() {
-			@Override
-			protected Bitmap doInBackground(Object... params) {
-				if (params.length == 0) {
-					return null;
-				}
-
-				Bitmap bitmap = (Bitmap) params[0];
-				Context context = (Context) params[1];
-				long id = (long) params[2];
-
-				if (context == null || bitmap == null || id < 0) {
-					return null;
-				}
-
-				String path;
-
-				try {
-					path = Utils.getResourceName(Utils.getMediaDirectory(context, "avatars"));
-					// Create imageDir
-					File mypath = new File(path);
-
-					FileOutputStream fos = new FileOutputStream(mypath);
-					// Use the compress method on the BitMap object to write image to the OutputStream
-					bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
-					fos.close();
-				} catch (Exception e) {
-					Logger.error("saveAvatarToInternalStorageAsync", e.getMessage());
-					return null;
-				}
-
-				// Update contact url
-				ConversaApp.getInstance(context).getDB().updateContactAvatar(id, path);
-				EventBus.getDefault().post(new ContactUpdateEvent(
-						ConversaApp.getInstance(context).getDB().getContactById(id),
-						ContactUpdateReason.AVATAR_DOWNLOAD
-				));
-
-				return bitmap;
-			}
-		}.execute(bitmapImage, context, id);
 	}
 
 	@WorkerThread

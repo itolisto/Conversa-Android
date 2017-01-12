@@ -11,11 +11,8 @@ import com.parse.ParseException;
 
 import java.util.HashMap;
 
-import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.AppActions;
-
-import static com.parse.ParseException.CONNECTION_FAILED;
-import static com.parse.ParseException.INTERNAL_SERVER_ERROR;
+import ee.app.conversa.utils.Logger;
 
 /**
  * Created by edgargomez on 10/12/16.
@@ -60,15 +57,8 @@ public class FavoriteJob extends Job {
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
         if (throwable instanceof ParseException) {
-            ParseException exception = (ParseException) throwable;
-            Logger.error(TAG, exception.getMessage());
-
-            if (exception.getCode() == INTERNAL_SERVER_ERROR ||
-                    exception.getCode() == CONNECTION_FAILED )
-            {
-                return RetryConstraint.CANCEL;
-            } else {
-                AppActions.validateParseException(getApplicationContext(), (ParseException) throwable);
+            if (AppActions.validateParseException((ParseException) throwable)) {
+                AppActions.appLogout(getApplicationContext(), true);
                 return RetryConstraint.CANCEL;
             }
         }

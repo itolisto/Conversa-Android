@@ -43,7 +43,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         super.onResume();
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null) {
-            if (intent.getExtras().getInt(Const.ACTION, -1) != -1) {
+            if (intent.getExtras().getInt(Const.ACTION, -1) == -1) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -64,6 +64,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                 });
                 AlertDialog b = dialogBuilder.create();
                 b.show();
+                intent.removeExtra(Const.ACTION);
             }
         }
     }
@@ -85,10 +86,10 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
             styledString.setSpan(new URLSpan("http://www.google.com"), index, text.length(), 0);
             // change text color
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.default_green, null)),
+                styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green, null)),
                         index, text.length(), 0);
             } else {
-                styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.default_green)),
+                styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green)),
                         index, text.length(), 0);
             }
             // this step is mandated for the url and clickable styles.

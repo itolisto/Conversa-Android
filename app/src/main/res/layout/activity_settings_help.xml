@@ -12,6 +12,7 @@
         <Button
             android:id="@+id/btnTerms"
             android:text="@string/sett_help_terms_privacy_title"
+            android:textColor="@color/black"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,6 +29,7 @@
             android:id="@+id/btnFeedback"
             android:layout_above="@id/vDivider"
             android:text="@string/sett_help_feedback_title"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="?android:attr/buttonBarButtonStyle" />
@@ -43,6 +45,7 @@
             android:id="@+id/btnSupport"
             android:layout_above="@id/vDividerTwo"
             android:text="@string/sett_help_support_title"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="?android:attr/buttonBarButtonStyle" />

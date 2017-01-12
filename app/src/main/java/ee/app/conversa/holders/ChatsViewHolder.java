@@ -114,10 +114,6 @@ public class ChatsViewHolder extends BaseHolder {
     }
 
     public void updateLastMessage(dbBusiness user) {
-        if (activity == null) {
-            return;
-        }
-
         nChatItem info = ConversaApp.getInstance(activity).getDB()
                 .getLastMessageAndUnredCount(user.getBusinessId());
         dbMessage lastMessage = info.getMessage();
@@ -171,10 +167,6 @@ public class ChatsViewHolder extends BaseHolder {
     }
 
     private String setDate(AppCompatActivity activity, long timeOfCreation) {
-        if (activity == null) {
-            return "";
-        }
-
         long now = System.currentTimeMillis();
 
         // Compute start of the day for the timestamp
@@ -185,18 +177,20 @@ public class ChatsViewHolder extends BaseHolder {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        if (timeOfCreation > cal.getTimeInMillis()) {
-            return Utils.getTimeOrDay(activity, timeOfCreation, false);
+        if (timeOfCreation > now) {
+            return Utils.getDate(activity, timeOfCreation, true);
         } else {
             long diff = now - timeOfCreation;
             long diffd = diff / (1000 * 60 * 60 * 24);
 
-            if (diffd >= 7) {
+            if (diffd > 7) {
                 return Utils.getDate(activity, timeOfCreation, true);
-            } else if (diffd > 0 && diffd < 7){
+            } else if (diffd > 1 && diffd <= 7){
                 return Utils.getTimeOrDay(activity, timeOfCreation, true);
-            } else {
+            } else if (diffd > 0 && diffd <= 1) {
                 return activity.getString(R.string.chat_day_yesterday);
+            } else {
+                return Utils.getTimeOrDay(activity, timeOfCreation, false);
             }
         }
     }

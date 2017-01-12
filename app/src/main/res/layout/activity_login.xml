@@ -3,7 +3,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
-	android:background="@color/default_white"
+	android:background="@android:color/white"
 	tools:context="ee.app.conversa.ActivityLogIn" >
 
 	<RelativeLayout
@@ -21,7 +21,7 @@
 			android:layout_marginTop="40dp"
 			android:textSize="18sp"
 			android:textAllCaps="true"
-			android:textColor="@color/default_black"
+			android:textColor="@color/black"
 			android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true"
 			android:layout_width="wrap_content"
@@ -46,10 +46,11 @@
 				android:layout_height="wrap_content"
 				android:gravity="bottom"
 				android:hint="@string/email"
+				android:imeOptions="actionNext"
 				android:textCursorDrawable="@null"
 				android:inputType="textEmailAddress"
-				android:textColor="@color/default_black"
-				android:textColorHint="@color/default_gray"
+				android:textColor="@color/black"
+				android:textColorHint="@color/gray"
 				android:textSize="14sp" />
 		</android.support.design.widget.TextInputLayout>
 
@@ -71,10 +72,11 @@
 				android:layout_height="wrap_content"
 				android:gravity="bottom"
 				android:hint="@string/password"
+				android:imeOptions="actionDone"
 				android:textCursorDrawable="@null"
 				android:inputType="textPassword"
-				android:textColor="@color/default_black"
-				android:textColorHint="@color/default_gray"
+				android:textColor="@color/black"
+				android:textColorHint="@color/gray"
 				android:textSize="14sp" />
 		</android.support.design.widget.TextInputLayout>
 
@@ -86,13 +88,13 @@
 			android:layout_alignParentRight="true"
 			android:layout_alignParentEnd="true"
 			android:layout_marginTop="3dp"
-			android:layout_marginRight="3dp"
-			android:layout_marginEnd="3dp"
+			android:layout_marginRight="16dp"
+			android:layout_marginEnd="16dp"
 			android:background="@null"
 			android:gravity="top"
 			android:textAllCaps="false"
 			android:text="@string/forgot_password"
-			android:textColor="@color/default_gray" />
+			android:textColor="@color/gray" />
 
 		<Button
 			android:id="@+id/btnSignInIn"

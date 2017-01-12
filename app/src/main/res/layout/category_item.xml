@@ -67,7 +67,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="@color/hookup_alert"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
@@ -76,8 +76,8 @@
 
     <View
         android:id="@+id/vDivider"
-        android:layout_marginLeft="35dp"
-        android:layout_marginStart="35dp"
+        android:layout_marginLeft="97dp"
+        android:layout_marginStart="97dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/divider"
         android:layout_width="match_parent"

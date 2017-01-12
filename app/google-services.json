@@ -1,9 +1,55 @@
 {
   "project_info": {
     "project_number": "362452554166",
-    "project_id": "firebase-conversa"
+    "firebase_url": "https://fir-conversa.firebaseio.com",
+    "project_id": "firebase-conversa",
+    "storage_bucket": "firebase-conversa.appspot.com"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362452554166:android:6c38ef01d47e5fd8",
+        "android_client_info": {
+          "package_name": "ee.app.conversamanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "362452554166-prvt28rog7h5c8ae6ku1fd9tsf6t3qle.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ee.app.conversamanager",
+            "certificate_hash": "B6576D987984E8590439CC4F80FD740377A4217F"
+          }
+        },
+        {
+          "client_id": "362452554166-as73j0v68q8sht7t277nqqk405t00imc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362452554166-as73j0v68q8sht7t277nqqk405t00imc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:362452554166:android:54b1566df0278f2b",
@@ -11,10 +57,23 @@
           "package_name": "ee.app.conversa"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "362452554166-0qul1ioqsbbhu2d8t8i0khocese856tr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ee.app.conversa",
+            "certificate_hash": "B6576D987984E8590439CC4F80FD740377A4217F"
+          }
+        },
+        {
+          "client_id": "362452554166-as73j0v68q8sht7t277nqqk405t00imc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAwg-G3VTF0jS_dyyTcfdZ6pDA2UK9rgYQ"
+          "current_key": "AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY"
         }
       ],
       "services": {
@@ -22,37 +81,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362452554166-as73j0v68q8sht7t277nqqk405t00imc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:362452554166:android:15ed54d2274ee6af",
-        "android_client_info": {
-          "package_name": "ee.app.conversabusiness"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAwg-G3VTF0jS_dyyTcfdZ6pDA2UK9rgYQ"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

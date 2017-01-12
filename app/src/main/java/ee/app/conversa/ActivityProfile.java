@@ -273,8 +273,11 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                 if(e == null) {
                     parseResult(result);
                 } else {
-                    AppActions.validateParseException(getApplicationContext(), e);
-                    parseResult("");
+                    if (AppActions.validateParseException(e)) {
+                        AppActions.appLogout(getApplicationContext(), true);
+                    } else {
+                        parseResult("");
+                    }
                 }
             }
         });
@@ -475,7 +478,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                 GradientDrawable shapeDrawable;
 
                 switch (status) {
-                    case 1: {
+                    case 0: {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_online);
                         } else {
@@ -483,19 +486,19 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                         }
                         break;
                     }
-                    case 2: {
+                    case 1: {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_offline);
+                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_away);
                         } else {
-                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_offline);
+                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_away);
                         }
                         break;
                     }
                     default: {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_away);
+                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_offline);
                         } else {
-                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_away);
+                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_offline);
                         }
                         break;
                     }

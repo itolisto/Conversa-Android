@@ -19,25 +19,15 @@ import ee.app.conversa.model.parse.Account;
  */
 public class AppActions {
 
-    public static void validateParseException(Context context, ParseException e) {
-        if (e.getCode() == ParseException.INVALID_SESSION_TOKEN ||
-                e.getCode() == ParseException.INVALID_LINKED_SESSION)
-        {
-            appLogout(context, false);
-            Intent intent = new Intent(context, ActivitySignIn.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Const.ACTION, e.getCode());
-            context.startActivity(intent);
-        }
+    public static boolean validateParseException(ParseException e) {
+        return (e.getCode() == ParseException.INVALID_SESSION_TOKEN ||
+                e.getCode() == ParseException.INVALID_LINKED_SESSION);
     }
 
-    public static void appLogout(Context context, boolean startActivity) {
+    public static void appLogout(Context context, boolean invalidSession) {
         ConversaApp.getInstance(context).getPreferences().cleanSharedPreferences();
 
-        if (ConversaApp.getInstance(context).getDB().deleteDatabase())
-            Logger.error("Logout", "Database removed");
-        else
+        if (!ConversaApp.getInstance(context).getDB().deleteDatabase())
             Logger.error("Logout", "An error has occurred while removing databased. Database not removed");
 
         Collection<String> tempList = new ArrayList<>(2);
@@ -49,12 +39,12 @@ public class AppActions {
         AblyConnection.getInstance().disconnectAbly();
         Account.logOut();
 
-        if (startActivity) {
-            Intent goToSignIn = new Intent(context, ActivitySignIn.class);
-            goToSignIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            goToSignIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(goToSignIn);
-        }
+        Intent goToSignIn = new Intent(context, ActivitySignIn.class);
+        goToSignIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        goToSignIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (invalidSession)
+            goToSignIn.putExtra(Const.ACTION, -1);
+        context.startActivity(goToSignIn);
     }
 
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true"
-        android:color="@color/default_white"
-        android:drawable="@color/default_white" />
+        android:color="@color/white"
+        android:drawable="@color/white" />
     <item android:state_focused="true"
-        android:color="@color/default_green"
-        android:drawable="@color/default_green" />
-    <item android:color="@color/default_green"
-        android:drawable="@color/default_green" />
+        android:color="@color/green"
+        android:drawable="@color/green" />
+    <item android:color="@color/green"
+        android:drawable="@color/green" />
 </selector>

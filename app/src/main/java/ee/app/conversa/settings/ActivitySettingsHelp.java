@@ -1,10 +1,13 @@
 package ee.app.conversa.settings;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
@@ -12,8 +15,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -90,9 +93,9 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
             }
             case R.id.btnSupport: {
                 dbBusiness dbBusiness = ConversaApp.getInstance(this).getDB().isContact("E5ZE2sr0tx");
-                final Intent intent = new Intent(this, ActivityProfile.class);
 
                 if (dbBusiness == null) {
+                    final Context context = this;
                     new MaterialDialog.Builder(this)
                             .title(R.string.sett_help_dialog_title)
                             .content(R.string.sett_help_dialog_message)
@@ -101,40 +104,12 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                             .showListener(new DialogInterface.OnShowListener() {
                                 @Override
                                 public void onShow(final DialogInterface dialogInterface) {
-                                    ParseQuery<Business> query = ParseQuery.getQuery(Business.class);
-                                    query.whereEqualTo(Const.kBusinessActiveKey, true);
-                                    query.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
-                                    query.whereDoesNotExist(Const.kBusinessBusinessKey);
-
-                                    query.getInBackground("E5ZE2sr0tx", new GetCallback<Business>() {
-                                        @Override
-                                        public void done(Business object, ParseException e) {
-                                            dialogInterface.dismiss();
-
-                                            if (e == null) {
-                                                if (isFragmentActive()) {
-                                                    dbBusiness dbBusiness = new dbBusiness();
-                                                    dbBusiness.setBusinessId("E5ZE2sr0tx");
-                                                    dbBusiness.setDisplayName(object.getDisplayName());
-                                                    dbBusiness.setConversaId(object.getConversaID());
-                                                    dbBusiness.setAbout(object.getAbout());
-
-                                                    if (object.getAvatar() != null)
-                                                        dbBusiness.setAvatarThumbFileId(object.getAvatar().getUrl());
-
-                                                    intent.putExtra(Const.iExtraAddBusiness, true);
-                                                    intent.putExtra(Const.iExtraBusiness, dbBusiness);
-                                                    startActivity(intent);
-                                                }
-                                            } else {
-                                                AppActions.validateParseException(getApplicationContext(), e);
-                                            }
-                                        }
-                                    });
+                                    new SupportInfoTask(context, dialogInterface).execute();
                                 }
                             })
                             .show();
                 } else {
+                    Intent intent = new Intent(this, ActivityProfile.class);
                     intent.putExtra(Const.iExtraAddBusiness, false);
                     intent.putExtra(Const.iExtraBusiness, dbBusiness);
                     startActivity(intent);
@@ -156,7 +131,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                 CustomTabActivityHelper.openCustomTab(
                         this,
                         intentBuilder.build(),
-                        Uri.parse("http://conversachat.com"),
+                        Uri.parse("http://conversachat.com/terms"),
                         new WebviewFallback());
                 break;
             }
@@ -175,7 +150,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                 CustomTabActivityHelper.openCustomTab(
                         this,
                         intentBuilder.build(),
-                        Uri.parse("http://conversachat.com"),
+                        Uri.parse("http://conversachat.com/feedback"),
                         new WebviewFallback());
                 break;
             }
@@ -262,8 +237,68 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
         }
     };
 
-    public boolean isFragmentActive() {
-        return !isFinishing();
+    private class SupportInfoTask extends AsyncTask<String, Void, dbBusiness> {
+
+        private Context context;
+        private DialogInterface dialogInterface;
+
+        public SupportInfoTask (Context context, DialogInterface dialogInterface) {
+            this.dialogInterface = dialogInterface;
+            this.context = context;
+        }
+
+        @Override
+        protected dbBusiness doInBackground(String... params) {
+            ParseQuery<Business> query = ParseQuery.getQuery(Business.class);
+            query.whereEqualTo(Const.kBusinessActiveKey, true);
+            query.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
+            query.whereDoesNotExist(Const.kBusinessBusinessKey);
+
+            try {
+                Business object = query.get("E5ZE2sr0tx");
+                dbBusiness dbBusiness = new dbBusiness();
+                dbBusiness.setBusinessId("E5ZE2sr0tx");
+                dbBusiness.setDisplayName(object.getDisplayName());
+                dbBusiness.setConversaId(object.getConversaID());
+                dbBusiness.setAbout(object.getAbout());
+
+                if (object.getAvatar() != null)
+                    dbBusiness.setAvatarThumbFileId(object.getAvatar().getUrl());
+
+                return dbBusiness;
+            } catch (ParseException e) {
+                if (AppActions.validateParseException(e)) {
+                    AppActions.appLogout(getApplicationContext(), true);
+                }
+
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(dbBusiness result) {
+            dialogInterface.dismiss();
+            if (result == null) {
+                new MaterialDialog.Builder(context)
+                        .title(R.string.sett_help_dialog_title)
+                        .content(R.string.sett_help_dialog_message_error)
+                        .positiveText(android.R.string.ok)
+                        .positiveColorRes(R.color.black)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            } else {
+                Intent intent = new Intent(context, ActivityProfile.class);
+                intent.putExtra(Const.iExtraAddBusiness, true);
+                intent.putExtra(Const.iExtraBusiness, result);
+                startActivity(intent);
+            }
+        }
+
     }
 
 }

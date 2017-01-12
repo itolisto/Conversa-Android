@@ -67,8 +67,12 @@ public class DownloadFileJob extends Job {
                                 bitmap, dbmessage.getId())
                 );
 
-                EventBus.getDefault().post(new MessageUpdateEvent(dbmessage,
-                        MessageUpdateReason.FILE_DOWNLOAD));
+                ConversaApp.getInstance(getApplicationContext())
+                        .getDB()
+                        .updateDeliveryStatus(dbmessage.getId(), DeliveryStatus.statusReceived);
+                dbmessage.setDeliveryStatus(DeliveryStatus.statusReceived);
+                EventBus.getDefault().post(
+                        new MessageUpdateEvent(dbmessage, MessageUpdateReason.FILE_DOWNLOAD));
                 return;
             } else {
                 Logger.error(TAG, "Request received unsuccessful response code: " + response.code());
@@ -77,9 +81,12 @@ public class DownloadFileJob extends Job {
             Logger.error(TAG, "Image download error: " + e.getMessage());
         }
 
+        ConversaApp.getInstance(getApplicationContext())
+                .getDB()
+                .updateDeliveryStatus(dbmessage.getId(), DeliveryStatus.statusParseError);
         dbmessage.setDeliveryStatus(DeliveryStatus.statusParseError);
-        EventBus.getDefault().post(new MessageUpdateEvent(dbmessage,
-                MessageUpdateReason.STATUS));
+        EventBus.getDefault().post(
+                new MessageUpdateEvent(dbmessage, MessageUpdateReason.FILE_DOWNLOAD));
     }
 
     @Override
