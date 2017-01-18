@@ -176,11 +176,6 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     }
 
     @Override
-    public void onNewIntent(Intent intent) {
-        this.setIntent(intent);
-    }
-
-    @Override
     protected void initialization() {
         super.initialization();
 
@@ -296,24 +291,6 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     };
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Branch branch = Branch.getInstance();
-        branch.initSession(new Branch.BranchReferralInitListener(){
-            @Override
-            public void onInitFinished(JSONObject referringParams, BranchError error) {
-                if (error == null) {
-                    // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
-                    // params will be empty if no data found
-                    // ... insert custom logic here ...
-                } else {
-                    Logger.error("MyApp", error.getMessage());
-                }
-            }
-        }, this.getIntent().getData(), this);
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.topLevelLayout: {
@@ -360,29 +337,27 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             case R.id.btnShare: {
                 Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
 
+                Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
+                String avatar = "";
+
+                if (uri != null) {
+                    avatar = businessObject.getAvatarThumbFileId();
+                }
+
                 BranchUniversalObject branchUniversalObject = new BranchUniversalObject()
-                        .setCanonicalIdentifier("item/12345")
-                        .setTitle("My Content Title")
-                        .setContentDescription("My Content Description")
-                        .setContentImageUrl("https://example.com/mycontent-12345.png")
+                        .setCanonicalIdentifier(businessObject.getBusinessId())
+                        .setTitle(businessObject.getDisplayName())
+                        .setContentDescription("profile_share")
                         .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                        .addContentMetadata("property1", "blue")
-                        .addContentMetadata("property2", "red");
+                        .addContentMetadata(Const.kBranchBusinessIdKey, businessObject.getBusinessId())
+                        .addContentMetadata(Const.kBranchBusinessNameKey, businessObject.getDisplayName())
+                        .addContentMetadata(Const.kBranchBusinessConversaIdKey, businessObject.getConversaId())
+                        .addContentMetadata(Const.kBranchBusinessAvatarKey, avatar);
 
                 LinkProperties linkProperties = new LinkProperties()
-                        .setChannel("facebook")
-                        .setFeature("sharing")
-                        .addControlParameter("$desktop_url", "http://example.com/home")
-                        .addControlParameter("$ios_url", "http://example.com/ios");
-
-//                branchUniversalObject.generateShortUrl(this, linkProperties, new Branch.BranchLinkCreateListener() {
-//                    @Override
-//                    public void onLinkCreate(String url, BranchError error) {
-//                        if (error == null) {
-//                            Logger.error("MyApp", "got my Branch link to share: " + url);
-//                        }
-//                    }
-//                });
+                        .setChannel("user_android")
+                        .setFeature("user_share")
+                        .addControlParameter("$fallback_url", "http://www.conversachat.com");
 
                 ShareSheetStyle shareSheetStyle = new ShareSheetStyle(this, "Check this out!", "This stuff is awesome: ")
                         .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")

@@ -24,15 +24,21 @@ public class AppActions {
                 e.getCode() == ParseException.INVALID_LINKED_SESSION);
     }
 
-    public static void appLogout(Context context, boolean invalidSession) {
-        ConversaApp.getInstance(context).getPreferences().cleanSharedPreferences();
+    public static void appLogout(final Context context, boolean invalidSession) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!ConversaApp.getInstance(context).getDB().deleteDatabase())
+                    Logger.error("Logout", "An error has occurred while removing databased. Database not removed");
+                // Clean shared preferences
+                ConversaApp.getInstance(context).getPreferences().cleanSharedPreferences();
+            }
+        }).start();
 
-        if (!ConversaApp.getInstance(context).getDB().deleteDatabase())
-            Logger.error("Logout", "An error has occurred while removing databased. Database not removed");
-
-        Collection<String> tempList = new ArrayList<>(2);
+        Collection<String> tempList = new ArrayList<>(3);
         tempList.add("upbc");
         tempList.add("upvt");
+        tempList.add("usertype");
         OneSignal.deleteTags(tempList);
         OneSignal.clearOneSignalNotifications();
         OneSignal.setSubscription(false);

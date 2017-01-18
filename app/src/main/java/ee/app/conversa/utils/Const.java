@@ -107,4 +107,8 @@ public class Const {
 	public static final String iExtraAddBusiness = "iExtraAddBusiness";
 	public static final String iExtraPosition = "iExtraAddBusiness";
 
+	public static final String kBranchBusinessIdKey = "objectId";
+	public static final String kBranchBusinessNameKey = "name";
+	public static final String kBranchBusinessConversaIdKey = "conversaid";
+	public static final String kBranchBusinessAvatarKey = "avatar";
 }

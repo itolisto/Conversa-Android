@@ -181,10 +181,12 @@ public class MySQLiteHelper {
     }
 
     private SQLiteDatabase openDatabase() throws SQLException {
+        deleteDataAssociatedWithUser(null, 0, true);
         return myDbHelper.getWritableDatabase();
     }
 
     public boolean deleteDatabase() {
+        deleteDataAssociatedWithUser(null, 0, true);
         return context.deleteDatabase(DATABASE_NAME);
     }
 
@@ -239,14 +241,30 @@ public class MySQLiteHelper {
     }
 
     @WorkerThread
-    public void deleteDataAssociatedWithUser(String ids, int total) {
-        String query = "SELECT " + sBusinessAvatarFile + "," + sBusinessBusinessId + " FROM "
-                + TABLE_CV_CONTACTS + " WHERE " + COLUMN_ID + " IN (" + ids + ")";
+    public void deleteDataAssociatedWithUser(String ids, int total, boolean allUsers) {
+        String query;
+
+        if (allUsers) {
+            query = "SELECT " + sBusinessAvatarFile + "," + sBusinessBusinessId + " FROM "
+                    + TABLE_CV_CONTACTS;
+        } else {
+            query = "SELECT " + sBusinessAvatarFile + "," + sBusinessBusinessId + " FROM "
+                    + TABLE_CV_CONTACTS + " WHERE " + COLUMN_ID + " IN (" + ids + ")";
+        }
 
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
-        List<String> avatars = new ArrayList<>(total);
-        List<String> business = new ArrayList<>(total);
+
+        List<String> avatars;
+        List<String> business;
+
+        if (allUsers) {
+            avatars = new ArrayList<>(cursor.getCount());
+            business = new ArrayList<>(cursor.getCount());
+        } else {
+            avatars = new ArrayList<>(total);
+            business = new ArrayList<>(total);
+        }
 
         while (!cursor.isAfterLast()) {
             avatars.add(cursor.getString(0));
@@ -262,13 +280,13 @@ public class MySQLiteHelper {
                 File file = new File(avatars.get(i));
                 try {
                     file.delete();
-                } catch (SecurityException e) {
+                } catch (Exception e) {
                     Logger.error("deleteDataAssociated", e.getMessage());
                 }
             }
         }
 
-        // 132 is the min string. It happens when only one user is deleted
+        // 15 is the min string. It happens when only one user is deleted
         StringBuilder objectIds = new StringBuilder(15);
         for (i = 0; i < business.size(); i++) {
             objectIds.append("\'");
@@ -279,32 +297,11 @@ public class MySQLiteHelper {
             }
         }
 
-        StringBuilder sb = new StringBuilder(132);
         // Delete data associated with messages
-        sb.append("SELECT ");
-        sb.append(sMessageLocalUrl);
-        sb.append(" FROM ");
-        sb.append(TABLE_MESSAGES);
-        sb.append(" WHERE ");
-        sb.append(sMessageType);
-        sb.append(" NOT IN (\'");
-        sb.append(Const.kMessageTypeLocation);
-        sb.append("\',\'");
-        sb.append(Const.kMessageTypeText);
-        sb.append("\')");
-        sb.append(" AND (");
-        sb.append(sMessageFromUserId);
-        sb.append(" IN (");
-        sb.append(objectIds);
-        sb.append(")");
-        sb.append(" OR ");
-        sb.append(sMessageToUserId);
-        sb.append(" IN (");
-        sb.append(objectIds);
-        sb.append(")");
-        sb.append(")");
-
-        query = sb.toString();
+        query = "SELECT " + sMessageLocalUrl + " FROM " + TABLE_MESSAGES + " WHERE " +
+                sMessageType + " NOT IN (\'" + Const.kMessageTypeLocation + "\',\'" +
+                Const.kMessageTypeText + "\')" + " AND (" + sMessageFromUserId + " IN (" +
+                objectIds + ")" + " OR " + sMessageToUserId + " IN (" + objectIds + ")" + ")";
 
         cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
@@ -314,7 +311,7 @@ public class MySQLiteHelper {
                 File file = new File(cursor.getString(0));
                 try {
                     file.delete();
-                } catch (SecurityException e) {
+                } catch (Exception e) {
                     Logger.error("deleteDataAssociated", e.getMessage());
                 }
             }
@@ -327,7 +324,7 @@ public class MySQLiteHelper {
     public void deleteContactsById(List<String> customer) {
         String args = TextUtils.join(",", customer);
         // Delete avatars/images/videos/audios associated with contact list
-        deleteDataAssociatedWithUser(args, customer.size());
+        deleteDataAssociatedWithUser(args, customer.size(), false);
         openDatabase().execSQL(String.format("DELETE FROM " + TABLE_CV_CONTACTS
                 + " WHERE " + COLUMN_ID + " IN (%s);", args));
     }

@@ -122,9 +122,15 @@
                     android:layout_toRightOf="@id/mtvPassword" />
             </RelativeLayout>
 
+            <View
+                android:background="@drawable/divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_divider_height"/>
+
             <ee.app.conversa.view.BoldTextView
                 android:text="@string/sett_account_privacy_title"
                 android:textAllCaps="true"
+                android:layout_marginTop="14dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -174,6 +180,11 @@
                     android:textColor="@color/red"
                     android:text="@string/sett_account_logout_title" />
             </RelativeLayout>
+
+            <View
+                android:background="@drawable/divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_divider_height"/>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

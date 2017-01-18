@@ -26,7 +26,6 @@ package ee.app.conversa;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.media.SoundPool;
 import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.LocalBroadcastManager;
@@ -39,8 +38,8 @@ import com.birbit.android.jobqueue.log.CustomLogger;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.github.stkent.bugshaker.BugShaker;
-import com.github.stkent.bugshaker.flow.dialog.AlertDialogType;
+import com.instabug.library.Instabug;
+import com.instabug.library.invocation.InstabugInvocationEvent;
 import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -68,8 +67,6 @@ import io.fabric.sdk.android.Fabric;
  */
 public class ConversaApp extends MultiDexApplication {
 
-	private SoundPool soundsSent;
-	private SoundPool soundsReceived;
 	private JobManager jobManager;
 	private Typeface mTfRalewayThin;
     private Typeface mTfRalewayLight;
@@ -106,41 +103,8 @@ public class ConversaApp extends MultiDexApplication {
 		initializeDeveloperBuild();
 		initializeJobManager();
 		initializeEventBus();
-		initializeBugShaker();
+		initializeInstabug();
 		initializeTypefaces();
-
-//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//			AudioAttributes attributes = new AudioAttributes.Builder()
-//					.setUsage(AudioAttributes.USAGE_NOTIFICATION)
-//					.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-//					.build();
-//			soundsSent = new SoundPool.Builder()
-//					.setAudioAttributes(attributes)
-//					.build();
-//			soundsReceived = new SoundPool.Builder()
-//					.setAudioAttributes(attributes)
-//					.build();
-//		} else {
-//			soundsSent = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
-//			soundsReceived = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
-//		}
-//
-//		soundsSent.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-//			@Override
-//			public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-//				/** soundId for Later handling of sound pool **/
-//				// in 2nd param u have to pass your desire ringtone
-//				int soundId;
-//
-//				if (sound) {
-//					soundId = sounds.load(getApplicationContext(), R.raw.message_sent, 1);
-//				} else {
-//					soundId = sounds.load(getApplicationContext(), R.raw.message_received, 1);
-//				}
-//
-//				sounds.play(soundId, 0.99f, 0.99f, 1, 0, 0.99f);
-//			}
-//		});
 	}
 
 	private void initializeFabric() {
@@ -243,17 +207,6 @@ public class ConversaApp extends MultiDexApplication {
 				.loadFactor(3)//3 jobs per consumer
 				.consumerKeepAlive(120);//wait 2 minute
 
-//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//			builder.scheduler(FrameworkJobSchedulerService.createSchedulerFor(this,
-//					MyJobService.class), true);
-//		} else {
-//			int enableGcm = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-//			if (enableGcm == ConnectionResult.SUCCESS) {
-//				builder.scheduler(GcmJobSchedulerService.createSchedulerFor(this,
-//						MyGcmJobService.class), true);
-//			}
-//		}
-
 		jobManager = new JobManager(builder.build());
 	}
 
@@ -264,15 +217,10 @@ public class ConversaApp extends MultiDexApplication {
 				.throwSubscriberException(BuildConfig.DEV_BUILD).installDefaultEventBus();
 	}
 
-	private void initializeBugShaker() {
-		BugShaker.get(this)
-				.setEmailAddresses("appconversa@gmail.com")   // required
-				.setEmailSubjectLine("Bug reported") // optional
-				.setAlertDialogType(AlertDialogType.NATIVE) // optional
-				.setLoggingEnabled(BuildConfig.DEV_BUILD)   // optional
-				.setIgnoreFlagSecure(true)                  // optional
-				.assemble()                                 // required
-				.start();                                   // required
+	private void initializeInstabug() {
+		new Instabug.Builder(this, "ea5b94f87bd996b1149b73bab3e148a7")
+				.setInvocationEvent(InstabugInvocationEvent.SHAKE)
+				.build();
 	}
 
 	private void initializeTypefaces() {

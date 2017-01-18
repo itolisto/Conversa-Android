@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ee.app.conversa">
 
     <uses-feature android:name="android.hardware.camera2.full" />
@@ -12,6 +13,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove">
+    </uses-permission>
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <uses-feature android:glEsVersion="0x00020000"
@@ -66,7 +69,20 @@
         <activity
             android:name="ee.app.conversa.ActivityMain"
             android:screenOrientation="portrait"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <data android:scheme="conversaapp" android:host="open" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="9ozf.test-app.link" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="ee.app.conversa.ActivitySignIn"
@@ -111,7 +127,7 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustResize"
-            android:parentActivityName="ee.app.conversa.ActivityMain" />
+            android:parentActivityName="ee.app.conversa.ActivityMain"/>
 
         <activity
             android:name="ee.app.conversa.ActivityImageDetail"
@@ -126,11 +142,6 @@
 
         <activity
             android:name="ee.app.conversa.ActivityCameraCrop"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
-        <activity
-            android:name="ee.app.conversa.browser.WebViewActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
 
@@ -164,6 +175,11 @@
             android:excludeFromRecents="true" />
 
         <activity
+            android:name="ee.app.conversa.browser.WebViewActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop" />
+
+        <activity
             android:name="com.afollestad.materialcamera.CaptureActivity"
             android:theme="@style/MaterialCamera.CaptureActivity" />
         <activity
@@ -185,12 +201,12 @@
             android:value="AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY" />
 
         <meta-data
-            android:name="io.branch.sdk.BranchKey"
-            android:value="key_test_ndl297oYX8yqRLgyhnRoLpidDuc2i3tr" />
-
-        <meta-data
             android:name="io.fabric.ApiKey"
             android:value="617c5ff8d2055123134c25a4b496d078123ef1da" />
+
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="key_test_ndl297oYX8yqRLgyhnRoLpidDuc2i3tr" />
 
         <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
             <intent-filter>
