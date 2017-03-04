@@ -18,9 +18,4 @@
             <enum name="rectangle" value="0"/>
         </attr>
     </declare-styleable>
-
-    <declare-styleable name="CustomTitlePreference">
-        <attr name="titleColor" format="reference"/>
-        <attr name="summaryColor" format="reference"/>
-    </declare-styleable>
 </resources>

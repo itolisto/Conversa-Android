@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,8 +35,6 @@ import java.util.regex.Pattern;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-
-import static ee.app.conversa.settings.language.DynamicLanguage.getSelectedLocale;
 
 /**
  * Utils
@@ -71,13 +68,10 @@ public class Utils {
 		}
 	}
 
-	public static int checkDate(String date, Context context) {
+	public static int checkDate(int year, int month, int day) {
 		try {
-			SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", getSelectedLocale(context));
-			df.setLenient(false);
-			Date dDate = df.parse(date);
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(dDate);
+			calendar.set(year, month, day);
 
 			Calendar today = Calendar.getInstance();
 			int age = today.get(Calendar.YEAR) - calendar.get(Calendar.YEAR);
@@ -91,7 +85,7 @@ public class Utils {
 			}
 
 			return 2;
-		} catch (NullPointerException|IllegalArgumentException|ParseException e) {
+		} catch (NullPointerException|IllegalArgumentException e) {
 			return 1;
 		}
 	}
@@ -208,6 +202,22 @@ public class Utils {
 				return DateFormat.format("KK:mm a", cal).toString();
 			}
 		}
+	}
+
+	public static boolean deleteFile(File file) {
+		boolean deletedAll = true;
+		if (file != null) {
+			if (file.isDirectory()) {
+				String[] children = file.list();
+				for (int i = 0; i < children.length; i++) {
+					deletedAll = deleteFile(new File(file, children[i])) && deletedAll;
+				}
+			} else {
+				deletedAll = file.delete();
+			}
+		}
+
+		return deletedAll;
 	}
 
 	public static File getMediaDirectory(Context context, String folder) throws Exception {

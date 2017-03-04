@@ -28,7 +28,7 @@
         <Button
             android:id="@+id/btnFeedback"
             android:layout_above="@id/vDivider"
-            android:text="@string/sett_help_feedback_title"
+            android:text="@string/sett_help_agent_title"
             android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

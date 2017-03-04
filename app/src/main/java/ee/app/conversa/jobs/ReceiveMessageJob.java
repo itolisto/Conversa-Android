@@ -21,7 +21,7 @@ import ee.app.conversa.delivery.DeliveryStatus;
 import ee.app.conversa.dialog.PushNotification;
 import ee.app.conversa.events.contact.ContactSaveEvent;
 import ee.app.conversa.events.message.MessageIncomingEvent;
-import ee.app.conversa.model.database.NotificationInformation;
+import ee.app.conversa.model.database.dbNotificationInformation;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.parse.Business;
@@ -101,11 +101,13 @@ public class ReceiveMessageJob extends Job {
             dbbusiness.setConversaId(customer.getConversaID());
             dbbusiness.setAbout(customer.getAbout());
 
-            if (customer.getAvatar() != null) {
-                if (!TextUtils.isEmpty(customer.getAvatar().getUrl())) {
-                    dbbusiness.setAvatarThumbFileId(customer.getAvatar().getUrl());
+            try {
+                if (customer.getAvatar() != null) {
+                    if (!TextUtils.isEmpty(customer.getAvatar().getUrl())) {
+                        dbbusiness.setAvatarThumbFileId(customer.getAvatar().getUrl());
+                    }
                 }
-            }
+            } catch (Exception ignored) {}
 
             ConversaApp.getInstance(getApplicationContext()).getDB().saveContact(dbbusiness);
 
@@ -154,6 +156,9 @@ public class ReceiveMessageJob extends Job {
                 break;
         }
 
+        if (additionalData.optBoolean("agent", false))
+            dbmessage.setConversaAgent('Y');
+
         ConversaApp.getInstance(getApplicationContext()).getDB().saveMessage(dbmessage);
 
         if (dbmessage.getId() == -1) {
@@ -166,7 +171,7 @@ public class ReceiveMessageJob extends Job {
                     .getPreferences().getPushNotificationPreview()) {
 
                 // Autoincrement count
-                NotificationInformation summary = ConversaApp.getInstance(getApplicationContext())
+                dbNotificationInformation summary = ConversaApp.getInstance(getApplicationContext())
                         .getDB().getGroupInformation(contactId);
 
                 if (summary.getNotificationId() == -1) {

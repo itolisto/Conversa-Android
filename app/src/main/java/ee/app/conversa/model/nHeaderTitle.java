@@ -6,19 +6,13 @@ package ee.app.conversa.model;
 public class nHeaderTitle {
 
     private final String headerName;
-    private final int relevance;
 
-    public nHeaderTitle(String headerName, int relevance) {
+    public nHeaderTitle(String headerName) {
         this.headerName = headerName;
-        this.relevance = relevance;
     }
 
     public String getHeaderName() {
         return headerName;
-    }
-
-    public int getRelevance() {
-        return relevance;
     }
 
 }

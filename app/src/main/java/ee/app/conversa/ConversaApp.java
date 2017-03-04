@@ -51,8 +51,6 @@ import ee.app.conversa.events.MyEventBusIndex;
 import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
-import ee.app.conversa.model.parse.BusinessCategory;
-import ee.app.conversa.model.parse.bCategory;
 import ee.app.conversa.notifications.onesignal.CustomNotificationOpenedHandler;
 import ee.app.conversa.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversa.settings.Preferences;
@@ -140,21 +138,19 @@ public class ConversaApp extends MultiDexApplication {
 	private void initializeParse() {
 		// Register subclassing for using as Parse objects
 		ParseObject.registerSubclass(Account.class);
-		ParseObject.registerSubclass(bCategory.class);
 		ParseObject.registerSubclass(Business.class);
-		ParseObject.registerSubclass(BusinessCategory.class);
 
 		// Initialize Parse.
-		Parse.initialize(this, "39H1RFC1jalMV3cv8pmDGPRh93Bga1mB4dyxbLwl", "YC3vORNGt6I4f8yEsO6TyGF97XbmitofOrrS5PCC");
-
-//		You need to enable the local datastore inside your initialization command, not before like it used to be.
-//		Parse.initialize(new Parse.Configuration.Builder(this)
-//			.applicationId("yourappid")
-//			.clientKey("yourclientkey")
-//			.server("serverurl")
-//			.enableLocalDataStore()
-//			.build()
-//		);
+		Parse.initialize(new Parse.Configuration.Builder(this)
+				.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
+				.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
+				.server("http://ec2-52-71-125-28.compute-1.amazonaws.com:1337/parse/")
+				// Localhost
+//				.applicationId("b15c83")
+//				.clientKey(null)
+//				.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
+				.build()
+		);
 	}
 
 	private void initializeDeveloperBuild() {

@@ -11,30 +11,21 @@ import java.util.List;
 import ee.app.conversa.R;
 import ee.app.conversa.holders.BaseHolder;
 import ee.app.conversa.holders.BusinessViewHolder;
-import ee.app.conversa.holders.HeaderViewHolder;
+import ee.app.conversa.holders.NHeaderViewHolder;
 import ee.app.conversa.holders.LoaderViewHolder;
-import ee.app.conversa.interfaces.OnBusinessClickListener;
 import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.nHeaderTitle;
-import ee.app.conversa.model.parse.Business;
 
 public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
 
     private final AppCompatActivity mActivity;
     private List<Object> mBusiness;
-    private OnBusinessClickListener listener;
     private OnContactClickListener localListener;
 
     private final int HEADER_TYPE = 1;
     private final int BUSINESS_TYPE = 2;
     private final int LOAD_TYPE = 3;
-
-    public BusinessAdapter(AppCompatActivity activity, OnBusinessClickListener listener) {
-        this.mActivity = activity;
-        this.mBusiness = new ArrayList<>();
-        this.listener = listener;
-    }
 
     public BusinessAdapter(AppCompatActivity activity, OnContactClickListener localListener) {
         this.mActivity = activity;
@@ -47,7 +38,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
         Object object = mBusiness.get(position);
         if (object instanceof nHeaderTitle) {
             return HEADER_TYPE;
-        } else if (object instanceof Business || object instanceof dbBusiness) {
+        } else if (object instanceof dbBusiness) {
             return BUSINESS_TYPE;
         } else {
             return LOAD_TYPE;
@@ -62,7 +53,7 @@ public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
     @Override
     public BaseHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == HEADER_TYPE) {
-            return new HeaderViewHolder(
+            return new NHeaderViewHolder(
                     LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.category_header, parent, false),
                     this.mActivity);
@@ -83,12 +74,10 @@ public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
     public void onBindViewHolder(BaseHolder holder, int i) {
         Object object = mBusiness.get(i);
 
-        if (object.getClass().equals(Business.class)) {
-            ((BusinessViewHolder) holder).setBusiness(object, listener);
-        } else if (object.getClass().equals(dbBusiness.class)) {
+        if (object.getClass().equals(dbBusiness.class)) {
             ((BusinessViewHolder) holder).setBusiness(object, localListener);
         } else if (object.getClass().equals(nHeaderTitle.class)) {
-            ((HeaderViewHolder) holder).setHeaderTitle(((nHeaderTitle) object).getHeaderName());
+            ((NHeaderViewHolder) holder).setHeaderTitle(((nHeaderTitle) object).getHeaderName());
         }
     }
 
@@ -115,9 +104,10 @@ public class BusinessAdapter extends RecyclerView.Adapter<BaseHolder> {
         notifyItemRangeInserted(position, business.size());
     }
 
-    public void addItems(List<Business> business) {
+    public void addItems(List<dbBusiness> business) {
+        int position = mBusiness.size();
         mBusiness.addAll(business);
-        notifyItemRangeInserted(mBusiness.size(), business.size());
+        notifyItemRangeInserted(position, business.size());
     }
 
     public void clear() {

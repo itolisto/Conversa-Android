@@ -18,7 +18,7 @@
             android:layout_height="1dp"/>
 
         <ImageView
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="7dp"
             android:src="@drawable/ic_no_conection"
             android:scaleType="centerInside"
             android:layout_centerHorizontal="true"
@@ -28,7 +28,6 @@
 
         <ee.app.conversa.view.LightTextView
             android:id="@+id/ltvNoConnection"
-            android:layout_marginTop="2dp"
             android:layout_centerHorizontal="true"
             android:textColor="@color/gray"
             android:text="@string/no_internet_connection"
@@ -66,15 +65,20 @@
         android:id="@+id/srlCategories"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvCategories"
-            android:visibility="gone"
+        <FrameLayout
+            android:id="@+id/flContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:cacheColorHint="@android:color/transparent"
-            android:divider="@null"
-            android:listSelector="@android:color/transparent"
-            android:overScrollMode="never" />
+            android:layout_height="match_parent">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvCategories"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cacheColorHint="@android:color/transparent"
+                    android:divider="@null"
+                    android:listSelector="@android:color/transparent"
+                    android:overScrollMode="never" />
+        </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

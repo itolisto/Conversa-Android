@@ -175,7 +175,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
             }
         });
 
-        recentList.add(new nHeaderTitle(getString(R.string.recent_searches_title), 0));
+        recentList.add(new nHeaderTitle(getString(R.string.recent_searches_title)));
         recent.execute();
     }
 
@@ -206,7 +206,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
 
             future = tpe.submit(new Callable<String>() {
                 public String call() throws Exception {
-                    HashMap<String, Object> params = new HashMap<>();
+                    HashMap<String, Object> params = new HashMap<>(2);
                     params.put("search", searchWith);
                     params.put("skip", page);
                     try {
@@ -274,7 +274,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                 List<Object> allResults = new ArrayList<>(size);
 
                 if (page == 0) {
-                    allResults.add(new nHeaderTitle(getString(R.string.searches_top_results_title), 0));
+                    allResults.add(new nHeaderTitle(getString(R.string.searches_top_results_title)));
                 }
 
                 for (int i = 0; i < size; i++) {

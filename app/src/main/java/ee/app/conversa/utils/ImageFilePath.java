@@ -86,7 +86,7 @@ public class ImageFilePath {
             return uri.getPath();
         }
 
-        return null;
+        return uri.getPath();
     }
 
     /**

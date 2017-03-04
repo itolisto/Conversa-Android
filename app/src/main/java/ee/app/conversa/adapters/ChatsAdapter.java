@@ -63,8 +63,12 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                             holder.toggleActivate();
                             break;
                         }
+                        case "updatePosition" : {
+                            holder.updateLastMessage(mUsers.get(position).getBusinessId());
+                            break;
+                        }
                         case "updateLastMessage": {
-                            holder.updateLastMessage(mUsers.get(position));
+                            holder.updateLastMessage(mUsers.get(position).getBusinessId());
                             break;
                         }
                         case "updateView": {
@@ -135,7 +139,16 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                     mUsers.add(0, mUsers.remove(i));
                     notifyItemMoved(i, 0);
                 }
-                notifyItemChanged(0, "updateLastMessage");
+                notifyItemChanged(0, "updatePosition");
+                break;
+            }
+        }
+    }
+
+    public void updateContactLastMessage(String businessId) {
+        for (int i = 0; i < mUsers.size(); i++) {
+            if (mUsers.get(i).getBusinessId().equals(businessId)) {
+                notifyItemChanged(i, "updateLastMessage");
                 break;
             }
         }

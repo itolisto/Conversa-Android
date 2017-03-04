@@ -13,34 +13,39 @@ import ee.app.conversa.interfaces.OnCategoryClickListener;
 import ee.app.conversa.model.nCategory;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.viewholders.FlexibleViewHolder;
+
+import static ee.app.conversa.R.id.sdvCategoryImage;
+import static ee.app.conversa.R.id.tvCategoryTitle;
+import static ee.app.conversa.R.id.vDivider;
 
 /**
  * Created by edgargomez on 10/31/16.
  */
 
-public class CategoryViewHolder extends BaseHolder {
+public class CategoryViewHolder extends FlexibleViewHolder {
 
+    protected final AppCompatActivity activity;
     private OnCategoryClickListener listener;
-    public MediumTextView tvCategoryTitle;
-    public SimpleDraweeView sdvCategoryImage;
+    public SimpleDraweeView mSdvCategoryImage;
+    public MediumTextView mTvCategoryTitle;
     public nCategory category;
-    public View vDivider;
+    public View mVDivider;
 
-    public CategoryViewHolder(View itemView, AppCompatActivity activity, OnCategoryClickListener listener) {
-        super(itemView, activity);
-        this.tvCategoryTitle = (MediumTextView) itemView.findViewById(R.id.tvCategoryTitle);
-        this.sdvCategoryImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvCategoryImage);
-        this.vDivider = itemView.findViewById(R.id.vDivider);
-
+    public CategoryViewHolder(View view, FlexibleAdapter adapter, AppCompatActivity activity, OnCategoryClickListener listener) {
+        super(view, adapter, false);
+        this.mTvCategoryTitle = (MediumTextView) view.findViewById(tvCategoryTitle);
+        this.mSdvCategoryImage = (SimpleDraweeView) view.findViewById(sdvCategoryImage);
+        this.mVDivider = view.findViewById(vDivider);
         this.listener = listener;
-
-        itemView.setOnClickListener(this);
+        this.activity = activity;
     }
 
     public void setCategory(nCategory category) {
         this.category = category;
 
-        tvCategoryTitle.setText(category.getCategoryName(activity));
+        mTvCategoryTitle.setText(category.getCategoryName(activity));
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 activity.getResources().getDimensionPixelSize(R.dimen.category_item_divider_height));
@@ -52,21 +57,26 @@ public class CategoryViewHolder extends BaseHolder {
         }
 
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        vDivider.setLayoutParams(params);
+        mVDivider.setLayoutParams(params);
 
         Uri uri;
 
-        if(category.getAvatarUrl().isEmpty()) {
+        if (category.getAvatarUrl().isEmpty()) {
             uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
         } else {
             uri = Uri.parse(category.getAvatarUrl());
         }
 
-        sdvCategoryImage.setImageURI(uri);
+        mSdvCategoryImage.setImageURI(uri);
+    }
+
+    public void removeDivider(boolean remove) {
+        mVDivider.setVisibility(remove ? View.GONE : View.VISIBLE);
     }
 
     @Override
     public void onClick(View view) {
+        super.onClick(view);
         if (listener != null) {
             listener.onCategoryClick(category, itemView, getAdapterPosition());
         }

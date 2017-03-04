@@ -4,11 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="35dp">
 
+    <View
+        android:layout_alignParentTop="true"
+        android:background="@drawable/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/category_item_divider_height" />
+
     <ee.app.conversa.view.MediumTextView
         android:id="@+id/rtvHeader"
         android:maxLines="1"
         android:ellipsize="end"
         android:singleLine="true"
+        android:gravity="start"
         android:layout_marginLeft="35dp"
         android:layout_marginStart="35dp"
         android:layout_marginRight="0dp"

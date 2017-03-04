@@ -5,29 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".FragmentUsersChat" >
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:gravity="center"
         android:id="@+id/rlNoChats"
         android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-
-        <View
-            android:id="@+id/vDivider"
-            android:layout_height="1dp"
-            android:layout_width="match_parent"
-            android:layout_centerInParent="true"/>
-
-        <ee.app.conversa.view.MediumTextView
-            android:id="@+id/tvNoMessages"
-            android:text="@string/no_messages"
-            android:textColor="@color/gray"
-            android:layout_above="@id/vDivider"
-            android:layout_centerHorizontal="true"
-            android:textSize="24sp"
-            android:layout_marginBottom="7dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/tvNoUsers"
@@ -35,34 +19,45 @@
             android:layout_height="75dp"
             android:src="@drawable/ic_no_chats"
             android:layout_marginBottom="7dp"
-            android:layout_centerHorizontal="true"
-            android:layout_above="@id/tvNoMessages"
             android:scaleType="fitCenter" />
+
+        <ee.app.conversa.view.MediumTextView
+            android:id="@+id/tvNoMessages"
+            android:text="@string/no_messages"
+            android:textColor="#AAAAAA"
+            android:textSize="22sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <ee.app.conversa.view.LightTextView
             android:id="@+id/tvNoMessagesDescription"
             android:text="@string/no_messages_description_one"
-            android:textColor="@color/gray"
-            android:textSize="14sp"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp"
             android:gravity="center"
-            android:layout_below="@id/vDivider"
-            android:layout_centerHorizontal="true"
+            android:layout_marginTop="14dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <ee.app.conversa.view.BoldTextView
-            android:padding="9dp"
-            android:textSize="18sp"
+        <Button
+            android:textSize="12sp"
             android:layout_marginTop="14dp"
-            android:id="@+id/rtvStartBrowsing"
+            android:id="@+id/btnStartBrowsing"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
+            android:paddingEnd="12dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingStart="12dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:textAllCaps="false"
             android:text="@string/start_browsing"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/green"
-            android:background="@drawable/border_textview"
-            android:layout_below="@id/tvNoMessagesDescription" />
-    </RelativeLayout>
+            android:textColor="@drawable/textcolor_green_state"
+            android:background="@drawable/button_shape_green_border" />
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/lvUsers"

@@ -2,40 +2,48 @@ package ee.app.conversa;
 
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.graphics.Palette;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.TextView;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.request.BasePostprocessor;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.facebook.imagepipeline.request.Postprocessor;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.jobs.FavoriteJob;
@@ -46,13 +54,8 @@ import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
 import ee.app.conversa.view.RegularTextView;
-import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
-import io.branch.referral.BranchError;
-import io.branch.referral.SharingHelper;
 import io.branch.referral.util.BranchEvent;
-import io.branch.referral.util.LinkProperties;
-import io.branch.referral.util.ShareSheetStyle;
 
 /**
  * Created by edgargomez on 11/24/16.
@@ -75,7 +78,6 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     private boolean addAsContact;
     private boolean liked;
     private int followers;
-    private int rgb;
     private final int ANIM_DURATION = 500;
     // Profile views
     private SimpleDraweeView mSdvBusinessHeader;
@@ -128,16 +130,6 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     public void runEnterAnimation() {
         final long duration = (long) (ANIM_DURATION * sAnimatorScale) / 2;
 
-        // Set starting values for properties we're going to animate. These
-        // values scale and position the full size version down to the thumbnail
-        // size/location, from which we'll animate it back up
-//        mCvContainer.setPivotX(0);
-//        mCvContainer.setPivotY(0);
-//        mCvContainer.setScaleX(1);
-//        mCvContainer.setScaleY(1);
-//        mCvContainer.setTranslationX(0);
-//        mCvContainer.setTranslationY(0);
-
         // Animate scale and translation to go from thumbnail to full size
         mCvContainer.animate().setDuration(duration).
                 scaleX(1).scaleY(1).
@@ -184,19 +176,18 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             return;
         }
 
-        rgb = -3;
         liked = false;
 
         jobManager = ConversaApp.getInstance(this).getJobManager();
         mCvContainer = (CardView) findViewById(R.id.cvContainer);
         mVwStatus = findViewById(R.id.vStatus);
 
-        //mCvContainer.setClipToOutline(true);
-
         mBackground = new ColorDrawable(ResourcesCompat.getColor(getResources(),
                 R.color.profile_light_background, null));
+
         findViewById(R.id.topLevelLayout).setBackground(mBackground);
         findViewById(R.id.topLevelLayout).setOnClickListener(this);
+        mCvContainer.setOnClickListener(this);
 
         // Profile views
         mSdvBusinessHeader = (SimpleDraweeView) findViewById(R.id.sdvProfileHeader);
@@ -208,7 +199,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         mBtnFavorite = (Button) findViewById(R.id.btnFavorite);
 
         mMtvBusinessName.setText(businessObject.getDisplayName());
-        mBtvConversaId.setText("@".concat(businessObject.getConversaId()));
+        mBtvConversaId.setText(businessObject.getFormattedConversaId());
 
         Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
@@ -216,34 +207,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
         }
 
-        Postprocessor redMeshPostprocessor = new BasePostprocessor() {
-            @Override
-            public String getName() {
-                return "redMeshPostprocessor";
-            }
-
-            @Override
-            public void process(Bitmap bitmap) {
-                if (bitmap == null) {
-                    bitmap = BitmapFactory.decodeResource(getResources(),
-                            R.drawable.ic_business_default);
-                    rgb = -2;
-                }
-
-                Palette.from(bitmap).generate(paletteListener);
-            }
-        };
-
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                .setPostprocessor(redMeshPostprocessor)
-                .build();
-
-        PipelineDraweeController controller = (PipelineDraweeController)
-                Fresco.newDraweeControllerBuilder()
-                        .setImageRequest(request)
-                        .setOldController(mSdvBusinessImage.getController())
-                        .build();
-        mSdvBusinessImage.setController(controller);
+        mSdvBusinessImage.setImageURI(uri);
 
         mBtnFavorite.setOnClickListener(this);
         findViewById(R.id.btnStartChat).setOnClickListener(this);
@@ -260,8 +224,10 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         }
 
         // Call Parse for registry
-        HashMap<String, String> params = new HashMap<>(1);
-        params.put("business", businessObject.getBusinessId());
+        HashMap<String, String> params = new HashMap<>(3);
+        params.put("businessId", businessObject.getBusinessId());
+        params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
+
         ParseCloud.callFunctionInBackground("getBusinessProfile", params, new FunctionCallback<String>() {
             @Override
             public void done(String result, ParseException e) {
@@ -277,18 +243,6 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             }
         });
     }
-
-    Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
-        public void onGenerated(Palette palette) {
-            if (palette.getLightVibrantSwatch() != null) {
-                rgb = palette.getLightVibrantSwatch().getRgb();
-            } else if (palette.getLightMutedSwatch() != null) {
-                rgb = palette.getLightMutedSwatch().getRgb();
-            } else {
-                rgb = -1;
-            }
-        }
-    };
 
     @Override
     public void onClick(View v) {
@@ -325,6 +279,14 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                                 (getResources().getDrawable(R.drawable.ic_fav));
                     }
                 }
+
+                Animation animationScaleUp = AnimationUtils.loadAnimation(this, R.anim.pop_out);
+                Animation animationScaleDown = AnimationUtils.loadAnimation(this, R.anim.pop_in);
+
+                AnimationSet growShrink = new AnimationSet(true);
+                growShrink.addAnimation(animationScaleUp);
+                growShrink.addAnimation(animationScaleDown);
+                mBtnFavorite.startAnimation(growShrink);
                 break;
             }
             case R.id.btnStartChat: {
@@ -337,53 +299,52 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             case R.id.btnShare: {
                 Branch.getInstance(getApplicationContext()).userCompletedAction(BranchEvent.SHARE_STARTED);
 
-                Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
-                String avatar = "";
+                final Intent intent_one = new Intent(android.content.Intent.ACTION_SEND);
+                intent_one.setType("text/plain");
+                // Add data to the intent, the receiving app will decide what to do with it.
+                intent_one.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.settings_using_conversa));
+                intent_one.putExtra(Intent.EXTRA_TEXT, "https://conversa.link/" + businessObject.getConversaId());
 
-                if (uri != null) {
-                    avatar = businessObject.getAvatarThumbFileId();
+                final List<ResolveInfo> activities = getPackageManager().queryIntentActivities(intent_one, 0);
+
+                List<String> appNames = new ArrayList<>(2);
+                List<Drawable> appIcons = new ArrayList<>(2);
+
+                for (ResolveInfo info : activities) {
+                    appNames.add(info.loadLabel(getPackageManager()).toString());
+                    String packageName = info.activityInfo.packageName;
+
+                    try {
+                        Drawable icon = getPackageManager().getApplicationIcon(packageName);
+                        appIcons.add(icon);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            appIcons.add(getResources().getDrawable(R.drawable.ic_business_default, null));
+                        } else {
+                            appIcons.add(getResources().getDrawable(R.drawable.ic_business_default));
+                        }
+                    }
                 }
 
-                BranchUniversalObject branchUniversalObject = new BranchUniversalObject()
-                        .setCanonicalIdentifier(businessObject.getBusinessId())
-                        .setTitle(businessObject.getDisplayName())
-                        .setContentDescription("profile_share")
-                        .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                        .addContentMetadata(Const.kBranchBusinessIdKey, businessObject.getBusinessId())
-                        .addContentMetadata(Const.kBranchBusinessNameKey, businessObject.getDisplayName())
-                        .addContentMetadata(Const.kBranchBusinessConversaIdKey, businessObject.getConversaId())
-                        .addContentMetadata(Const.kBranchBusinessAvatarKey, avatar);
+                ListAdapter adapter = new ArrayAdapterWithIcon(this, appNames, appIcons);
 
-                LinkProperties linkProperties = new LinkProperties()
-                        .setChannel("user_android")
-                        .setFeature("user_share")
-                        .addControlParameter("$fallback_url", "http://www.conversachat.com");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getString(R.string.settings_share_conversa));
+                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ResolveInfo info = activities.get(which);
+                        //if (info.activityInfo.packageName.equals("com.facebook.katana")) {
+                        // Facebook was chosen
+                        //}
+                        // Start the selected activity
+                        intent_one.setPackage(info.activityInfo.packageName);
+                        startActivity(intent_one);
+                    }
+                });
 
-                ShareSheetStyle shareSheetStyle = new ShareSheetStyle(this, "Check this out!", "This stuff is awesome: ")
-                        .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
-                        .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
-                        .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
-                        .addPreferredSharingOption(SharingHelper.SHARE_WITH.EMAIL)
-                        .setAsFullWidthStyle(true)
-                        .setSharingTitle("Share With");
-
-                branchUniversalObject.showShareSheet(this,
-                        linkProperties,
-                        shareSheetStyle,
-                        new Branch.BranchLinkShareListener() {
-                            @Override
-                            public void onShareLinkDialogLaunched() {
-                            }
-                            @Override
-                            public void onShareLinkDialogDismissed() {
-                            }
-                            @Override
-                            public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
-                            }
-                            @Override
-                            public void onChannelSelected(String channelName) {
-                            }
-                        });
+                AlertDialog share = builder.create();
+                share.show();
                 break;
             }
             case R.id.btnCloseProfile: {
@@ -401,7 +362,6 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
     public void onBackPressed() {
         runExitAnimation(new Runnable() {
             public void run() {
-                // *Now* go ahead and exit the activity
                 finish();
             }
         });
@@ -414,19 +374,6 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
 
                 followers = jsonRootObject.optInt("followers", 0);
                 String headerUrl = jsonRootObject.optString("header", null);
-                String daySpecial = jsonRootObject.optString("daySpecial", null);
-                String website = jsonRootObject.optString("website", null);
-                boolean delivery = jsonRootObject.optBoolean("delivery", false);
-                JSONArray openOn = jsonRootObject.optJSONArray("openOn");
-                String number = jsonRootObject.optString("number", null);
-                boolean multiple = jsonRootObject.optBoolean("multiple", false);
-                boolean online = jsonRootObject.optBoolean("online", false);
-                String promo = jsonRootObject.optString("promo", null);
-                String promoTextColor = jsonRootObject.optString("promoColor", null);
-                String promoBackground = jsonRootObject.optString("promoBack", null);
-                JSONArray tags = jsonRootObject.optJSONArray("tags");
-                boolean verified = jsonRootObject.optBoolean("verified", false);
-                long since = jsonRootObject.optLong("since", 0L);
                 boolean favorite = jsonRootObject.optBoolean("favorite", false);
                 int status = jsonRootObject.optInt("status", 0);
 
@@ -485,6 +432,31 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
             Logger.error("parseResult", e.getMessage());
         } finally {
             mBtnFavorite.setEnabled(true);
+        }
+    }
+
+    public class ArrayAdapterWithIcon extends ArrayAdapter<String> {
+
+        private List<Drawable> images;
+
+        ArrayAdapterWithIcon(Context context, List<String> items, List<Drawable> images) {
+            super(context, android.R.layout.select_dialog_item, items);
+            this.images = images;
+        }
+
+        @Override
+        public @NonNull View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(images.get(position), null, null, null);
+            } else {
+                textView.setCompoundDrawablesWithIntrinsicBounds(images.get(position), null, null, null);
+            }
+            textView.setCompoundDrawablePadding(
+                    (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, getContext().getResources().getDisplayMetrics()));
+            return view;
         }
     }
 

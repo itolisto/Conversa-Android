@@ -12,27 +12,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.interfaces.OnBusinessClickListener;
+import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.model.database.dbBusiness;
-import ee.app.conversa.model.parse.Business;
-import ee.app.conversa.model.parse.BusinessCategory;
-import ee.app.conversa.model.parse.bCategory;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.Logger;
 
-public class ActivityBusiness extends ConversaActivity implements OnBusinessClickListener {
+public class ActivityBusiness extends ConversaActivity implements OnContactClickListener {
 
     private RelativeLayout mRlNoConnection;
     private AVLoadingIndicatorView mPbLoadingCategory;
@@ -118,31 +119,12 @@ public class ActivityBusiness extends ConversaActivity implements OnBusinessClic
             if (page == 0)
                 mPbLoadingCategory.smoothToShow();
 
-            ParseQuery<BusinessCategory> query = ParseQuery.getQuery(BusinessCategory.class);
-            Collection<String> collection = new ArrayList<>();
-            collection.add(Const.kBusinessCategoryBusinessKey);
-            query.selectKeys(collection);
-
-            String cat = Const.kBusinessCategoryBusinessKey.concat(".").concat(Const.kBusinessBusinessInfoKey);
-            query.include(cat);
-            query.whereEqualTo(Const.kBusinessCategoryCategoryKey, ParseObject.createWithoutData(bCategory.class, categoryId));
-            query.whereEqualTo(Const.kBusinessCategoryActiveKey, true);
-
-            ParseQuery<Business> param1 = ParseQuery.getQuery(Business.class);
-            param1.whereEqualTo(Const.kBusinessActiveKey, true);
-            param1.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
-            param1.whereDoesNotExist(Const.kBusinessBusinessKey);
-
-            query.whereMatchesKeyInQuery(Const.kBusinessCategoryBusinessKey, Const.kObjectRowObjectIdKey, param1);
-            query.orderByAscending(Const.kBusinessCategoryRelevanceKey);
-            query.addAscendingOrder(Const.kBusinessCategoryPositionKey);
-            query.setLimit(20);
-            query.setSkip(page * 20);
-
-            query.findInBackground(new FindCallback<BusinessCategory>() {
-
+            HashMap<String, Object> params = new HashMap<>(2);
+            params.put("page", page);
+            params.put("categoryId", categoryId);
+            ParseCloud.callFunctionInBackground("getCategoryBusinesses", params, new FunctionCallback<String>() {
                 @Override
-                public void done(List<BusinessCategory> objects, ParseException e) {
+                public void done(String result, ParseException e) {
                     if (page == 0)
                         mPbLoadingCategory.smoothToHide();
 
@@ -154,38 +136,55 @@ public class ActivityBusiness extends ConversaActivity implements OnBusinessClic
                     if (e != null) {
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);
+                        } else {
+                            if (page == 0)
+                                findViewById(R.id.llNoResultsContainer).setVisibility(View.VISIBLE);
                         }
                     } else {
-                        final int size = objects.size();
+                        try {
+                            JSONArray results = new JSONArray(result);
+                            int size = results.length();
 
-                        if (size > 0) {
-                            List<Business> business = new ArrayList<>(objects.size());
+                            if (size > 0) {
+                                List<dbBusiness> businesses = new ArrayList<>(size);
 
-                            for (int i = 0; i < size; i++) {
-                                business.add(objects.get(i).getBusiness());
-                            }
+                                for (int i = 0; i < size; i++) {
+                                    JSONObject businessReg = results.getJSONObject(i);
 
-                            if (size < 20) {
+                                    dbBusiness business = new dbBusiness();
+                                    business.setBusinessId(businessReg.getString("ob"));
+                                    business.setDisplayName(businessReg.getString("dn"));
+                                    business.setConversaId(businessReg.getString("cn"));
+                                    business.setAbout(businessReg.getString("ab"));
+                                    business.setAvatarThumbFileId(businessReg.getString("av"));
+
+                                    businesses.add(business);
+                                }
+
+                                if (size < 20) {
+                                    loadMore = false;
+                                }
+
+                                mBusinessListAdapter.addItems(businesses);
+
+                                if (mRlNoConnection.getVisibility() == View.VISIBLE) {
+                                    mRlNoConnection.setVisibility(View.GONE);
+                                }
+
+                                if (page == 0) {
+                                    mRvBusiness.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                if (page == 0) {
+                                    findViewById(R.id.llNoResultsContainer).setVisibility(View.VISIBLE);
+                                }
                                 loadMore = false;
                             }
 
-                            mBusinessListAdapter.addItems(business);
-
-                            if (mRlNoConnection.getVisibility() == View.VISIBLE) {
-                                mRlNoConnection.setVisibility(View.GONE);
-                            }
-
-                            if (page == 0) {
-                                mRvBusiness.setVisibility(View.VISIBLE);
-                            }
-                        } else {
-                            if (page == 0) {
-                                // Empty view
-                            }
-                            loadMore = false;
+                            page++;
+                        } catch (JSONException f) {
+                            Logger.error("parseResult", f.getMessage());
                         }
-
-                        page++;
                     }
                 }
             });
@@ -196,37 +195,36 @@ public class ActivityBusiness extends ConversaActivity implements OnBusinessClic
     }
 
     @Override
-    public void onBusinessClick(Business business, View itemView, int position) {
-        dbBusiness dbBusiness = ConversaApp.getInstance(this).getDB().isContact(business.getObjectId());
+    public void onContactClick(dbBusiness contact, View v, int position) {
+        dbBusiness business = ConversaApp.getInstance(this)
+                .getDB()
+                .isContact(contact.getBusinessId());
         Intent intent = new Intent(this, ActivityProfile.class);
 
-        if (dbBusiness == null) {
-            dbBusiness = new dbBusiness();
-            dbBusiness.setBusinessId(business.getObjectId());
-            dbBusiness.setDisplayName(business.getDisplayName());
-            dbBusiness.setConversaId(business.getConversaID());
-            dbBusiness.setAbout(business.getAbout());
+        if (business == null) {
+            business = new dbBusiness();
+            business.setBusinessId(contact.getBusinessId());
+            business.setDisplayName(contact.getDisplayName());
+            business.setConversaId(contact.getConversaId());
+            business.setAbout(contact.getAbout());
             intent.putExtra(Const.iExtraAddBusiness, true);
         } else {
             intent.putExtra(Const.iExtraAddBusiness, false);
         }
 
-        if(business.getAvatar() != null && !TextUtils.isEmpty(business.getAvatar().getUrl())) {
-            if (TextUtils.isEmpty(dbBusiness.getAvatarThumbFileId())) {
-                dbBusiness.setAvatarThumbFileId(business.getAvatar().getUrl());
-            } else {
-                if (!dbBusiness.getAvatarThumbFileId().equals(business.getAvatar().getUrl())) {
-                    // Update avatar
-                    dbBusiness.setAvatarThumbFileId(business.getAvatar().getUrl());
-                }
+        if (TextUtils.isEmpty(business.getAvatarThumbFileId())) {
+            business.setAvatarThumbFileId(contact.getAvatarThumbFileId());
+        } else {
+            if (!business.getAvatarThumbFileId().equals(contact.getAvatarThumbFileId())) {
+                // Update avatar
+                business.setAvatarThumbFileId(contact.getAvatarThumbFileId());
             }
         }
 
-        intent.putExtra(Const.iExtraBusiness, dbBusiness);
+        intent.putExtra(Const.iExtraBusiness, business);
         startActivity(intent);
         // Override transitions: we don't want the normal window animation in addition
         // to our custom one
         overridePendingTransition(0, 0);
     }
-
 }

@@ -8,11 +8,12 @@
     <color name="green">#37FF77</color>
     <color name="green_darker">#00C03E</color>
     <color name="black">#505050</color>
-    <color name="gray">#A3A3A3</color>
     <color name="red">#F1015D</color>
-    <color name="light_gray">#d3d3d3</color>
-    <color name="orange">#FF9900</color>>
-    <color name="blue">#000099</color>
+    <color name="blue">#0A7BF6</color>
+    <color name="orange">#FF9900</color>
+    <color name="gray">#A3A3A3</color>
+    <color name="light_gray">#B8B8B8</color>
+    <color name="dark_gray">#686868</color>
 
     <!-- Status bar colors -->
     <color name="status_bar_default">#00C03E</color>
@@ -25,7 +26,6 @@
 
     <!-- Tabs -->
     <color name="regular_tabs">#37FF77</color>
-    <color name="settings_tab">#626663</color>
     <color name="tab_indicator">#6F726D</color>
 
     <!-- Backgrounds -->

@@ -4,11 +4,17 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -21,12 +27,14 @@ import com.parse.SignUpCallback;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.settings.language.DynamicLanguage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
+import ee.app.conversa.view.LightTextView;
 
 import static ee.app.conversa.R.id.btnSignUpUp;
 import static ee.app.conversa.R.id.tilBirthdaySignUp;
@@ -75,6 +83,50 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
 
         mBtnSignUpUp.setOnClickListener(this);
         mBtnSignUpUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
+
+        LightTextView mLtvTermsPrivacy = (LightTextView) findViewById(R.id.ltvTermsPrivacy);
+        String text = mLtvTermsPrivacy.getText().toString();
+
+        String language = ConversaApp.getInstance(this).getPreferences().getLanguage();
+
+        if (language.equals("zz")) {
+            if (Locale.getDefault().getLanguage().startsWith("es")) {
+                language = "es";
+            } else {
+                language = "en";
+            }
+        }
+
+        int indexTerms;
+        int indexPrivacy;
+
+        if (language.equals("es")) {
+            indexTerms = TextUtils.indexOf(text, "TERMINOS");
+            indexPrivacy = TextUtils.indexOf(text, "POLITICAS");
+        } else {
+            indexTerms = TextUtils.indexOf(text, "TERMS");
+            indexPrivacy = TextUtils.indexOf(text, "PRIVACY");
+        }
+
+        Spannable styledString = new SpannableString(text);
+        // url
+        styledString.setSpan(new URLSpan("http://conversachat.com/terms"), indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
+        styledString.setSpan(new URLSpan("http://conversachat.com/privacy"), indexPrivacy, text.length(), 0);
+        // change text color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green, null)),
+                    indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green, null)),
+                    indexPrivacy, text.length(), 0);
+        } else {
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green)),
+                    indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green)),
+                    indexPrivacy, text.length(), 0);
+        }
+        // this step is mandated for the url and clickable styles.
+        mLtvTermsPrivacy.setMovementMethod(LinkMovementMethod.getInstance());
+        mLtvTermsPrivacy.setText(styledString);
     }
 
     @Override
@@ -109,25 +161,29 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
                 if (validateForm()) {
                     Account user = new Account();
 
-                    String username = TextUtils.split(mEtSignUpEmail.getText().toString(), "@")[0];
+                    String email = mEtSignUpEmail.getText().toString();
+                    String parts[] = TextUtils.split(email, "@");
+                    String username = parts[0];
+                    String domain = TextUtils.split(parts[1], "\\.")[0];
+
+                    String fusername = username + domain;
 
                     user.setEmail(mEtSignUpEmail.getText().toString());
-                    user.setUsername(username);
+                    user.setUsername(fusername);
                     user.setPassword(mEtSignUpPassword.getText().toString());
                     user.put(Const.kUserTypeKey, 1);
 
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(mYear, mMonth, mDay);
-                    user.put(Const.kUserBirthday, new SimpleDateFormat("dd-MM-yyyy",
-                            DynamicLanguage.getSelectedLocale(getApplicationContext()))
-                            .format(newDate.getTime()));
+
+                    user.put(Const.kUserBirthday, newDate.getTimeInMillis());
 
                     int selectedId = radioSexGroup.getCheckedRadioButtonId();
 
-                    if (findViewById(selectedId).getId() == R.id.rbMale) {
-                        user.put(Const.kUserGender, 1);
-                    } else {
+                    if (findViewById(selectedId).getId() == R.id.rbFemale) {
                         user.put(Const.kUserGender, 0);
+                    } else {
+                        user.put(Const.kUserGender, 1);
                     }
 
                     final ProgressDialog progress = new ProgressDialog(this);
@@ -172,7 +228,15 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
                         mYear = year;
                         mMonth = monthOfYear;
                         mDay = dayOfMonth;
-                        mEtSignUpBirthday.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                        Calendar newDate = Calendar.getInstance();
+                        newDate.set(year, monthOfYear, dayOfMonth);
+
+                        mEtSignUpBirthday.setText(
+                                new SimpleDateFormat("dd-MM-yyyy",
+                                        DynamicLanguage.getSelectedLocale(getApplicationContext()))
+                                        .format(newDate.getTime())
+                        );
                     }
                 }, mYear, mMonth, mDay);
         datePickerDialog.getDatePicker().setMaxDate(new Date(System.currentTimeMillis()).getTime());
@@ -196,7 +260,7 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
             select = mEtSignUpBirthday;
             title = getString(R.string.common_field_required);
         } else {
-            int result = Utils.checkDate(mEtSignUpBirthday.getText().toString(), this);
+            int result = Utils.checkDate(mYear, mMonth, mDay);
             if (result == 1) {
                 title = getString(R.string.common_field_invalid);
             } else if (result == 2) {

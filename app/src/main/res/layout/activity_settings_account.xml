@@ -29,103 +29,82 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_title_divider_height" />
 
-            <RelativeLayout
-                android:id="@+id/rlEmail"
+            <LinearLayout
+                android:id="@+id/llEmail"
+                android:orientation="vertical"
                 android:gravity="center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/listPreferredItemHeight">
 
                 <ee.app.conversa.view.RegularTextView
-                    android:id="@+id/mtvEmail"
                     android:text="@string/sett_account_email_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:layout_centerVertical="true" />
+                    android:maxLines="1" />
 
                 <ee.app.conversa.view.LightTextView
-                    android:gravity="end"
                     android:textSize="12sp"
                     android:id="@+id/ltvEmail"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/mtvEmail"
-                    android:layout_toRightOf="@id/mtvEmail" />
-            </RelativeLayout>
+                    android:textColor="@color/black" />
+            </LinearLayout>
 
             <View
                 android:background="@drawable/divider"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_divider_height"/>
 
-            <RelativeLayout
-                android:id="@+id/rlName"
+            <LinearLayout
+                android:id="@+id/llName"
+                android:orientation="vertical"
                 android:gravity="center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/listPreferredItemHeight">
 
                 <ee.app.conversa.view.RegularTextView
-                    android:id="@+id/mtvName"
                     android:text="@string/sett_account_name_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:layout_centerVertical="true" />
+                    android:maxLines="1" />
 
                 <ee.app.conversa.view.LightTextView
-                    android:gravity="end"
                     android:textSize="12sp"
                     android:id="@+id/ltvName"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/mtvName"
-                    android:layout_toRightOf="@id/mtvName" />
-            </RelativeLayout>
+                    android:textColor="@color/black" />
+            </LinearLayout>
 
             <View
                 android:background="@drawable/divider"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_divider_height"/>
 
-            <RelativeLayout
-                android:id="@+id/rlPassword"
+            <LinearLayout
+                android:id="@+id/llPassword"
+                android:orientation="vertical"
                 android:gravity="center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/listPreferredItemHeight">
 
                 <ee.app.conversa.view.RegularTextView
-                    android:id="@+id/mtvPassword"
                     android:text="@string/sett_account_password_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:layout_centerVertical="true" />
+                    android:maxLines="1" />
 
                 <ee.app.conversa.view.LightTextView
-                    android:gravity="end"
                     android:textSize="12sp"
                     android:id="@+id/ltvPassword"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:textColor="@color/light_gray"
-                    android:text="@string/sett_account_password_alert_title"
-                    android:layout_toEndOf="@id/mtvPassword"
-                    android:layout_toRightOf="@id/mtvPassword" />
-            </RelativeLayout>
-
-            <View
-                android:background="@drawable/divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_divider_height"/>
+                    android:text="@string/sett_account_password_alert_title" />
+            </LinearLayout>
 
             <ee.app.conversa.view.BoldTextView
                 android:text="@string/sett_account_privacy_title"

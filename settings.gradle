@@ -1,1 +1,1 @@
-include ':app', ':library_easyvideo', ':material_camara'
+include ':app'

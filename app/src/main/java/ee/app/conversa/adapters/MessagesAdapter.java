@@ -239,33 +239,35 @@ public class MessagesAdapter extends RecyclerView.Adapter<BaseHolder> {
 	}
 
 	private Spannable setDate(dbMessage message, AppCompatActivity activity) {
-		long now = System.currentTimeMillis();
 		long timeOfCreation = message.getCreated();
 
 		// Compute start of the day for the timestamp
 		Calendar cal = Calendar.getInstance(Locale.getDefault());
-		cal.setTimeInMillis(now);
+		cal.setTimeInMillis(System.currentTimeMillis());
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.MILLISECOND, 1);
+
+		long now = cal.getTimeInMillis();
 
 		String date, hour;
 
 		if (timeOfCreation > now) {
-			date = Utils.getDate(activity, timeOfCreation, true);
+			date = activity.getString(R.string.chat_day_today);
 		} else {
 			long diff = now - timeOfCreation;
 			long diffd = diff / (1000 * 60 * 60 * 24);
+			long diffw = diff / (1000 * 60 * 60 * 24 * 7);
 
 			if (diffd > 7) {
-				date = Utils.getDate(activity, timeOfCreation, true);
-			} else if (diffd > 1 && diffd <= 7){
+				date = Utils.getDate(activity, timeOfCreation, (diffw > 52));
+			} else if (diffd >= 1 && diffd <= 7) {
 				date = Utils.getTimeOrDay(activity, timeOfCreation, true);
-			} else if (diffd > 0 && diffd <= 1) {
+			} else if (diffd == 0) {
 				date = activity.getString(R.string.chat_day_yesterday);
 			} else {
-				date = activity.getString(R.string.chat_day_today);
+				date = Utils.getDate(activity, timeOfCreation, true);
 			}
 		}
 
@@ -406,7 +408,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<BaseHolder> {
 							.getColor(R.color.gray));
 				}
 			} else if (!message.getFromUserId().equals(fromUser)) {
-				this.mLtvSubText.setVisibility(View.GONE);
+				if (message.getConversaAgent()) {
+					this.mLtvSubText.setVisibility(View.VISIBLE);
+					this.mLtvSubText.setText(activity.getString(R.string.chat_by_conversa_agent));
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+						this.mLtvSubText.setTextColor(activity.getResources()
+								.getColor(R.color.gray, null));
+					} else {
+						this.mLtvSubText.setTextColor(activity.getResources()
+								.getColor(R.color.gray));
+					}
+				} else {
+					this.mLtvSubText.setVisibility(View.GONE);
+				}
 			} else if (nextMessage != null) {
 				if (nextMessage.getFromUserId().equals(fromUser)) {
 					this.mLtvSubText.setVisibility(View.GONE);

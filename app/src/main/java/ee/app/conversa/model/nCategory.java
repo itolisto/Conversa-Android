@@ -22,10 +22,6 @@ public class nCategory {
         this.removeDividerMargin = false;
     }
 
-    public void setRemoveDividerMargin(boolean removeDividerMargin) {
-        this.removeDividerMargin = removeDividerMargin;
-    }
-
     public boolean getRemoveDividerMargin() {
         return removeDividerMargin;
     }

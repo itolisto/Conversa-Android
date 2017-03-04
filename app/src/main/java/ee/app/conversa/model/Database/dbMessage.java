@@ -1,27 +1,3 @@
-/*
- * The MIT License (MIT)
- * 
- * Copyright � 2013 Clover Studio Ltd. All rights reserved.
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package ee.app.conversa.model.database;
 
 import android.content.Context;
@@ -59,6 +35,7 @@ public class dbMessage implements Parcelable {
 	private int mDuration;
 	private long mBytes;
 	private int mProgress;
+	private char mAgent;
 
 	public dbMessage() {
 		this.mId = -1;
@@ -80,6 +57,7 @@ public class dbMessage implements Parcelable {
 		this.mDuration = 0;
 		this.mBytes = 0;
 		this.mProgress = 0;
+		this.mAgent = 'N';
 	}
 
 	public long getId() { return mId; }
@@ -101,6 +79,7 @@ public class dbMessage implements Parcelable {
 	public int getDuration() { return mDuration; }
 	public long getBytes() { return mBytes; }
 	public int getProgress() { return mProgress; }
+	public boolean getConversaAgent() { return mAgent == 'Y'; }
 
 	public void setId(long id) { this.mId = id; }
 	public void setFromUserId(String fromUserId) { this.mFromUserId = fromUserId; }
@@ -121,6 +100,7 @@ public class dbMessage implements Parcelable {
 	public void setDuration(int mDuration) { this.mDuration = mDuration; }
 	public void setBytes(long mBytes) { this.mBytes = mBytes; }
 	public void setProgress(int mProgress) { this.mProgress = mProgress; }
+	public void setConversaAgent(char mAgent) { this.mAgent = mAgent; }
 
 	/* ******************************************************************************************* */
 	/* ******************************************************************************************* */
@@ -176,6 +156,7 @@ public class dbMessage implements Parcelable {
 		dest.writeInt(this.mDuration);
 		dest.writeLong(this.mBytes);
 		dest.writeInt(this.mProgress);
+		dest.writeByte(this.mAgent == 'Y' ? (byte) 1 : (byte) 0);
 	}
 
 	protected dbMessage(Parcel in) {
@@ -198,6 +179,7 @@ public class dbMessage implements Parcelable {
 		this.mDuration = in.readInt();
 		this.mBytes = in.readLong();
 		this.mProgress = in.readInt();
+		this.mAgent = in.readByte() == 1 ? 'Y' : 'N';
 	}
 
 	public static final Parcelable.Creator<dbMessage> CREATOR = new Parcelable.Creator<dbMessage>() {

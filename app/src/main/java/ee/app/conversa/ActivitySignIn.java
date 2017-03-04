@@ -76,38 +76,31 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         ImageView mivLanguage = (ImageView) findViewById(R.id.ivLanguage);
 
         LightTextView mLtvClickHere = (LightTextView) findViewById(R.id.ltvClickHere);
-        if (mLtvClickHere != null) {
-            String text = getString(R.string.string_signin_sign_up_business_two);
+        String text = getString(R.string.string_signin_sign_up_business_two);
 
-            int index = TextUtils.indexOf(text, "?") + 2; // Index starts from zero but spannable string starts from one, plus whitespace
+        int index = TextUtils.indexOf(text, "?") + 2; // Index starts from zero but spannable string starts from one, plus whitespace
 
-            Spannable styledString = new SpannableString(text);
-            // url
-            styledString.setSpan(new URLSpan("http://www.google.com"), index, text.length(), 0);
-            // change text color
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green, null)),
-                        index, text.length(), 0);
-            } else {
-                styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green)),
-                        index, text.length(), 0);
-            }
-            // this step is mandated for the url and clickable styles.
-            mLtvClickHere.setMovementMethod(LinkMovementMethod.getInstance());
-            mLtvClickHere.setText(styledString);
+        Spannable styledString = new SpannableString(text);
+        // url
+        styledString.setSpan(new URLSpan("http://conversa.link/manager"), index, text.length(), 0);
+        // change text color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green, null)),
+                    index, text.length(), 0);
+        } else {
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green)),
+                    index, text.length(), 0);
         }
+        // this step is mandated for the url and clickable styles.
+        mLtvClickHere.setMovementMethod(LinkMovementMethod.getInstance());
+        mLtvClickHere.setText(styledString);
 
-        if(mBtnSignIn != null) {
-            mBtnSignIn.setOnClickListener(this);
-            mBtnSignIn.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
-        }
-
-        if(mBtnSignUp != null) {
-            mBtnSignUp.setOnClickListener(this);
-            mBtnSignUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
-        }
-
+        mBtnSignIn.setOnClickListener(this);
+        mBtnSignUp.setOnClickListener(this);
         mivLanguage.setOnClickListener(this);
+
+        mBtnSignIn.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
+        mBtnSignUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
 	}
 
     @Override

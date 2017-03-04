@@ -8,36 +8,9 @@
     <string name="SIGN_UP">Sign up</string>
     <string name="action_location">Locations</string>
     <string name="browse_categories">Browse categories</string>
-    <!--<string name="c0i96zRLFyw">Books</string>-->
-    <!--<string name="c1zZcJ8an9Z">Services</string>-->
-    <!--<string name="c3b8NykTdo3">Toys</string>-->
-    <!--<string name="c462mKRISE7">Electronics \u0026 Tech</string>-->
-    <!--<string name="c4EsFpxgOu6">Delivery</string>-->
-    <!--<string name="c90Y0ajWUAG">Pets</string>-->
-    <!--<string name="cDqCLGage9M">Beauty</string>-->
-    <!--<string name="cFBv7AV5OGU">Videogames</string>-->
-    <!--<string name="cJi1FwE21F8">Party Supplies</string>-->
-    <!--<string name="cMHbjypaY4R">Men\'s Clothing</string>-->
-    <!--<string name="cQNFkAelMAd">Home \u0026 Garden</string>-->
-    <!--<string name="cR7LZJ3Lbj8">Gifts</string>-->
-    <!--<string name="cRWcS1d4bqt">Baby</string>-->
-    <!--<string name="cSYHk42aEOz">Cars</string>-->
-    <!--<string name="cTFau41aZ8E">Musical Instruments</string>-->
-    <!--<string name="cVZg31Kxzew">Travel</string>-->
-    <!--<string name="cW0lNHTPV3v">Sports \u0026 Fitness</string>-->
-    <!--<string name="caDuBd0GuuH">Restaurants</string>-->
-    <!--<string name="caWthcdxIAJ">Men Shoes</string>-->
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="cancel">Cancel</string>
     <string name="category">Categories</string>
-    <!--<string name="cay9ADQjpRT">Furniture</string>-->
-    <!--<string name="ccCZl1h0sXf">Office Supplies</string>-->
-    <!--<string name="ccGWcPxDcB7">Food</string>-->
-    <!--<string name="ccQy8YtN7j4">Entertainment</string>-->
-    <!--<string name="cgBcgtlLRVw">Jewelry \u0026 Accessories</string>-->
-    <!--<string name="c63MVeTZE3q">Kid\'s Clothing</string>-->
-    <!--<string name="cztraRwNrdX">Education</string>-->
-    <!--<string name="c0GCyIw3HBP">Bakery \u0026 Treats</string>-->
     <string name="chat_wall_message_hint">Write a message</string>
     <string name="close">close</string>
     <string name="confirm_email">We\'ve sent you an email to %1s to reset your password</string>
@@ -47,11 +20,6 @@
     <string name="contacts_last_message_location">Location</string>
     <string name="contacts_last_message_video" translatable="false">Video</string>
     <string name="contacts_last_message_audio" translatable="false">Audio</string>
-    <!--<string name="cr4ZYMKINHp">Women\'s Clothing</string>-->
-    <!--<string name="cuRzYgo8krw">Women Shoes</string>-->
-    <!--<string name="cydPTRrUJye">Health</string>-->
-    <!--<string name="cDvl63HGh9j" translatable="false">Retailers</string>-->
-    <!--<string name="cprn5lWuEDc" translatable="false">Online \u0026 Internet</string>-->
     <string name="delete_title_menu">Delete</string>
     <string name="delivery_title">Delivery</string>
     <string name="email">EMAIL</string>
@@ -80,7 +48,7 @@
     <string name="no_messages">No Messages</string>
     <string name="no_messages_description_one">When you have messages\nyou\'ll see them here</string>
     <string name="no_user_registered">No user registered with this email or password</string>
-    <string name="number_of_followers">Followers</string>
+    <string name="number_of_followers" translatable="false">Favs</string>
     <string name="open_on_title">Open</string>
     <string name="password">PASSWORD</string>
     <string name="picture">Image</string>
@@ -88,7 +56,7 @@
     <string name="preferences__chats" translatable="false">Chats</string>
     <string name="preferences__help">Help \u0026 Support</string>
     <string name="preferences__notifications">Notifications \u0026 Sounds</string>
-    <string name="preferences__share">Do you like Conversa? Share :)</string>
+    <string name="preferences__share">Conversa is useful. You should share it.</string>
     <string name="privacy_politics_preference">Privacy Policy</string>
     <string name="profile_conversa_time_info_message">ConversaTime is the schedule by which we will be answering you through chat, but our goal is to serve 24hrs.</string>
     <string name="profile_conversa_time_info_title">What is ConversaTime?</string>
@@ -106,7 +74,7 @@
     <string name="summary_go_intent_preference">Conversa Official Site</string>
     <string name="string_signin_title_two">CHAT WITH ANY BUSINESS\n SIMPLE. FAST. EFFECTIVE.</string>
     <string name="string_signin_title_one">Chat to any business</string>
-    <string name="string_signin_sign_up_business_two">BUSINESS? CLICK HERE</string>
+    <string name="string_signin_sign_up_business_two">BUSINESS? PRESS HERE</string>
     <string name="string_signin_sign_up_business_one">LOOKING TO SIGN UP YOUR</string>
     <string name="string_signin_are_you_new">ARE YOU NEW HERE?</string>
     <string name="string_signin_already_have_an_account">ALREADY HAVE AN ACCOUNT?</string>
@@ -126,7 +94,7 @@
     <string name="settings">Settings</string>
     <string name="sett_preferences_default_title">Title</string>
     <string name="sett_preferences_default_description">Description</string>
-    <string name="sett_help_feedback_title">Feedback</string>
+    <string name="sett_help_agent_title">Conversa Agent</string>
     <string name="sett_help_support_title">Technical Support</string>
     <string name="sett_help_terms_privacy_title">Terms &amp; Privacy</string>
     <string name="sett_notification_sound_title">Sound</string>
@@ -136,12 +104,14 @@
     <string name="sett_notification_preview_summary">Show push notification</string>
     <string name="sett_notification_inapp_title">In-App notifications</string>
     <string name="sett_notification_inapp_sound_summary">Play when receiving a message</string>
-    <string name="sett_notification_inapp_preview_summary">Show in-app notification</string>
+    <string name="sett_notification_inapp_preview_summary">Show when receiving a message</string>
     <string name="sett_chat_quality_title">Upload quality</string>
     <string name="sett_chat_quality_default_entry">High</string>
     <string name="sett_chat_message_title">Messages</string>
+    <string name="sett_chat_sound_title">Sound</string>
     <string name="sett_chat_message_sent_sound">Sound when sending</string>
     <string name="sett_chat_message_received_sound">Sound when receiving</string>
+    <string name="sett_chat_message_sound_message">Play sound inside chat</string>
     <string name="sett_account_privacy_title">Privacy</string>
     <string name="sett_account_password_title">Password</string>
     <string name="sett_account_logout_title">Log Out</string>
@@ -159,7 +129,7 @@
     <string name="schedule_title">ConversaTime</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="recent_searches_ok">Clear</string>
-    <string name="recent_searches_message">Do you want to clear your recent searches?</string>
+    <string name="recent_searches_message">Clear recent searches</string>
     <string name="profile_no_website_message">Working on website</string>
     <string name="profile_no_number_message">No number available</string>
     <string name="profile_location_online_location">We are only present online</string>
@@ -227,4 +197,21 @@
     <string name="common_field_required">Required field</string>
     <string name="common_field_invalid">Invalid field</string>
     <string name="notification_stack_text">You have %1$d new messages from %2$s</string>
+    <string name="chat_status">Active %1$d %2$s ago</string>
+    <string name="chat_status_now">Active now</string>
+    <string name="chat_status_minute">minute</string>
+    <string name="chat_status_minutes">minutes</string>
+    <string name="chat_status_hour">hour</string>
+    <string name="chat_status_hours">hours</string>
+    <string name="chat_status_day">day</string>
+    <string name="chat_status_days">days</string>
+    <string name="chat_status_week">week</string>
+    <string name="chat_status_weeks">weeks</string>
+    <string name="chat_status_year">year</string>
+    <string name="chat_status_years">years</string>
+    <string name="contacts_options_delete">Delete conversation</string>
+    <string name="contacts_options_select">Select</string>
+    <string name="contacts_options_clear">Clear conversation</string>
+    <string name="contacts_item_conversation_empty">Start chatting</string>
+    <string name="chat_by_conversa_agent">Vía Conversa Agent</string>
 </resources>

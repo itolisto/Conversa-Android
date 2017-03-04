@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
@@ -23,15 +24,20 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
-import com.afollestad.materialcamera.MaterialCamera;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,19 +46,21 @@ import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.interfaces.OnMessageClickListener;
 import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.messaging.MessageDeleteReason;
 import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.messaging.SendMessageAsync;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
+import ee.app.conversa.utils.ImageFilePath;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
-import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.MediumTextView;
 import ee.app.conversa.view.MyBottomSheetDialogFragment;
+import ee.app.conversa.view.RegularTextView;
 
-public class ActivityChatWall extends ConversaActivity implements View.OnClickListener,
-		View.OnTouchListener, OnMessageClickListener {
+public class ActivityChatWall extends ConversaActivity implements View.OnClickListener, OnMessageClickListener {
 
 	private dbBusiness businessObject;
 	private MessagesAdapter gMessagesAdapter;
@@ -65,7 +73,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private int itemPosition;
 
 	private Handler isUserTypingHandler = new Handler();
-	private LightTextView mSubTitleTextView;
+	private RegularTextView mSubTitleTextView;
 	private RecyclerView mRvWallMessages;
 	private EditText mEtMessageText;
 	private BottomSheetDialogFragment myBottomSheet;
@@ -74,8 +82,8 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private MediumTextView mTitleTextView;
 
 	private Timer typingTimer;
+	private String lastStatus;
 
-	public final static int CAMERA_RQ = 6969;
 	public final static int PERMISSION_RQ = 84;
 
 	public ActivityChatWall() {
@@ -96,7 +104,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		if (savedInstanceState == null) {
 			Bundle extras = getIntent().getExtras();
-			if(extras == null) {
+			if (extras == null) {
 				finish();
 			} else {
 				businessObject = extras.getParcelable(Const.iExtraBusiness);
@@ -146,8 +154,11 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 					uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
 				}
 
+				lastStatus = getString(R.string.app_name);
 				ivContactAvatar.setImageURI(uri);
 				mTitleTextView.setText(business.getDisplayName());
+				mSubTitleTextView.setText(lastStatus);
+				loadLastStatus();
 				// Set new business reference
 				businessObject = business;
 				// Clean list of current messages and get new messages
@@ -211,7 +222,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		mTitleTextView = (MediumTextView) toolbar.findViewById(R.id.tvChatName);
 		FrameLayout mBackButton = (FrameLayout) toolbar.findViewById(R.id.flBack);
 		ImageButton mIbBackButton = (ImageButton) toolbar.findViewById(R.id.ibBack);
-		mSubTitleTextView = (LightTextView) toolbar.findViewById(R.id.tvChatStatus);
+		mSubTitleTextView = (RegularTextView) toolbar.findViewById(R.id.tvChatStatus);
 		ivContactAvatar = (SimpleDraweeView) toolbar.findViewById(R.id.ivAvatarChat);
 
 		Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
@@ -220,14 +231,19 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
 		}
 
+		lastStatus = getString(R.string.app_name);
+
 		ivContactAvatar.setImageURI(uri);
 		mTitleTextView.setText(businessObject.getDisplayName());
+		toolbar.findViewById(R.id.rlChatHeader).setOnClickListener(this);
 
 		setSupportActionBar(toolbar);
 
 		mRvWallMessages = (RecyclerView) findViewById(R.id.rvWallMessages);
 		mEtMessageText = (EditText) findViewById(R.id.etWallMessage);
 		mBtnWallSend = (ImageButton) findViewById(R.id.btnWallSend);
+
+		mBtnWallSend.setEnabled(false);
 
 		myBottomSheet = MyBottomSheetDialogFragment.newInstance(businessObject.getBusinessId(), this);
 
@@ -241,7 +257,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				this);
 		LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 		mRvWallMessages.setLayoutManager(manager);
-		mRvWallMessages.setOnTouchListener(this);
 		mRvWallMessages.setAdapter(gMessagesAdapter);
 		mRvWallMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
@@ -267,6 +282,24 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				}
 			}
 		});
+		mRvWallMessages.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+			@Override
+			public void onLayoutChange(View v,
+									   int left, int top, int right, final int bottom,
+									   int oldLeft, int oldTop, int oldRight, final int oldBottom) {
+				if (bottom < oldBottom) {
+					Logger.error("onLayoutChange", "Bottom:" + bottom + " Old:" + oldBottom);
+					mRvWallMessages.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							mRvWallMessages.smoothScrollToPosition(
+									gMessagesAdapter.getItemCount() - 1
+							);
+						}
+					}, 100);
+				}
+			}
+		});
 
 		mBtnWallSend.setOnClickListener(this);
 		mBtnOpenSlidingDrawer.setOnClickListener(this);
@@ -278,6 +311,8 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			// Request permission to save videos in external storage
 			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_RQ);
 		}
+
+		loadLastStatus();
 	}
 
 	@Override
@@ -311,17 +346,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			// navigate up to the logical parent activity.
 			NavUtils.navigateUpTo(this, upIntent);
 		}
-	}
-
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-		switch (v.getId()) {
-			case R.id.rvWallMessages:
-				Utils.hideKeyboard(this);
-				return false;
-		}
-
-		return true;
 	}
 
 	@Override
@@ -359,9 +383,17 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-			case R.id.ivAvatarChat:
+			case R.id.rlChatHeader: {
+				Intent intent = new Intent(this, ActivityProfile.class);
+				intent.putExtra(Const.iExtraBusiness, businessObject);
+				startActivity(intent);
+				overridePendingTransition(0, 0);
+				break;
+			}
+			case R.id.ivAvatarChat: {
 				// Llamar a Servidor por foto y actualizar
 				break;
+			}
 			case R.id.ibBack:
 			case R.id.flBack:
 				onBackPressed();
@@ -386,22 +418,10 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// Make sure the request was successful
-		if (resultCode == RESULT_OK) {
-			// Check which request we're responding to
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RESULT_OK && data != null) {
 			switch (requestCode) {
-				case ActivityCameraCrop.PICK_CAMERA_REQUEST:
-				case ActivityCameraCrop.PICK_GALLERY_REQUEST: {
-					SendMessageAsync.sendImageMessage(
-							this,
-							data.getStringExtra("result"),
-							data.getIntExtra("width", 0),
-							data.getIntExtra("height", 0),
-							data.getLongExtra("bytes", 0),
-							addAsContact,
-							businessObject);
-					break;
-				}
 				case ActivityLocation.PICK_LOCATION_REQUEST: {
 					SendMessageAsync.sendLocationMessage(
 							this,
@@ -411,42 +431,126 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 							businessObject);
 					break;
 				}
-				case CAMERA_RQ: {
-					if (data.getType().equals("image/jpeg")) {
-						BitmapFactory.Options options = new BitmapFactory.Options();
-						options.inJustDecodeBounds = true;
-						BitmapFactory.decodeFile(data.getData().getPath(), options);
-						SendMessageAsync.sendImageMessage(
-								this,
-								data.getData().toString(),
-								options.outWidth,
-								options.outHeight,
-								data.getLongExtra(MaterialCamera.SIZE_EXTRA, 0),
-								addAsContact,
-								businessObject);
-					}
-//					else {
-//						MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-//						retriever.setDataSource(data.getData().getPath());
-//						int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-//						int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-//						int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-//						retriever.release();
-//					}
+				case Const.CAPTURE_MEDIA: {
+					String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+					BitmapFactory.Options options = new BitmapFactory.Options();
+					options.inJustDecodeBounds = true;
+					BitmapFactory.decodeFile(path, options);
+
+					SendMessageAsync.sendImageMessage(
+							this,
+							path,
+							options.outWidth,
+							options.outHeight,
+							new File(path == null ? "" : path).length(),
+							addAsContact,
+							businessObject);
+					break;
+				}
+				case Const.CAPTURE_VIDEO: {
+					MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+					retriever.setDataSource(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
+					int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+					int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+					int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+					retriever.release();
 					break;
 				}
 			}
-		} else if (requestCode == CAMERA_RQ) {
-			if (data != null && data.getSerializableExtra(MaterialCamera.ERROR_EXTRA) != null) {
-				Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
-				if (e != null) {
-					Logger.error("onActivityResult", e.getMessage());
-				}
-			}
+		} else {
+			Logger.error("onActivityResult", "Error");
 		}
 	}
 
 	/* ****************************************************************************************** */
+
+	private void loadLastStatus() {
+		final WeakReference<ActivityChatWall> wActivity = new WeakReference<>(this);
+
+		final Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+
+				final HashMap<String, String> params = new HashMap<>(1);
+				params.put("businessId", businessObject.getBusinessId());
+
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						ParseCloud.callFunctionInBackground("getBusinessLastStatus", params, new FunctionCallback<Long>() {
+							@Override
+							public void done(Long last, ParseException e) {
+								if (e != null) {
+									if (AppActions.validateParseException(e)) {
+										AppActions.appLogout(getApplicationContext(), true);
+									}
+								} else {
+									ActivityChatWall activity = wActivity.get();
+									if (activity != null) {
+										long now = System.currentTimeMillis();
+
+										if (last <= now) {
+											long diff = now - last;
+											long diffm = diff / (1000 * 60);
+
+											if (diffm < 70) {
+												if (diffm <= 10) {
+													lastStatus = getString(R.string.chat_status_now);
+												} else {
+													diffm = diffm - 10;
+													if (diffm == 1) {
+														lastStatus = getString(R.string.chat_status, 1, getString(R.string.chat_status_minute));
+													} else {
+														lastStatus = getString(R.string.chat_status, diffm, getString(R.string.chat_status_minutes));
+													}
+												}
+											} else {
+												diff = diff - (70 * 60 * 1000);
+												long diffh = diff / (1000 * 60 * 60);
+												long diffd = diff / (1000 * 60 * 60 * 24);
+												long diffw = diff / (1000 * 60 * 60 * 24 * 7);
+
+												if (diffh < 24) {
+													if (diffh == 1) {
+														lastStatus = getString(R.string.chat_status, 1, getString(R.string.chat_status_hour));
+													} else {
+														lastStatus = getString(R.string.chat_status, diffh, getString(R.string.chat_status_hours));
+													}
+												} else if (diffd < 31) {
+													if (diffd == 1) {
+														lastStatus = getString(R.string.chat_status, 1, getString(R.string.chat_status_day));
+													} else {
+														lastStatus = getString(R.string.chat_status, diffd, getString(R.string.chat_status_days));
+													}
+												} else if (diffw < 52) {
+													if (diffw == 1) {
+														lastStatus = getString(R.string.chat_status, 1, getString(R.string.chat_status_week));
+													} else {
+														lastStatus = getString(R.string.chat_status, diffw, getString(R.string.chat_status_weeks));
+													}
+												} else {
+													diffw = diffw / 52;
+													if (diffw == 1) {
+														lastStatus = getString(R.string.chat_status, 1, getString(R.string.chat_status_year));
+													} else {
+														lastStatus = getString(R.string.chat_status, diffw, getString(R.string.chat_status_years));
+													}
+												}
+											}
+										}
+
+										if (!typingFlag)
+											mSubTitleTextView.setText(lastStatus);
+									}
+								}
+							}
+						});
+					}
+				});
+			}
+		}, (long) (2.5 * 1000));
+	}
 
 	@Override
 	public void noInternetConnection() {
@@ -526,7 +630,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	}
 
 	@Override
-	public void MessageDeleted(List<String> message) {
+	public void MessageDeleted(List<String> response, MessageDeleteReason reason) {
 
 	}
 
@@ -561,6 +665,10 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 			if (ConversaApp.getInstance(this).getPreferences().getPlaySoundWhenReceiving()) {
 				playSound(false);
+			}
+
+			if (!lastStatus.equals(getString(R.string.chat_status_now))) {
+				lastStatus = getString(R.string.chat_status_now);
 			}
 
 			// 3. Add to adapter
@@ -605,9 +713,8 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	public void showIsTyping(boolean show) {
 		if (show) {
 			mSubTitleTextView.setText(R.string.is_typing);
-			mSubTitleTextView.setVisibility(View.VISIBLE);
 		} else {
-			mSubTitleTextView.setVisibility(View.GONE);
+			mSubTitleTextView.setText(lastStatus);
 		}
 	}
 

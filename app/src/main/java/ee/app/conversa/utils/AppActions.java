@@ -28,6 +28,7 @@ public class AppActions {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                ConversaApp.getInstance(context).getJobManager().clear();
                 if (!ConversaApp.getInstance(context).getDB().deleteDatabase())
                     Logger.error("Logout", "An error has occurred while removing databased. Database not removed");
                 // Clean shared preferences

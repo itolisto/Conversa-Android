@@ -25,13 +25,14 @@ import java.util.List;
 import java.util.Locale;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.model.database.NotificationInformation;
+import ee.app.conversa.model.database.dbNotificationInformation;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.model.database.dbSearch;
 import ee.app.conversa.model.nChatItem;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
+import ee.app.conversa.utils.Utils;
 
 public class MySQLiteHelper {
     
@@ -67,6 +68,7 @@ public class MySQLiteHelper {
     private static final String sMessageDuration = "duration";
     private static final String sMessageBytes = "bytes";
     private static final String sMessageProgress = "progress";
+    private static final String sMessageConversa = "conversa_agent";
 
     private static final String TABLE_MESSAGES_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_MESSAGES + "("
@@ -83,12 +85,13 @@ public class MySQLiteHelper {
             + "\"" + sMessageCreatedAt + "\" INTEGER NOT NULL, "
             + "\"" + sMessageViewAt + "\" INTEGER NOT NULL DEFAULT 0, "
             + "\"" + sMessageReadAt + "\" INTEGER NOT NULL DEFAULT 0, "
-            + "\"" + sMessageMessageId + "\" CHAR(14),"
-            + "\"" + sMessageWidth + "\" INTEGER DEFAULT 0,"
-            + "\"" + sMessageHeight + "\" INTEGER DEFAULT 0,"
-            + "\"" + sMessageDuration + "\" INTEGER DEFAULT 0,"
+            + "\"" + sMessageMessageId + "\" CHAR(20), "
+            + "\"" + sMessageWidth + "\" INTEGER DEFAULT 0, "
+            + "\"" + sMessageHeight + "\" INTEGER DEFAULT 0, "
+            + "\"" + sMessageDuration + "\" INTEGER DEFAULT 0, "
             + "\"" + sMessageBytes + "\" INTEGER DEFAULT 0, "
-            + "\"" + sMessageProgress + "\" INTEGER DEFAULT 0 );";
+            + "\"" + sMessageProgress + "\" INTEGER DEFAULT 0, "
+            + "\"" + sMessageConversa + "\" CHAR(1) DEFAULT 'N');";
 
     private static final String tmIndex1 = "CREATE INDEX M_search on "  + TABLE_MESSAGES + "(" + sMessageFromUserId + ", " + sMessageToUserId + "); ";
     private static final String tmIndex2 = "CREATE UNIQUE INDEX IF NOT EXISTS C_messageId on "  + TABLE_MESSAGES + "(" + sMessageMessageId + ");";
@@ -117,7 +120,7 @@ public class MySQLiteHelper {
             + "\"" + sBusinessAvatarFile + "\" VARCHAR(355), "
             + "\"" + sBusinessBlocked + "\" CHAR(1) NOT NULL DEFAULT 'N', "
             + "\"" + sBusinessMuted + "\" CHAR(1) NOT NULL DEFAULT 'N', "
-            + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL );";
+            + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL);";
 
     private static final String tcIndex1 = "CREATE UNIQUE INDEX IF NOT EXISTS C_businessId on "  + TABLE_CV_CONTACTS + "(" + sBusinessBusinessId + ");";
 
@@ -181,12 +184,11 @@ public class MySQLiteHelper {
     }
 
     private SQLiteDatabase openDatabase() throws SQLException {
-        deleteDataAssociatedWithUser(null, 0, true);
         return myDbHelper.getWritableDatabase();
     }
 
     public boolean deleteDatabase() {
-        deleteDataAssociatedWithUser(null, 0, true);
+        deleteAllData();
         return context.deleteDatabase(DATABASE_NAME);
     }
 
@@ -241,30 +243,44 @@ public class MySQLiteHelper {
     }
 
     @WorkerThread
-    public void deleteDataAssociatedWithUser(String ids, int total, boolean allUsers) {
-        String query;
+    private void deleteAllData() {
+        // TODO: if any new folders are added they should be included here
+        try {
+            File path1 = Utils.getMediaDirectory(context, "images");
+            File path2 = Utils.getMediaDirectory(context, "avatars");
 
-        if (allUsers) {
-            query = "SELECT " + sBusinessAvatarFile + "," + sBusinessBusinessId + " FROM "
-                    + TABLE_CV_CONTACTS;
-        } else {
-            query = "SELECT " + sBusinessAvatarFile + "," + sBusinessBusinessId + " FROM "
-                    + TABLE_CV_CONTACTS + " WHERE " + COLUMN_ID + " IN (" + ids + ")";
+            if (path1.exists()) {
+                String[] fileNames = path1.list();
+                for (String fileName : fileNames) {
+                    if (!fileName.equals("lib")) {
+                        Utils.deleteFile(new File(path1, fileName));
+                    }
+                }
+            }
+
+            if (path2.exists()) {
+                String[] fileNames = path2.list();
+                for (String fileName : fileNames) {
+                    if (!fileName.equals("lib")) {
+                        Utils.deleteFile(new File(path2, fileName));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Logger.error("deleteAllData", e.getMessage());
         }
+    }
+
+    @WorkerThread
+    public void deleteAllDataAssociatedWithUser(String ids, int total) {
+        String query = "SELECT " + sBusinessAvatarFile + "," + sBusinessBusinessId + " FROM "
+                + TABLE_CV_CONTACTS + " WHERE " + COLUMN_ID + " IN (" + ids + ")";
 
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
-        List<String> avatars;
-        List<String> business;
-
-        if (allUsers) {
-            avatars = new ArrayList<>(cursor.getCount());
-            business = new ArrayList<>(cursor.getCount());
-        } else {
-            avatars = new ArrayList<>(total);
-            business = new ArrayList<>(total);
-        }
+        List<String> avatars = new ArrayList<>(total);
+        List<String> business = new ArrayList<>(total);
 
         while (!cursor.isAfterLast()) {
             avatars.add(cursor.getString(0));
@@ -273,7 +289,7 @@ public class MySQLiteHelper {
         }
 
         cursor.close();
-        int i = 0;
+        int i;
 
         for (i = 0; i < avatars.size(); i++) {
             if (avatars.get(i) != null) {
@@ -297,16 +313,20 @@ public class MySQLiteHelper {
             }
         }
 
-        // Delete data associated with messages
-        query = "SELECT " + sMessageLocalUrl + " FROM " + TABLE_MESSAGES + " WHERE " +
+        deleteAllDataAssociatedToMessagesWithUser(objectIds.toString());
+    }
+
+    @WorkerThread
+    public void deleteAllDataAssociatedToMessagesWithUser(String objectIds) {
+        String query = "SELECT " + sMessageLocalUrl + " FROM " + TABLE_MESSAGES + " WHERE " +
                 sMessageType + " NOT IN (\'" + Const.kMessageTypeLocation + "\',\'" +
                 Const.kMessageTypeText + "\')" + " AND (" + sMessageFromUserId + " IN (" +
                 objectIds + ")" + " OR " + sMessageToUserId + " IN (" + objectIds + ")" + ")";
 
-        cursor = openDatabase().rawQuery(query, new String[]{});
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
-        for (i = 0; i < cursor.getCount(); i++) {
+        for (int i = 0; i < cursor.getCount(); i++) {
             if (cursor.getString(0) != null) {
                 File file = new File(cursor.getString(0));
                 try {
@@ -324,7 +344,7 @@ public class MySQLiteHelper {
     public void deleteContactsById(List<String> customer) {
         String args = TextUtils.join(",", customer);
         // Delete avatars/images/videos/audios associated with contact list
-        deleteDataAssociatedWithUser(args, customer.size(), false);
+        deleteAllDataAssociatedWithUser(args, customer.size());
         openDatabase().execSQL(String.format("DELETE FROM " + TABLE_CV_CONTACTS
                 + " WHERE " + COLUMN_ID + " IN (%s);", args));
     }
@@ -370,10 +390,8 @@ public class MySQLiteHelper {
         contact.setAbout(cursor.getString(5));
         contact.setComposingMessage(cursor.getString(6));
         contact.setAvatarThumbFileId(cursor.getString(7));
-        boolean b = cursor.getString(8).contentEquals("Y");
-        contact.setBlocked(b);
-        b = cursor.getString(9).contentEquals("Y");
-        contact.setMuted(b);
+        contact.setBlocked(cursor.getString(8).contentEquals("Y"));
+        contact.setMuted(cursor.getString(9).contentEquals("Y"));
         contact.setCreated(cursor.getLong(10));
         return contact;
     }
@@ -402,6 +420,7 @@ public class MySQLiteHelper {
         message.put(sMessageDuration, newMessage.getDuration());
         message.put(sMessageBytes, newMessage.getBytes());
         message.put(sMessageProgress, newMessage.getProgress());
+        message.put(sMessageConversa, newMessage.getConversaAgent() ? "Y" : "N");
 
         long id = openDatabase().insert(TABLE_MESSAGES, null, message);
 
@@ -536,7 +555,8 @@ public class MySQLiteHelper {
                 new String[] {id, fromId, fromId, id} );
     }
 
-    private int deleteAllMessagesById(String id) {
+    public int deleteAllMessagesById(String id) {
+        deleteAllDataAssociatedToMessagesWithUser("\'" + id + "\'");
         String fromId = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
         int result = openDatabase().delete(TABLE_MESSAGES,
                 "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
@@ -609,6 +629,7 @@ public class MySQLiteHelper {
         message.setDuration(cursor.getInt(16));
         message.setBytes(cursor.getLong(17));
         message.setProgress(cursor.getInt(18));
+        message.setConversaAgent(cursor.getString(19).equals("Y") ? 'Y' : 'N');
         return message;
     }
 
@@ -731,11 +752,11 @@ public class MySQLiteHelper {
     /* ******************************************* */
     /* ******************************************* */
 
-    public NotificationInformation getGroupInformation(String group_id) {
+    public dbNotificationInformation getGroupInformation(String group_id) {
         String query = "SELECT " + COLUMN_ID + "," + sNotificationAndroidId + "," + sNotificationCount + " FROM " + TABLE_NOTIFICATION + " WHERE " + sNotificationGroup + " = \'" + group_id + "\'" + " LIMIT 1";
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
-        NotificationInformation information = new NotificationInformation(group_id);
+        dbNotificationInformation information = new dbNotificationInformation(group_id);
 
         while (!cursor.isAfterLast()) {
             information.setNotificationId(cursor.getInt(0));
@@ -748,7 +769,7 @@ public class MySQLiteHelper {
         return information;
     }
 
-    public void incrementGroupCount(NotificationInformation information, boolean create) {
+    public void incrementGroupCount(dbNotificationInformation information, boolean create) {
         if (create) {
             // Create record
             ContentValues record = new ContentValues();

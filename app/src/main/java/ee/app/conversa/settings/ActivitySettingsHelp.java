@@ -17,9 +17,12 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 import de.psdev.licensesdialog.LicensesDialog;
 import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;
@@ -34,7 +37,6 @@ import ee.app.conversa.browser.CustomTabActivityHelper;
 import ee.app.conversa.browser.WebviewFallback;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.database.dbBusiness;
-import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 
@@ -92,7 +94,9 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                 break;
             }
             case R.id.btnSupport: {
-                dbBusiness dbBusiness = ConversaApp.getInstance(this).getDB().isContact("E5ZE2sr0tx");
+                // TODO: Support account hardcoded, change correct object id
+                final String supportId = "E5ZE2sr0tx";
+                dbBusiness dbBusiness = ConversaApp.getInstance(this).getDB().isContact(supportId);
 
                 if (dbBusiness == null) {
                     final Context context = this;
@@ -104,7 +108,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                             .showListener(new DialogInterface.OnShowListener() {
                                 @Override
                                 public void onShow(final DialogInterface dialogInterface) {
-                                    new SupportInfoTask(context, dialogInterface).execute();
+                                    new SupportInfoTask(context, dialogInterface).execute(supportId);
                                 }
                             })
                             .show();
@@ -249,26 +253,26 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
 
         @Override
         protected dbBusiness doInBackground(String... params) {
-            ParseQuery<Business> query = ParseQuery.getQuery(Business.class);
-            query.whereEqualTo(Const.kBusinessActiveKey, true);
-            query.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
-            query.whereDoesNotExist(Const.kBusinessBusinessKey);
-
             try {
-                Business object = query.get("E5ZE2sr0tx");
-                dbBusiness dbBusiness = new dbBusiness();
-                dbBusiness.setBusinessId("E5ZE2sr0tx");
-                dbBusiness.setDisplayName(object.getDisplayName());
-                dbBusiness.setConversaId(object.getConversaID());
-                dbBusiness.setAbout(object.getAbout());
+                HashMap<String, Object> pparams = new HashMap<>(2);
+                pparams.put("customer", 1);
+                pparams.put("accountId", params[0]);
+                String json = ParseCloud.callFunction("getConversaAccount", pparams);
+                JSONObject businessReg = new JSONObject(json);
 
-                if (object.getAvatar() != null)
-                    dbBusiness.setAvatarThumbFileId(object.getAvatar().getUrl());
+                dbBusiness business = new dbBusiness();
+                business.setBusinessId(businessReg.getString("ob"));
+                business.setDisplayName(businessReg.getString("dn"));
+                business.setConversaId(businessReg.getString("cn"));
+                business.setAbout(businessReg.getString("ab"));
+                business.setAvatarThumbFileId(businessReg.getString("av"));
 
-                return dbBusiness;
-            } catch (ParseException e) {
-                if (AppActions.validateParseException(e)) {
-                    AppActions.appLogout(getApplicationContext(), true);
+                return business;
+            } catch (Exception e) {
+                if (e instanceof ParseException) {
+                    if (AppActions.validateParseException((ParseException)e)) {
+                        AppActions.appLogout(getApplicationContext(), true);
+                    }
                 }
 
                 return null;
@@ -278,6 +282,10 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
         @Override
         protected void onPostExecute(dbBusiness result) {
             dialogInterface.dismiss();
+
+            if (isCancelled() || isDestroyed() || isFinishing())
+                return;
+
             if (result == null) {
                 new MaterialDialog.Builder(context)
                         .title(R.string.sett_help_dialog_title)

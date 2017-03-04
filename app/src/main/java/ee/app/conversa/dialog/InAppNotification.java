@@ -35,7 +35,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.view.animation.TranslateAnimation;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -47,7 +47,6 @@ import ee.app.conversa.R;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Const;
-import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
 
 /**
@@ -60,29 +59,14 @@ public class InAppNotification implements OnClickListener {
 	public static final int SHORT_ANIM_DURATION = 0;
 	public static final int MEDIUM_ANIM_DURATION = 1;
 	public static final int LONG_ANIM_DURATION = 2;
-	private final String TAG = InAppNotification.class.getSimpleName();
-	private int mAnimationDuration;
+
+	private Animation mSlideFromTop;
+	private Animation mSlideOutTop;
+	private Animation mSlideOutTopOnClose;
+
 	private RelativeLayout mPushLayout;
 	private Context mContext;
 	private dbBusiness user;
-
-	private final TranslateAnimation mSlideFromTop = new TranslateAnimation(
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) 0);
-
-	private final TranslateAnimation mSlideOutTop = new TranslateAnimation(
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0);
-
-	private final TranslateAnimation mSlideOutTopOnClose = new TranslateAnimation(
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_PARENT, 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) 0,
-			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0);
 
 	public static InAppNotification make(Context context, RelativeLayout layout) {
 		InAppNotification notification = new InAppNotification();
@@ -92,40 +76,35 @@ public class InAppNotification implements OnClickListener {
 	}
 
 	public void show(dbMessage message) {
-		showNotification(message, MEDIUM_ANIM_DURATION, 4000);
+		show(message, MEDIUM_ANIM_DURATION);
 	}
 
-	public void show(dbMessage message, int duration, int timeBeforeHiding) {
-		showNotification(message, duration, timeBeforeHiding);
+	public void show(dbMessage message, int duration) {
+		showNotification(message, duration);
 	}
 
-	private void showNotification(dbMessage message, int duration, int timeBeforeHiding) {
+	private void showNotification(dbMessage message, int duration) {
 		if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationPreview()) {
 			addView(message);
-			setDuration(duration);
-			setTranslateAnimations(timeBeforeHiding);
+			setTranslateAnimations(getDuration(duration));
 			startTranslateAnimations();
 		}
 	}
 
-	private void setDuration(int duration) {
+	private int getDuration(int duration) {
 		switch (duration) {
 			case SHORT_ANIM_DURATION:
-				mAnimationDuration = mContext.getResources().getInteger(
+				return mContext.getResources().getInteger(
 						android.R.integer.config_shortAnimTime);
-				break;
 			case MEDIUM_ANIM_DURATION:
-				mAnimationDuration = mContext.getResources().getInteger(
+				return mContext.getResources().getInteger(
 						android.R.integer.config_mediumAnimTime);
-				break;
 			case LONG_ANIM_DURATION:
-				mAnimationDuration = mContext.getResources().getInteger(
+				return mContext.getResources().getInteger(
 						android.R.integer.config_longAnimTime);
-				break;
 			default:
-				mAnimationDuration = mContext.getResources().getInteger(
+				return mContext.getResources().getInteger(
 						android.R.integer.config_mediumAnimTime);
-				break;
 		}
 	}
 
@@ -134,79 +113,76 @@ public class InAppNotification implements OnClickListener {
 				.getDB()
 				.isContact(message.getFromUserId());
 
-		if (user == null) {
-			Logger.error(TAG, "Contact doesn't exits, notification can't be displayed");
-			return;
-		}
+		if (user != null) {
+			TextView mTvUserName = (TextView) mPushLayout.findViewById(R.id.tvUserName);
+			TextView mTvNotification = (TextView) mPushLayout.findViewById(R.id.tvNotification);
+			SimpleDraweeView mSdvAvatar = (SimpleDraweeView) mPushLayout.findViewById(R.id.sdvPushAvatar);
+			mTvUserName.setText(user.getDisplayName());
 
-		TextView mTvUserName = (TextView) mPushLayout.findViewById(R.id.tvUserName);
-		TextView mTvNotification = (TextView) mPushLayout.findViewById(R.id.tvNotification);
-		SimpleDraweeView mSdvAvatar = (SimpleDraweeView) mPushLayout.findViewById(R.id.sdvPushAvatar);
-		mTvUserName.setText(user.getDisplayName());
-
-		switch (message.getMessageType()) {
-			case Const.kMessageTypeImage:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_image));
-				break;
-			case Const.kMessageTypeLocation:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_location));
-				break;
-			case Const.kMessageTypeAudio:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_audio));
-				break;
-			case Const.kMessageTypeVideo:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_video));
-				break;
-			case Const.kMessageTypeText:
-				mTvNotification.setText(message.getBody().replaceAll("\\n", " "));
-				break;
-			default:
-				mTvNotification.setText(mContext
-						.getString(R.string.contacts_last_message_default));
-				break;
-		}
-
-		if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationSound()) {
-			final SoundPool sounds;
-
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				AudioAttributes attributes = new AudioAttributes.Builder()
-						.setUsage(AudioAttributes.USAGE_NOTIFICATION)
-						.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-						.build();
-				sounds = new SoundPool.Builder()
-						.setAudioAttributes(attributes)
-						.build();
-			} else {
-				sounds = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
+			switch (message.getMessageType()) {
+				case Const.kMessageTypeImage:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_image));
+					break;
+				case Const.kMessageTypeLocation:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_location));
+					break;
+				case Const.kMessageTypeAudio:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_audio));
+					break;
+				case Const.kMessageTypeVideo:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_video));
+					break;
+				case Const.kMessageTypeText:
+					mTvNotification.setText(message.getBody().replaceAll("\\n", " "));
+					break;
+				default:
+					mTvNotification.setText(mContext
+							.getString(R.string.contacts_last_message_default));
+					break;
 			}
 
-			sounds.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-				@Override
-				public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-					/** soundId for Later handling of sound pool **/
-					// in 2nd param u have to pass your desire ringtone
-					sounds.play(soundId, 0.99f, 0.99f, 1, 0, 0.99f);
+			if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationSound()) {
+				final SoundPool sounds;
+
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					AudioAttributes attributes = new AudioAttributes.Builder()
+							.setUsage(AudioAttributes.USAGE_NOTIFICATION)
+							.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+							.build();
+					sounds = new SoundPool.Builder()
+							.setAudioAttributes(attributes)
+							.build();
+				} else {
+					sounds = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
 				}
-			});
 
-			sounds.load(mContext, R.raw.sound_notification, 1);
+				sounds.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+					@Override
+					public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
+						/** soundId for Later handling of sound pool **/
+						// in 2nd param u have to pass your desire ringtone
+						sounds.play(soundId, 0.99f, 0.99f, 1, 0, 0.99f);
+					}
+				});
+
+				sounds.load(mContext, R.raw.sound_notification, 1);
+			}
+
+			Uri uri = Utils.getUriFromString(user.getAvatarThumbFileId());
+
+			if (uri == null) {
+				uri = Utils.getDefaultImage(mContext, R.drawable.ic_business_default);
+			}
+
+			mSdvAvatar.setImageURI(uri);
+
+			mPushLayout.findViewById(R.id.btnClose).setOnClickListener(this);
+			mPushLayout.setOnClickListener(this);
 		}
-
-		Uri uri = Utils.getUriFromString(user.getAvatarThumbFileId());
-
-		if (uri == null) {
-			uri = Utils.getDefaultImage(mContext, R.drawable.ic_business_default);
-		}
-
-		mSdvAvatar.setImageURI(uri);
-
-		mPushLayout.findViewById(R.id.btnClose).setOnClickListener(this);
-		mPushLayout.setOnClickListener(this);
 	}
 
 	private void hideNotification() {
@@ -216,10 +192,14 @@ public class InAppNotification implements OnClickListener {
 		}
 	}
 
-	private void setTranslateAnimations(int timeBeforeHiding) {
+	private void setTranslateAnimations(int duration) {
+		mSlideFromTop = AnimationUtils.loadAnimation(mContext, R.anim.slide_in_top);
+		mSlideOutTop = AnimationUtils.loadAnimation(mContext, R.anim.slide_in_top);
+		mSlideOutTopOnClose = mSlideOutTop;
+
 		mSlideFromTop.setFillAfter(false);
 		mSlideFromTop.setFillEnabled(false);
-		mSlideFromTop.setDuration(mAnimationDuration);
+		mSlideFromTop.setDuration(duration);
 		mSlideFromTop.setAnimationListener(new AnimationListener() {
 
 			public void onAnimationStart(Animation animation) {
@@ -233,8 +213,8 @@ public class InAppNotification implements OnClickListener {
 				mPushLayout.startAnimation(mSlideOutTop);
 			}
 		});
-		mSlideOutTop.setStartOffset(timeBeforeHiding);
-		mSlideOutTop.setDuration(mAnimationDuration);
+		mSlideOutTop.setStartOffset(duration * 3);
+		mSlideOutTop.setDuration(duration);
 		mSlideOutTop.setAnimationListener(new AnimationListener() {
 
 			public void onAnimationStart(Animation animation) {
@@ -249,7 +229,7 @@ public class InAppNotification implements OnClickListener {
 		});
 
 		mSlideOutTopOnClose.setStartOffset(0);
-		mSlideOutTopOnClose.setDuration(mAnimationDuration);
+		mSlideOutTopOnClose.setDuration(duration);
 		mSlideOutTopOnClose.setAnimationListener(new AnimationListener() {
 
 			public void onAnimationStart(Animation animation) {

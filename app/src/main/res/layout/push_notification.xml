@@ -4,7 +4,7 @@
     android:id="@+id/rlPushNotification"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:elevation="7dp"
+    android:elevation="2dp"
     android:layout_alignParentTop="true"
     android:background="@color/push_notification_background"
     android:padding="2dp" >

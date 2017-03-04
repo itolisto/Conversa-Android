@@ -204,7 +204,7 @@ public class FragmentPreferences extends ConversaFragment implements View.OnClic
 
         private List<Drawable> images;
 
-        public ArrayAdapterWithIcon(Context context, List<String> items, List<Drawable> images) {
+        ArrayAdapterWithIcon(Context context, List<String> items, List<Drawable> images) {
             super(context, android.R.layout.select_dialog_item, items);
             this.images = images;
         }

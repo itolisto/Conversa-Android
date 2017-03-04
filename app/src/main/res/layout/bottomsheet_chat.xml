@@ -16,15 +16,6 @@
         style="?android:attr/buttonBarButtonStyle" />
 
     <ImageButton
-        android:id="@+id/btnGallery"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:layout_weight="1"
-        android:src="@drawable/ic_album"
-        style="?android:attr/buttonBarButtonStyle" />
-
-    <ImageButton
         android:id="@+id/btnLocation"
         android:layout_width="0dp"
         android:layout_height="match_parent"

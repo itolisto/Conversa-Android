@@ -9,7 +9,7 @@ import android.support.v4.app.NotificationCompat;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.model.database.NotificationInformation;
+import ee.app.conversa.model.database.dbNotificationInformation;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.notifications.NotificationDeleted;
 import ee.app.conversa.notifications.NotificationPressed;
@@ -20,7 +20,7 @@ import ee.app.conversa.utils.Const;
  */
 public class PushNotification {
 
-    public static void showMessageNotification(Context context, String from, String jsonData, dbMessage message, NotificationInformation summary) {
+    public static void showMessageNotification(Context context, String from, String jsonData, dbMessage message, dbNotificationInformation summary) {
         if (ConversaApp.getInstance(context).getPreferences().getPushNotificationPreview()) {
             Intent intentChatWallView = new Intent(context, NotificationPressed.class);
             intentChatWallView.putExtra("notificationId", summary.getNotificationId());

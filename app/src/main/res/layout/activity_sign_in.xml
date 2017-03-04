@@ -102,21 +102,22 @@
 
 		<ee.app.conversa.view.LightTextView
 			android:id="@+id/ltvClickHere"
-			android:layout_width="match_parent"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:layout_marginBottom="16dp"
 			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
 			android:text="@string/string_signin_sign_up_business_two"
-			android:textSize="12sp" />
+			android:textSize="11sp" />
 
 		<ee.app.conversa.view.LightTextView
 			android:layout_above="@id/ltvClickHere"
-			android:layout_width="match_parent"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:gravity="center"
+			android:layout_centerHorizontal="true"
 			android:text="@string/string_signin_sign_up_business_one"
-			android:textSize="12sp" />
+			android:textSize="11sp" />
 	</RelativeLayout>
 
 	<ImageView

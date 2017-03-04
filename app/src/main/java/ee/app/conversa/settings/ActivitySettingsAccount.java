@@ -76,8 +76,8 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
         mLtvEmail.setText(Account.getCurrentUser().getEmail());
         mLtvName.setText(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountDisplayName());
 
-        findViewById(R.id.rlName).setOnClickListener(this);
-        findViewById(R.id.rlPassword).setOnClickListener(this);
+        findViewById(R.id.llName).setOnClickListener(this);
+        findViewById(R.id.llPassword).setOnClickListener(this);
         findViewById(R.id.rlCleanRecentSearches).setOnClickListener(this);
         findViewById(R.id.rlLogOut).setOnClickListener(this);
     }
@@ -85,7 +85,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.rlName: {
+            case R.id.llName: {
                 new MaterialDialog.Builder(this)
                         .title(getString(R.string.sett_account_name_alert_title))
                         .positiveText(getString(R.string.action_change))
@@ -109,7 +109,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                         .show();
                 break;
             }
-            case R.id.rlPassword: {
+            case R.id.llPassword: {
                 new MaterialDialog.Builder(this)
                         .title(getString(R.string.sett_account_password_alert_title))
                         .positiveText(getString(R.string.action_change))
@@ -194,9 +194,10 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                 if (newName.isEmpty()) {
                     showErrorMessage(getString(R.string.common_field_required));
                 } else {
-                    HashMap<String, String> params = new HashMap<>();
+                    HashMap<String, String> params = new HashMap<>(2);
                     params.put("displayName", newName);
-                    params.put("objectId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
+                    params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
+
                     ParseCloud.callFunctionInBackground("updateCustomerName", params, new FunctionCallback<Integer>() {
                         @Override
                         public void done(Integer object, ParseException e) {

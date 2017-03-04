@@ -11,6 +11,7 @@ import com.parse.ParseException;
 
 import java.util.HashMap;
 
+import ee.app.conversa.ConversaApp;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Logger;
 
@@ -39,8 +40,12 @@ public class FavoriteJob extends Job {
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onRun() throws Throwable {
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("business", businessId);
+        HashMap<String, Object> params = new HashMap<>(3);
+        params.put("businessId", businessId);
+        params.put("customerId", ConversaApp
+                .getInstance(getApplicationContext())
+                .getPreferences()
+                .getAccountCustomerId());
 
         if (favorite) {
             params.put("favorite", true);

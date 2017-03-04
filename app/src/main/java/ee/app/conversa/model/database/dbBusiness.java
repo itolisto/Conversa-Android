@@ -62,6 +62,7 @@ public class dbBusiness implements Parcelable {
     public String getBusinessId() { return mBusinessId; }
     public String getDisplayName() { return mDisplayName; }
     public String getConversaId() { return mConversaId; }
+    public String getFormattedConversaId() { return "@".concat(mConversaId); }
     public String getAbout() { return mAbout; }
     public String getComposingMessage() { return mComposingMessageString; }
     public String getAvatarThumbFileId() { return mAvatarThumbFileId; }

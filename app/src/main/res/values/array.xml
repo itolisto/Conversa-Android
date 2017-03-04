@@ -13,13 +13,13 @@
         <item>2</item>
     </string-array>
 
-    <string-array name="language_entries">
+    <string-array name="language_entries" translatable="false">
         <item>@string/sett_language_default_option</item>
         <item>English</item>
         <item>Español</item>
     </string-array>
 
-    <string-array name="language_values">
+    <string-array name="language_values" translatable="false">
         <item>zz</item>
         <item>en</item>
         <item>es</item>

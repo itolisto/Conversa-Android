@@ -24,6 +24,7 @@ import ee.app.conversa.events.message.MessageRetrieveEvent;
 import ee.app.conversa.events.message.MessageUpdateEvent;
 import ee.app.conversa.interfaces.OnContactTaskCompleted;
 import ee.app.conversa.interfaces.OnMessageTaskCompleted;
+import ee.app.conversa.messaging.MessageDeleteReason;
 import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
@@ -96,7 +97,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageDeleteEvent(MessageDeleteEvent event) {
-        MessageDeleted(event.getMessageList());
+        MessageDeleted(event.getMessageList(), event.getReason());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -155,7 +156,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     @Override
-    public void MessageDeleted(final List<String> response) {
+    public void MessageDeleted(List<String> response, MessageDeleteReason reason) {
         /* Child activities override this method */
     }
 

@@ -41,6 +41,29 @@
                 android:layout_height="wrap_content" />
         </RelativeLayout>
 
+        <LinearLayout
+            android:gravity="center"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_height="match_parent"
+            android:id="@+id/llNoResultsContainer" >
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="@null"
+                android:background="@drawable/ic_sad_face" />
+
+            <ee.app.conversa.view.LightTextView
+                android:layout_marginTop="7dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_no_results_found" />
+        </LinearLayout>
+
         <com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/pbLoadingCategory"
             android:layout_width="50dp"

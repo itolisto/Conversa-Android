@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="?android:attr/selectableItemBackground"
+        android:id="@+id/rlDialogUserSelect"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight">
+        <ImageView
+            android:src="@drawable/ic_account"
+            android:id="@+id/ivAvatarAccount"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_centerVertical="true"
+            android:layout_width="@dimen/settings_main_avatar_size"
+            android:layout_height="@dimen/settings_main_avatar_size" />
+        <ee.app.conversa.view.RegularTextView
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:layout_toEndOf="@id/ivAvatarAccount"
+            android:layout_toRightOf="@id/ivAvatarAccount"
+            android:text="@string/contacts_options_select"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:background="?android:attr/selectableItemBackground"
+        android:id="@+id/rlDialogUserClear"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight">
+        <ImageView
+            android:src="@drawable/ic_clear"
+            android:id="@+id/ivClearAccount"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_centerVertical="true"
+            android:layout_width="@dimen/settings_main_avatar_size"
+            android:layout_height="@dimen/settings_main_avatar_size" />
+        <ee.app.conversa.view.RegularTextView
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:layout_toEndOf="@id/ivClearAccount"
+            android:layout_toRightOf="@id/ivClearAccount"
+            android:text="@string/contacts_options_clear"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:background="?android:attr/selectableItemBackground"
+        android:id="@+id/rlDialogUserDelete"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight">
+        <ImageView
+            android:src="@drawable/ic_delete"
+            android:id="@+id/ivNotificationAccount"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_centerVertical="true"
+            android:layout_width="@dimen/settings_main_avatar_size"
+            android:layout_height="@dimen/settings_main_avatar_size" />
+        <ee.app.conversa.view.RegularTextView
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:layout_toEndOf="@id/ivNotificationAccount"
+            android:layout_toRightOf="@id/ivNotificationAccount"
+            android:text="@string/contacts_options_delete"
+            android:textColor="@color/red"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+</LinearLayout>

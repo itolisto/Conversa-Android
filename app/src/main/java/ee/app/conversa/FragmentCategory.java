@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,28 +28,29 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
-import ee.app.conversa.adapters.CategoryAdapter;
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.interfaces.OnCategoryClickListener;
+import ee.app.conversa.items.HeaderItem;
+import ee.app.conversa.items.SectionableItem;
 import ee.app.conversa.model.nCategory;
-import ee.app.conversa.model.nHeaderTitle;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
+import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 
 public class FragmentCategory extends Fragment implements OnCategoryClickListener, View.OnClickListener {
 
     private RelativeLayout mRlNoConnection;
     private RecyclerView mRvCategory;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private CategoryAdapter mCategoryListAdapter;
     private AVLoadingIndicatorView mPbLoadingCategories;
+
+    private FlexibleAdapter<AbstractFlexibleItem> mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -66,11 +67,15 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
 
         mBtnRetry.setOnClickListener(this);
 
-        mCategoryListAdapter = new CategoryAdapter((ActivityMain)getActivity(), this);
-        mRvCategory.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRvCategory.setAdapter(mCategoryListAdapter);
+        mAdapter = new FlexibleAdapter<>(new ArrayList<AbstractFlexibleItem>(), null);
+        mRvCategory.setLayoutManager(new SmoothScrollLinearLayoutManager(getActivity()));
+        mRvCategory.setAdapter(mAdapter);
         mRvCategory.setHasFixedSize(true);
         mRvCategory.setItemAnimator(new DefaultItemAnimator());
+
+        mAdapter.setUnlinkAllItemsOnRemoveHeaders(true)
+                .setDisplayHeadersAtStartUp(true) //Show Headers at startUp!
+                .setStickyHeaders(true); //Make headers sticky
 
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.orange, R.color.blue);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -149,65 +154,36 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
             if (result.isEmpty()) {
                 mRvCategory.setVisibility(View.GONE);
             } else {
-                JSONObject jsonRootObject = new JSONObject(result);
-                JSONArray categories = jsonRootObject.optJSONArray("results");
+                mAdapter.clear();
 
-                int size = categories.length();
-                List<nCategory> alphabetically = null;
-                List<Object> categoriesList = new ArrayList<>(30);
+                JSONArray results = new JSONArray(result);
+                int size = results.length() - 1;
 
-                for (int i = 0; i < size; i++) {
-                    JSONObject jsonCategory = categories.getJSONObject(i);
-                    String headerTitle = jsonCategory.optString("tn", null);
+                for (int i = size; i >= 0; i--) {
+                    JSONObject object = results.getJSONObject(i);
 
-                    if (headerTitle != null) {
-                        int relevance = jsonCategory.optInt("re", 0);
-                        categoriesList.add(new nHeaderTitle(headerTitle, relevance));
+                    HeaderItem headerItem = new HeaderItem(String.valueOf(i), object.optString("tn", ""));
+                    mAdapter.addSection(headerItem);
 
-                        if (jsonCategory.optBoolean("al", false)) {
-                            alphabetically = new ArrayList<>(1);
-                        }
-                    } else {
-                        nCategory category = new nCategory(
-                                jsonCategory.optString("ob", ""),
-                                jsonCategory.optString("na", ""),
-                                jsonCategory.optString("th", ""));
+                    JSONArray categories = object.getJSONArray("cat");
+                    int categoriesSize = categories.length();
 
-                        if (alphabetically != null) {
-                            alphabetically.add(category);
-
-                            if (i + 1 < size) {
-                                jsonCategory = categories.getJSONObject(i + 1);
-
-                                if (jsonCategory.optString("tn", null) != null) {
-                                    Collections.sort(alphabetically, new Comparator<nCategory>() {
-                                        @Override
-                                        public int compare(final nCategory object1, final nCategory object2) {
-                                            return object1.getCategoryName(getActivity()).compareTo(object2.getCategoryName(getActivity()));
-                                        }
-                                    });
-                                    categoriesList.addAll(alphabetically);
-                                    alphabetically.clear();
-                                    alphabetically = null;
-                                }
-                            } else {
-                                Collections.sort(alphabetically, new Comparator<nCategory>() {
-                                    @Override
-                                    public int compare(final nCategory object1, final nCategory object2) {
-                                        return object1.getCategoryName(getActivity()).compareTo(object2.getCategoryName(getActivity()));
-                                    }
-                                });
-                                categoriesList.addAll(alphabetically);
-                                alphabetically.clear();
-                                alphabetically = null;
-                            }
-                        } else {
-                            categoriesList.add(category);
-                        }
+                    for (int h = 0; h < categoriesSize; h++) {
+                        JSONObject category = categories.getJSONObject(h);
+                        SectionableItem categoryReg = new SectionableItem(
+                                headerItem,
+                                (AppCompatActivity)getActivity(),
+                                this,
+                                new nCategory(
+                                    category.optString("ob", ""),
+                                    category.optString("na", ""),
+                                    category.optString("th", "")
+                                )
+                        );
+                        mAdapter.addItemToSection(categoryReg, headerItem, h);
                     }
                 }
 
-                mCategoryListAdapter.addItems(categoriesList);
                 mRvCategory.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
@@ -230,4 +206,5 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
             getCategoriesAsync();
         }
     }
+
 }
