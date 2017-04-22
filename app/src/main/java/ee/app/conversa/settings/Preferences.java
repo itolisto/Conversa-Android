@@ -67,6 +67,10 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ GETTERS *********************************** */
 	/* ******************************************************************************** */
+    public boolean getShowTutorial() {
+        return getBooleanPreference(PreferencesKeys.TUTORIAL_KEY, true);
+    }
+
     public String getAccountCustomerId() {
         return getStringPreference(PreferencesKeys.ACCOUNT_CUSTOMER_ID_KEY, "");
     }
@@ -155,6 +159,12 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
+    public void setShowTutorial(boolean value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PreferencesKeys.TUTORIAL_KEY, value);
+        editor.apply();
+    }
+
     public void setAccountCustomerId(String id, boolean onBackground) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PreferencesKeys.ACCOUNT_CUSTOMER_ID_KEY, id);

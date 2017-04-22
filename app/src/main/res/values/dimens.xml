@@ -26,4 +26,9 @@
     <dimen name="settings_main_avatar_size">21dp</dimen>
     <dimen name="settings_main_next_size">16dp</dimen>
 
+    <dimen name="st_indicator_size_default">4dp</dimen>
+    <dimen name="st_indicator_spacing_default">4dp</dimen>
+
+    <dimen name="tutorial_title_size">21sp</dimen>
+    <dimen name="tutorial_message_size">16sp</dimen>
 </resources>

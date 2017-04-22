@@ -50,12 +50,12 @@
                         android:fadingEdge="horizontal" />
 
                     <ee.app.conversa.view.LightTextView
-                        android:textSize="13sp"
-                        android:text="@string/sett_notification_sound_summary"
-                        android:layout_width="wrap_content"
+                        android:textSize="12sp"
+                        android:layout_marginTop="7dp"
+                        android:textColor="@color/light_gray"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:maxLines="4" />
+                        android:text="@string/sett_notification_sound_summary" />
                 </LinearLayout>
 
                 <android.support.v7.widget.SwitchCompat
@@ -92,12 +92,12 @@
                         android:fadingEdge="horizontal" />
 
                     <ee.app.conversa.view.LightTextView
-                        android:textSize="13sp"
-                        android:text="@string/sett_notification_preview_summary"
-                        android:layout_width="wrap_content"
+                        android:textSize="12sp"
+                        android:layout_marginTop="7dp"
+                        android:textColor="@color/light_gray"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:maxLines="4" />
+                        android:text="@string/sett_notification_preview_summary" />
                 </LinearLayout>
 
                 <android.support.v7.widget.SwitchCompat
@@ -141,12 +141,12 @@
                         android:fadingEdge="horizontal" />
 
                     <ee.app.conversa.view.LightTextView
-                        android:textSize="13sp"
-                        android:text="@string/sett_notification_inapp_sound_summary"
-                        android:layout_width="wrap_content"
+                        android:textSize="12sp"
+                        android:layout_marginTop="7dp"
+                        android:textColor="@color/light_gray"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:maxLines="4" />
+                        android:text="@string/sett_notification_inapp_sound_summary" />
                 </LinearLayout>
 
                 <android.support.v7.widget.SwitchCompat
@@ -183,12 +183,12 @@
                         android:fadingEdge="horizontal" />
 
                     <ee.app.conversa.view.LightTextView
-                        android:textSize="13sp"
-                        android:text="@string/sett_notification_inapp_preview_summary"
-                        android:layout_width="wrap_content"
+                        android:textSize="12sp"
+                        android:layout_marginTop="7dp"
+                        android:textColor="@color/light_gray"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:maxLines="4" />
+                        android:text="@string/sett_notification_inapp_preview_summary" />
                 </LinearLayout>
 
                 <android.support.v7.widget.SwitchCompat

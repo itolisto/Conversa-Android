@@ -9,50 +9,96 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize">
-        <Button
-            android:id="@+id/btnTerms"
-            android:text="@string/sett_help_terms_privacy_title"
-            android:textColor="@color/black"
+
+        <LinearLayout
+            android:padding="7dp"
+            android:id="@+id/rlTerms"
+            android:orientation="vertical"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:layout_height="62dp">
+
+            <ee.app.conversa.view.MediumTextView
+                android:text="@string/sett_help_terms_privacy_title"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:text="@string/sett_help_terms_privacy_message"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/dark_gray"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <View
             android:id="@+id/vDivider"
-            android:layout_above="@id/btnTerms"
+            android:layout_above="@id/rlTerms"
             android:layout_width="match_parent"
             android:background="@drawable/divider"
             android:layout_height="0.5dp"/>
 
-        <Button
-            android:id="@+id/btnFeedback"
+        <LinearLayout
+            android:padding="7dp"
+            android:id="@+id/rlAgent"
+            android:orientation="vertical"
             android:layout_above="@id/vDivider"
-            android:text="@string/sett_help_agent_title"
-            android:textColor="@color/black"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:layout_height="62dp">
+
+            <ee.app.conversa.view.MediumTextView
+                android:text="@string/sett_help_agent_title"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:text="@string/sett_help_agent_message"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/dark_gray"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <View
             android:id="@+id/vDividerTwo"
-            android:layout_above="@id/btnFeedback"
+            android:layout_above="@id/rlAgent"
             android:layout_width="match_parent"
             android:background="@drawable/divider"
             android:layout_height="0.5dp"/>
 
-        <Button
-            android:id="@+id/btnSupport"
+        <LinearLayout
+            android:padding="7dp"
+            android:id="@+id/rlSupport"
+            android:orientation="vertical"
             android:layout_above="@id/vDividerTwo"
-            android:text="@string/sett_help_support_title"
-            android:textColor="@color/black"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:layout_height="62dp">
+
+            <ee.app.conversa.view.MediumTextView
+                android:text="@string/sett_help_support_title"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ee.app.conversa.view.RegularTextView
+                android:text="@string/sett_help_support_message"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/dark_gray"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <View
             android:id="@+id/vDividerThree"
-            android:layout_above="@id/btnSupport"
+            android:layout_above="@id/rlSupport"
             android:layout_width="match_parent"
             android:background="@drawable/divider"
             android:layout_height="0.5dp"/>

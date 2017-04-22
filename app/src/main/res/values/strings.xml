@@ -46,7 +46,7 @@
     <string name="mute_title_menu">Mute</string>
     <string name="name_already_taken">Name is already taken</string>
     <string name="no_messages">No Messages</string>
-    <string name="no_messages_description_one">When you have messages\nyou\'ll see them here</string>
+    <string name="no_messages_description_one">When you have chats\nyou\'ll see them here</string>
     <string name="no_user_registered">No user registered with this email or password</string>
     <string name="number_of_followers" translatable="false">Favs</string>
     <string name="open_on_title">Open</string>
@@ -97,14 +97,17 @@
     <string name="sett_help_agent_title">Conversa Agent</string>
     <string name="sett_help_support_title">Technical Support</string>
     <string name="sett_help_terms_privacy_title">Terms &amp; Privacy</string>
+    <string name="sett_help_agent_message">Didn\'t found the business you were looking for? Chat with a Conversa Agent</string>
+    <string name="sett_help_support_message">Issues with the app or something isn\'t running smoothly, chat with tech support</string>
+    <string name="sett_help_terms_privacy_message">Concerns about your privacy or how we handle your data. Go ahead, read all the terms. We dare you.</string>
     <string name="sett_notification_sound_title">Sound</string>
-    <string name="sett_notification_sound_summary">Play when receiving a push notification</string>
+    <string name="sett_notification_sound_summary">Play when receiving a notification</string>
     <string name="sett_notification_push_title">Push notifications</string>
     <string name="sett_notification_preview_title">Preview</string>
-    <string name="sett_notification_preview_summary">Show push notification</string>
+    <string name="sett_notification_preview_summary">Show notification</string>
     <string name="sett_notification_inapp_title">In-App notifications</string>
     <string name="sett_notification_inapp_sound_summary">Play when receiving a message</string>
-    <string name="sett_notification_inapp_preview_summary">Show when receiving a message</string>
+    <string name="sett_notification_inapp_preview_summary">Show notification</string>
     <string name="sett_chat_quality_title">Upload quality</string>
     <string name="sett_chat_quality_default_entry">High</string>
     <string name="sett_chat_message_title">Messages</string>
@@ -112,6 +115,7 @@
     <string name="sett_chat_message_sent_sound">Sound when sending</string>
     <string name="sett_chat_message_received_sound">Sound when receiving</string>
     <string name="sett_chat_message_sound_message">Play sound inside chat</string>
+    <string name="sett_chat_message_quality">Sending images with higher quality uses more data</string>
     <string name="sett_account_privacy_title">Privacy</string>
     <string name="sett_account_password_title">Password</string>
     <string name="sett_account_logout_title">Log Out</string>
@@ -147,7 +151,7 @@
     <string name="profile_go_location">Go</string>
     <string name="gender_female">FEMALE</string>
     <string name="gender_male">MALE</string>
-    <string name="search_toolbar_hint">Search businesses, stores, etc.</string>
+    <string name="search_toolbar_hint">Search for stores and businesses</string>
     <string name="recent_searches_title">Recents</string>
     <string name="searches_top_results_title">Results</string>
     <string name="no_internet_connection_retry">Retry</string>
@@ -182,9 +186,11 @@
     <string name="profile_action_share">Share</string>
     <string name="signup_warning">BY SIGNING UP YOU ARE ACCEPTING OUR \nTERMS AND PRIVACY POLICIES</string>
     <string name="sett_help_policies">Privacy policies</string>
-    <string name="sett_help_dialog_title">Support</string>
-    <string name="sett_help_dialog_message">Retrieving support information</string>
-    <string name="sett_help_dialog_message_error">Couldn\'t find support informartion, please try again later</string>
+    <string name="sett_help_dialog_support_title">Support</string>
+    <string name="sett_help_dialog_support_message">Retrieving support information</string>
+    <string name="sett_help_dialog_agent_title">Conversa Agent</string>
+    <string name="sett_help_dialog_agent_message">Retrieving agent information</string>
+    <string name="sett_help_dialog_message_error">Couldn\'t find informartion, please try again later</string>
     <string name="sett_account_info_title">Information</string>
     <string name="sett_account_name_title">Name</string>
     <string name="sett_account_email_alert_title">Change email</string>
@@ -196,6 +202,7 @@
     <string name="profile_share_text">Chat now with %1$s, follow the link %2$s</string>
     <string name="common_field_required">Required field</string>
     <string name="common_field_invalid">Invalid field</string>
+    <string name="common_field_invalid_email">Invalid field, check email</string>
     <string name="notification_stack_text">You have %1$d new messages from %2$s</string>
     <string name="chat_status">Active %1$d %2$s ago</string>
     <string name="chat_status_now">Active now</string>
@@ -210,8 +217,19 @@
     <string name="chat_status_year">year</string>
     <string name="chat_status_years">years</string>
     <string name="contacts_options_delete">Delete conversation</string>
-    <string name="contacts_options_select">Select</string>
+    <string name="contacts_options_select">Select more</string>
     <string name="contacts_options_clear">Clear conversation</string>
     <string name="contacts_item_conversation_empty">Start chatting</string>
     <string name="chat_by_conversa_agent">Vía Conversa Agent</string>
+    <string name="tutorial_skip">Start Now</string>
+    <string name="tutorial_message_five">No phone calls. No emails. No social media. Just chat.</string>
+    <string name="tutorial_message_four">Find the business on Conversa and start chatting</string>
+    <string name="tutorial_message_one">We made easy to contact and chat any local business</string>
+    <string name="tutorial_message_three">Get more information about the service you need</string>
+    <string name="tutorial_message_two">Chat to find out prices or availability about any product</string>
+    <string name="tutorial_title_five">You\'ll love it</string>
+    <string name="tutorial_title_four">Whenever you need</string>
+    <string name="tutorial_title_one">Welcome to Conversa</string>
+    <string name="tutorial_title_three">Or maybe</string>
+    <string name="tutorial_title_two">Now you can</string>
 </resources>

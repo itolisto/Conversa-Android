@@ -4,6 +4,8 @@ package ee.app.conversa.settings;
  * Created by edgargomez on 9/14/16.
  */
 public class PreferencesKeys {
+    public static final String TUTORIAL_KEY = "tutorial__key";
+
     public static final String MAIN_LANGUAGE_KEY = "preferences__language";
     public static final String ACCOUNT_EMAIL_KEY = "preferences__account_email_key";
     public static final String ACCOUNT_NAME_KEY = "preferences__account_name_key";

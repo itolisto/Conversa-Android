@@ -11,7 +11,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,6 +19,7 @@ import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.view.LightTextView;
+import ee.app.conversa.view.URLSpanNoUnderline;
 
 /**
  * ActivitySignIn
@@ -82,7 +82,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
 
         Spannable styledString = new SpannableString(text);
         // url
-        styledString.setSpan(new URLSpan("http://conversa.link/manager"), index, text.length(), 0);
+        styledString.setSpan(new URLSpanNoUnderline("https://conversa.typeform.com/to/RRg54U"), index, text.length(), 0);
         // change text color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green, null)),

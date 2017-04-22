@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Toolbar colors -->
-    <color name="greenNavbar">#37FF77</color>
+    <color name="greenNavbar">#06F28F</color>
     <color name="whiteNavbar">#F7F7F7</color>
 
     <color name="white">#F7F7F7</color>
-    <color name="green">#37FF77</color>
+    <color name="green">#06F28F</color>
     <color name="green_darker">#00C03E</color>
     <color name="black">#505050</color>
     <color name="red">#F1015D</color>
@@ -25,7 +25,7 @@
     <color name="status_away">#FFC107</color>
 
     <!-- Tabs -->
-    <color name="regular_tabs">#37FF77</color>
+    <color name="regular_tabs">#06F28F</color>
     <color name="tab_indicator">#6F726D</color>
 
     <!-- Backgrounds -->
@@ -34,5 +34,4 @@
     <color name="push_notification_background">#E61D1D1D</color>
     <color name="image_view_background">#000000</color>
     <color name="profile_light_background">#80505050</color>
-
 </resources>

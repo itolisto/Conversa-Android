@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,12 +20,16 @@ import org.json.JSONObject;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.jobs.CustomerInfoJob;
 import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
 
 public class ActivityMain extends ConversaActivity implements Foreground.Listener, View.OnClickListener {
 
@@ -128,53 +133,52 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         mFsvSearch.setOnClickListener(this);
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        Branch branch = Branch.getInstance();
-//        branch.initSession(new Branch.BranchReferralInitListener(){
-//            @Override
-//            public void onInitFinished(JSONObject referringParams, BranchError error) {
-//                if (error == null) {
-//                    // params will be empty if no data found
-//                    if (referringParams.optString("goConversa", null) != null) {
-//                        String objectId = referringParams.optString(Const.kBranchBusinessIdKey, "");
-//
-//                        if (!TextUtils.isEmpty(objectId)) {
-//                            dbBusiness business = ConversaApp.getInstance(getApplicationContext())
-//                                    .getDB()
-//                                    .isContact(objectId);
-//
-//                            String name = referringParams.optString(Const.kBranchBusinessNameKey, "");
-//                            String id = referringParams.optString(Const.kBranchBusinessConversaIdKey, "");
-//                            String avatar = referringParams.optString(Const.kBranchBusinessAvatarKey, "");
-//                            boolean add = false;
-//
-//                            if (business == null) {
-//                                business = new dbBusiness();
-//                                business.setBusinessId(objectId);
-//                                business.setDisplayName(name);
-//                                business.setConversaId(id);
-//                                business.setAbout("");
-//                                business.setComposingMessage("");
-//                                business.setAvatarThumbFileId(avatar);
-//                                business.setBlocked(false);
-//                                business.setMuted(false);
-//                                add = true;
-//                            }
-//
-//                            Intent intent = new Intent(getApplicationContext(), ActivityChatWall.class);
-//                            intent.putExtra(Const.iExtraBusiness, business);
-//                            intent.putExtra(Const.iExtraAddBusiness, add);
-//                            startActivity(intent);
-//                        }
-//                    }
-//                } else {
-//                    Logger.error("ActivityChatWall branch", error.getMessage());
-//                }
-//            }
-//        }, this.getIntent().getData(), this);
-//    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        Branch branch = Branch.getInstance();
+        branch.initSession(new Branch.BranchReferralInitListener(){
+            @Override
+            public void onInitFinished(JSONObject referringParams, BranchError error) {
+                if (error == null) {
+                    // params will be empty if no data found
+                    if (referringParams.optString("goConversa", null) != null) {
+                        String objectId = referringParams.optString(Const.kBranchBusinessIdKey, "");
+
+                        if (!TextUtils.isEmpty(objectId)) {
+                            dbBusiness business = ConversaApp.getInstance(getApplicationContext())
+                                    .getDB()
+                                    .isContact(objectId);
+
+                            String name = referringParams.optString(Const.kBranchBusinessNameKey, "");
+                            String id = referringParams.optString(Const.kBranchBusinessConversaIdKey, "");
+                            String avatar = referringParams.optString(Const.kBranchBusinessAvatarKey, "");
+                            boolean add = false;
+
+                            if (business == null) {
+                                business = new dbBusiness();
+                                business.setBusinessId(objectId);
+                                business.setDisplayName(name);
+                                business.setConversaId(id);
+                                business.setComposingMessage("");
+                                business.setAvatarThumbFileId(avatar);
+                                business.setBlocked(false);
+                                business.setMuted(false);
+                                add = true;
+                            }
+
+                            Intent intent = new Intent(getApplicationContext(), ActivityChatWall.class);
+                            intent.putExtra(Const.iExtraBusiness, business);
+                            intent.putExtra(Const.iExtraAddBusiness, add);
+                            startActivity(intent);
+                        }
+                    }
+                } else {
+                    Logger.error("ActivityChatWall branch", error.getMessage());
+                }
+            }
+        }, this.getIntent().getData(), this);
+    }
 
     @Override
     public void onDestroy() {

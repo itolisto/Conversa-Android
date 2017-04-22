@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,19 +15,11 @@ import android.widget.RelativeLayout;
 
 import com.instabug.library.InstabugTrackingDelegate;
 
-import org.json.JSONObject;
-
-import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.management.ConnectionChangeReceiver;
-import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.settings.language.DynamicLanguage;
-import ee.app.conversa.utils.Const;
-import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
-import io.branch.referral.Branch;
-import io.branch.referral.BranchError;
 
 /**
  * Created by edgargomez on 6/3/16.
@@ -63,50 +54,6 @@ public class BaseActivity extends AppCompatActivity {
         if (checkInternetConnection) {
             ConversaApp.getInstance(this).getLocalBroadcastManager().registerReceiver(mConnectionChangeReceiver, mConnectionChangeFilter);
         }
-
-        Branch branch = Branch.getInstance();
-        branch.initSession(new Branch.BranchReferralInitListener(){
-            @Override
-            public void onInitFinished(JSONObject referringParams, BranchError error) {
-                if (error == null) {
-                    // params will be empty if no data found
-                    if (referringParams.optString("goConversa", null) != null) {
-                        String objectId = referringParams.optString(Const.kBranchBusinessIdKey, "");
-
-                        if (!TextUtils.isEmpty(objectId)) {
-                            dbBusiness business = ConversaApp.getInstance(getApplicationContext())
-                                    .getDB()
-                                    .isContact(objectId);
-
-                            String name = referringParams.optString(Const.kBranchBusinessNameKey, "");
-                            String id = referringParams.optString(Const.kBranchBusinessConversaIdKey, "");
-                            String avatar = referringParams.optString(Const.kBranchBusinessAvatarKey, "");
-                            boolean add = false;
-
-                            if (business == null) {
-                                business = new dbBusiness();
-                                business.setBusinessId(objectId);
-                                business.setDisplayName(name);
-                                business.setConversaId(id);
-                                business.setAbout("");
-                                business.setComposingMessage("");
-                                business.setAvatarThumbFileId(avatar);
-                                business.setBlocked(false);
-                                business.setMuted(false);
-                                add = true;
-                            }
-
-                            Intent intent = new Intent(getApplicationContext(), ActivityChatWall.class);
-                            intent.putExtra(Const.iExtraBusiness, business);
-                            intent.putExtra(Const.iExtraAddBusiness, add);
-                            startActivity(intent);
-                        }
-                    }
-                } else {
-                    Logger.error("ActivityChatWall branch", error.getMessage());
-                }
-            }
-        }, this.getIntent().getData(), this);
     }
 
     @Override

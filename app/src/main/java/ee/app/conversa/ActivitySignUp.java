@@ -3,7 +3,6 @@ package ee.app.conversa;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +13,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -32,9 +30,11 @@ import java.util.Locale;
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.settings.language.DynamicLanguage;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
+import ee.app.conversa.view.URLSpanNoUnderline;
 
 import static ee.app.conversa.R.id.btnSignUpUp;
 import static ee.app.conversa.R.id.tilBirthdaySignUp;
@@ -110,8 +110,8 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
 
         Spannable styledString = new SpannableString(text);
         // url
-        styledString.setSpan(new URLSpan("http://conversachat.com/terms"), indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
-        styledString.setSpan(new URLSpan("http://conversachat.com/privacy"), indexPrivacy, text.length(), 0);
+        styledString.setSpan(new URLSpanNoUnderline("http://conversachat.com/terms"), indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
+        styledString.setSpan(new URLSpanNoUnderline("http://conversachat.com/privacy"), indexPrivacy, text.length(), 0);
         // change text color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.green, null)),
@@ -289,11 +289,7 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
 
     public void AuthListener(boolean result, ParseException error) {
         if (result) {
-            Intent intent = new Intent(this, ActivityMain.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            AppActions.initSession(this);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.signup_register_error));

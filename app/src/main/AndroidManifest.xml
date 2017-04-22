@@ -40,20 +40,7 @@
         android:theme="@style/AppTheme" >
 
         <activity android:name=".extendables.BaseActivity"
-            android:screenOrientation="portrait" >
-            <intent-filter>
-                <data android:scheme="conversaapp" android:host="open" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="conversa.link" android:pathPrefix="/IT8k" />
-            </intent-filter>
-        </activity>
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ActivitySplashScreen"
@@ -74,7 +61,26 @@
         <activity
             android:name="ee.app.conversa.ActivityMain"
             android:screenOrientation="portrait"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask">
+            <intent-filter>
+                <data android:scheme="conversaapp" android:host="open" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="conversa.link" android:pathPrefix="/IT8k" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="ee.app.conversa.ActivityTutorial"
+            android:theme="@style/TutorialTheme"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            android:noHistory="true" />
 
         <activity
             android:name="ee.app.conversa.ActivitySignIn"

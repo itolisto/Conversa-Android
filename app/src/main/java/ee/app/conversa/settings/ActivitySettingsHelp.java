@@ -66,9 +66,9 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         findViewById(R.id.btnLicences).setOnClickListener(this);
-        findViewById(R.id.btnSupport).setOnClickListener(this);
-        findViewById(R.id.btnTerms).setOnClickListener(this);
-        findViewById(R.id.btnFeedback).setOnClickListener(this);
+        findViewById(R.id.rlSupport).setOnClickListener(this);
+        findViewById(R.id.rlTerms).setOnClickListener(this);
+        findViewById(R.id.rlAgent).setOnClickListener(this);
         mCustomTabActivityHelper = new CustomTabActivityHelper();
         mCustomTabActivityHelper.setConnectionCallback(mConnectionCallback);
         mCustomTabActivityHelper.mayLaunchUrl(Uri.parse("http://conversachat.com"), null, null);
@@ -93,34 +93,39 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                 onLicencesClick();
                 break;
             }
-            case R.id.btnSupport: {
-                // TODO: Support account hardcoded, change correct object id
-                final String supportId = "E5ZE2sr0tx";
-                dbBusiness dbBusiness = ConversaApp.getInstance(this).getDB().isContact(supportId);
-
-                if (dbBusiness == null) {
-                    final Context context = this;
-                    new MaterialDialog.Builder(this)
-                            .title(R.string.sett_help_dialog_title)
-                            .content(R.string.sett_help_dialog_message)
-                            .progress(true, 0)
-                            .progressIndeterminateStyle(true)
-                            .showListener(new DialogInterface.OnShowListener() {
-                                @Override
-                                public void onShow(final DialogInterface dialogInterface) {
-                                    new SupportInfoTask(context, dialogInterface).execute(supportId);
-                                }
-                            })
-                            .show();
-                } else {
-                    Intent intent = new Intent(this, ActivityProfile.class);
-                    intent.putExtra(Const.iExtraAddBusiness, false);
-                    intent.putExtra(Const.iExtraBusiness, dbBusiness);
-                    startActivity(intent);
-                }
+            case R.id.rlSupport: {
+                final Context context = this;
+                new MaterialDialog.Builder(this)
+                        .title(R.string.sett_help_dialog_support_title)
+                        .content(R.string.sett_help_dialog_support_message)
+                        .progress(true, 0)
+                        .progressIndeterminateStyle(true)
+                        .showListener(new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(final DialogInterface dialogInterface) {
+                                new SupportInfoTask(context, dialogInterface).execute("1");
+                            }
+                        })
+                        .show();
                 break;
             }
-            case R.id.btnTerms: {
+            case R.id.rlAgent: {
+                final Context context = this;
+                new MaterialDialog.Builder(this)
+                        .title(R.string.sett_help_dialog_agent_title)
+                        .content(R.string.sett_help_dialog_agent_message)
+                        .progress(true, 0)
+                        .progressIndeterminateStyle(true)
+                        .showListener(new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(final DialogInterface dialogInterface) {
+                                new SupportInfoTask(context, dialogInterface).execute("2");
+                            }
+                        })
+                        .show();
+                break;
+            }
+            case R.id.rlTerms: {
                 // create an intent builder
                 CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
                 // Begin customizing
@@ -136,25 +141,6 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                         this,
                         intentBuilder.build(),
                         Uri.parse("http://conversachat.com/terms"),
-                        new WebviewFallback());
-                break;
-            }
-            case R.id.btnFeedback: {
-                // create an intent builder
-                CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-                // Begin customizing
-                intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
-                intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-                intentBuilder.setShowTitle(true);
-                intentBuilder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_arrow_back));
-                intentBuilder.setStartAnimations(this, R.anim.slide_in_right, R.anim.slide_out_left);
-                intentBuilder.setExitAnimations(this, android.R.anim.slide_in_left,
-                        android.R.anim.slide_out_right);
-
-                CustomTabActivityHelper.openCustomTab(
-                        this,
-                        intentBuilder.build(),
-                        Uri.parse("http://conversachat.com/feedback"),
                         new WebviewFallback());
                 break;
             }
@@ -232,12 +218,12 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
     private CustomTabActivityHelper.ConnectionCallback mConnectionCallback = new CustomTabActivityHelper.ConnectionCallback() {
         @Override
         public void onCustomTabsConnected() {
-            //SnackbarFactory.createSnackbar(MainActivity.this, mLayoutMainCoordinator, "Connected to service").show();
+            //SnackbarFactory.createSnackbar(ActivityTutorial.this, mLayoutMainCoordinator, "Connected to service").show();
         }
 
         @Override
         public void onCustomTabsDisconnected() {
-            //SnackbarFactory.createSnackbar(MainActivity.this, mLayoutMainCoordinator, "Disconnected from service").show();
+            //SnackbarFactory.createSnackbar(ActivityTutorial.this, mLayoutMainCoordinator, "Disconnected from service").show();
         }
     };
 
@@ -245,6 +231,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
 
         private Context context;
         private DialogInterface dialogInterface;
+        private boolean add;
 
         public SupportInfoTask (Context context, DialogInterface dialogInterface) {
             this.dialogInterface = dialogInterface;
@@ -256,22 +243,38 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
             try {
                 HashMap<String, Object> pparams = new HashMap<>(2);
                 pparams.put("customer", 1);
-                pparams.put("accountId", params[0]);
-                String json = ParseCloud.callFunction("getConversaAccount", pparams);
-                JSONObject businessReg = new JSONObject(json);
+                pparams.put("purpose", Integer.parseInt(params[0]));
+                final String supportId = ParseCloud.callFunction("getConversaAccountId", pparams);
 
-                dbBusiness business = new dbBusiness();
-                business.setBusinessId(businessReg.getString("ob"));
-                business.setDisplayName(businessReg.getString("dn"));
-                business.setConversaId(businessReg.getString("cn"));
-                business.setAbout(businessReg.getString("ab"));
-                business.setAvatarThumbFileId(businessReg.getString("av"));
+                add = false;
 
-                return business;
+                dbBusiness dbBusiness = ConversaApp
+                        .getInstance(getApplicationContext())
+                        .getDB()
+                        .isContact(supportId);
+
+                if (dbBusiness == null) {
+                    add = true;
+
+                    HashMap<String, Object> sparams = new HashMap<>(1);
+                    sparams.put("accountId", supportId);
+
+                    final String json = ParseCloud.callFunction("getConversaAccount", sparams);
+
+                    JSONObject businessReg = new JSONObject(json);
+                    dbBusiness = new dbBusiness();
+                    dbBusiness.setBusinessId(businessReg.getString("oj"));
+                    dbBusiness.setDisplayName(businessReg.getString("dn"));
+                    dbBusiness.setConversaId(businessReg.getString("id"));
+                    dbBusiness.setAvatarThumbFileId(businessReg.getString("av"));
+                }
+
+                return dbBusiness;
             } catch (Exception e) {
                 if (e instanceof ParseException) {
                     if (AppActions.validateParseException((ParseException)e)) {
                         AppActions.appLogout(getApplicationContext(), true);
+                        cancel(true);
                     }
                 }
 
@@ -288,7 +291,6 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
 
             if (result == null) {
                 new MaterialDialog.Builder(context)
-                        .title(R.string.sett_help_dialog_title)
                         .content(R.string.sett_help_dialog_message_error)
                         .positiveText(android.R.string.ok)
                         .positiveColorRes(R.color.black)
@@ -301,7 +303,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                         .show();
             } else {
                 Intent intent = new Intent(context, ActivityProfile.class);
-                intent.putExtra(Const.iExtraAddBusiness, true);
+                intent.putExtra(Const.iExtraAddBusiness, add);
                 intent.putExtra(Const.iExtraBusiness, result);
                 startActivity(intent);
             }

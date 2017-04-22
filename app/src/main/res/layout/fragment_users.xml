@@ -55,6 +55,7 @@
             android:maxLines="1"
             android:textAllCaps="false"
             android:text="@string/start_browsing"
+            android:textStyle="bold"
             android:textColor="@drawable/textcolor_green_state"
             android:background="@drawable/button_shape_green_border" />
     </LinearLayout>

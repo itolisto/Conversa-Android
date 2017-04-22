@@ -78,7 +78,6 @@ public class ReceiveMessageJob extends Job {
             Collection<String> collection = new ArrayList<>();
             collection.add(Const.kBusinessDisplayNameKey);
             collection.add(Const.kBusinessConversaIdKey);
-            collection.add(Const.kBusinessAboutKey);
             collection.add(Const.kBusinessAvatarKey);
             query.selectKeys(collection);
 
@@ -99,7 +98,6 @@ public class ReceiveMessageJob extends Job {
             dbbusiness.setBusinessId(contactId);
             dbbusiness.setDisplayName(customer.getDisplayName());
             dbbusiness.setConversaId(customer.getConversaID());
-            dbbusiness.setAbout(customer.getAbout());
 
             try {
                 if (customer.getAvatar() != null) {

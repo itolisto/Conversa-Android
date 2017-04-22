@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white"
+    android:id="@+id/rootFirstPage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="ContentDescription">
+
+    <ImageView
+        android:src="@drawable/cam1"
+        android:id="@+id/ivThirdImage"
+        android:layout_width="250dp"
+        android:layout_height="500dp"
+        android:scaleType="centerInside"
+        android:layout_above="@+id/rlText"
+        android:layout_marginBottom="-150dp"
+        android:layout_centerHorizontal="true" />
+
+    <RelativeLayout
+        android:id="@+id/rlText"
+        android:background="@android:color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="180dp">
+
+        <ee.app.conversa.view.MediumTextView
+            android:id="@+id/mtvTitle"
+            android:textAlignment="center"
+            android:layout_marginTop="28dp"
+            android:textColor="@android:color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/tutorial_title_size"
+            android:text="@string/tutorial_title_one"/>
+
+        <ee.app.conversa.view.RegularTextView
+            android:layout_marginTop="7dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:layout_below="@id/mtvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/tutorial_message_size"
+            android:layout_marginEnd="14dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:layout_marginStart="14dp"
+            android:text="@string/tutorial_message_one"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

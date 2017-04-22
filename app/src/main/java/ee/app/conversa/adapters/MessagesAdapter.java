@@ -409,14 +409,30 @@ public class MessagesAdapter extends RecyclerView.Adapter<BaseHolder> {
 				}
 			} else if (!message.getFromUserId().equals(fromUser)) {
 				if (message.getConversaAgent()) {
-					this.mLtvSubText.setVisibility(View.VISIBLE);
-					this.mLtvSubText.setText(activity.getString(R.string.chat_by_conversa_agent));
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-						this.mLtvSubText.setTextColor(activity.getResources()
-								.getColor(R.color.gray, null));
+					if (nextMessage != null) {
+						if (!message.getFromUserId().equals(fromUser) && message.getConversaAgent()) {
+							this.mLtvSubText.setVisibility(View.GONE);
+						} else {
+							this.mLtvSubText.setVisibility(View.VISIBLE);
+							this.mLtvSubText.setText(activity.getString(R.string.chat_by_conversa_agent));
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+								this.mLtvSubText.setTextColor(activity.getResources()
+										.getColor(R.color.gray, null));
+							} else {
+								this.mLtvSubText.setTextColor(activity.getResources()
+										.getColor(R.color.gray));
+							}
+						}
 					} else {
-						this.mLtvSubText.setTextColor(activity.getResources()
-								.getColor(R.color.gray));
+						this.mLtvSubText.setVisibility(View.VISIBLE);
+						this.mLtvSubText.setText(activity.getString(R.string.chat_by_conversa_agent));
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+							this.mLtvSubText.setTextColor(activity.getResources()
+									.getColor(R.color.gray, null));
+						} else {
+							this.mLtvSubText.setTextColor(activity.getResources()
+									.getColor(R.color.gray));
+						}
 					}
 				} else {
 					this.mLtvSubText.setVisibility(View.GONE);

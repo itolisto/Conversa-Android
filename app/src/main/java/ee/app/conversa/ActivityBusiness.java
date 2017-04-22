@@ -155,7 +155,6 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
                                     business.setBusinessId(businessReg.getString("ob"));
                                     business.setDisplayName(businessReg.getString("dn"));
                                     business.setConversaId(businessReg.getString("cn"));
-                                    business.setAbout(businessReg.getString("ab"));
                                     business.setAvatarThumbFileId(businessReg.getString("av"));
 
                                     businesses.add(business);
@@ -206,7 +205,6 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
             business.setBusinessId(contact.getBusinessId());
             business.setDisplayName(contact.getDisplayName());
             business.setConversaId(contact.getConversaId());
-            business.setAbout(contact.getAbout());
             intent.putExtra(Const.iExtraAddBusiness, true);
         } else {
             intent.putExtra(Const.iExtraAddBusiness, false);

@@ -132,13 +132,6 @@
                     android:layout_centerVertical="true"
                     android:ellipsize="marquee" />
 
-                <ImageView
-                    android:src="@drawable/ic_info"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"/>
             </RelativeLayout>
 
             <View

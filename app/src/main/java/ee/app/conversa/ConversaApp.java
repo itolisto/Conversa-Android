@@ -106,8 +106,7 @@ public class ConversaApp extends MultiDexApplication {
 	}
 
 	private void initializeFabric() {
-		Fabric.with(this, new Crashlytics());
-		Fabric.with(this, new Answers());
+		Fabric.with(this, new Crashlytics(), new Answers());
 	}
 
 	private void initializeBranch() {

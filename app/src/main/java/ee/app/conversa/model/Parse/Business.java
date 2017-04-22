@@ -18,10 +18,6 @@ public class Business extends ParseObject {
         return getString("conversaID");
     }
 
-    public String getAbout() {
-        return getString("about");
-    }
-
     public ParseFile getAvatar() {
         return getParseFile("avatar");
     }

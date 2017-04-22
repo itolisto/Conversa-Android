@@ -383,15 +383,12 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
+			case R.id.ivAvatarChat:
 			case R.id.rlChatHeader: {
 				Intent intent = new Intent(this, ActivityProfile.class);
 				intent.putExtra(Const.iExtraBusiness, businessObject);
 				startActivity(intent);
 				overridePendingTransition(0, 0);
-				break;
-			}
-			case R.id.ivAvatarChat: {
-				// Llamar a Servidor por foto y actualizar
 				break;
 			}
 			case R.id.ibBack:
@@ -494,11 +491,11 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 											long diff = now - last;
 											long diffm = diff / (1000 * 60);
 
-											if (diffm < 70) {
-												if (diffm <= 10) {
+											if (diffm < 63) {
+												if (diffm <= 3) {
 													lastStatus = getString(R.string.chat_status_now);
 												} else {
-													diffm = diffm - 10;
+													diffm = diffm - 3;
 													if (diffm == 1) {
 														lastStatus = getString(R.string.chat_status, 1, getString(R.string.chat_status_minute));
 													} else {

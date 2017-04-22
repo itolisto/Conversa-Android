@@ -44,7 +44,6 @@ public class dbBusiness implements Parcelable {
     private String mBusinessId;
     private String mDisplayName;
     private String mConversaId;
-    private String mAbout;
     private String mComposingMessageString;
     private String mAvatarThumbFileId;
     private boolean mBlocked;
@@ -63,7 +62,6 @@ public class dbBusiness implements Parcelable {
     public String getDisplayName() { return mDisplayName; }
     public String getConversaId() { return mConversaId; }
     public String getFormattedConversaId() { return "@".concat(mConversaId); }
-    public String getAbout() { return mAbout; }
     public String getComposingMessage() { return mComposingMessageString; }
     public String getAvatarThumbFileId() { return mAvatarThumbFileId; }
     public boolean isBlocked() { return mBlocked; }
@@ -75,7 +73,6 @@ public class dbBusiness implements Parcelable {
     public void setBusinessId(String mBusinessId) { this.mBusinessId = mBusinessId; }
     public void setDisplayName(String mDisplayName) { this.mDisplayName = mDisplayName; }
     public void setConversaId(String mConversaId) { this.mConversaId = mConversaId; }
-    public void setAbout(String about) { this.mAbout = about; }
     public void setComposingMessage(String mComposingMessageString) { this.mComposingMessageString = mComposingMessageString; }
     public void setAvatarThumbFileId(String mAvatarThumbFileId) { this.mAvatarThumbFileId = mAvatarThumbFileId; }
     public void setBlocked(boolean mBlocked) { this.mBlocked = mBlocked; }
@@ -111,7 +108,6 @@ public class dbBusiness implements Parcelable {
         dest.writeString(this.mBusinessId);
         dest.writeString(this.mDisplayName);
         dest.writeString(this.mConversaId);
-        dest.writeString(this.mAbout);
         dest.writeString(this.mComposingMessageString);
         dest.writeString(this.mAvatarThumbFileId);
         dest.writeByte(this.mBlocked ? (byte) 1 : (byte) 0);
@@ -128,7 +124,6 @@ public class dbBusiness implements Parcelable {
         this.mBusinessId = in.readString();
         this.mDisplayName = in.readString();
         this.mConversaId = in.readString();
-        this.mAbout = in.readString();
         this.mComposingMessageString = in.readString();
         this.mAvatarThumbFileId = in.readString();
         this.mBlocked = in.readByte() != 0;

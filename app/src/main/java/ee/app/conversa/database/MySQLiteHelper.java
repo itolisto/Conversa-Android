@@ -101,7 +101,6 @@ public class MySQLiteHelper {
     private static final String sBusinessDisplayName = "displayName";
     private static final String sBusinessConversaId = "conversaId";
     private static final String sBusinessRecent = "recent";
-    private static final String sBusinessAbout = "about";
     private static final String sBusinessComposingMessage = "composingMessageString";
     private static final String sBusinessAvatarFile = "avatar_file_url";
     private static final String sBusinessBlocked = "blocked";
@@ -115,7 +114,6 @@ public class MySQLiteHelper {
             + "\"" + sBusinessDisplayName + "\" VARCHAR(180) NOT NULL, "
             + "\"" + sBusinessConversaId + "\" VARCHAR(255) NOT NULL, "
             + "\"" + sBusinessRecent + "\" INTEGER, "
-            + "\"" + sBusinessAbout + "\" VARCHAR(255), "
             + "\"" + sBusinessComposingMessage + "\" VARCHAR(255), "
             + "\"" + sBusinessAvatarFile + "\" VARCHAR(355), "
             + "\"" + sBusinessBlocked + "\" CHAR(1) NOT NULL DEFAULT 'N', "
@@ -205,7 +203,6 @@ public class MySQLiteHelper {
         contact.put(sBusinessDisplayName, user.getDisplayName());
         contact.put(sBusinessConversaId, user.getConversaId());
         contact.put(sBusinessRecent, user.getRecent());
-        contact.put(sBusinessAbout, user.getAbout());
         contact.put(sBusinessComposingMessage, "");
         contact.put(sBusinessAvatarFile, user.getAvatarThumbFileId());
         contact.put(sBusinessBlocked, "N");
@@ -387,12 +384,11 @@ public class MySQLiteHelper {
         contact.setDisplayName(cursor.getString(2));
         contact.setConversaId(cursor.getString(3));
         contact.setRecent(cursor.getLong(4));
-        contact.setAbout(cursor.getString(5));
-        contact.setComposingMessage(cursor.getString(6));
-        contact.setAvatarThumbFileId(cursor.getString(7));
-        contact.setBlocked(cursor.getString(8).contentEquals("Y"));
-        contact.setMuted(cursor.getString(9).contentEquals("Y"));
-        contact.setCreated(cursor.getLong(10));
+        contact.setComposingMessage(cursor.getString(5));
+        contact.setAvatarThumbFileId(cursor.getString(6));
+        contact.setBlocked(cursor.getString(7).contentEquals("Y"));
+        contact.setMuted(cursor.getString(8).contentEquals("Y"));
+        contact.setCreated(cursor.getLong(9));
         return contact;
     }
 
