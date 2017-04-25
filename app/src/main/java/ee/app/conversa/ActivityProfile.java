@@ -257,6 +257,8 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
 
                     jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), false));
                     followers--;
+                    if (followers < 0)
+                        followers = 0;
                     mBtvFollowers.setText(String.valueOf(followers));
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         mBtnFavorite.setBackground
@@ -435,7 +437,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         }
     }
 
-    public class ArrayAdapterWithIcon extends ArrayAdapter<String> {
+    private class ArrayAdapterWithIcon extends ArrayAdapter<String> {
 
         private List<Drawable> images;
 

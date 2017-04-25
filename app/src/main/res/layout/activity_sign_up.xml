@@ -41,7 +41,7 @@
 			android:paddingStart="14dp"
 			android:paddingRight="14dp" >
 
-			<EditText
+			<android.support.design.widget.TextInputEditText
 				android:id="@+id/etSignUpEmail"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
 			android:paddingStart="14dp"
 			android:paddingRight="14dp" >
 
-			<EditText
+			<android.support.design.widget.TextInputEditText
 				android:id="@+id/etSignUpPassword"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
 			android:paddingStart="14dp"
 			android:paddingRight="14dp" >
 
-			<EditText
+			<android.support.design.widget.TextInputEditText
 				android:id="@+id/etSignUpBirthday"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"

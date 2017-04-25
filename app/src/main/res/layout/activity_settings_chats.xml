@@ -21,6 +21,7 @@
             <ee.app.conversa.view.BoldTextView
                 android:text="@string/sett_chat_message_title"
                 android:textAllCaps="true"
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -37,6 +38,7 @@
                 android:layout_height="?attr/listPreferredItemHeight">
                 <ee.app.conversa.view.RegularTextView
                     android:text="@string/sett_chat_quality_title"
+                    android:textColor="@color/black"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <ee.app.conversa.view.LightTextView
@@ -59,6 +61,7 @@
                 android:text="@string/sett_chat_sound_title"
                 android:textAllCaps="true"
                 android:layout_marginTop="14dp"
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -72,6 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/listPreferredItemHeight">
                 <ee.app.conversa.view.RegularTextView
+                    android:textColor="@color/black"
                     android:text="@string/sett_chat_message_sent_sound"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -93,6 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/listPreferredItemHeight">
                 <ee.app.conversa.view.RegularTextView
+                    android:textColor="@color/black"
                     android:text="@string/sett_chat_message_received_sound"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

@@ -146,7 +146,7 @@
     <string name="gender">gender</string>
     <string name="signup_birthday_old_error">You must be at least 13 years old to use Conversa</string>
     <string name="signup_register_error">Sorry, this email is already being used by another user, try with another</string>
-    <string name="send_password">Send</string>
+    <string name="send_password">Recover</string>
     <string name="FORGOT_PASSWORD">Forgot password</string>
     <string name="profile_go_location">Go</string>
     <string name="gender_female">FEMALE</string>

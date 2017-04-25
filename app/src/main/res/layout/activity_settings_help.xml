@@ -16,7 +16,7 @@
             android:orientation="vertical"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
-            android:layout_height="62dp">
+            android:layout_height="wrap_content">
 
             <ee.app.conversa.view.MediumTextView
                 android:text="@string/sett_help_terms_privacy_title"
@@ -47,7 +47,7 @@
             android:orientation="vertical"
             android:layout_above="@id/vDivider"
             android:layout_width="match_parent"
-            android:layout_height="62dp">
+            android:layout_height="wrap_content">
 
             <ee.app.conversa.view.MediumTextView
                 android:text="@string/sett_help_agent_title"
@@ -78,7 +78,7 @@
             android:orientation="vertical"
             android:layout_above="@id/vDividerTwo"
             android:layout_width="match_parent"
-            android:layout_height="62dp">
+            android:layout_height="wrap_content">
 
             <ee.app.conversa.view.MediumTextView
                 android:text="@string/sett_help_support_title"

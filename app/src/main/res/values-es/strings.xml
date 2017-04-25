@@ -139,7 +139,7 @@
     <string name="gender">género</string>
     <string name="signup_birthday_old_error">Debes tener al menos 13 años para usar Conversa</string>
     <string name="signup_register_error">Lo sentimos, este correo electrónico ya está siendo usado por otro usuario, intenta con otro</string>
-    <string name="send_password">Enviar</string>
+    <string name="send_password">Recuperar</string>
     <string name="FORGOT_PASSWORD">Recuperar contraseña</string>
     <string name="profile_go_location">Ir</string>
     <string name="gender_female">MUJER</string>
