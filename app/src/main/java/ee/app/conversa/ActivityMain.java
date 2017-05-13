@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.onesignal.OneSignal;
+import com.parse.ParseUser;
 
 import org.json.JSONObject;
 
@@ -57,73 +58,82 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AblyConnection.getInstance().initAbly();
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        mFsvSearch = (CardView) toolbar.findViewById(R.id.fsvSearch);
-        mIvConversa = (ImageView) toolbar.findViewById(R.id.ivConversa);
-        mRtvTitle = (MediumTextView) toolbar.findViewById(R.id.rtvTitle);
-        setSupportActionBar(toolbar);
-
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        final PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.setOffscreenPageLimit(2);
-
-        resetNotifications = true;
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.getTabAt(0).setIcon(tabSelectedIcons[0]);
-        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                final int p = tab.getPosition();
-                mViewPager.setCurrentItem(p);
-                supportInvalidateOptionsMenu();
-                tab.setIcon(tabSelectedIcons[p]);
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                int position = tab.getPosition();
-
-                if (position == 0) {
-                    if (mPagerAdapter.getRegisteredFragment(0) != null)
-                        ((FragmentUsersChat)mPagerAdapter.getRegisteredFragment(0)).finishActionMode();
-                }
-
-                tab.setIcon(tabIcons[position]);
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
-        });
-
-        // 1. Subscribe to Customer channels if not subscribed already
-        if (ConversaApp.getInstance(this).getPreferences().getAccountCustomerId().isEmpty()) {
-            // 1. Get Customer Id
-            ConversaApp.getInstance(this)
-                    .getJobManager()
-                    .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser == null) {
+            // If to verify if deep link was opened when no session is
+            // active,
+            Intent go = new Intent(this, ActivitySignIn.class);
+            startActivity(go);
+            finish();
         } else {
-            OneSignal.getTags(new OneSignal.GetTagsHandler() {
-                @Override
-                public void tagsAvailable(JSONObject tags) {
-                    if (tags == null || tags.length() == 0) {
-                        OneSignal.setSubscription(true);
-                        Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
-                                .getPreferences().getAccountCustomerId());
-                    }
-                }
-            });
-        }
+            AblyConnection.getInstance().initAbly();
 
-        initialization();
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
+            mFsvSearch = (CardView) toolbar.findViewById(R.id.fsvSearch);
+            mIvConversa = (ImageView) toolbar.findViewById(R.id.ivConversa);
+            mRtvTitle = (MediumTextView) toolbar.findViewById(R.id.rtvTitle);
+            setSupportActionBar(toolbar);
+
+            mViewPager = (ViewPager) findViewById(R.id.pager);
+            final PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+            mViewPager.setAdapter(mPagerAdapter);
+            mViewPager.setOffscreenPageLimit(2);
+
+            resetNotifications = true;
+
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+            tabLayout.setupWithViewPager(mViewPager);
+            tabLayout.getTabAt(0).setIcon(tabSelectedIcons[0]);
+            tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+            tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    final int p = tab.getPosition();
+                    mViewPager.setCurrentItem(p);
+                    supportInvalidateOptionsMenu();
+                    tab.setIcon(tabSelectedIcons[p]);
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                    int position = tab.getPosition();
+
+                    if (position == 0) {
+                        if (mPagerAdapter.getRegisteredFragment(0) != null)
+                            ((FragmentUsersChat)mPagerAdapter.getRegisteredFragment(0)).finishActionMode();
+                    }
+
+                    tab.setIcon(tabIcons[position]);
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) { }
+            });
+
+            // 1. Subscribe to Customer channels if not subscribed already
+            if (ConversaApp.getInstance(this).getPreferences().getAccountCustomerId().isEmpty()) {
+                // 1. Get Customer Id
+                ConversaApp.getInstance(this)
+                        .getJobManager()
+                        .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
+            } else {
+                OneSignal.getTags(new OneSignal.GetTagsHandler() {
+                    @Override
+                    public void tagsAvailable(JSONObject tags) {
+                        if (tags == null || tags.length() == 0) {
+                            OneSignal.setSubscription(true);
+                            Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
+                                    .getPreferences().getAccountCustomerId());
+                        }
+                    }
+                });
+            }
+
+            initialization();
+        }
 	}
 
     @Override

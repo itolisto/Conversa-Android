@@ -35,11 +35,8 @@ import android.util.Log;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.instabug.library.Instabug;
-import com.instabug.library.invocation.InstabugInvocationEvent;
+import com.flurry.android.FlurryAgent;
 import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -57,7 +54,6 @@ import ee.app.conversa.settings.Preferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import io.branch.referral.Branch;
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Basic Application class, holds references to often used single instance
@@ -94,19 +90,14 @@ public class ConversaApp extends MultiDexApplication {
 		AblyConnection.initAblyManager(this);
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
-		initializeFabric();
 		initializeBranch();
 		initializeOneSignal();
 		initializeParse();
 		initializeDeveloperBuild();
 		initializeJobManager();
 		initializeEventBus();
-		initializeInstabug();
+        initializeFlurry();
 		initializeTypefaces();
-	}
-
-	private void initializeFabric() {
-		Fabric.with(this, new Crashlytics(), new Answers());
 	}
 
 	private void initializeBranch() {
@@ -212,11 +203,11 @@ public class ConversaApp extends MultiDexApplication {
 				.throwSubscriberException(BuildConfig.DEV_BUILD).installDefaultEventBus();
 	}
 
-	private void initializeInstabug() {
-		new Instabug.Builder(this, "ea5b94f87bd996b1149b73bab3e148a7")
-				.setInvocationEvent(InstabugInvocationEvent.SHAKE)
-				.build();
-	}
+    private void initializeFlurry() {
+        new FlurryAgent.Builder()
+                .withLogEnabled(true)
+                .build(this, "HNFDYJRY88CWYJ9464VB");
+    }
 
 	private void initializeTypefaces() {
 		mTfRalewayThin = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf");

@@ -7,13 +7,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
-
-import com.instabug.library.InstabugTrackingDelegate;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
@@ -107,13 +104,6 @@ public class BaseActivity extends AppCompatActivity {
 
     public boolean hasInternetConnection() {
         return Utils.hasNetworkConnection(this);
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        InstabugTrackingDelegate
-                .notifyActivityGotTouchEvent(ev,this);
-        return super.dispatchTouchEvent(ev);
     }
 
 }

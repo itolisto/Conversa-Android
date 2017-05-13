@@ -74,10 +74,11 @@
     <string name="string_signin_already_have_an_account">¿YA TENGO UNA CUENTA?</string>
     <string name="start_browsing">Empezar a navegar</string>
     <string name="special_promo_title">Promoción especial</string>
-    <string name="signup_password_regex_error">Contraseña debe contener al menos una letra, un número y un caracter especial</string>
+    <string name="signup_password_regex_error">Contraseña debe contener al menos una letra, un número y un carácter especial</string>
     <string name="signup_password_length_error">Contraseña debe contener al menos seis caracteres</string>
-    <string name="signup_name_error">Nombre debe contener más de un caracter en longitud</string>
+    <string name="signup_name_error">Nombre debe contener más de un carácter en longitud</string>
     <string name="settings_using_conversa">Estoy usando Conversa</string>
+    <string name="settings_using_conversa_text">Chatea ahora con %1$s, sigue el link: %2$s</string>
     <string name="settings_title_menu">Cuenta</string>
     <string name="settings_share_conversa">¿Cómo quieres compartir?</string>
     <string name="settings_password_succesful">Contraseña cambiada</string>
@@ -217,12 +218,15 @@
     <string name="tutorial_skip">Empezar Ahora</string>
     <string name="tutorial_message_five">Sin llamadas. Sin emails. Sin redes sociales. Solo chat.</string>
     <string name="tutorial_message_four">Encuentra el negocio en Conversa y empieza a chatear</string>
+    <!--\uD83D\uDE04-->
     <string name="tutorial_message_one">Hemos hecho fácil poder contactar y chatear con cualquier empresa local</string>
     <string name="tutorial_message_three">Obtener más información del servicio que necesitas</string>
     <string name="tutorial_message_two">Chatear y consultar sobre precios o disponibilidad de productos</string>
+    <!--\uD83D\uDCAC\uD83D\uDCF2-->
     <string name="tutorial_title_five">Lo amarás en serio</string>
     <string name="tutorial_title_four">Cuando lo necesites</string>
     <string name="tutorial_title_one">Bienvenido a Conversa</string>
+    <!--\uD83D\uDE0E-->
     <string name="tutorial_title_three">O quizá</string>
     <string name="tutorial_title_two">Ahora puedes</string>
 </resources>

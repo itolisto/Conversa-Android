@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import com.flurry.android.FlurryAgent;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.interfaces.OnCategoryClickListener;
@@ -142,6 +144,11 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
         intent.putExtra(Const.kObjectRowObjectIdKey, category.getObjectId());
         String categoryName = category.getCategoryName(getActivity());
         intent.putExtra(Const.kClassCategory, categoryName);
+
+        Map<String, String> articleParams = new HashMap<>(1);
+        articleParams.put("category", category.getObjectId());
+        FlurryAgent.logEvent("user_category_selected", articleParams);
+
         startActivity(intent);
     }
 

@@ -30,6 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.flurry.android.FlurryAgent;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -119,6 +121,21 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		initialization();
 		dbMessage.getAllMessageForChat(this, businessObject.getBusinessId(), 20, 0);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Map<String, String> articleParams = new HashMap<>(1);
+		String customer_id = ConversaApp.getInstance(this).getPreferences().getAccountCustomerId();
+		articleParams.put("user", (customer_id == null) ? "" : customer_id);
+		FlurryAgent.logEvent("user_chat_duration", articleParams, true);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		FlurryAgent.endTimedEvent("user_chat_duration");
 	}
 
 	@Override
@@ -503,7 +520,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 													}
 												}
 											} else {
-												diff = diff - (70 * 60 * 1000);
+												diff = diff - (63 * 60 * 1000);
 												long diffh = diff / (1000 * 60 * 60);
 												long diffd = diff / (1000 * 60 * 60 * 24);
 												long diffw = diff / (1000 * 60 * 60 * 24 * 7);

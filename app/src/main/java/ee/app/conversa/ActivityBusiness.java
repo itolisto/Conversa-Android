@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.flurry.android.FlurryAgent;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
@@ -218,6 +220,10 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
                 business.setAvatarThumbFileId(contact.getAvatarThumbFileId());
             }
         }
+
+        Map<String, String> articleParams = new HashMap<>(1);
+        articleParams.put("fromCategory", String.valueOf(true));
+        FlurryAgent.logEvent("user_profile_open", articleParams);
 
         intent.putExtra(Const.iExtraBusiness, business);
         startActivity(intent);

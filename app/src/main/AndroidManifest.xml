@@ -187,10 +187,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY" />
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="617c5ff8d2055123134c25a4b496d078123ef1da" />
-
         <!-- Add this meta-data below, and change "key_live_xxxxxxx" to your actual live Branch key -->
         <meta-data
             android:name="io.branch.sdk.BranchKey"

@@ -34,6 +34,7 @@ import android.widget.TextView;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.flurry.android.FlurryAgent;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -44,6 +45,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.jobs.FavoriteJob;
@@ -119,6 +121,20 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                 }
             });
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Map<String, String> articleParams = new HashMap<>(1);
+        articleParams.put("business", businessObject.getBusinessId());
+        FlurryAgent.logEvent("user_profile_view_duration", articleParams, true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        FlurryAgent.endTimedEvent("user_profile_view_duration");
     }
 
     /**
@@ -257,9 +273,11 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
 
                     jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), false));
                     followers--;
+
                     if (followers < 0)
                         followers = 0;
-                    mBtvFollowers.setText(String.valueOf(followers));
+
+                    setFollowersText(followers);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         mBtnFavorite.setBackground
                                 (getResources().getDrawable(R.drawable.ic_fav_not, null));
@@ -272,7 +290,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
 
                     jobManager.addJobInBackground(new FavoriteJob(TAG, businessObject.getBusinessId(), true));
                     followers++;
-                    mBtvFollowers.setText(String.valueOf(followers));
+                    setFollowersText(followers);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         mBtnFavorite.setBackground
                                 (getResources().getDrawable(R.drawable.ic_fav, null));
@@ -305,7 +323,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                 intent_one.setType("text/plain");
                 // Add data to the intent, the receiving app will decide what to do with it.
                 intent_one.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.settings_using_conversa));
-                intent_one.putExtra(Intent.EXTRA_TEXT, "https://conversa.link/" + businessObject.getConversaId());
+                intent_one.putExtra(Intent.EXTRA_TEXT, getString(R.string.settings_using_conversa_text, businessObject.getDisplayName(), "https://conversa.link/" + businessObject.getConversaId()));
 
                 final List<ResolveInfo> activities = getPackageManager().queryIntentActivities(intent_one, 0);
 
@@ -369,6 +387,10 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         });
     }
 
+    private void setFollowersText(int followers) {
+        mBtvFollowers.setText(Utils.numberWithFormat(followers));
+    }
+
     private void parseResult(String result) {
         try {
             if (!result.isEmpty()) {
@@ -391,7 +413,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
                     }
                 }
 
-                mBtvFollowers.setText(String.valueOf(followers));
+                setFollowersText(followers);
 
                 Uri uri = Utils.getUriFromString(headerUrl);
 

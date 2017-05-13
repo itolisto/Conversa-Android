@@ -68,6 +68,16 @@ public class Utils {
 		}
 	}
 
+	public static String numberWithFormat(int number) {
+		if (number > 999999) {
+			return String.format(Locale.getDefault(), "%.1fM", number/1000000.0).replace(',', '.');
+		} else if (number > 999) {
+			return String.format(Locale.getDefault(), "%.1fK", number/1000.0).replace(',', '.');
+		} else {
+			return String.valueOf(number);
+		}
+	}
+
 	public static int checkDate(int year, int month, int day) {
 		try {
 			Calendar calendar = Calendar.getInstance();

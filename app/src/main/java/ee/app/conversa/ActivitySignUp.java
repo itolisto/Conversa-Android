@@ -211,7 +211,6 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     private void showDate() {
         Utils.hideKeyboard(this);
 
-
         if (mYear == -1) {
             final Calendar c = Calendar.getInstance();
             mYear = c.get(Calendar.YEAR);

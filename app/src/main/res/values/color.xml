@@ -16,7 +16,7 @@
     <color name="dark_gray">#686868</color>
 
     <!-- Status bar colors -->
-    <color name="status_bar_default">#00C03E</color>
+    <color name="status_bar_default">#21CE86</color>
     <color name="status_bar_chat">#DEDEDE</color>
 
     <!-- Status colors -->

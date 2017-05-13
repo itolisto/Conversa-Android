@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.flurry.android.FlurryAgent;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -23,6 +24,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -351,6 +353,10 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                         ));
             }
         }).start();
+
+        Map<String, String> articleParams = new HashMap<>(1);
+        articleParams.put("fromSearch", String.valueOf(true));
+        FlurryAgent.logEvent("user_profile_open", articleParams);
 
         intent.putExtra(Const.iExtraBusiness, business);
         startActivity(intent);

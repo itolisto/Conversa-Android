@@ -108,7 +108,7 @@ public class Const {
 
 	public static final String kBranchBusinessIdKey = "objectId";
 	public static final String kBranchBusinessNameKey = "name";
-	public static final String kBranchBusinessConversaIdKey = "conversaid";
+	public static final String kBranchBusinessConversaIdKey = "conversaId";
 	public static final String kBranchBusinessAvatarKey = "avatar";
 
 	public static final int CAPTURE_MEDIA = 368;

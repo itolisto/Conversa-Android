@@ -84,6 +84,7 @@
     <string name="signup_password_length_error">Password must contain at least six characters</string>
     <string name="signup_name_error">Name should contain more than 1 character in length</string>
     <string name="settings_using_conversa">I\'m using Conversa</string>
+    <string name="settings_using_conversa_text">Chat now with %1$s, follow the link: %2$s</string>
     <string name="settings_title_menu">Account</string>
     <string name="settings_share_conversa">How do you want to share?</string>
     <string name="settings_password_succesful">Password changed</string>
@@ -224,12 +225,15 @@
     <string name="tutorial_skip">Start Now</string>
     <string name="tutorial_message_five">No phone calls. No emails. No social media. Just chat.</string>
     <string name="tutorial_message_four">Find the business on Conversa and start chatting</string>
+    <!--\uD83D\uDE04-->
     <string name="tutorial_message_one">We made easy to contact and chat any local business</string>
     <string name="tutorial_message_three">Get more information about the service you need</string>
     <string name="tutorial_message_two">Chat to find out prices or availability about any product</string>
+    <!--\uD83D\uDCAC\uD83D\uDCF2-->
     <string name="tutorial_title_five">You\'ll love it</string>
     <string name="tutorial_title_four">Whenever you need</string>
     <string name="tutorial_title_one">Welcome to Conversa</string>
+    <!--\uD83D\uDE0E-->
     <string name="tutorial_title_three">Or maybe</string>
     <string name="tutorial_title_two">Now you can</string>
 </resources>
