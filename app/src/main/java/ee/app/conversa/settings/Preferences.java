@@ -67,6 +67,10 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ GETTERS *********************************** */
 	/* ******************************************************************************** */
+    public String getPushKey() {
+        return getStringPreference(PreferencesKeys.PUSH_KEY, "");
+    }
+
     public boolean getShowTutorial() {
         return getBooleanPreference(PreferencesKeys.TUTORIAL_KEY, true);
     }
@@ -159,6 +163,12 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
+    public void setPushKey(String value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PreferencesKeys.PUSH_KEY, value);
+        editor.apply();
+    }
+
     public void setShowTutorial(boolean value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(PreferencesKeys.TUTORIAL_KEY, value);

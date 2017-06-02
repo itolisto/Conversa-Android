@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
-import com.onesignal.OneSignal;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
@@ -62,9 +61,9 @@ public class AppActions {
         tempList.add("upbc");
         tempList.add("upvt");
         tempList.add("usertype");
-        OneSignal.deleteTags(tempList);
-        OneSignal.clearOneSignalNotifications();
-        OneSignal.setSubscription(false);
+//        OneSignal.deleteTags(tempList);
+//        OneSignal.clearOneSignalNotifications();
+//        OneSignal.setSubscription(false);
         AblyConnection.getInstance().disconnectAbly();
         Account.logOut();
 

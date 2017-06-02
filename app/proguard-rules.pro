@@ -58,23 +58,48 @@
 -dontwarn com.flurry.**
 -keepattributes *Annotation*,EnclosingMethod,Signature
 -keepclasseswithmembers class * {
-   public (android.content.Context, android.util.AttributeSet, int);
- }
-
- # Google Play Services library
-  -keep class * extends java.util.ListResourceBundle {
-   protected Object[ ][ ] getContents();
+    public (android.content.Context, android.util.AttributeSet, int);
+}
+# Google Play Services library
+-keep class * extends java.util.ListResourceBundle {
+    protected Object[ ][ ] getContents();
+}
+-keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
+    public static final *** NULL;
+}
+-keepnames @com.google.android.gms.common.annotation.KeepName class *
+-keepclassmembernames class * {
+    @com.google.android.gms.common.annotation.KeepName *;
 }
 
- -keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
-  public static final *** NULL;
- }
-
- -keepnames @com.google.android.gms.common.annotation.KeepName class *
- -keepclassmembernames class * {
-    @com.google.android.gms.common.annotation.KeepName *;
-  }
-
- -keepnames class * implements android.os.Parcelable {
-  public static final ** CREATOR;
- }
+-keepnames class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+#
+# Required for PubNub
+#
+-keepattributes Exceptions, InnerClasses, Signature, Deprecated, SourceFile, LineNumberTable, *Annotation*, EnclosingMethod
+-keep class com.google.android.gms.ads.identifier.** { *; }
+# joda time
+-keep class org.joda.time.** { *; }
+-dontwarn org.joda.time.**
+# jackson
+-keepnames class com.fasterxml.jackson.** { *; }
+-dontwarn com.fasterxml.jackson.databind.**
+-keep class org.codehaus.**
+# gson
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.examples.android.model.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
+# Retrofit 2.X
+## https://square.github.io/retrofit/ ##
+-dontwarn retrofit2.**
+#-keep class retrofit2.** { *; }
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
+# Pubnub
+-dontwarn com.pubnub.**
+#-keep class com.pubnub.** { *; }
+-dontwarn org.slf4j.**

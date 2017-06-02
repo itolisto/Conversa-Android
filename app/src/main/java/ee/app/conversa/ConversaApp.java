@@ -37,7 +37,6 @@ import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.flurry.android.FlurryAgent;
-import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -48,8 +47,6 @@ import ee.app.conversa.events.MyEventBusIndex;
 import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
-import ee.app.conversa.notifications.onesignal.CustomNotificationOpenedHandler;
-import ee.app.conversa.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversa.settings.Preferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
@@ -105,24 +102,24 @@ public class ConversaApp extends MultiDexApplication {
 	}
 
 	private void initializeOneSignal() {
-		OneSignal
-				// Initializes OneSignal to register the device for push notifications
-				.startInit(this)
-				// Prompts the user for location permissions. This allows for geotagging so you can
-				// send notifications to users based on location.
-				.autoPromptLocation(true)
-				// How OneSignal notifications will be shown when one is received while your app is
-				// in focus
-				.inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
-				// Sets a notification opened handler. The instance will be called when a notification
-				// is tapped on from the notification shade or when closing an Alert notification
-				// shown in the app.
-				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(this))
-				// Sets a notification received handler. The instance will be called when a
-				// notification is received whether it was displayed or not.
-				.setNotificationReceivedHandler(new CustomNotificationReceivedHandler(this))
-				// Initializes OneSignal to register the device for push notifications
-				.init();
+//		OneSignal
+//				// Initializes OneSignal to register the device for push notifications
+//				.startInit(this)
+//				// Prompts the user for location permissions. This allows for geotagging so you can
+//				// send notifications to users based on location.
+//				.autoPromptLocation(true)
+//				// How OneSignal notifications will be shown when one is received while your app is
+//				// in focus
+//				.inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
+//				// Sets a notification opened handler. The instance will be called when a notification
+//				// is tapped on from the notification shade or when closing an Alert notification
+//				// shown in the app.
+//				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(this))
+//				// Sets a notification received handler. The instance will be called when a
+//				// notification is received whether it was displayed or not.
+//				.setNotificationReceivedHandler(new CustomNotificationReceivedHandler(this))
+//				// Initializes OneSignal to register the device for push notifications
+//				.init();
 	}
 
 	private void initializeParse() {
