@@ -1,5 +1,6 @@
-package ee.app.conversa.management;
+package ee.app.conversa.notifications;
 
+import ee.app.conversa.management.AblyConnection;
 import io.ably.lib.fcm.AblyFirebaseInstanceIdService;
 import io.ably.lib.realtime.AblyRealtime;
 

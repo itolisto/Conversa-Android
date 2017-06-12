@@ -1,7 +1,9 @@
 package ee.app.conversa.management;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +33,7 @@ import io.ably.lib.types.ClientOptions;
 import io.ably.lib.types.ErrorInfo;
 import io.ably.lib.types.Message;
 import io.ably.lib.types.PresenceMessage;
+import io.ably.lib.util.IntentUtils;
 
 /**
  * Created by edgargomez on 8/17/16.
@@ -84,31 +87,42 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
             // Register listener for state changes
             ablyRealtime.connection.on(this);
             // Register local broadcast
-//            ConversaApp.getInstance(context).getLocalBroadcastManager().registerReceiver(new BroadcastReceiver() {
-//                @Override
-//                public void onReceive(Context context, Intent intent) {
-//                    ErrorInfo error = IntentUtils.getErrorInfo(intent);
-//                    if (error != null) {
-//                        // Handle error
-//                        return;
-//                    }
+            ConversaApp.getInstance(context).getLocalBroadcastManager().registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    ErrorInfo error = IntentUtils.getErrorInfo(intent);
+                    if (error != null) {
+                        // Handle error
+                        return;
+                    }
                     // Subscribe to channels / listen for push etc.
-//                    ablyRealtime.channels.get("").
-//                    ablyRealtime.channels.get("").push.subscribeDeviceAsync(context, new CompletionListener() {
-//
-//                        @Override
-//                        public void onSuccess() {
-//
-//                        }
-//
-//                        @Override
-//                        public void onError(ErrorInfo errorInfo) {
-//
-//                        }
-//                    });
-//                }
-//            }, new IntentFilter("io.ably.broadcast.PUSH_ACTIVATE"));
-//            ablyRealtime.push.activate(context);
+                    String channelname = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
+                    ablyRealtime.channels.get("upbc:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+                        @Override
+                        public void onSuccess() {
+                            Logger.error("onSuccess", "Public channel subscribed for push");
+                        }
+
+                        @Override
+                        public void onError(ErrorInfo errorInfo) {
+                            Logger.error("onError", "Public channel error for push: " + errorInfo.message);
+                        }
+                    });
+
+                    ablyRealtime.channels.get("upvt:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+                        @Override
+                        public void onSuccess() {
+                            Logger.error("onSuccess", "Private channel subscribed for push");
+                        }
+
+                        @Override
+                        public void onError(ErrorInfo errorInfo) {
+                            Logger.error("onError", "Private channel error for push: " + errorInfo.message);
+                        }
+                    });
+                }
+            }, new IntentFilter("io.ably.broadcast.PUSH_ACTIVATE"));
+            ablyRealtime.push.activate(context);
         } catch (AblyException e) {
             Logger.error(TAG, "InitAbly method exception: " + e.getMessage());
         }
@@ -132,6 +146,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
     public void disconnectAbly() {
         if (ablyRealtime != null) {
             ablyRealtime.connection.close();
+            ablyRealtime.push.deactivate(context);
         }
     }
 

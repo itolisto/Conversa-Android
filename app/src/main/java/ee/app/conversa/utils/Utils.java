@@ -18,11 +18,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import com.onesignal.OneSignal;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.MalformedURLException;
@@ -107,18 +102,6 @@ public class Utils {
 	public static boolean checkPassword(String password) {
 		String pattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*\\W).{6,}$";
 		return Pattern.compile(pattern).matcher(password).matches();
-	}
-
-	public static void subscribeToTags(String channelName) {
-		JSONObject tags = new JSONObject();
-		try {
-			tags.put("upbc", channelName);
-			tags.put("upvt", channelName);
-			tags.put("usertype", 1);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		OneSignal.sendTags(tags);
 	}
 
 	public static Uri getUriFromString(String path) {

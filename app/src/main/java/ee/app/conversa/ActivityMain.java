@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.onesignal.OneSignal;
 import com.parse.ParseUser;
 
 import org.json.JSONObject;
@@ -27,7 +26,6 @@ import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
-import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
@@ -119,17 +117,6 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                 ConversaApp.getInstance(this)
                         .getJobManager()
                         .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
-            } else {
-                OneSignal.getTags(new OneSignal.GetTagsHandler() {
-                    @Override
-                    public void tagsAvailable(JSONObject tags) {
-                        if (tags == null || tags.length() == 0) {
-                            OneSignal.setSubscription(true);
-                            Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
-                                    .getPreferences().getAccountCustomerId());
-                        }
-                    }
-                });
             }
 
             initialization();

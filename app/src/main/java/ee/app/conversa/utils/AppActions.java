@@ -4,11 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
-import com.onesignal.OneSignal;
 import com.parse.ParseException;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import ee.app.conversa.ActivityMain;
 import ee.app.conversa.ActivitySignIn;
@@ -58,13 +54,6 @@ public class AppActions {
             }
         }).start();
 
-        Collection<String> tempList = new ArrayList<>(3);
-        tempList.add("upbc");
-        tempList.add("upvt");
-        tempList.add("usertype");
-        OneSignal.deleteTags(tempList);
-        OneSignal.clearOneSignalNotifications();
-        OneSignal.setSubscription(false);
         AblyConnection.getInstance().disconnectAbly();
         Account.logOut();
 

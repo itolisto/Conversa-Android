@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.onesignal.OneSignal;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
@@ -19,7 +18,6 @@ import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Logger;
-import ee.app.conversa.utils.Utils;
 
 /**
  * Created by edgargomez on 10/12/16.
@@ -62,9 +60,6 @@ public class CustomerInfoJob extends Job {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountBirthday(birthday, false);
         // 2. Subscribe to Customer channels
         AblyConnection.getInstance().subscribeToChannels();
-        // 3. Subscribe to Customer channels
-        OneSignal.setSubscription(true);
-        Utils.subscribeToTags(objectId);
     }
 
     @Override

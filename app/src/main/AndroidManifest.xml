@@ -111,6 +111,7 @@
             android:launchMode="singleTop" />
 
         <activity android:name="ee.app.conversa.ActivitySearch"
+            android:theme="@style/ChatWallTheme"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
 
@@ -163,6 +164,7 @@
             android:parentActivityName="ee.app.conversa.ActivityMain" />
 
         <activity android:name=".notifications.NotificationPressed"
+            android:noHistory="true"
             android:launchMode="singleTask"
             android:taskAffinity=""
             android:excludeFromRecents="true" />
@@ -201,18 +203,6 @@
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
-
-        <!-- Receive data in the background with or without displaying a notification. -->
-        <service
-            android:name=".notifications.onesignal.CustomNotificationExtenderService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.onesignal.NotificationExtender" />
-            </intent-filter>
-        </service>
-        <!-- By default OneSignal will open or resume your launcher Activity when a notification is
-            tapped on. You can disable this behavior by adding the meta-data tag -->
-        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />
 
         <service
             android:name=".contact.ContactIntentService"
