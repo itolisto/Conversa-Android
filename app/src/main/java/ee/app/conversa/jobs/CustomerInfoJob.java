@@ -18,7 +18,6 @@ import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Logger;
-import ee.app.conversa.utils.Utils;
 
 /**
  * Created by edgargomez on 10/12/16.
@@ -62,9 +61,6 @@ public class CustomerInfoJob extends Job {
         // 2. Subscribe to Customer channels
         AblyConnection.getInstance().subscribeToChannels();
         AblyConnection.getInstance().subscribeToPushChannels();
-        // 3. Subscribe to Customer channels
-        //OneSignal.setSubscription(true);
-        Utils.subscribeToTags(objectId);
     }
 
     @Override

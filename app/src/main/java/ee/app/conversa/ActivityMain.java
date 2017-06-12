@@ -120,16 +120,6 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
             } else {
                 AblyConnection.getInstance().subscribeToChannels();
                 AblyConnection.getInstance().subscribeToPushChannels();
-//                OneSignal.getTags(new OneSignal.GetTagsHandler() {
-//                    @Override
-//                    public void tagsAvailable(JSONObject tags) {
-//                        if (tags == null || tags.length() == 0) {
-//                            OneSignal.setSubscription(true);
-//                            Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
-//                                    .getPreferences().getAccountCustomerId());
-//                        }
-//                    }
-//                });
             }
 
             initialization();

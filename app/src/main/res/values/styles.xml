@@ -29,6 +29,14 @@
         <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
     </style>
 
+    <style name="SearchTheme" parent="AppTheme">
+        <item name="colorPrimary">@android:color/holo_blue_dark</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/status_bar_search</item>
+        <!--   theme UI controls like checkboxes and text fields e.g. FloatActionButton -->
+        <item name="colorAccent">@android:color/holo_blue_dark</item>
+    </style>
+
     <style name="TutorialTheme" parent="AppTheme">
         <item name="colorPrimary">@android:color/holo_blue_dark</item>
         <!--   darker variant for the status bar and contextual app bars -->

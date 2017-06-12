@@ -40,15 +40,15 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "726872517648-batkgjvq3853g644rncmbhkdnj567ffj.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
               "client_id": "726872517648-6orfk6d7dbc2nerkct4m1fqr5o3pm6jc.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "ee.app.conversamanager"
               }
+            },
+            {
+              "client_id": "726872517648-batkgjvq3853g644rncmbhkdnj567ffj.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         },
@@ -59,20 +59,12 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:726872517648:android:fd7006c9efd7b078",
+        "mobilesdk_app_id": "1:726872517648:android:6c38ef01d47e5fd8",
         "android_client_info": {
-          "package_name": "ee.app.manager"
+          "package_name": "ee.app.conversamanager"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "726872517648-jns1iogo2n70qpk50cvcgkkrochotdqj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "ee.app.manager",
-            "certificate_hash": "b6576d987984e8590439cc4f80fd740377a4217f"
-          }
-        },
         {
           "client_id": "726872517648-batkgjvq3853g644rncmbhkdnj567ffj.apps.googleusercontent.com",
           "client_type": 3
@@ -88,20 +80,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "726872517648-batkgjvq3853g644rncmbhkdnj567ffj.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "726872517648-6orfk6d7dbc2nerkct4m1fqr5o3pm6jc.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "ee.app.conversamanager"
-              }
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

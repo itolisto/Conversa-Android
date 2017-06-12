@@ -86,7 +86,7 @@ public class AblyConnection extends SubscribeCallback {
                 .async(new PNCallback<PNPushAddChannelResult>() {
             @Override
             public void onResponse(PNPushAddChannelResult result, PNStatus status) {
-                Log.e("onResponse", "Status: " + status);
+                Log.e("onResponse", "Result: " + result + ". Status: " + status);
             }
         });
     }
