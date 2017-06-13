@@ -517,7 +517,8 @@ public class MySQLiteHelper {
 
         while (!cursor.isAfterLast()) {
             message = cursorToMessage(cursor);
-            count = cursor.getInt(19);
+            // TODO: If a field is added/removed from database, change position
+            count = cursor.getInt(20);
             cursor.moveToNext();
         }
 
