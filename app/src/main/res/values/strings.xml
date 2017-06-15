@@ -91,7 +91,7 @@
     <string name="settings_password_error">We\'re sorry, password couldn\'t be changed. Please try again later</string>
     <string name="settings_email_succesful">Email changed</string>
     <string name="settings_email_error">We\'re sorry, email couldn\'t be changed. Please try again later</string>
-    <string name="settings_body_conversa">I\'m using Conversa and it really works. You can chat directly with thousands of businesses and stores. Follow the link and download it.</string>
+    <string name="settings_body_conversa">I\'m using Conversa and it really works. You can chat directly with thousands of businesses and stores. Follow the link and download it: </string>
     <string name="settings">Settings</string>
     <string name="sett_preferences_default_title">Title</string>
     <string name="sett_preferences_default_description">Description</string>

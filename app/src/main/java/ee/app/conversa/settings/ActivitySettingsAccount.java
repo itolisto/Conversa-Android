@@ -24,7 +24,6 @@ import ee.app.conversa.R;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.AppActions;
-import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
 
 /**
@@ -219,21 +218,17 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                 if (newValue.isEmpty()) {
                     showErrorMessage(getString(R.string.common_field_required));
                 } else {
-                    if (Utils.checkPassword(newValue)) {
-                        Account.getCurrentUser().setPassword(newValue);
-                        Account.getCurrentUser().saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    showSuccessMessage(getString(R.string.settings_password_succesful));
-                                } else {
-                                    showErrorMessage(getString(R.string.settings_password_error));
-                                }
+                    Account.getCurrentUser().setPassword(newValue);
+                    Account.getCurrentUser().saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                showSuccessMessage(getString(R.string.settings_password_succesful));
+                            } else {
+                                showErrorMessage(getString(R.string.settings_password_error));
                             }
-                        });
-                    } else {
-                        showErrorMessage(getString(R.string.signup_password_regex_error));
-                    }
+                        }
+                    });
                 }
 
                 return false;

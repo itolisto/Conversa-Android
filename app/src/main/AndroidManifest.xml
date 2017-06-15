@@ -194,7 +194,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY" />
+            android:value="AIzaSyCf6IrLbTGZFv_SJZLWY-L81eohCrlhZJE" />
 
         <!-- Add this meta-data below, and change "key_live_xxxxxxx" to your actual live Branch key -->
         <meta-data

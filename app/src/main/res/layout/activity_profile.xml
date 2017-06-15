@@ -97,14 +97,14 @@
                         android:layout_below="@id/rtvFollowersTitle" />
 
                     <ImageButton
-                        android:scaleX="0.30"
-                        android:scaleY="0.30"
+                        android:scaleX="0.55"
+                        android:scaleY="0.55"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:id="@+id/btnCloseProfile"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:background="@drawable/ic_close"/>
+                        android:background="@drawable/ic_close_profile"/>
                 </RelativeLayout>
                 <com.facebook.drawee.view.SimpleDraweeView
                     android:layout_width="80dp"

@@ -85,7 +85,7 @@
     <string name="settings_password_error">Lo sentimos, tu contraseña no se cambió. Intenta más tarde.</string>
     <string name="settings_email_succesful">Correo electrónico cambiado</string>
     <string name="settings_email_error">Lo sentimos, tu correo electrónico no fue cambiado. Intenta más tarde.</string>
-    <string name="settings_body_conversa">Estoy usando Conversa y realmente funciona. Puedes chatear directamente con miles de negocios y tiendas. Sigue el link y descargala.</string>
+    <string name="settings_body_conversa">Estoy usando Conversa y realmente funciona. Puedes chatear directamente con miles de negocios y tiendas. Sigue el link y descargala: </string>
     <string name="settings">Ajustes</string>
     <string name="sett_preferences_default_title">Título</string>
     <string name="sett_preferences_default_description">Descripción</string>
@@ -215,7 +215,7 @@
     <string name="contacts_options_clear">Limpiar conversación</string>
     <string name="contacts_item_conversation_empty">Empieza a chatear</string>
     <string name="chat_by_conversa_agent">Vía Agente Conversa</string>
-    <string name="tutorial_skip">Empezar Ahora</string>
+    <string name="tutorial_skip">Empecemos</string>
     <string name="tutorial_message_five">Sin llamadas. Sin emails. Sin redes sociales. Solo chat.</string>
     <string name="tutorial_message_four">Encuentra el negocio en Conversa y empieza a chatear</string>
     <!--\uD83D\uDE04-->
