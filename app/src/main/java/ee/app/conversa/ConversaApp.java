@@ -109,7 +109,7 @@ public class ConversaApp extends MultiDexApplication {
 		Parse.initialize(new Parse.Configuration.Builder(this)
 				.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
 				.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
-				.server("http://ec2-52-71-125-28.compute-1.amazonaws.com:1337/parse/")
+				.server("https://api.conversachat.com/parse/")
 				// Localhost
 //				.applicationId("b15c83")
 //				.clientKey(null)
