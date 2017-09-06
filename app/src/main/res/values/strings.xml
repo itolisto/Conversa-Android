@@ -236,4 +236,22 @@
     <!--\uD83D\uDE0E-->
     <string name="tutorial_title_three">Or maybe</string>
     <string name="tutorial_title_two">Now you can</string>
+    <string name="camera_permission_confirmation">This app demonstrates the usage of CameraView. In order to do that, it needs permission to access camera.</string>
+    <string name="camera_permission_not_granted">Camera app cannot do anything without camera permission.</string>
+    <string name="picture_taken">Picture taken</string>
+    <string name="aspect_ratio">Aspect ratio</string>
+    <string name="switch_flash">Switch flash</string>
+    <string name="switch_camera">Switch camera</string>
+    <string name="flash_auto">Flash auto</string>
+    <string name="flash_off">Flash off</string>
+    <string name="flash_on">Flash on</string>
+    <string name="save">Save</string>
+    <string name="no_select">No Select</string>
+    <string name="have_code">I HAVE A CODE</string>
+    <string name="dont_have_Code">I DONT HAVE A CODE :(</string>
+    <string name="get_in">ENTER</string>
+    <string name="get_it">GET ONE</string>
+    <string name="code_registered">¿HAVE YOU ENTERED A CODE AND\n CREATE AN ACOUNT?</string>
+    <string name="tap_here">TAP HERE</string>
+    <string name="feel_lucky">I feel lucky</string>
 </resources>

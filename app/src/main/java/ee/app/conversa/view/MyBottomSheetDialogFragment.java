@@ -1,7 +1,9 @@
 package ee.app.conversa.view;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -9,17 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sandrios.sandriosCamera.internal.SandriosCamera;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
-import com.sandrios.sandriosCamera.internal.ui.model.QualityOptions;
+import java.net.URI;
 
 import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ActivityLocation;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
+import ee.app.conversa.camara.ImagePickerDemo;
 import ee.app.conversa.utils.Const;
-
-//import com.afollestad.materialcamera.MaterialCamera;
 
 /**
  * Created by edgargomez on 9/9/16.
@@ -57,33 +56,21 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
         return v;
     }
 
+
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnCamera: {
-                QualityOptions qualityOptions;
 
-                switch (ConversaApp.getInstance(mActivity).getPreferences().getUploadQualityPosition()) {
-                    case 0:
-                        qualityOptions = QualityOptions.QUALITY_HIGH;
-                        break;
-                    case 1:
-                        qualityOptions = QualityOptions.QUALITY_MID;
-                        break;
-                    case 2:
-                        qualityOptions = QualityOptions.QUALITY_LOW;
-                        break;
-                    default:
-                        qualityOptions = QualityOptions.QUALITY_NONE;
-                        break;
-                }
+                Intent intent = new Intent(mActivity, ImagePickerDemo.class);
+                intent.putExtra("picker", "single");
+                //mActivity.startActivity(intent);
+                mActivity.startActivityForResult(intent, ImagePickerDemo.CAMERA_CODE_ACTIVITY);
 
-                new SandriosCamera(mActivity, Const.CAPTURE_MEDIA)
-                        .setShowPicker(true)
-                        .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
-                        .enableImageCropping(false)
-                        .setDefaultMediaQuality(qualityOptions)
-                        .launchCamera();
+                //mActivity.startActivityForResult(intent, ActivityLocation.PICK_LOCATION_REQUEST);
+
+
                 break;
             }
             case R.id.btnLocation: {
@@ -96,5 +83,6 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
 
         dismiss();
     }
+
 
 }
