@@ -165,7 +165,7 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
         ArrayAdapterWithIcon(Context context, List<String> items, List<Drawable> images) {
             super(context, android.R.layout.select_dialog_item, items);
             this.images = images;
-        
+        }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
