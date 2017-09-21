@@ -60,6 +60,7 @@ public class CustomerInfoJob extends Job {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountBirthday(birthday, false);
         // 2. Subscribe to Customer channels
         AblyConnection.getInstance().subscribeToChannels();
+        AblyConnection.getInstance().subscribeToPushChannels();
     }
 
     @Override

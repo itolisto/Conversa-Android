@@ -1,0 +1,140 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        tools:context="ee.app.conversa.ActivityRequireCode" >
+
+       <!-- <ImageView
+            android:id="@+id/ivConversa"
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:contentDescription="@null"
+            android:scaleType="centerInside"
+            android:src="@drawable/im_logo" />-->
+
+        <RelativeLayout
+            android:layout_below="@id/ivConversa"
+            android:layout_marginEnd="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+          <!--  <ee.app.conversa.view.BoldTextView
+                android:id="@+id/ltvSecondUnderTitle"
+                android:layout_marginTop="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:text="@string/string_signin_title_two"
+                android:textColor="@color/gray"
+                android:textSize="15sp" />-->
+
+            <ee.app.conversa.view.MediumTextView
+                android:id="@+id/btvSignUpInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="200dp"
+                android:gravity="center"
+                android:text="@string/have_code"
+                android:textColor="@color/black_text"
+                android:textSize="12.5sp" />
+
+            <RelativeLayout
+                android:gravity="center"
+                android:id="@+id/rlSignUpContainer"
+                android:layout_below="@id/btvSignUpInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/btnEnterCode"
+                    android:layout_width="170dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="7dp"
+                    android:paddingLeft="7dp"
+                    android:paddingStart="7dp"
+                    android:paddingRight="7dp"
+                    android:paddingEnd="7dp"
+                    android:text="@string/get_in"
+                    android:textColor="@drawable/textcolor_black_state"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/button_shape_white" />
+            </RelativeLayout>
+
+            <ee.app.conversa.view.MediumTextView
+                android:id="@+id/tvAlready"
+                android:layout_below="@id/rlSignUpContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/dont_have_Code"
+                android:textColor="@color/black_text"
+                android:textSize="12.5sp" />
+
+            <RelativeLayout
+                android:gravity="center"
+                android:id="@+id/rlSignInContainer"
+                android:layout_below="@id/tvAlready"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/btnGetOne"
+                    android:layout_width="170dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="7dp"
+                    android:paddingLeft="7dp"
+                    android:paddingStart="7dp"
+                    android:paddingRight="7dp"
+                    android:paddingEnd="7dp"
+                    android:gravity="center"
+                    android:text="@string/get_it"
+                    android:textStyle="bold"
+                    android:textColor="@drawable/textcolor_black_state"
+                    android:textSize="14sp"
+                    android:background="@drawable/button_shape_green_border" />
+            </RelativeLayout>
+
+            <ee.app.conversa.view.LightTextView
+                android:id="@+id/ltvTapHere"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="16dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:text="@string/tap_here"
+                android:textSize="11sp" />
+
+           <!-- <ee.app.conversa.view.LightTextView
+                android:layout_above="@id/ltvTapHere"
+                android:layout_width="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/black_text"
+                android:text="@string/code_registered"
+                android:textSize="11sp" />-->
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/ivLanguage"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_language"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="6dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginTop="6dp"
+            android:padding="10dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp" />
+
+    </RelativeLayout>

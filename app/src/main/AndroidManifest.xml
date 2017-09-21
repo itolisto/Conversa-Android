@@ -13,166 +13,169 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove">
-    </uses-permission>
+    <uses-permission
+        android:name="android.permission.RECORD_AUDIO"
+        tools:node="remove" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
-    <uses-feature android:glEsVersion="0x00020000"
-        android:required="true"/>
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
-    <!-- [START gcm_permission] -->
     <!-- App receives GCM messages. -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <!-- Keeps the processor from sleeping when a message is received. -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <permission
-        android:name="ee.app.conversa.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-    <!-- Prevent other Android applications from registering and receiving the Android application's messages -->
-    <uses-permission android:name="ee.app.conversa.permission.C2D_MESSAGE" />
-    <!-- [END gcm_permission] -->
-
-    <application android:name="ee.app.conversa.ConversaApp"
+    <application
+        tools:replace="android:icon"
+        android:name=".ConversaApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-
-        <activity android:name=".extendables.BaseActivity"
-            android:screenOrientation="portrait" />
-
+        android:theme="@style/AppTheme">
         <activity
             android:name=".ActivitySplashScreen"
-            android:screenOrientation="portrait"
-            android:noHistory="true"/>
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
 
         <activity-alias
             android:name=".Launcher"
             android:noHistory="true"
-            android:targetActivity=".ActivitySplashScreen"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:targetActivity=".ActivitySplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity-alias>
 
         <activity
-            android:name="ee.app.conversa.ActivityMain"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask">
+            android:name=".ActivityMain"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
-                <data android:scheme="conversaapp" android:host="open" />
+                <data
+                    android:host="open"
+                    android:scheme="conversaapp" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="conversa.link" android:pathPrefix="/IT8k" />
+
+                <data
+                    android:host="conversa.link"
+                    android:pathPrefix="/IT8k"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
-
-        <activity android:name="ee.app.conversa.ActivityTutorial"
-            android:theme="@style/TutorialTheme"
-            android:screenOrientation="portrait"
+        <activity
+            android:name=".ActivityTutorial"
             android:launchMode="singleTop"
-            android:noHistory="true" />
-
-        <activity
-            android:name="ee.app.conversa.ActivitySignIn"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:launchMode="singleTask" />
-
-        <activity
-            android:name="ee.app.conversa.ActivityLogIn"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
-        <activity
-            android:name="ee.app.conversa.ActivitySignUp"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
-        <activity
-            android:name="ee.app.conversa.ActivityForgotPassword"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
-        <activity android:name="ee.app.conversa.ActivityBusiness"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
-        <activity android:name="ee.app.conversa.ActivitySearch"
-            android:theme="@style/SearchTheme"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
-        <activity android:name="ee.app.conversa.ActivityProfile"
-            android:theme="@style/Theme.AppCompat.Translucent"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
-        <activity
-            android:name="ee.app.conversa.ActivityChatWall"
-            android:theme="@style/ChatWallTheme"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:parentActivityName="ee.app.conversa.ActivityMain"/>
-
-        <activity
-            android:name="ee.app.conversa.ActivityImageDetail"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:parentActivityName="ee.app.conversa.ActivityChatWall" />
-
-        <activity
-            android:name="ee.app.conversa.ActivityLocation"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
-
-        <activity
-            android:name="ee.app.conversa.settings.ActivitySettingsAccount"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:parentActivityName="ee.app.conversa.ActivityMain" />
-
-        <activity
-            android:name="ee.app.conversa.settings.ActivitySettingsChat"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:parentActivityName="ee.app.conversa.ActivityMain" />
-
-        <activity
-            android:name="ee.app.conversa.settings.ActivitySettingsNotifications"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:parentActivityName="ee.app.conversa.ActivityMain" />
-
-        <activity
-            android:name="ee.app.conversa.settings.ActivitySettingsHelp"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:parentActivityName="ee.app.conversa.ActivityMain" />
-
-        <activity android:name=".notifications.NotificationPressed"
             android:noHistory="true"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:excludeFromRecents="true" />
-
-        <activity
-            android:name="ee.app.conversa.browser.WebViewActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
+            android:theme="@style/TutorialTheme" />
+        <activity
+            android:name=".ActivitySignIn"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ActivityLogIn"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ActivitySignUp"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ActivityRequireCode"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ActivityEnterCode"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ActivityForgotPassword"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ActivityBusiness"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivitySearch"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/SearchTheme" />
+        <activity
+            android:name=".ActivityProfile"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Translucent" />
+        <activity
+            android:name=".ActivityChatWall"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ActivityMain"
+            android:screenOrientation="portrait"
+            android:theme="@style/ChatWallTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".camara.ImagePickerDemo"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/ChatWallTheme" />
+        <activity
+            android:name=".ActivityImageDetail"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ActivityChatWall"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityLocation"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".settings.ActivitySettingsAccount"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ActivityMain"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".settings.ActivitySettingsChat"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ActivityMain"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".settings.ActivitySettingsNotifications"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ActivityMain"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".settings.ActivitySettingsHelp"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ActivityMain"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".notifications.NotificationPressed"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:taskAffinity="" />
+        <activity
+            android:name=".browser.WebViewActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
 
         <!-- **************************************************************************************** -->
         <receiver android:name=".management.ConnectionChangeReceiver">
@@ -182,12 +185,27 @@
             </intent-filter>
         </receiver>
         <!-- **************************************************************************************** -->
+        <service android:name=".notifications.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".notifications.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- suppress AndroidDomInspection -->
+        <service
+            android:name=".notifications.RegistrationIntentService"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY" />
+            android:value="AIzaSyCf6IrLbTGZFv_SJZLWY-L81eohCrlhZJE" />
 
         <!-- Add this meta-data below, and change "key_live_xxxxxxx" to your actual live Branch key -->
         <meta-data
@@ -198,7 +216,9 @@
             android:name="io.branch.sdk.BranchKey.test"
             android:value="key_test_jlh0fVE5OwrAI8P2yVGwRagmttb6Hahk" />
 
-        <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
+        <receiver
+            android:name="io.branch.referral.InstallListener"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
@@ -213,5 +233,8 @@
         <service
             android:name=".messaging.CustomMessageService"
             android:exported="false" />
+
+        <activity android:name=".ActivityGetCode"></activity>
     </application>
+
 </manifest>

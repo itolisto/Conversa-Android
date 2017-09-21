@@ -1,6 +1,7 @@
 package ee.app.conversa;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
@@ -34,7 +35,6 @@ import com.flurry.android.FlurryAgent;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -45,6 +45,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ee.app.conversa.adapters.MessagesAdapter;
+import ee.app.conversa.camara.ImagePickerDemo;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.interfaces.OnMessageClickListener;
 import ee.app.conversa.management.AblyConnection;
@@ -425,6 +426,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 							body,
 							addAsContact,
 							businessObject);
+					//insert here the code to send the images.
 				}
 				break;
 		}
@@ -446,7 +448,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 					break;
 				}
 				case Const.CAPTURE_MEDIA: {
-					String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+					/*String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
 					BitmapFactory.Options options = new BitmapFactory.Options();
 					options.inJustDecodeBounds = true;
 					BitmapFactory.decodeFile(path, options);
@@ -458,18 +460,40 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 							options.outHeight,
 							new File(path == null ? "" : path).length(),
 							addAsContact,
-							businessObject);
+							businessObject);String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+					BitmapFactory.Options options = new BitmapFactory.Options();
+					options.inJustDecodeBounds = true;
+					BitmapFactory.decodeFile(path, options);
+
+					SendMessageAsync.sendImageMessage(
+							this,
+							path,
+							options.outWidth,
+							options.outHeight,
+							new File(path == null ? "" : path).length(),
+							addAsContact,
+							businessObject);*/
 					break;
 				}
 				case Const.CAPTURE_VIDEO: {
-					MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+					/*MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 					retriever.setDataSource(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
 					int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
 					int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
 					int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-					retriever.release();
+					retriever.release();*/
 					break;
-				}
+
+                }
+                case ImagePickerDemo.CAMERA_CODE_ACTIVITY: {
+                    if(resultCode == Activity.RESULT_OK) {
+                        String uri = data.getStringExtra("imageUri");
+                        SendMessageAsync.sendImageMessage(this,uri,200, 200, 200 ,addAsContact, businessObject);
+
+                    }
+
+                }
+                break;
 			}
 		} else {
 			Logger.error("onActivityResult", "Error");

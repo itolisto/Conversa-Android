@@ -71,7 +71,7 @@
     <string name="string_signin_sign_up_business_two">NEGOCIO? PRESIONA AQUI</string>
     <string name="string_signin_sign_up_business_one">¿BUSCANDO REGISTRAR TU</string>
     <string name="string_signin_are_you_new">¿ERES NUEVO AQUI?</string>
-    <string name="string_signin_already_have_an_account">¿YA TENGO UNA CUENTA?</string>
+    <string name="string_signin_already_have_an_account">YA TENGO UNA CUENTA</string>
     <string name="start_browsing">Empezar a navegar</string>
     <string name="special_promo_title">Promoción especial</string>
     <string name="signup_password_regex_error">Contraseña debe contener al menos una letra, un número y un carácter especial</string>
@@ -85,7 +85,7 @@
     <string name="settings_password_error">Lo sentimos, tu contraseña no se cambió. Intenta más tarde.</string>
     <string name="settings_email_succesful">Correo electrónico cambiado</string>
     <string name="settings_email_error">Lo sentimos, tu correo electrónico no fue cambiado. Intenta más tarde.</string>
-    <string name="settings_body_conversa">Estoy usando Conversa y realmente funciona. Puedes chatear directamente con miles de negocios y tiendas. Sigue el link y descargala.</string>
+    <string name="settings_body_conversa">Estoy usando Conversa y realmente funciona. Puedes chatear directamente con miles de negocios y tiendas. Sigue el link y descargala: </string>
     <string name="settings">Ajustes</string>
     <string name="sett_preferences_default_title">Título</string>
     <string name="sett_preferences_default_description">Descripción</string>
@@ -215,7 +215,7 @@
     <string name="contacts_options_clear">Limpiar conversación</string>
     <string name="contacts_item_conversation_empty">Empieza a chatear</string>
     <string name="chat_by_conversa_agent">Vía Agente Conversa</string>
-    <string name="tutorial_skip">Empezar Ahora</string>
+    <string name="tutorial_skip">Empecemos</string>
     <string name="tutorial_message_five">Sin llamadas. Sin emails. Sin redes sociales. Solo chat.</string>
     <string name="tutorial_message_four">Encuentra el negocio en Conversa y empieza a chatear</string>
     <!--\uD83D\uDE04-->
@@ -229,4 +229,40 @@
     <!--\uD83D\uDE0E-->
     <string name="tutorial_title_three">O quizá</string>
     <string name="tutorial_title_two">Ahora puedes</string>
+    <!-- imagepicker demo -->
+    <string name="camera_permission_confirmation">This app demonstrates the usage of CameraView. In order to do that, it needs permission to access camera.</string>
+    <string name="camera_permission_not_granted">Camera app cannot do anything without camera permission.</string>
+    <string name="picture_taken">Picture taken</string>
+    <string name="aspect_ratio">Aspect ratio</string>
+    <string name="switch_flash">Switch flash</string>
+    <string name="switch_camera">Switch camera</string>
+    <string name="flash_auto">Flash auto</string>
+    <string name="flash_off">Flash off</string>
+    <string name="flash_on">Flash on</string>
+    <string name="save">Save</string>
+    <string name="no_select">No Select</string>
+    <string name="have_code">TENGO UN CÓDIGO</string>
+    <string name="dont_have_Code">AUN NO TENGO CÓDIGO :(</string>
+    <string name="get_in">INGRESAR</string>
+    <string name="get_it">CONSEGUIR</string>
+    <string name="code_registered">¿YA HAS INGRESADO UN CÓDIGO Y \n CREASTE UNA CUENTA? </string>
+    <string name="tap_here">¿YA HAS INGRESADO UN CÓDIGO Y \n CREASTE UNA CUENTA? TAP AQUì</string>
+    <string name="feel_lucky">Me siento con suerte</string>
+    <string name="how_to_get">¿Como obtengo un código?</string>
+    <string name="share_next">Obtén uno aquí:</string>
+    <string name="get_code_Share">Obtener</string>
+    <string name="info_get_code1">Nuestro sistema detectara tu \n post o tweet y te enviaremos \n un código por MD.</string>
+    <string name="info_get_code2">O comparte esto en FB o TW\n y no olvides usar los hashtags:</string>
+    <string name="info_hashtags">#conversachat #codigoconversa</string>
+    <string name="info_get_code3">Nuestro sistema detectara tu\n post o tweet y te enviaremos\n un código por MD.</string>
+    <string name="fail_code_title">Oops</string>
+    <string name="success_code_title">¡Genial!</string>
+    <string name="fail_code">Lo sentimos, el código que ingresaste no es válido.</string>
+    <string name="success_code"> El código es válido, accede a la app ahora.</string>
+    <string name="btn_fail_code">Obtener Código Valido </string>
+    <string name="btn_success_code">Acceder</string>
+    <string name="message_share_code">
+        Las antiguas formas de comunicación con empresas han muerto. Hay un nuevo rey en la ciudad. Conversa llego para quedarse.  Ve de que se trata. Descarga la app y solicita tu código de acceso.  #conversachat #conversacode
+    </string>
+
 </resources>

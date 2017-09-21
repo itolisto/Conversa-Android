@@ -95,6 +95,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         mLtvClickHere.setMovementMethod(LinkMovementMethod.getInstance());
         mLtvClickHere.setText(styledString);
 
+
         mBtnSignIn.setOnClickListener(this);
         mBtnSignUp.setOnClickListener(this);
         mivLanguage.setOnClickListener(this);

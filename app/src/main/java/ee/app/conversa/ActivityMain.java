@@ -23,15 +23,15 @@ import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
-import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.view.MediumTextView;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
 
-public class ActivityMain extends ConversaActivity implements Foreground.Listener, View.OnClickListener {
+public class ActivityMain extends ConversaActivity implements View.OnClickListener {
 
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String TAG = ActivityMain.class.getSimpleName();
     private ViewPager mViewPager;
     private boolean resetNotifications;
@@ -117,6 +117,9 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                 ConversaApp.getInstance(this)
                         .getJobManager()
                         .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
+            } else {
+                AblyConnection.getInstance().subscribeToChannels();
+                AblyConnection.getInstance().subscribeToPushChannels();
             }
 
             initialization();
@@ -126,8 +129,12 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
     @Override
     protected void initialization() {
         super.initialization();
-        Foreground.get(this).addListener(this);
         mFsvSearch.setOnClickListener(this);
+//        if (checkPlayServices()) {
+//            // Start IntentService to register this application with GCM.
+//            Intent intent = new Intent(this, RegistrationIntentService.class);
+//            startService(intent);
+//        }
     }
 
     @Override
@@ -175,12 +182,6 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                 }
             }
         }, this.getIntent().getData(), this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Foreground.get(this).removeListener(this);
     }
 
     @Override
@@ -244,21 +245,32 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
     }
 
     @Override
-    public void onBecameForeground() {
-        AblyConnection.getInstance().connectAbly();
-    }
-
-    @Override
-    public void onBecameBackground() {
-        AblyConnection.getInstance().disconnectAbly();
-    }
-
-    @Override
     public void onClick(View view) {
         if (view.getId() == R.id.fsvSearch) {
             Intent intent = new Intent(getApplicationContext(), ActivitySearch.class);
             startActivity(intent);
         }
     }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+//    private boolean checkPlayServices() {
+//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+//        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+//        if (resultCode != ConnectionResult.SUCCESS) {
+//            if (apiAvailability.isUserResolvableError(resultCode)) {
+//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+//                        .show();
+//            } else {
+//                Log.i(TAG, "This device is not supported.");
+//                finish();
+//            }
+//            return false;
+//        }
+//        return true;
+//    }
 
 }

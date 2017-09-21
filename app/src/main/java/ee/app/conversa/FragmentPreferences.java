@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -130,7 +131,9 @@ public class FragmentPreferences extends ConversaFragment implements View.OnClic
                 intent_one.putExtra(Intent.EXTRA_SUBJECT,
                         getActivity().getString(R.string.settings_using_conversa));
                 intent_one.putExtra(Intent.EXTRA_TEXT,
-                        getActivity().getString(R.string.settings_body_conversa));
+                        getActivity().getResources().getString(R.string.settings_body_conversa)
+                                + " " +
+                                Uri.parse("descarga.conversachat.com"));
 
                 final List<ResolveInfo> activities = getActivity()
                         .getPackageManager().queryIntentActivities(intent_one, 0);

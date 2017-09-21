@@ -37,3 +37,4 @@ local.properties
 *.ipr
 *~
 *.swp
+app/src/main/java/ee/app/conversa/notifications/MyFirebaseInstanceIDService\.java~pubnub

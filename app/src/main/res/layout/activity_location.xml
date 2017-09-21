@@ -13,7 +13,7 @@
         android:layout_height="match_parent" />
 
     <Button
-        android:textSize="16sp"
+        android:textSize="12sp"
         android:id="@+id/btnSend"
         android:text="@string/SEND"
         android:layout_width="60dp"
