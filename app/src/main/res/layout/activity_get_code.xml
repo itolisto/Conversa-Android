@@ -33,10 +33,10 @@
                     android:layout_height="160dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginLeft="60dp"
+                    android:layout_marginLeft="50dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="50dp"
-                    android:layout_marginRight="60dp"
+                    android:layout_marginRight="50dp"
                     android:background="@drawable/get_code_gif" />
 
                 <ee.app.conversa.view.MediumTextView
@@ -76,7 +76,7 @@
                     android:paddingStart="7dp"
                     android:text="@string/get_code_Share"
                     android:textColor="@drawable/textcolor_green_state"
-                    android:textSize="10sp" />
+                    android:textSize="14sp" />
 
                 <!--<ee.app.conversa.view.MediumTextView
                     android:layout_width="match_parent"
@@ -102,8 +102,7 @@
                     android:gravity="center"
                     android:text="@string/info_get_code2"
                     android:textColor="@color/black"
-                    android:textSize="13dp"
-                    android:textStyle="bold" />
+                    android:textSize="13dp" />
 
                 <ee.app.conversa.view.MediumTextView
                     android:layout_width="match_parent"
@@ -115,8 +114,8 @@
                     android:gravity="center"
                     android:text="@string/info_hashtags"
                     android:textColor="@color/green"
-                    android:textSize="13dp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textSize="13dp"/>
 
                 <ee.app.conversa.view.MediumTextView
                     android:layout_width="match_parent"
@@ -128,8 +127,7 @@
                     android:gravity="center"
                     android:text="@string/info_get_code3"
                     android:textColor="@color/black"
-                    android:textSize="13dp"
-                    android:textStyle="bold" />
+                    android:textSize="13dp" />
 
 
             </LinearLayout>

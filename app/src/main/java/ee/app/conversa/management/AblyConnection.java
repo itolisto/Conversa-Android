@@ -14,20 +14,12 @@ import com.google.gson.JsonObject;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.pubnub.api.PNConfiguration;
-import com.pubnub.api.PubNub;
-import com.pubnub.api.callbacks.PNCallback;
-import com.pubnub.api.callbacks.SubscribeCallback;
-import com.pubnub.api.enums.PNPushType;
-import com.pubnub.api.enums.PNStatusCategory;
-import com.pubnub.api.models.consumer.PNStatus;
-import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
-import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
-import com.pubnub.api.models.consumer.push.PNPushAddChannelResult;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,12 +46,15 @@ import io.ably.lib.util.IntentUtils;
 /**
  * Created by edgargomez on 8/17/16.
  */
-public class AblyConnection extends SubscribeCallback {
+public class AblyConnection implements Channel.MessageListener, Presence.PresenceListener,
+        CompletionListener, ConnectionStateListener, ChannelStateListener {
 
     private final String TAG = AblyConnection.class.getSimpleName();
     private static AblyConnection instance;
     private final Context context;
-    private PubNub ablyRealtime;
+    private AblyRealtime ablyRealtime;
+    private final String clientId;
+    private boolean firstLoad;
 
     public static void initAblyManager(@NonNull Context context) {
         instance = new AblyConnection(context);
@@ -75,10 +70,14 @@ public class AblyConnection extends SubscribeCallback {
     }
 
     private AblyConnection(Context context) {
+
         this.context = context;
+        this.firstLoad = true;
+        this.clientId = generateDeviceUUID();
+
     }
 
-    public PubNub getAblyRealtime() {
+    public AblyRealtime getAblyRealtime() {
         return ablyRealtime;
     }
 
@@ -107,30 +106,7 @@ public class AblyConnection extends SubscribeCallback {
                         return;
                     }
                     // Subscribe to channels / listen for push etc.
-                    String channelname = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
-                    ablyRealtime.channels.get("upbc:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
-                        @Override
-                        public void onSuccess() {
-                            Logger.error("onSuccess", "Public channel subscribed for push");
-                        }
-
-                        @Override
-                        public void onError(ErrorInfo errorInfo) {
-                            Logger.error("onError", "Public channel error for push: " + errorInfo.message);
-                        }
-                    });
-
-                    ablyRealtime.channels.get("upvt:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
-                        @Override
-                        public void onSuccess() {
-                            Logger.error("onSuccess", "Private channel subscribed for push");
-                        }
-
-                        @Override
-                        public void onError(ErrorInfo errorInfo) {
-                            Logger.error("onError", "Private channel error for push: " + errorInfo.message);
-                        }
-                    });
+                    subscribeToPushChannels();
                 }
             }, new IntentFilter("io.ably.broadcast.PUSH_ACTIVATE"));
             ablyRealtime.push.activate(context);
@@ -139,9 +115,59 @@ public class AblyConnection extends SubscribeCallback {
         }
     }
 
+
+    public void subscribeToPushChannels() {
+        String channelname = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
+        ablyRealtime.channels.get("upbc:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+            @Override
+            public void onSuccess() {
+                Logger.error("onSuccess", "Public channel subscribed for push");
+            }
+
+            @Override
+            public void onError(ErrorInfo errorInfo) {
+                Logger.error("onError", "Public channel error for push: " + errorInfo.message);
+            }
+        });
+
+        ablyRealtime.channels.get("upvt:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+            @Override
+            public void onSuccess() {
+                Logger.error("onSuccess", "Private channel subscribed for push");
+            }
+
+            @Override
+            public void onError(ErrorInfo errorInfo) {
+                Logger.error("onError", "Private channel error for push: " + errorInfo.message);
+            }
+
+        });
+    }
     public void subscribeToChannels() {
-        if (ablyRealtime == null)
-            return;
+        String channelname = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
+        if (!channelname.isEmpty()) {
+            for (int i = 0; i < 2; i++) {
+                Channel channel;
+                if (i == 0) {
+                    channel = ablyRealtime.channels.get("upbc:" + channelname);
+                } else {
+                    channel = ablyRealtime.channels.get("upvt:" + channelname);
+                }
+
+                reattach(channel);
+            }
+        }
+    }
+
+    private void reattach(Channel channel) {
+        try {
+            channel.subscribe(this);
+            channel.presence.subscribe(this);
+            channel.presence.enter(PresenceMessage.Action.present, this);
+        } catch (AblyException e) {
+            Logger.error("reattach", "Error while trying to subscribe to channel or presence");
+        }
+    }
 
     public void disconnectAbly() {
         if (ablyRealtime != null) {
@@ -149,7 +175,7 @@ public class AblyConnection extends SubscribeCallback {
             ablyRealtime.push.deactivate(context);
         }
     }
-
+/*
     public void subscribeToPushChannels() {
         if (ablyRealtime == null || ConversaApp.getInstance(context).getPreferences().getPushKey().isEmpty())
             return;
@@ -164,8 +190,8 @@ public class AblyConnection extends SubscribeCallback {
                 Log.e("onResponse", "Result: " + result + ". Status: " + status);
             }
         });
-    }
-
+    }*/
+/*
     public void disconnectAbly() {
         if (ablyRealtime != null) {
             this.ablyRealtime.unsubscribeAll();
@@ -174,7 +200,7 @@ public class AblyConnection extends SubscribeCallback {
                     .pushType(PNPushType.GCM);
         }
     }
-
+*/
     private List<String> getChannels() {
         String channelname = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
         List<String> channels = new ArrayList<>(2);
@@ -227,11 +253,13 @@ public class AblyConnection extends SubscribeCallback {
 
     public final String getPublicConnectionId() {
         if (ablyRealtime != null) {
-            return ablyRealtime.getInstanceId();
+            return ablyRealtime.connection.key;
         }
 
         return null;
     }
+
+    /*
 
     @Override
     public void status(PubNub pubnub, PNStatus status) {
@@ -248,8 +276,28 @@ public class AblyConnection extends SubscribeCallback {
             // Handle messsage decryption error. Probably client configured to
             // encrypt messages and on live data feed it received plain text.
         }
-    }
+    }*/
 
+    @Override
+    public void onMessage(Message messages) {
+        JSONObject additionalData;
+
+        try {
+            additionalData = new JSONObject(messages.data.toString());
+        } catch (JSONException e) {
+            Logger.error(TAG, "onMessageReceived additionalData fail to parse-> " + e.getMessage());
+            return;
+        }
+
+        switch (additionalData.optInt("appAction", 0)) {
+            case 1:
+                Intent msgIntent = new Intent(context, CustomMessageService.class);
+                msgIntent.putExtra("data", additionalData.toString());
+                context.startService(msgIntent);
+                break;
+        }
+    }
+    /*
     @Override
     public void message(PubNub pubnub, PNMessageResult message) {
         // Handle new message stored in message.message
@@ -294,8 +342,8 @@ public class AblyConnection extends SubscribeCallback {
                     EventBus.getDefault().post(new TypingEvent(jeFrom, isUserTyping));
                 break;
         }
-    }
-
+    }*/
+/*
     @Override
     public void presence(PubNub pubnub, PNPresenceEventResult presence) {
 //        Logger.error("onPresenceMessage", "Member " + presenceMessage.clientId + " : " + presenceMessage.action.toString());
@@ -307,6 +355,105 @@ public class AblyConnection extends SubscribeCallback {
 //                EventBus.getDefault().post(new TypingEvent(jeFrom.getAsString(), isUserTyping));
 //            }
 //        }
+    }*/
+    @Override
+    public void onPresenceMessage(PresenceMessage presenceMessage) {
+        Logger.error("onPresenceMessage", "Member " + presenceMessage.clientId + " : " + presenceMessage.action.toString());
+
+        if (presenceMessage.data != null) {
+            JsonElement jeFrom = ((JsonObject) presenceMessage.data).get("from");
+            if (jeFrom != null) {
+                boolean isUserTyping = ((JsonObject) presenceMessage.data).get("isTyping").getAsBoolean();
+                EventBus.getDefault().post(new TypingEvent(jeFrom.getAsString(), isUserTyping));
+            }
+        }
     }
 
+    @Override
+    public void onChannelStateChanged(ChannelStateChange stateChange) {
+        if (stateChange.reason != null) {
+            Logger.error("onChannelStateChanged", stateChange.reason.message);
+        }
+
+    }
+
+    @Override
+    public void onSuccess() {
+        Logger.error("PresenceRegistration", "\nsuccess success success\nsuccess");
+    }
+
+    @Override
+    public void onError(ErrorInfo reason) {
+        Logger.error("PresenceRegistration", reason.message);
+    }
+
+    @Override
+    public void onConnectionStateChanged(ConnectionStateChange connectionStateChange) {
+        switch (connectionStateChange.current) {
+            case initialized:
+                Logger.error("onConnectionStateChgd", "Initialized");
+                break;
+            case connecting:
+                Logger.error("onConnectionStateChgd", "Connecting");
+                break;
+            case connected:
+                Logger.error("onConnectionStateChgd", "Connected");
+                if (firstLoad) {
+                    // Subscribe to all Channels
+                    subscribeToChannels();
+                    // Change first load
+                    firstLoad = false;
+                } else {
+                    if (ablyRealtime.channels.values().size() == 0) {
+                        subscribeToChannels();
+                    } else {
+                        for (Channel channel : ablyRealtime.channels.values()) {
+                            reattach(channel);
+                        }
+                    }
+                }
+                break;
+            case disconnected:
+                Logger.error("onConnectionStateChgd", "Disconnected");
+                break;
+            case suspended:
+                Logger.error("onConnectionStateChgd", "Suspended");
+                break;
+            case closing:
+                Logger.error("onConnectionStateChgd", "Closing");
+                for (Channel channel : ablyRealtime.channels.values()) {
+                    channel.unsubscribe();
+                    channel.presence.unsubscribe();
+                }
+                break;
+            case closed:
+                Logger.error("onConnectionStateChgd", "Closed");
+                break;
+            case failed:
+                Logger.error("onConnectionStateChgd", "Failed" + connectionStateChange.reason);
+                break;
+        }
+    }
+
+    private static String generateDeviceUUID() {
+        String serial = android.os.Build.SERIAL;
+        String androidID = Settings.Secure.ANDROID_ID;
+        String deviceUUID = serial + androidID;
+
+        MessageDigest digest;
+        byte[] result;
+        try {
+            digest = MessageDigest.getInstance("SHA-1");
+            result = digest.digest(deviceUUID.getBytes("UTF-8"));
+        } catch (Exception e) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : result) {
+            sb.append(String.format("%02X", b));
+        }
+
+        return sb.toString();
+    }
 }

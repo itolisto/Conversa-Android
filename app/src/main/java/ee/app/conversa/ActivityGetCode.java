@@ -5,9 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,6 +31,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import ee.app.conversa.browser.CustomTabActivityHelper;
+import ee.app.conversa.browser.WebviewFallback;
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.extendables.ConversaFragment;
 import ee.app.conversa.view.LightTextView;
@@ -41,6 +46,9 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
         setContentView(R.layout.activity_get_code);
         initialization();
     }
+
+
+    private CustomTabActivityHelper mCustomTabActivityHelper;
 
     @Override
     protected void initialization() {
@@ -87,7 +95,23 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
         mLtvClickHere.setText(styledString);
         mLtvClickHere.setOnClickListener(this);
 
+        mCustomTabActivityHelper = new CustomTabActivityHelper();
+        mCustomTabActivityHelper.setConnectionCallback(mConnectionCallback);
+        mCustomTabActivityHelper.mayLaunchUrl(Uri.parse("http://codigos.conversachat.com"), null, null);
+
     }
+
+    private CustomTabActivityHelper.ConnectionCallback mConnectionCallback = new CustomTabActivityHelper.ConnectionCallback() {
+        @Override
+        public void onCustomTabsConnected() {
+            //SnackbarFactory.createSnackbar(ActivityTutorial.this, mLayoutMainCoordinator, "Connected to service").show();
+        }
+
+        @Override
+        public void onCustomTabsDisconnected() {
+            //SnackbarFactory.createSnackbar(ActivityTutorial.this, mLayoutMainCoordinator, "Disconnected from service").show();
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -147,15 +171,37 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
                 return;
             }
             case R.id.btnGetCode: {
-                Uri uri = Uri.parse("http://codigos.conversachat.com");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
+                // create an intent builder
+                CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+                // Begin customizing
+                intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+                intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+                intentBuilder.setShowTitle(true);
+                intentBuilder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_arrow_back));
+                intentBuilder.setStartAnimations(this, R.anim.slide_in_right, R.anim.slide_out_left);
+                intentBuilder.setExitAnimations(this, android.R.anim.slide_in_left,
+                        android.R.anim.slide_out_right);
 
+                CustomTabActivityHelper.openCustomTab(
+                        this,
+                        intentBuilder.build(),
+                        Uri.parse("http://codigos.conversachat.com"),
+                        new WebviewFallback());
                 break;
+
             }
 
 
+
         }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        //
+        Intent intent = new Intent(this, ActivityRequireCode.class);
+        startActivity(intent);
     }
 
     public class ArrayAdapterWithIcon extends ArrayAdapter<String> {
@@ -165,7 +211,7 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
         ArrayAdapterWithIcon(Context context, List<String> items, List<Drawable> images) {
             super(context, android.R.layout.select_dialog_item, items);
             this.images = images;
-        
+        }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
