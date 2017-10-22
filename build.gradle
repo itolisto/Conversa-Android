@@ -17,8 +17,11 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
+        maven { url "https://github.com/taplytics/Taplytics-Android-SDK/raw/master/AndroidStudio/" }
         maven { url "https://jitpack.io" }
-
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 

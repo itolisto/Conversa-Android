@@ -72,7 +72,7 @@
     <string name="test_string">test string</string>
     <string name="terms_of_use_preference">Terms &amp; Conditions</string>
     <string name="summary_go_intent_preference">Conversa Official Site</string>
-    <string name="string_signin_title_two">CHAT WITH ANY BUSINESS\n SIMPLE. FAST. EFFECTIVE.</string>
+    <string name="string_signin_title_two">CHAT WITH LOCAL BUSINESS\nIN JUST SECONDS</string>
     <string name="string_signin_title_one">Chat to any business</string>
     <string name="string_signin_sign_up_business_two">BUSINESS? PRESS HERE</string>
     <string name="string_signin_sign_up_business_one">LOOKING TO SIGN UP YOUR</string>
@@ -251,21 +251,21 @@
     <string name="dont_have_Code">I DONT HAVE A CODE YET :(</string>
     <string name="get_in">ACCESS</string>
     <string name="get_it">GET ONE</string>
-    <string name="code_registered">¿HAVE YOU ALREADY ENTERED A CODE AND\n CREATED AN ACOUNT?</string>
-    <string name="tap_here">¿HAVE YOU ALREADY ENTERED A CODE AND\n CREATED AN ACOUNT? TAP HERE</string>
+    <string name="code_registered">HAVE YOU ALREADY ENTERED A CODE AND\n CREATED AN ACOUNT?</string>
+    <string name="tap_here">HAVE YOU ALREADY ENTERED A CODE AND\n CREATED AN ACOUNT? TAP HERE</string>
     <string name="feel_lucky">I feel lucky</string>
-    <string name="how_to_get">¿How can I get a code?</string>
-    <string name="share_next">Get on here:</string>
+    <string name="how_to_get">How can I get a code?</string>
+    <string name="share_next">Get one here:</string>
     <string name="get_code_Share">GET</string>
     <string name="info_get_code1">Our system will detect your \n post or tweet and  we\'ll send \n you a code via MD.</string>
-    <string name="info_get_code2">Or share this in FB or TW and \n don\'t forget to use hashtags:</string>
-    <string name="info_hashtags">#conversachat #conversacode</string>
+    <string name="info_get_code2">Or share this in FB or TW and \n don\'t forget to use the hashtags:</string>
+    <string name="info_hashtags">#conversachat </string>
     <string name="info_get_code3">Our system will detect your \n post or tweet and  we\'ll send \n you a code via MD.</string>
     <string name="fail_code_title">Oops</string>
-    <string name="success_code_title">¡Awesome!</string>
-    <string name="fail_code">We\'re sorry the code isn\'t  valid.</string>
+    <string name="success_code_title">Awesome!</string>
+    <string name="fail_code">We\'re sorry the code isn\'t  valid</string>
     <string name="success_code"> The code is valid</string>
-    <string name="btn_fail_code">Get Valid Code</string>
+    <string name="btn_fail_code">Get valid code</string>
     <string name="btn_success_code">access now</string>
     <string name="message_share_code">
         The old ways to contact business are now dead. There\'s a new king in town. Conversa is here to stay. See what  all this buzz is about.  Download the app and get your early access code.  #conversachat #conversacode

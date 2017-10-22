@@ -14,6 +14,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.parse.ParseUser;
+import com.taplytics.sdk.Taplytics;
+
+import net.hockeyapp.android.CrashManager;
 
 import org.json.JSONObject;
 
@@ -134,7 +137,15 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
 //            // Start IntentService to register this application with GCM.
 //            Intent intent = new Intent(this, RegistrationIntentService.class);
 //            startService(intent);
+
+
 //        }
+        checkForCrashes();
+        Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
+    }
+
+    private void checkForCrashes() {
+        CrashManager.register(this);
     }
 
     @Override

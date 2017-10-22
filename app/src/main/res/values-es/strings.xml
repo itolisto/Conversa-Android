@@ -66,9 +66,9 @@
     <string name="test_string">Cadena de prueba</string>
     <string name="terms_of_use_preference">Términos y Condiciones de Uso</string>
     <string name="summary_go_intent_preference">Sitio oficial de Conversa</string>
-    <string name="string_signin_title_two">CHATEA CON CUALQUIER NEGOCIO \nSENCILLO. VELOZ. EFICAZ.</string>
+    <string name="string_signin_title_two">CHATEA CON EMPRESAS LOCALES \nEN SEGUNDOS</string>
     <string name="string_signin_title_one">Habla con cualquier negocio</string>
-    <string name="string_signin_sign_up_business_two">NEGOCIO? PRESIONA AQUI</string>
+    <string name="string_signin_sign_up_business_two">NEGOCIO? PRESIONA AQUÌ</string>
     <string name="string_signin_sign_up_business_one">¿BUSCANDO REGISTRAR TU</string>
     <string name="string_signin_are_you_new">¿ERES NUEVO AQUI?</string>
     <string name="string_signin_already_have_an_account">YA TENGO UNA CUENTA</string>
@@ -242,27 +242,27 @@
     <string name="save">Save</string>
     <string name="no_select">No Select</string>
     <string name="have_code">TENGO UN CÓDIGO</string>
-    <string name="dont_have_Code">AUN NO TENGO CÓDIGO :(</string>
+    <string name="dont_have_Code">AÚN NO TENGO CÓDIGO :(</string>
     <string name="get_in">INGRESAR</string>
     <string name="get_it">CONSEGUIR</string>
     <string name="code_registered">¿YA HAS INGRESADO UN CÓDIGO Y \n CREASTE UNA CUENTA? </string>
-    <string name="tap_here">¿YA HAS INGRESADO UN CÓDIGO Y \n CREASTE UNA CUENTA? TAP AQUì</string>
+    <string name="tap_here">¿YA HAS INGRESADO UN CÓDIGO Y \n CREASTE UNA CUENTA? TAP AQUÍ</string>
     <string name="feel_lucky">Me siento con suerte</string>
-    <string name="how_to_get">¿Como obtengo un código?</string>
+    <string name="how_to_get">¿Cómo obtengo un código?</string>
     <string name="share_next">Obtén uno aquí:</string>
     <string name="get_code_Share">Obtener</string>
     <string name="info_get_code1">Nuestro sistema detectara tu \n post o tweet y te enviaremos \n un código por MD.</string>
     <string name="info_get_code2">O comparte esto en FB o TW\n y no olvides usar los hashtags:</string>
-    <string name="info_hashtags">#conversachat #codigoconversa</string>
-    <string name="info_get_code3">Nuestro sistema detectara tu\n post o tweet y te enviaremos\n un código por MD.</string>
+    <string name="info_hashtags">#conversachat </string>
+    <string name="info_get_code3">Nuestro sistema detectará tu\n post o tweet y te enviáremos\n un código por MD.</string>
     <string name="fail_code_title">Oops</string>
     <string name="success_code_title">¡Genial!</string>
-    <string name="fail_code">Lo sentimos, el código que ingresaste no es válido.</string>
-    <string name="success_code"> El código es válido, accede a la app ahora.</string>
-    <string name="btn_fail_code">Obtener Código Valido </string>
+    <string name="fail_code">Lo sentimos, el código ingresado no es válido</string>
+    <string name="success_code"> El código es válido, accede a la app ahora</string>
+    <string name="btn_fail_code">Obtener código válido </string>
     <string name="btn_success_code">Acceder</string>
     <string name="message_share_code">
-        Las antiguas formas de comunicación con empresas han muerto. Hay un nuevo rey en la ciudad. Conversa llego para quedarse.  Ve de que se trata. Descarga la app y solicita tu código de acceso.  #conversachat #conversacode
+        Las anticuadas formas de comunicación con empresas han muerto. Hay un nuevo rey en la ciudad. Conversa llego para quedarse.  Ve de que se trata. Descarga la app y solicita tu código de acceso.  #conversachat #conversacode
     </string>
 
 </resources>

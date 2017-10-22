@@ -1,19 +1,22 @@
 package ee.app.conversa;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import com.chaos.view.PinView;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+
+import java.util.HashMap;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import ee.app.conversa.extendables.BaseActivity;
-import ee.app.conversa.management.AblyConnection;
-import ee.app.conversa.utils.Logger;
 
 public class ActivityEnterCode extends BaseActivity implements View.OnClickListener {
 
@@ -43,46 +46,55 @@ public class ActivityEnterCode extends BaseActivity implements View.OnClickListe
     public void processPin() {
         String pin = mPinView.getText().toString();
         // Llamar funcion y cambiar a pantalla o mostrar alerta de pin invalido
-        if(pin.equals("123456")){
 
-            new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                    .setTitleText(this.getResources().getString(R.string.success_code_title) )
-                    .setContentText(getResources().getString(R.string.success_code))
-                    .setConfirmText(getResources().getString(R.string.btn_success_code))
-                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sDialog) {
-                            //sDialog.dismissWithAnimation();
-                            Intent intent = new Intent(mActivity, ActivitySignIn.class);
-                            mActivity.startActivity(intent);
-                        }
-                    })
-                    .show();
+        HashMap<String, String> params = new HashMap<>(2);
+        params.put("code", pin);
+        final ProgressDialog progress = new ProgressDialog(this);
+        progress.show();
 
 
+        ParseCloud.callFunctionInBackground("validateConversaCode", params, new FunctionCallback<Integer>() {
+            @Override
+            public void done(Integer object, ParseException e) {
+                progress.dismiss();
+                if (e == null) {
+                    new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)
+                            .setTitleText(mActivity.getResources().getString(R.string.success_code_title) )
+                            .setContentText(getResources().getString(R.string.success_code))
+                            .setConfirmText(getResources().getString(R.string.btn_success_code))
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    //sDialog.dismissWithAnimation();
+                                    Intent intent = new Intent(mActivity, ActivitySignIn.class);
+                                    mActivity.startActivity(intent);
+                                }
+                            })
+                            .show();
+                } else {
+                    new SweetAlertDialog(mActivity, SweetAlertDialog.ERROR_TYPE)
+                            .setTitleText(mActivity.getResources().getString(R.string.fail_code_title) )
+                            .setContentText(getResources().getString(R.string.fail_code))
+                            .setConfirmText(getResources().getString(R.string.btn_fail_code))
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    //sDialog.dismissWithAnimation();
+                                    Intent intent = new Intent(mActivity, ActivityGetCode.class);
+                                    mActivity.startActivity(intent);
+                                }
+                            })
+                            .show();
+                }
+            }
+        });
 
 
-        }else{
-
-            new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                    .setTitleText(this.getResources().getString(R.string.fail_code_title) )
-                    .setContentText(getResources().getString(R.string.fail_code))
-                    .setConfirmText(getResources().getString(R.string.btn_fail_code))
-                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sDialog) {
-                            //sDialog.dismissWithAnimation();
-                            Intent intent = new Intent(mActivity, ActivityGetCode.class);
-                            mActivity.startActivity(intent);
-                        }
-                    })
-                    .show();
-
-        }
     }
 
     @Override
     public void onClick(View v) {
+
         processPin();
     }
 
