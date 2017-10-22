@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -23,6 +24,11 @@
         android:required="true" />
 
     <!-- App receives GCM messages. -->
+    <permission
+        android:name="ee.app.conversa.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="ee.app.conversa.permission.C2D_MESSAGE" />
+
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
@@ -184,22 +190,47 @@
                 <action android:name="android.net.ConnectivityManager.CONNECTIVITY_ACTION" />
             </intent-filter>
         </receiver>
-        <!-- **************************************************************************************** -->
-        <service android:name=".notifications.MyFirebaseMessagingService">
+
+        <!-- Delegate Skygear SDK to manage GCM Services -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="ee.app.conversa" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name="io.skygear.skygear.gcm.ListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-        <service android:name=".notifications.MyFirebaseInstanceIDService">
+        <service
+            android:name="io.skygear.skygear.gcm.InstanceIDListenerService"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+                <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
-        <!-- suppress AndroidDomInspection -->
+        <service
+            android:name="io.skygear.skygear.gcm.RegistrationIntentService"
+            android:exported="false">
+        </service>
+
+        <service
+            android:name="ee.app.conversa.notifications.MyListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
         <service
             android:name=".notifications.RegistrationIntentService"
             android:exported="false" />
-
+        <!-- **************************************************************************************** -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

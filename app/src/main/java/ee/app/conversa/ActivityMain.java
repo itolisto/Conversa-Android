@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.jobs.CustomerInfoJob;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.SkygearConnection;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
@@ -28,6 +28,8 @@ import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.view.MediumTextView;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
+import io.skygear.skygear.Container;
+import io.skygear.skygear.gcm.RegistrationIntentService;
 
 public class ActivityMain extends ConversaActivity implements View.OnClickListener {
 
@@ -64,7 +66,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
             startActivity(go);
             finish();
         } else {
-            AblyConnection.getInstance().initAbly();
+            SkygearConnection.getInstance().initAbly();
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setTitle("");
@@ -118,8 +120,8 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                         .getJobManager()
                         .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
             } else {
-                AblyConnection.getInstance().subscribeToChannels();
-                AblyConnection.getInstance().subscribeToPushChannels();
+                SkygearConnection.getInstance().subscribeToChannels();
+                SkygearConnection.getInstance().subscribeToPushChannels();
             }
 
             initialization();
@@ -130,11 +132,12 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
     protected void initialization() {
         super.initialization();
         mFsvSearch.setOnClickListener(this);
-//        if (checkPlayServices()) {
-//            // Start IntentService to register this application with GCM.
-//            Intent intent = new Intent(this, RegistrationIntentService.class);
-//            startService(intent);
-//        }
+
+        Container skygear = Container.defaultContainer(this);
+        if (skygear.getPush().getGcmSenderId() != null) {
+            Intent gcmTokenRegisterIntent = new Intent(this, RegistrationIntentService.class);
+            this.startService(gcmTokenRegisterIntent);
+        }
     }
 
     @Override
@@ -251,26 +254,5 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
             startActivity(intent);
         }
     }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-//    private boolean checkPlayServices() {
-//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-//        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-//        if (resultCode != ConnectionResult.SUCCESS) {
-//            if (apiAvailability.isUserResolvableError(resultCode)) {
-//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-//                        .show();
-//            } else {
-//                Log.i(TAG, "This device is not supported.");
-//                finish();
-//            }
-//            return false;
-//        }
-//        return true;
-//    }
 
 }

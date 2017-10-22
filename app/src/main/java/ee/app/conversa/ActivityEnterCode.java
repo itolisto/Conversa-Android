@@ -3,7 +3,6 @@ package ee.app.conversa;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,8 +17,6 @@ import java.util.HashMap;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import ee.app.conversa.extendables.BaseActivity;
-import ee.app.conversa.management.AblyConnection;
-import ee.app.conversa.utils.Logger;
 
 public class ActivityEnterCode extends BaseActivity implements View.OnClickListener {
 

@@ -60,11 +60,14 @@ android {
 }
 
 dependencies {
-    compile (name:'ably-android-0.9-dev', ext:'aar')
+    //compile (name:'ably-android-0.9-dev', ext:'aar')
     testCompile 'junit:junit:4.12'
 
     compile project(':library')
     compile project(':tedbottompicker')
+
+    compile 'io.skygear:skygear:+' // from Android Quickstart
+    compile 'io.skygear.plugins:chat:+'
 
     compile 'com.android.support:multidex:1.0.1'
     compile "com.google.firebase:firebase-messaging:$PLAY_LIB_VERSION"

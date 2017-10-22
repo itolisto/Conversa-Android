@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.delivery.DeliveryStatus;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.SkygearConnection;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
@@ -54,10 +54,10 @@ public class SendMessageJob extends Job {
         params.put("fromCustomer", true);
         params.put("messageType", Integer.valueOf(message.getMessageType()));
 
-        if (AblyConnection.getInstance() != null && AblyConnection.getInstance()
+        if (SkygearConnection.getInstance() != null && SkygearConnection.getInstance()
                 .getPublicConnectionId() != null)
         {
-            params.put("connectionId", AblyConnection.getInstance().getPublicConnectionId());
+            params.put("connectionId", SkygearConnection.getInstance().getPublicConnectionId());
         }
 
         switch (message.getMessageType()) {

@@ -44,13 +44,14 @@ import org.greenrobot.eventbus.EventBus;
 
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.events.MyEventBusIndex;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.SkygearConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.settings.Preferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import io.branch.referral.Branch;
+import io.skygear.skygear.Container;
 
 /**
  * Basic Application class, holds references to often used single instance
@@ -84,7 +85,7 @@ public class ConversaApp extends MultiDexApplication {
 		setLocalBroadcastManager();
 
 		Fresco.initialize(this);
-		AblyConnection.initAblyManager(this);
+		SkygearConnection.initSkygearManager(this);
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 		initializeBranch();
@@ -94,6 +95,14 @@ public class ConversaApp extends MultiDexApplication {
 		initializeEventBus();
         initializeFlurry();
 		initializeTypefaces();
+
+		io.skygear.skygear.Configuration config = new io.skygear.skygear.Configuration.Builder()
+				.endPoint("")
+				.apiKey("")
+				.gcmSenderId("726872517648")
+				.build();
+
+		Container.defaultContainer(this).configure(config);
 	}
 
 	private void initializeBranch() {

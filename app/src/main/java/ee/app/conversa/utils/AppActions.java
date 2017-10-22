@@ -9,7 +9,7 @@ import com.parse.ParseException;
 import ee.app.conversa.ActivityMain;
 import ee.app.conversa.ActivitySignIn;
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.SkygearConnection;
 import ee.app.conversa.model.parse.Account;
 
 /**
@@ -54,7 +54,7 @@ public class AppActions {
             }
         }).start();
 
-        AblyConnection.getInstance().disconnectAbly();
+        SkygearConnection.getInstance().disconnectAbly();
         Account.logOut();
 
         Intent goToSignIn = new Intent(context, ActivitySignIn.class);
