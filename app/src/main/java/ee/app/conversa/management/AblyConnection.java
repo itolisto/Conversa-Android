@@ -175,37 +175,12 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
             ablyRealtime.push.deactivate(context);
         }
     }
-/*
-    public void subscribeToPushChannels() {
-        if (ablyRealtime == null || ConversaApp.getInstance(context).getPreferences().getPushKey().isEmpty())
-            return;
 
-        this.ablyRealtime.addPushNotificationsOnChannels()
-                .pushType(PNPushType.GCM)
-                .channels(getChannels())
-                .deviceId(ConversaApp.getInstance(context).getPreferences().getPushKey())
-                .async(new PNCallback<PNPushAddChannelResult>() {
-            @Override
-            public void onResponse(PNPushAddChannelResult result, PNStatus status) {
-                Log.e("onResponse", "Result: " + result + ". Status: " + status);
-            }
-        });
-    }*/
-/*
-    public void disconnectAbly() {
-        if (ablyRealtime != null) {
-            this.ablyRealtime.unsubscribeAll();
-            this.ablyRealtime.removeAllPushNotificationsFromDeviceWithPushToken()
-                    .deviceId(ConversaApp.getInstance(context).getPreferences().getPushKey())
-                    .pushType(PNPushType.GCM);
-        }
-    }
-*/
     private List<String> getChannels() {
         String channelname = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
         List<String> channels = new ArrayList<>(2);
-        channels.add("upbc_" + channelname);
-        channels.add("upvt_" + channelname);
+        channels.add("upbc:" + channelname);
+        channels.add("upvt:" + channelname);
         return channels;
     }
 
@@ -259,25 +234,6 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
         return null;
     }
 
-    /*
-
-    @Override
-    public void status(PubNub pubnub, PNStatus status) {
-        if (status.getCategory() == PNStatusCategory.PNUnexpectedDisconnectCategory) {
-            // This event happens when radio / connectivity is lost
-        } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
-            // Connect event. You can do stuff like publish, and know you'll get it.
-            // Or just use the connected event to confirm you are subscribed for
-            // UI / internal notifications, etc
-        } else if (status.getCategory() == PNStatusCategory.PNReconnectedCategory) {
-            // Happens as part of our regular operation. This event happens when
-            // radio / connectivity is lost, then regained.
-        } else if (status.getCategory() == PNStatusCategory.PNDecryptionErrorCategory) {
-            // Handle messsage decryption error. Probably client configured to
-            // encrypt messages and on live data feed it received plain text.
-        }
-    }*/
-
     @Override
     public void onMessage(Message messages) {
         JSONObject additionalData;
@@ -297,65 +253,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
                 break;
         }
     }
-    /*
-    @Override
-    public void message(PubNub pubnub, PNMessageResult message) {
-        // Handle new message stored in message.message
-        if (message.getChannel() != null) {
-            // Message has been received on channel group stored in
-            // message.getChannel()
-        } else {
-            // Message has been received on channel stored in
-            // message.getSubscription()
-        }
 
-        JSONObject additionalData;
-
-        try {
-            JsonObject mMessage = message.getMessage().getAsJsonObject();
-            JsonObject mmMessage;
-
-            if (mMessage.get("message").isJsonObject()) {
-                mmMessage = mMessage.getAsJsonObject("message");
-                additionalData = new JSONObject(mmMessage.getAsString());
-            } else {
-                JsonElement jeMessage = mMessage.get("message");
-                additionalData = new JSONObject(jeMessage.getAsString());
-            }
-        } catch (Exception e) {
-            Logger.error(TAG, "onMessageReceived additionalData fail to parse-> " + e.getMessage());
-            return;
-        }
-
-        switch (additionalData.optInt("appAction", 0)) {
-            case 1:
-                Intent msgIntent = new Intent(context, CustomMessageService.class);
-                msgIntent.putExtra("data", additionalData.toString());
-                context.startService(msgIntent);
-                break;
-            case 2:
-                Logger.error("onPresenceMessage", additionalData.toString());
-
-                String jeFrom = additionalData.optString("from", "");
-                boolean isUserTyping = additionalData.optBoolean("isTyping", false);
-                if (!jeFrom.isEmpty())
-                    EventBus.getDefault().post(new TypingEvent(jeFrom, isUserTyping));
-                break;
-        }
-    }*/
-/*
-    @Override
-    public void presence(PubNub pubnub, PNPresenceEventResult presence) {
-//        Logger.error("onPresenceMessage", "Member " + presenceMessage.clientId + " : " + presenceMessage.action.toString());
-//
-//        if (presenceMessage.data != null) {
-//            JsonElement jeFrom = ((JsonObject) presenceMessage.data).get("from");
-//            if (jeFrom != null) {
-//                boolean isUserTyping = ((JsonObject) presenceMessage.data).get("isTyping").getAsBoolean();
-//                EventBus.getDefault().post(new TypingEvent(jeFrom.getAsString(), isUserTyping));
-//            }
-//        }
-    }*/
     @Override
     public void onPresenceMessage(PresenceMessage presenceMessage) {
         Logger.error("onPresenceMessage", "Member " + presenceMessage.clientId + " : " + presenceMessage.action.toString());
