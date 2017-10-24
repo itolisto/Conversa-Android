@@ -160,16 +160,9 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
             case btnSignUpUp: {
                 if (validateForm()) {
                     Account user = new Account();
-
                     String email = mEtSignUpEmail.getText().toString();
-                    String parts[] = TextUtils.split(email, "@");
-                    String username = parts[0];
-                    String domain = TextUtils.split(parts[1], "\\.")[0];
-
-                    String fusername = username + domain;
-
-                    user.setEmail(mEtSignUpEmail.getText().toString());
-                    user.setUsername(fusername);
+                    user.setEmail(email);
+                    user.setUsername(email);
                     user.setPassword(mEtSignUpPassword.getText().toString());
                     user.put(Const.kUserTypeKey, 1);
 
