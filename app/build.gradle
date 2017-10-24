@@ -13,7 +13,7 @@ android {
         config {
             keyAlias 'conversa'
             keyPassword 'GaQhikhPoBB0f'
-            storeFile file('/Users/edgargomez/Desktop/Keys/android/Conversa.jks')
+            storeFile file('Conversa.jks')
             storePassword 'GaQhikhPoBB0f'
         }
     }
@@ -57,13 +57,16 @@ android {
 }
 
 dependencies {
+    testCompile 'junit:junit:4.12'
 
+    compile project(':library')
+    compile project(':tedbottompicker');
 
+    compile 'com.android.support:multidex:1.0.1'
     compile "com.google.firebase:firebase-messaging:$PLAY_LIB_VERSION"
     compile "com.android.support:design:$SUPPORT_LIB_VERSION"
     compile "com.android.support:percent:$SUPPORT_LIB_VERSION"
     compile "com.android.support:support-v4:$SUPPORT_LIB_VERSION"
-    //compile "com.android.support:palette-v7:$SUPPORT_LIB_VERSION"
     compile "com.android.support:customtabs:$SUPPORT_LIB_VERSION"
     compile "com.android.support:cardview-v7:$SUPPORT_LIB_VERSION"
     compile "com.android.support:appcompat-v7:$SUPPORT_LIB_VERSION"
@@ -72,18 +75,6 @@ dependencies {
     compile "com.google.android.gms:play-services-maps:$PLAY_LIB_VERSION"
     compile "com.google.android.gms:play-services-base:$PLAY_LIB_VERSION"
     compile "com.google.android.gms:play-services-location:$PLAY_LIB_VERSION"
-
-
-
-    compile project(':library')
-    compile project(':tedbottompicker');
-
-    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.6.2'
-
-
-
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'net.hockeyapp.android:HockeySDK:5.0.3'
 
     compile 'com.wang.avi:library:2.1.3'
     compile 'org.greenrobot:eventbus:3.0.0'
@@ -105,16 +96,17 @@ dependencies {
 
     compile 'io.branch.sdk.android:library:2.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
 
-    compile'com.taplytics.sdk:taplytics:+@aar'
     compile 'com.android.volley:volley:+'
-    //compile('com.google.android.gms:play-services-gcm:9.+')
+    compile 'com.taplytics.sdk:taplytics:+@aar'
+    compile 'net.hockeyapp.android:HockeySDK:5.0.3'
+    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.6.2'
+
     debugCompile ('io.socket:socket.io-client:+') {
         exclude group: 'org.json', module: 'json'
     }
 
+    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
 }
 
 apt {

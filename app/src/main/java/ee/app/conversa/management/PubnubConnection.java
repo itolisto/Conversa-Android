@@ -38,19 +38,19 @@ import ee.app.conversa.utils.Logger;
 /**
  * Created by edgargomez on 8/17/16.
  */
-public class AblyConnection extends SubscribeCallback {
+public class PubnubConnection extends SubscribeCallback {
 
-    private final String TAG = AblyConnection.class.getSimpleName();
-    private static AblyConnection instance;
+    private final String TAG = PubnubConnection.class.getSimpleName();
+    private static PubnubConnection instance;
     private final Context context;
     private PubNub ablyRealtime;
 
     public static void initAblyManager(@NonNull Context context) {
-        instance = new AblyConnection(context);
+        instance = new PubnubConnection(context);
     }
 
     @Nullable
-    public static AblyConnection getInstance() {
+    public static PubnubConnection getInstance() {
         if (instance == null) {
             return null;
         }
@@ -58,7 +58,7 @@ public class AblyConnection extends SubscribeCallback {
         return instance;
     }
 
-    private AblyConnection(Context context) {
+    private PubnubConnection(Context context) {
         this.context = context;
     }
 

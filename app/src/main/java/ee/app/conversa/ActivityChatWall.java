@@ -6,10 +6,8 @@ import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
@@ -36,7 +34,6 @@ import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +45,7 @@ import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.camara.ImagePickerDemo;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.interfaces.OnMessageClickListener;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.PubnubConnection;
 import ee.app.conversa.messaging.MessageDeleteReason;
 import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.messaging.SendMessageAsync;
@@ -56,7 +53,6 @@ import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
-import ee.app.conversa.utils.ImageFilePath;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
@@ -193,7 +189,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		@Override
 		public void run() {
 			Logger.error("isUserTypingRunnable", "Try to send typing ended update");
-			AblyConnection.getInstance().userHasEndedTyping(businessObject.getBusinessId());
+			PubnubConnection.getInstance().userHasEndedTyping(businessObject.getBusinessId());
 			typingFlag = false;
 		}
 	};
@@ -222,7 +218,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 				if (!typingFlag) {
 					Logger.error("isUserTypingRunnable", "Try to send typing started update");
-					AblyConnection.getInstance().userHasStartedTyping(businessObject.getBusinessId());
+					PubnubConnection.getInstance().userHasStartedTyping(businessObject.getBusinessId());
 					typingFlag = true;
 				}
 

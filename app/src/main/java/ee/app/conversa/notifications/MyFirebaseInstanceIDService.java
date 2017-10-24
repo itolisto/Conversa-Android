@@ -6,7 +6,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.PubnubConnection;
 
 /**
  * Created by edgargomez on 5/16/17.
@@ -43,7 +43,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setPushKey(token);
-        AblyConnection.getInstance().subscribeToPushChannels();
+        PubnubConnection.getInstance().subscribeToPushChannels();
     }
 
 }
