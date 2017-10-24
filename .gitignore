@@ -1,3 +1,6 @@
+# Log memory errors
+*.log
+
 # built application files
 *.apk
 *.ap_
