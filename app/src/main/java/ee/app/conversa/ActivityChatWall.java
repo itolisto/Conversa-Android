@@ -413,7 +413,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			case R.id.flBack:
 				onBackPressed();
 				break;
-			case R.id.btnSlideButton:
+			case R.id.btnSlideButton:;
 				myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
 				break;
 			case R.id.btnWallSend:

@@ -142,11 +142,13 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
     public void onCategoryClick(nCategory category, View itemView, int position) {
         Intent intent = new Intent(getContext(), ActivityBusiness.class);
         intent.putExtra(Const.kObjectRowObjectIdKey, category.getObjectId());
+        intent.putExtra("custom", category.isCustom());
         String categoryName = category.getCategoryName(getActivity());
         intent.putExtra(Const.kClassCategory, categoryName);
 
-        Map<String, String> articleParams = new HashMap<>(1);
+        Map<String, String> articleParams = new HashMap<>(2);
         articleParams.put("category", category.getObjectId());
+        articleParams.put("custom", String.valueOf(category.isCustom()));
         FlurryAgent.logEvent("user_category_selected", articleParams);
 
         startActivity(intent);
@@ -184,7 +186,8 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
                                 new nCategory(
                                     category.optString("ob", ""),
                                     category.optString("na", ""),
-                                    category.optString("th", "")
+                                    category.optString("th", ""),
+                                    category.optBoolean("cs", false)
                                 )
                         );
                         mAdapter.addItemToSection(categoryReg, headerItem, h);

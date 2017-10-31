@@ -9,9 +9,13 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import com.chaos.view.PinView;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -53,24 +57,45 @@ public class ActivityEnterCode extends BaseActivity implements View.OnClickListe
         progress.show();
 
 
-        ParseCloud.callFunctionInBackground("validateConversaCode", params, new FunctionCallback<Integer>() {
+        ParseCloud.callFunctionInBackground("validateConversaCode", params, new FunctionCallback<String>() {
             @Override
-            public void done(Integer object, ParseException e) {
+            public void done(String object, ParseException e) {
                 progress.dismiss();
                 if (e == null) {
-                    new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)
-                            .setTitleText(mActivity.getResources().getString(R.string.success_code_title) )
-                            .setContentText(getResources().getString(R.string.success_code))
-                            .setConfirmText(getResources().getString(R.string.btn_success_code))
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sDialog) {
-                                    //sDialog.dismissWithAnimation();
-                                    Intent intent = new Intent(mActivity, ActivitySignIn.class);
-                                    mActivity.startActivity(intent);
-                                }
-                            })
-                            .show();
+                    JsonObject jobj = new Gson().fromJson(object, JsonObject.class);
+                    boolean codeValid = jobj.get("valid").getAsBoolean();
+
+
+                    if(codeValid)  {
+                        new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)
+                                .setTitleText(mActivity.getResources().getString(R.string.success_code_title) )
+                                .setContentText(getResources().getString(R.string.success_code))
+                                .setConfirmText(getResources().getString(R.string.btn_success_code))
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sDialog) {
+                                        //sDialog.dismissWithAnimation();
+                                        Intent intent = new Intent(mActivity, ActivitySignIn.class);
+                                        mActivity.startActivity(intent);
+                                    }
+                                })
+                                .show();
+                    }else {
+                        new SweetAlertDialog(mActivity, SweetAlertDialog.ERROR_TYPE)
+                                .setTitleText(mActivity.getResources().getString(R.string.fail_code_title) )
+                                .setContentText(getResources().getString(R.string.fail_code))
+                                .setConfirmText(getResources().getString(R.string.btn_fail_code))
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sDialog) {
+                                        //sDialog.dismissWithAnimation();
+                                        Intent intent = new Intent(mActivity, ActivityGetCode.class);
+                                        mActivity.startActivity(intent);
+                                    }
+                                })
+                                .show();
+                    }
+
                 } else {
                     new SweetAlertDialog(mActivity, SweetAlertDialog.ERROR_TYPE)
                             .setTitleText(mActivity.getResources().getString(R.string.fail_code_title) )

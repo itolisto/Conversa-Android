@@ -43,6 +43,7 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
     private BusinessAdapter mBusinessListAdapter;
 
     private String categoryId;
+    private boolean custom;
 
     private int page;
     private boolean loadingPage;
@@ -61,6 +62,7 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
         super.initialization();
 
         categoryId = getIntent().getExtras().getString(Const.kObjectRowObjectIdKey);
+        custom = getIntent().getExtras().getBoolean("custom");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -124,6 +126,7 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
             HashMap<String, Object> params = new HashMap<>(2);
             params.put("page", page);
             params.put("categoryId", categoryId);
+            params.put("custom", custom);
             ParseCloud.callFunctionInBackground("getCategoryBusinesses", params, new FunctionCallback<String>() {
                 @Override
                 public void done(String result, ParseException e) {

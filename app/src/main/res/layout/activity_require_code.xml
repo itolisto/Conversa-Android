@@ -76,7 +76,7 @@
             android:text="@string/dont_have_Code"
             android:textColor="@color/black_text"
             android:textSize="12.5sp" />
-
+<!--
         <RelativeLayout
             android:gravity="center"
             android:id="@+id/rlSignInContainer"
@@ -95,9 +95,9 @@
                 android:gravity="center"
                 android:text="@string/have_code"
                 android:textColor="@color/black_text"
-                android:textSize="12.5sp" />
+                android:textSize="12.5sp" />-->
 
-            <RelativeLayout
+           <!-- <RelativeLayout
                 android:gravity="center"
                 android:id="@+id/rlSignUpContainer"
                 android:layout_below="@id/btvSignUpInfo"
@@ -108,7 +108,7 @@
                     android:layout_width="170dp"
                     android:layout_height="40dp"
                     android:layout_marginTop="7dp"
-                    android:paddingLeft="7dp"
+                    android:paddingLeft="7dp"<
                     android:paddingStart="7dp"
                     android:paddingRight="7dp"
                     android:paddingEnd="7dp"
@@ -116,7 +116,7 @@
                     android:textColor="@drawable/textcolor_white_state"
                     android:textSize="14sp"
                     android:background="@drawable/button_shape_white" />
-            </RelativeLayout>
+            </RelativeLayout>-->
 
             <ee.app.conversa.view.MediumTextView
                 android:id="@+id/tvAlready"
@@ -174,7 +174,7 @@
                 android:textSize="11sp" />-->
         </RelativeLayout>
 
-        <ee.app.conversa.view.LightTextView
+       <!-- <ee.app.conversa.view.LightTextView
             android:id="@+id/ltvTapHere"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -183,7 +183,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:text="@string/tap_here"
-            android:textSize="11sp" />
+            android:textSize="11sp" />-->
 
         <!-- <ee.app.conversa.view.LightTextView
              android:layout_above="@id/ltvTapHere"
@@ -193,8 +193,8 @@
              android:layout_centerHorizontal="true"
              android:textColor="@color/black_text"
              android:text="@string/code_registered"
-             android:textSize="11sp" />-->
-    </RelativeLayout>
+             android:textSize="11sp" />
+    </RelativeLayout>-->
 
     <ImageView
         android:id="@+id/ivLanguage"

@@ -149,6 +149,7 @@ public class ImagePickerDemo extends AppCompatActivity implements
             switch (v.getId()) {
                 case R.id.take_picture:
                     if (mCameraView != null) {
+                       // mCameraView.start();
                         mCameraView.takePicture();
                     }
                     break;

@@ -1,21 +1,23 @@
 package ee.app.conversa.view;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import java.net.URI;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+
+import java.util.ArrayList;
 
 import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ActivityLocation;
-import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.camara.ImagePickerDemo;
 import ee.app.conversa.utils.Const;
@@ -62,15 +64,25 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnCamera: {
+                PermissionListener permissionlistener = new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        Intent intent = new Intent(mActivity, ImagePickerDemo.class);
+                        intent.putExtra("picker", "single");
+                        mActivity.startActivityForResult(intent, ImagePickerDemo.CAMERA_CODE_ACTIVITY);
+                    }
 
-                Intent intent = new Intent(mActivity, ImagePickerDemo.class);
-                intent.putExtra("picker", "single");
-                //mActivity.startActivity(intent);
-                mActivity.startActivityForResult(intent, ImagePickerDemo.CAMERA_CODE_ACTIVITY);
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                        Toast.makeText(mActivity, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                };
 
-                //mActivity.startActivityForResult(intent, ActivityLocation.PICK_LOCATION_REQUEST);
-
-
+                new TedPermission(mActivity)
+                        .setPermissionListener(permissionlistener)
+                        .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                        .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .check();
                 break;
             }
             case R.id.btnLocation: {
