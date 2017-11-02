@@ -58,8 +58,6 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
         return v;
     }
 
-
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -69,7 +67,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
                     public void onPermissionGranted() {
                         Intent intent = new Intent(mActivity, ImagePickerDemo.class);
                         intent.putExtra("picker", "single");
-                        mActivity.startActivityForResult(intent, ImagePickerDemo.CAMERA_CODE_ACTIVITY);
+                        mActivity.startActivityForResult(intent, Const.CAPTURE_MEDIA);
                     }
 
                     @Override
@@ -95,6 +93,5 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
 
         dismiss();
     }
-
 
 }

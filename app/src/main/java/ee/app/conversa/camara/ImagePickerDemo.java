@@ -41,8 +41,6 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -68,11 +66,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 
-import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.R;
-import gun0912.tedbottompicker.GridSpacingItemDecoration;
 import gun0912.tedbottompicker.TedBottomPicker;
-import gun0912.tedbottompicker.adapter.ImageGalleryAdapter;
 
 
 /**
@@ -81,18 +76,17 @@ import gun0912.tedbottompicker.adapter.ImageGalleryAdapter;
  */
 public class ImagePickerDemo extends AppCompatActivity implements
         ActivityCompat.OnRequestPermissionsResultCallback,
-        AspectRatioFragment.Listener, View.OnClickListener {
+        AspectRatioFragment.Listener {
 
     private static final String TAG = "ImagePickerDemo";
+
     public static final int CAMERA_CODE_ACTIVITY = 193;
 
-    private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static int  SELECT_IMAGE_STATUS = 0;
 
     private static final String FRAGMENT_DIALOG = "dialog";
 
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
-
 
     private static final int[] FLASH_OPTIONS = {
             CameraView.FLASH_AUTO,
@@ -104,7 +98,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
             R.drawable.ic_flash_auto,
             R.drawable.ic_flash_off,
             R.drawable.ic_flash_on,
-
     };
 
     private static final int[] FLASH_TITLES = {
@@ -118,20 +111,8 @@ public class ImagePickerDemo extends AppCompatActivity implements
     private CameraView mCameraView;
 
     private Handler mBackgroundHandler;
-    private RecyclerView galleryView;
-
-    private ImageGalleryAdapter imageGalleryAdapter;
-
-    private Uri cameraImageUri;
-
 
     ArrayList<Uri> selectedUriList;
-    ArrayList<Uri> tempUriList;
-
-    static final int REQ_CODE_CAMERA = 1;
-    static final int REQ_CODE_GALLERY = 2;
-    static final String EXTRA_CAMERA_IMAGE_URI = "camera_image_uri";
-    static final String EXTRA_CAMERA_SELECTED_IMAGE_URI = "camera_selected_image_uri";
 
     TedBottomPicker bottomSheetDialogFragment;
     Activity iActivity;
@@ -140,8 +121,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
     private FrameLayout bottomSheetView;
 
     private String pickerType;
-    Uri selectedUri;
-
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -149,15 +128,12 @@ public class ImagePickerDemo extends AppCompatActivity implements
             switch (v.getId()) {
                 case R.id.take_picture:
                     if (mCameraView != null) {
-                       // mCameraView.start();
                         mCameraView.takePicture();
                     }
                     break;
                 case R.id.btn_image_preview_save:
                     //get the content of picture
-
                     break;
-
             }
         }
     };
@@ -169,7 +145,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
         mCameraView = (CameraView) findViewById(R.id.camera);
         bottomSheetView = (FrameLayout) findViewById(R.id.container);
 
-        // setRecyclerView();
         iActivity = this;
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
@@ -188,7 +163,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
-
     }
 
     @Override
@@ -197,16 +171,12 @@ public class ImagePickerDemo extends AppCompatActivity implements
         if (checkPermission()) {
             mCameraView.start();
             if (bottomSheetDialogFragment == null || !bottomSheetDialogFragment.isVisible()) {
-
                 if (pickerType.equalsIgnoreCase("single"))
                     showBottomPicker();
                 else if (pickerType.equalsIgnoreCase("multi")) {
                     showMultiBottomPicker();
                 }
-
-
             }
-
         } else {
             requestPermission();
         }
@@ -289,9 +259,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
 
             }
         });
-
-
-        //
     }
 
     @Override
@@ -422,13 +389,7 @@ public class ImagePickerDemo extends AppCompatActivity implements
                 }
             });
         }
-
     };
-
-    @Override
-    public void onClick(View v) {
-
-    }
 
     public static class ConfirmationDialogFragment extends DialogFragment {
 
@@ -478,24 +439,13 @@ public class ImagePickerDemo extends AppCompatActivity implements
                             })
                     .create();
         }
-
     }
-
-    private void setRecyclerView() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);
-        galleryView.setLayoutManager(gridLayoutManager);
-        galleryView.addItemDecoration(
-                new GridSpacingItemDecoration(gridLayoutManager.getSpanCount(), 10, false));
-    }
-
 
     private void requestPermission() {
-
-        ActivityCompat.requestPermissions(ImagePickerDemo.this,
+        ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
-
     }
 
     @Override
@@ -519,7 +469,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
                     } else {
                         Toast.makeText(ImagePickerDemo.this, "Permission Denied",
                                 Toast.LENGTH_LONG).show();
-
                     }
                 }
 
@@ -528,15 +477,18 @@ public class ImagePickerDemo extends AppCompatActivity implements
     }
 
     public boolean checkPermission() {
-        int FirstPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.CAMERA);
-        int SecondPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int FirstPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.CAMERA);
+            int SecondPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        return FirstPermissionResult == PackageManager.PERMISSION_GRANTED &&
-                SecondPermissionResult == PackageManager.PERMISSION_GRANTED;
+            return FirstPermissionResult == PackageManager.PERMISSION_GRANTED &&
+                    SecondPermissionResult == PackageManager.PERMISSION_GRANTED;
+//        } else {
+//            return true;
+//        }
     }
-
 
     public void imagePreview(final Uri uri) {
         final Dialog dialog = new Dialog(this, android.R.style.Theme_Light);
@@ -550,25 +502,22 @@ public class ImagePickerDemo extends AppCompatActivity implements
 
         Glide.with(this).load(uri).into(previewImage);
         saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SELECT_IMAGE_STATUS = 1;
-                   dialog.dismiss();
-                    iActivity.setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri.getPath()));
-                    iActivity.finish();
-                    //setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri));
-                    //finish();
-                }
+            @Override
+            public void onClick(View v) {
+                SELECT_IMAGE_STATUS = 1;
+                dialog.dismiss();
+                iActivity.setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri.getPath()));
+            }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SELECT_IMAGE_STATUS =0;
                 dialog.dismiss();
-
-
+                iActivity.setResult(Activity.RESULT_CANCELED);
             }
         });
         dialog.show();
     }
+
 }

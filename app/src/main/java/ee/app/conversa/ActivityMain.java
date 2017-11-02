@@ -59,17 +59,15 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AblyConnection.getInstance().initAbly();
-
         ParseUser currentUser = ParseUser.getCurrentUser();
+
         if (currentUser == null) {
-            // If to verify if deep link was opened when no session is
-            // active,
+            // Verify if deep link was opened when no session is active
             Intent go = new Intent(this, ActivitySignIn.class);
             startActivity(go);
             finish();
         } else {
-            //AblyConnection.getInstance().initAbly();
+            AblyConnection.getInstance().initAbly();
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setTitle("");
@@ -124,7 +122,6 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                         .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
             } else {
                 AblyConnection.getInstance().subscribeToChannels();
-                AblyConnection.getInstance().subscribeToPushChannels();
             }
 
             initialization();

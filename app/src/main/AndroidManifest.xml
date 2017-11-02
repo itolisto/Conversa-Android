@@ -3,22 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ee.app.conversa">
 
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera2" android:required="false"/>
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove">
-    </uses-permission>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <!-- App receives GCM messages. -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <uses-feature android:name="android.hardware.camera.any" android:required="true"/>
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+    <!--<uses-feature android:name="android.hardware.camera" android:required="false"/>-->
+    <!--<uses-feature android:name="android.hardware.camera2" android:required="false"/>-->
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -75,60 +76,72 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ActivityTutorial"
             android:launchMode="singleTop"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/TutorialTheme" />
+
         <activity
             android:name=".ActivitySignIn"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".ActivityLogIn"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+
         <activity
             android:name=".ActivitySignUp"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+
         <activity
             android:name=".ActivityRequireCode"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+
         <activity
             android:name=".ActivityGetCode"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".ActivityEnterCode"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+
         <activity
             android:name=".ActivityForgotPassword"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+
         <activity
             android:name=".ActivityBusiness"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".ActivitySearch"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/SearchTheme" />
+
         <activity
             android:name=".ActivityProfile"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Translucent" />
+
         <activity
             android:name=".ActivityChatWall"
             android:launchMode="singleTop"
@@ -136,46 +149,55 @@
             android:screenOrientation="portrait"
             android:theme="@style/ChatWallTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+
         <activity
             android:name=".camara.ImagePickerDemo"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/ChatWallTheme" />
+
         <activity
             android:name=".ActivityImageDetail"
             android:launchMode="singleTop"
             android:parentActivityName=".ActivityChatWall"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".ActivityLocation"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".settings.ActivitySettingsAccount"
             android:launchMode="singleTop"
             android:parentActivityName=".ActivityMain"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".settings.ActivitySettingsChat"
             android:launchMode="singleTop"
             android:parentActivityName=".ActivityMain"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".settings.ActivitySettingsNotifications"
             android:launchMode="singleTop"
             android:parentActivityName=".ActivityMain"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".settings.ActivitySettingsHelp"
             android:launchMode="singleTop"
             android:parentActivityName=".ActivityMain"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".notifications.NotificationPressed"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:noHistory="true"
             android:taskAffinity="" />
+
         <activity
             android:name=".browser.WebViewActivity"
             android:launchMode="singleTop"
@@ -209,10 +231,6 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <!-- suppress AndroidDomInspection -->
-        <service
-            android:name=".notifications.RegistrationIntentService"
-            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.gms.version"

@@ -9,11 +9,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -34,11 +33,11 @@ import java.util.List;
 import ee.app.conversa.browser.CustomTabActivityHelper;
 import ee.app.conversa.browser.WebviewFallback;
 import ee.app.conversa.extendables.BaseActivity;
-import ee.app.conversa.extendables.ConversaFragment;
-import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.MediumTextView;
 
 public class ActivityGetCode extends BaseActivity implements View.OnClickListener{
+
+    private CustomTabActivityHelper mCustomTabActivityHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +46,12 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
         initialization();
     }
 
-
-    private CustomTabActivityHelper mCustomTabActivityHelper;
-
     @Override
     protected void initialization() {
         super.initialization();
 
         Button mBtnGetCode = (Button) findViewById(R.id.btnGetCode);
         mBtnGetCode.setOnClickListener(this);
-
-
-
 
         MediumTextView mLtvClickHere = (MediumTextView) findViewById(R.id.ltvShareThis);
         String text = getResources().getString(R.string.info_get_code2);
@@ -98,7 +91,6 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
         mCustomTabActivityHelper = new CustomTabActivityHelper();
         mCustomTabActivityHelper.setConnectionCallback(mConnectionCallback);
         mCustomTabActivityHelper.mayLaunchUrl(Uri.parse("http://codigos.conversachat.com"), null, null);
-
     }
 
     private CustomTabActivityHelper.ConnectionCallback mConnectionCallback = new CustomTabActivityHelper.ConnectionCallback() {
@@ -190,16 +182,11 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
                 break;
 
             }
-
-
-
         }
-
     }
 
     @Override
     public void onBackPressed() {
-        //
         Intent intent = new Intent(this, ActivityRequireCode.class);
         startActivity(intent);
     }
