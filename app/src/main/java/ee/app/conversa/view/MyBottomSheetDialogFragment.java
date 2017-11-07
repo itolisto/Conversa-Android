@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.ActivityLocation;
 import ee.app.conversa.R;
-import ee.app.conversa.camara.ImagePickerDemo;
+import ee.app.conversa.camera.ImagePickerDemo;
 import ee.app.conversa.utils.Const;
 
 /**

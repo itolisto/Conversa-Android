@@ -36,6 +36,7 @@ import io.ably.lib.types.ClientOptions;
 import io.ably.lib.types.ErrorInfo;
 import io.ably.lib.types.Message;
 import io.ably.lib.util.IntentUtils;
+import io.ably.lib.util.Log;
 
 /**
  * Created by edgargomez on 8/17/16.
@@ -101,7 +102,7 @@ public class AblyConnection implements Channel.MessageListener,
             if (ablyRealtime == null) {
                 ClientOptions clientOptions = new ClientOptions();
                 clientOptions.key = "zmxQkA.0hjFJg:-DRtJj8oaEifjs-_";
-                clientOptions.logLevel = io.ably.lib.util.Log.ERROR;
+                clientOptions.logLevel = Log.DEBUG;
                 //clientOptions.clientId = clientId;
                 // Receive messages that they themselves publish
                 clientOptions.echoMessages = false;

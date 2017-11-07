@@ -8,6 +8,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+
 import com.chaos.view.PinView;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -53,8 +55,8 @@ public class ActivityEnterCode extends BaseActivity implements View.OnClickListe
 
         HashMap<String, String> params = new HashMap<>(2);
         params.put("code", pin);
-        final ProgressDialog progress = new ProgressDialog(this);
-        progress.show();
+        final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
+        progress.setContentView(R.layout.progress_layout);
 
 
         ParseCloud.callFunctionInBackground("validateConversaCode", params, new FunctionCallback<String>() {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ee.app.conversa.camara;
+package ee.app.conversa.camera;
 
 import android.Manifest;
 import android.app.Activity;
@@ -444,8 +444,10 @@ public class ImagePickerDemo extends AppCompatActivity implements
     private void requestPermission() {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS );
+
+
     }
 
     @Override
@@ -459,7 +461,8 @@ public class ImagePickerDemo extends AppCompatActivity implements
                     boolean CameraPermission = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     boolean StoragePermission =
                             grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    if (CameraPermission && StoragePermission) {
+                    boolean readStoragePermission = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+                    if (CameraPermission && StoragePermission && readStoragePermission) {
                         // Permission Granted
                         mCameraView.start();
                         showBottomPicker();
@@ -477,17 +480,29 @@ public class ImagePickerDemo extends AppCompatActivity implements
     }
 
     public boolean checkPermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int FirstPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(),
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          int FirstPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(),
                     Manifest.permission.CAMERA);
             int SecondPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int ThirdPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+
 
             return FirstPermissionResult == PackageManager.PERMISSION_GRANTED &&
-                    SecondPermissionResult == PackageManager.PERMISSION_GRANTED;
-//        } else {
-//            return true;
-//        }
+                    SecondPermissionResult == PackageManager.PERMISSION_GRANTED &&
+                    ThirdPermissionResult == PackageManager.PERMISSION_GRANTED;
+
+           /* if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }*/
+
+
+        } else {
+            return true;
+        }
     }
 
     public void imagePreview(final Uri uri) {

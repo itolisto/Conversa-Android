@@ -40,7 +40,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ee.app.conversa.adapters.MessagesAdapter;
-import ee.app.conversa.camara.ImagePickerDemo;
+import ee.app.conversa.camera.ImagePickerDemo;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.interfaces.OnMessageClickListener;
 import ee.app.conversa.management.AblyConnection;
