@@ -53,9 +53,9 @@ public class ActivityEnterCode extends BaseActivity implements View.OnClickListe
         progress.show();
 
 
-        ParseCloud.callFunctionInBackground("validateConversaCode", params, new FunctionCallback<Integer>() {
+        ParseCloud.callFunctionInBackground("validateConversaCode", params, new FunctionCallback<String>() {
             @Override
-            public void done(Integer object, ParseException e) {
+            public void done(String object, ParseException e) {
                 progress.dismiss();
                 if (e == null) {
                     new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)

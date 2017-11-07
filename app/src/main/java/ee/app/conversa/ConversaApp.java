@@ -113,7 +113,7 @@ public class ConversaApp extends MultiDexApplication {
 				// Localhost
 				.applicationId("b15c83")
 				.clientKey(null)
-				.server("http://192.168.1.11:1337/parse/") // The trailing slash is important.
+				.server("http://192.168.1.5:1337/parse/") // The trailing slash is important.
 				.build()
 		);
 	}

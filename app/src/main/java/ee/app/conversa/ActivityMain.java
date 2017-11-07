@@ -127,14 +127,16 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
 
             initialization();
         }
+
+        Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
+        //checkForCrashes();
 	}
 
     @Override
     protected void initialization() {
         super.initialization();
         mFsvSearch.setOnClickListener(this);
-        checkForCrashes();
-        Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
+
     }
 
     private void checkForCrashes() {

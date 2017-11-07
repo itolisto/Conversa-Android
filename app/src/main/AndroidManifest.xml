@@ -11,8 +11,9 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="replace" />
     <uses-permission
         android:name="android.permission.RECORD_AUDIO"
         tools:node="remove" />
@@ -34,6 +35,13 @@
         android:theme="@style/AppTheme"
 
         >
+
+        <meta-data
+            android:name="net.hockeyapp.android.appIdentifier"
+            android:value="9ca43ca3e2504597a27b6efc969f5fb3" />
+        <meta-data
+            android:name="net.hockeyapp.android.appSecret"
+            android:value="d4877799232376e37c0bc33af10bbdc7" />
 
         <activity
             android:name=".ActivitySplashScreen"
@@ -179,6 +187,13 @@
             android:name=".browser.WebViewActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
+        <!-- *************************************HOCKEY APP*********************************************** -->
+
+
+
+        <!-- **************************************************************************************** -->
+
 
         <!-- **************************************************************************************** -->
         <receiver android:name=".management.ConnectionChangeReceiver">
