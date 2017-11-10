@@ -60,11 +60,18 @@ android {
 }
 
 dependencies {
+<<<<<<< HEAD
     compile (name:'ably-android-1.0.1-release', ext:'aar')
     testCompile 'junit:junit:4.12'
 
     compile project(':library')
     compile project(':tedbottompicker')
+=======
+    testCompile 'junit:junit:4.12'
+
+    compile project(':library')
+    compile project(':tedbottompicker');
+>>>>>>> pubnub
 
     compile 'com.android.support:multidex:1.0.1'
     compile "com.google.firebase:firebase-messaging:$PLAY_LIB_VERSION"
@@ -104,11 +111,27 @@ dependencies {
     compile 'io.branch.sdk.android:library:2.+'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.+'
 
+<<<<<<< HEAD
     apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
 
     debugCompile ('io.socket:socket.io-client:+') {
         exclude group: 'org.json', module: 'json'
     }
+=======
+    compile 'io.branch.sdk.android:library:2.+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile 'com.android.volley:volley:+'
+    compile 'com.taplytics.sdk:taplytics:+@aar'
+    compile 'net.hockeyapp.android:HockeySDK:5.0.3'
+    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.6.2'
+
+    debugCompile ('io.socket:socket.io-client:+') {
+        exclude group: 'org.json', module: 'json'
+    }
+
+    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
+>>>>>>> pubnub
 }
 
 apt {

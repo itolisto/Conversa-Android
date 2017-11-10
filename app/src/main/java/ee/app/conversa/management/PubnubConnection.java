@@ -41,22 +41,26 @@ import io.ably.lib.util.Log;
 /**
  * Created by edgargomez on 8/17/16.
  */
+<<<<<<< HEAD:app/src/main/java/ee/app/conversa/management/AblyConnection.java
 public class AblyConnection implements Channel.MessageListener,
         CompletionListener, ConnectionStateListener, ChannelStateListener {
+=======
+public class PubnubConnection extends SubscribeCallback {
+>>>>>>> pubnub:app/src/main/java/ee/app/conversa/management/PubnubConnection.java
 
-    private final String TAG = AblyConnection.class.getSimpleName();
-    private static AblyConnection instance;
+    private final String TAG = PubnubConnection.class.getSimpleName();
+    private static PubnubConnection instance;
     private final Context context;
     private AblyRealtime ablyRealtime;
     private final String clientId;
     private boolean firstLoad;
 
     public static void initAblyManager(@NonNull Context context) {
-        instance = new AblyConnection(context);
+        instance = new PubnubConnection(context);
     }
 
     @Nullable
-    public static AblyConnection getInstance() {
+    public static PubnubConnection getInstance() {
         if (instance == null) {
             return null;
         }
@@ -64,7 +68,7 @@ public class AblyConnection implements Channel.MessageListener,
         return instance;
     }
 
-    private AblyConnection(Context context) {
+    private PubnubConnection(Context context) {
         this.context = context;
         this.firstLoad = true;
         this.clientId = generateDeviceUUID();

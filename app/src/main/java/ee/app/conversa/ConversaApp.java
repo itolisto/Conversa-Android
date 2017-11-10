@@ -44,7 +44,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.events.MyEventBusIndex;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.PubnubConnection;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.settings.Preferences;
@@ -84,7 +84,7 @@ public class ConversaApp extends MultiDexApplication {
 		setLocalBroadcastManager();
 
 		Fresco.initialize(this);
-		AblyConnection.initAblyManager(this);
+		PubnubConnection.initAblyManager(this);
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 		initializeBranch();
@@ -105,6 +105,7 @@ public class ConversaApp extends MultiDexApplication {
 		ParseObject.registerSubclass(Account.class);
 		ParseObject.registerSubclass(Business.class);
 
+<<<<<<< HEAD
 		// Initialize Parse
 		if (BuildConfig.DEV_BUILD) {
 			Parse.initialize(new Parse.Configuration.Builder(this)
@@ -123,6 +124,19 @@ public class ConversaApp extends MultiDexApplication {
 					.build()
 			);
 		}
+=======
+		// Initialize Parse.
+		Parse.initialize(new Parse.Configuration.Builder(this)
+				//.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
+				//.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
+				//.server("https://api.conversachat.com/parse/")
+				// Localhost
+				.applicationId("b15c83")
+				.clientKey(null)
+				.server("http://192.168.1.5:1337/parse/") // The trailing slash is important.
+				.build()
+		);
+>>>>>>> pubnub
 	}
 
 	private void initializeDeveloperBuild() {
