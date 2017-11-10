@@ -43,9 +43,6 @@ public class CustomerInfoJob extends Job {
         HashMap<String, String> params = new HashMap<>();
 
         String json = ParseCloud.callFunction("getCustomerId", params);
-
-        //Logger.error(TAG, "CUSTOMER_OBJECTID: " + json);
-
         JSONObject jsonRootObject = new JSONObject(json);
 
         String objectId = jsonRootObject.optString("ob", Account.getCurrentUser().getObjectId());
@@ -59,8 +56,12 @@ public class CustomerInfoJob extends Job {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountGender(gender, false);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountBirthday(birthday, false);
         // 2. Subscribe to Customer channels
+<<<<<<< HEAD
+        AblyConnection.getInstance().subscribeToChannels();
+=======
         PubnubConnection.getInstance().subscribeToChannels();
         PubnubConnection.getInstance().subscribeToPushChannels();
+>>>>>>> pubnub
     }
 
     @Override

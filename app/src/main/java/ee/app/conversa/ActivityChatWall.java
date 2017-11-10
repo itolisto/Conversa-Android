@@ -1,7 +1,6 @@
 package ee.app.conversa;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
@@ -42,7 +40,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ee.app.conversa.adapters.MessagesAdapter;
-import ee.app.conversa.camara.ImagePickerDemo;
+import ee.app.conversa.camera.ImagePickerDemo;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.interfaces.OnMessageClickListener;
 import ee.app.conversa.management.PubnubConnection;
@@ -75,7 +73,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private RegularTextView mSubTitleTextView;
 	private RecyclerView mRvWallMessages;
 	private EditText mEtMessageText;
-	private BottomSheetDialogFragment myBottomSheet;
+	private MyBottomSheetDialogFragment myBottomSheet;
 	private ImageButton mBtnWallSend;
 	private SimpleDraweeView ivContactAvatar;
 	private MediumTextView mTitleTextView;
@@ -409,7 +407,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			case R.id.flBack:
 				onBackPressed();
 				break;
-			case R.id.btnSlideButton:
+			case R.id.btnSlideButton:;
 				myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
 				break;
 			case R.id.btnWallSend:
@@ -444,7 +442,8 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 					break;
 				}
 				case Const.CAPTURE_MEDIA: {
-					/*String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+					/*
+					String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
 					BitmapFactory.Options options = new BitmapFactory.Options();
 					options.inJustDecodeBounds = true;
 					BitmapFactory.decodeFile(path, options);
@@ -456,40 +455,27 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 							options.outHeight,
 							new File(path == null ? "" : path).length(),
 							addAsContact,
-							businessObject);String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
-					BitmapFactory.Options options = new BitmapFactory.Options();
-					options.inJustDecodeBounds = true;
-					BitmapFactory.decodeFile(path, options);
-
-					SendMessageAsync.sendImageMessage(
-							this,
-							path,
-							options.outWidth,
-							options.outHeight,
-							new File(path == null ? "" : path).length(),
-							addAsContact,
-							businessObject);*/
+							businessObject);
+					*/
 					break;
 				}
 				case Const.CAPTURE_VIDEO: {
-					/*MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+					/*
+					MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 					retriever.setDataSource(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
 					int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
 					int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
 					int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-					retriever.release();*/
+					retriever.release();
+					*/
 					break;
 
                 }
                 case ImagePickerDemo.CAMERA_CODE_ACTIVITY: {
-                    if(resultCode == Activity.RESULT_OK) {
-                        String uri = data.getStringExtra("imageUri");
-                        SendMessageAsync.sendImageMessage(this,uri,200, 200, 200 ,addAsContact, businessObject);
-
-                    }
-
+					String uri = data.getStringExtra("imageUri");
+					SendMessageAsync.sendImageMessage(this,uri,200, 200, 200 ,addAsContact, businessObject);
+					break;
                 }
-                break;
 			}
 		} else {
 			Logger.error("onActivityResult", "Error");

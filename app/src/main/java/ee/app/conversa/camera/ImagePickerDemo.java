@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ee.app.conversa.camara;
+package ee.app.conversa.camera;
 
 import android.Manifest;
 import android.app.Activity;
@@ -549,15 +549,15 @@ public class ImagePickerDemo extends AppCompatActivity implements
 
         Glide.with(this).load(uri).into(previewImage);
         saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SELECT_IMAGE_STATUS = 1;
-                   dialog.dismiss();
-                    iActivity.setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri.getPath()));
-                    iActivity.finish();
-                    //setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri));
-                    //finish();
-                }
+            @Override
+            public void onClick(View v) {
+                SELECT_IMAGE_STATUS = 1;
+                dialog.dismiss();
+                iActivity.setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri.getPath()));
+                iActivity.finish();
+                //setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri));
+                //finish();
+            }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override

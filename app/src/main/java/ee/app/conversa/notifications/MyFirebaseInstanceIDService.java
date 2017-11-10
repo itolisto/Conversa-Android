@@ -1,5 +1,10 @@
 package ee.app.conversa.notifications;
 
+<<<<<<< HEAD
+import ee.app.conversa.management.AblyConnection;
+import io.ably.lib.fcm.AblyFirebaseInstanceIdService;
+import io.ably.lib.realtime.AblyRealtime;
+=======
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -7,32 +12,24 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.management.PubnubConnection;
+>>>>>>> pubnub
 
-/**
- * Created by edgargomez on 5/16/17.
- */
+public class MyFirebaseInstanceIDService extends AblyFirebaseInstanceIdService {
 
-public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
-
-    private static final String TAG = "MyFirebaseIIDService";
-
-    /**
-     * Called if InstanceID token is updated. This may occur if the security of
-     * the previous token had been compromised. Note that this is called when the InstanceID token
-     * is initially generated so this is where you would retrieve the token.
-     */
     @Override
     public void onTokenRefresh() {
-        // Get updated InstanceID token.
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.e(TAG, "Refreshed token: " + refreshedToken);
-
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // Instance ID token to your app server.
-        sendRegistrationToServer(refreshedToken);
+        super.onTokenRefresh(getAblyRealtime());
     }
 
+<<<<<<< HEAD
+    @SuppressWarnings("ConstantConditions")
+    private AblyRealtime getAblyRealtime() {
+        try {
+            return AblyConnection.getInstance().getAblyRealtime();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+=======
     /**
      * Persist token to third-party servers.
      *
@@ -44,6 +41,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private void sendRegistrationToServer(String token) {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setPushKey(token);
         PubnubConnection.getInstance().subscribeToPushChannels();
+>>>>>>> pubnub
     }
-
 }

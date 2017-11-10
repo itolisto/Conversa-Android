@@ -54,8 +54,12 @@ public class AppActions {
             }
         }).start();
 
+<<<<<<< HEAD
+        AblyConnection.getInstance().disconnectAbly();
+=======
 
         PubnubConnection.getInstance().disconnectAbly();
+>>>>>>> pubnub
         Account.logOut();
 
         Intent goToSignIn = new Intent(context, ActivitySignIn.class);

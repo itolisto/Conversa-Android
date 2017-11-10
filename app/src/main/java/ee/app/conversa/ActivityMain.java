@@ -60,9 +60,9 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         setContentView(R.layout.activity_main);
 
         ParseUser currentUser = ParseUser.getCurrentUser();
+
         if (currentUser == null) {
-            // If to verify if deep link was opened when no session is
-            // active,
+            // Verify if deep link was opened when no session is active
             Intent go = new Intent(this, ActivitySignIn.class);
             startActivity(go);
             finish();
@@ -121,8 +121,12 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                         .getJobManager()
                         .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
             } else {
+<<<<<<< HEAD
+                AblyConnection.getInstance().subscribeToChannels();
+=======
                 PubnubConnection.getInstance().subscribeToChannels();
                 PubnubConnection.getInstance().subscribeToPushChannels();
+>>>>>>> pubnub
             }
 
             initialization();
@@ -136,7 +140,12 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
     protected void initialization() {
         super.initialization();
         mFsvSearch.setOnClickListener(this);
+<<<<<<< HEAD
+        checkForCrashes();
+        Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
+=======
 
+>>>>>>> pubnub
     }
 
     private void checkForCrashes() {

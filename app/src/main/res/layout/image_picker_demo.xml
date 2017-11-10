@@ -5,10 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    >
-
-
+    android:fitsSystemWindows="true">
 
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,8 +15,7 @@
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/primary"
-        >
+        android:background="@color/primary">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -36,9 +32,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:adjustViewBounds="true"
-            />
-
+            android:adjustViewBounds="true" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/take_picture"
@@ -50,7 +44,6 @@
             app:useCompatPadding="true"/>
 
     </RelativeLayout>
-
 
     <FrameLayout
         android:layout_width="match_parent"

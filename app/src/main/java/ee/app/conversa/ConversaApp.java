@@ -105,6 +105,26 @@ public class ConversaApp extends MultiDexApplication {
 		ParseObject.registerSubclass(Account.class);
 		ParseObject.registerSubclass(Business.class);
 
+<<<<<<< HEAD
+		// Initialize Parse
+		if (BuildConfig.DEV_BUILD) {
+			Parse.initialize(new Parse.Configuration.Builder(this)
+					//localhost
+					.applicationId("b15c83")
+					.clientKey(null)
+					//.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
+					.server("http://192.168.1.5:1337/parse/") // The trailing slash is important.
+					.build()
+			);
+		} else {
+			Parse.initialize(new Parse.Configuration.Builder(this)
+					.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
+					.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
+					.server("https://api.conversachat.com/parse/")
+					.build()
+			);
+		}
+=======
 		// Initialize Parse.
 		Parse.initialize(new Parse.Configuration.Builder(this)
 				//.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
@@ -116,10 +136,11 @@ public class ConversaApp extends MultiDexApplication {
 				.server("http://192.168.1.5:1337/parse/") // The trailing slash is important.
 				.build()
 		);
+>>>>>>> pubnub
 	}
 
 	private void initializeDeveloperBuild() {
-		if (BuildConfig.DEV_BUILD) {
+		/*if (BuildConfig.DEV_BUILD) {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 					.detectAll()
 					.penaltyLog()
@@ -128,7 +149,7 @@ public class ConversaApp extends MultiDexApplication {
 					.detectAll()
 					.penaltyLog()
 					.build());
-		}
+		}*/
 	}
 
 	private void initializeJobManager() {

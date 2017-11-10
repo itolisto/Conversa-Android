@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ee.app.conversa.camara;
+package ee.app.conversa.camera;
 
 import android.app.Dialog;
 import android.content.Context;
