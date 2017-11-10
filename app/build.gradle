@@ -60,7 +60,7 @@ android {
 }
 
 dependencies {
-    compile (name:'ably-android-1.0-debug', ext:'aar')
+    compile (name:'ably-android-1.0.1-release', ext:'aar')
     testCompile 'junit:junit:4.12'
 
     compile project(':library')

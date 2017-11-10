@@ -67,7 +67,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
                     public void onPermissionGranted() {
                         Intent intent = new Intent(mActivity, ImagePickerDemo.class);
                         intent.putExtra("picker", "single");
-                        mActivity.startActivityForResult(intent, Const.CAPTURE_MEDIA);
+                        mActivity.startActivityForResult(intent, ImagePickerDemo.CAMERA_CODE_ACTIVITY);
                     }
 
                     @Override
