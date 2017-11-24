@@ -60,9 +60,8 @@ public class CustomMessageService extends IntentService {
                  } else {
                      Logger.error(TAG, "A Job for this message already exits, skip creation");
                  }
-
-                 break;
              }
+             break;
          }
     }
 

@@ -30,23 +30,13 @@ public class ActivitySplashScreen extends AppCompatActivity {
                 }
             }, 1200);
         } else {
-            if (ConversaApp.getInstance(this).getPreferences().getShowTutorial()) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent go = new Intent(ActivitySplashScreen.this, ActivityTutorial.class);
-                        startActivity(go);
-                    }
-                }, 1200);
-            } else {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent go = new Intent(ActivitySplashScreen.this, ActivitySignIn.class);
-                        startActivity(go);
-                    }
-                }, 1200);
-            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent go = new Intent(ActivitySplashScreen.this, ActivitySignIn.class);
+                    startActivity(go);
+                }
+            }, 1200);
         }
 	}
 

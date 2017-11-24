@@ -41,13 +41,13 @@ android {
             minifyEnabled false
             buildConfigField "boolean", DEV_BUILD, "true"
             buildConfigField "boolean", JOB_LOGGER, "true"
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    'proguard-rules.pro'
         }
         release {
             minifyEnabled true
             proguardFiles = buildTypes.debug.proguardFiles
             signingConfig signingConfigs.config
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
         }
     }
     packagingOptions {
@@ -75,7 +75,6 @@ dependencies {
     compile "com.android.support:cardview-v7:$SUPPORT_LIB_VERSION"
     compile "com.android.support:appcompat-v7:$SUPPORT_LIB_VERSION"
     compile "com.android.support:recyclerview-v7:$SUPPORT_LIB_VERSION"
-    compile "com.google.android.gms:play-services-gcm:$PLAY_LIB_VERSION"
     compile "com.google.android.gms:play-services-maps:$PLAY_LIB_VERSION"
     compile "com.google.android.gms:play-services-base:$PLAY_LIB_VERSION"
     compile "com.google.android.gms:play-services-location:$PLAY_LIB_VERSION"

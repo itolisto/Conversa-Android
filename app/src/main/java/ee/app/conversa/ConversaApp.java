@@ -26,7 +26,6 @@ package ee.app.conversa;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatDelegate;
@@ -111,8 +110,8 @@ public class ConversaApp extends MultiDexApplication {
 					//localhost
 					.applicationId("b15c83")
 					.clientKey(null)
-					//.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
-					.server("http://192.168.1.5:1337/parse/") // The trailing slash is important.
+					.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
+//					.server("http://192.168.1.5:1337/parse/") // The trailing slash is important.
 					.build()
 			);
 		} else {
@@ -126,16 +125,16 @@ public class ConversaApp extends MultiDexApplication {
 	}
 
 	private void initializeDeveloperBuild() {
-		/*if (BuildConfig.DEV_BUILD) {
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-					.detectAll()
-					.penaltyLog()
-					.build());
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll()
-					.penaltyLog()
-					.build());
-		}*/
+		if (BuildConfig.DEV_BUILD) {
+//			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//					.detectAll()
+//					.penaltyLog()
+//					.build());
+//			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//					.detectAll()
+//					.penaltyLog()
+//					.build());
+		}
 	}
 
 	private void initializeJobManager() {

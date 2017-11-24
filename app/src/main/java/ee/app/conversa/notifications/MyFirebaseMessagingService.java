@@ -20,13 +20,10 @@ package ee.app.conversa.notifications;
  * limitations under the License.
  */
 
-import android.util.Log;
-
 import com.birbit.android.jobqueue.JobStatus;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import ee.app.conversa.ConversaApp;
@@ -35,7 +32,7 @@ import ee.app.conversa.utils.Logger;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyFirebaseMsgService";
+    private static final String TAG = "FirebaseMsgService";
 
     /**
      * Called when message is received.
@@ -55,10 +52,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.e(TAG, "Message data payload: " + remoteMessage.getData());
+            Logger.error(TAG, "Message data payload: " + remoteMessage.getData());
 
             try {
-                String data = remoteMessage.getData().get("message");
+                String data = remoteMessage.getData().toString();
                 JSONObject additionalData = new JSONObject(data);
                 Logger.error(TAG, "Full additionalData:\n" + additionalData.toString());
 
@@ -80,7 +77,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                     }
                 }
-            } catch (JSONException ignored) {}
+            } catch (Exception e) {
+                Logger.error(TAG, "onMessageReceived additionalData fail to parse-> " + e.getMessage());
+            }
         }
     }
 

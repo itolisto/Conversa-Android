@@ -19,7 +19,6 @@ package ee.app.conversa.camera;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -29,20 +28,15 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -68,11 +62,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 
-import ee.app.conversa.ActivityChatWall;
 import ee.app.conversa.R;
-import gun0912.tedbottompicker.GridSpacingItemDecoration;
 import gun0912.tedbottompicker.TedBottomPicker;
-import gun0912.tedbottompicker.adapter.ImageGalleryAdapter;
 
 
 /**
@@ -81,18 +72,17 @@ import gun0912.tedbottompicker.adapter.ImageGalleryAdapter;
  */
 public class ImagePickerDemo extends AppCompatActivity implements
         ActivityCompat.OnRequestPermissionsResultCallback,
-        AspectRatioFragment.Listener, View.OnClickListener {
+        AspectRatioFragment.Listener {
 
     private static final String TAG = "ImagePickerDemo";
+
     public static final int CAMERA_CODE_ACTIVITY = 193;
 
-    private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static int  SELECT_IMAGE_STATUS = 0;
 
     private static final String FRAGMENT_DIALOG = "dialog";
 
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
-
 
     private static final int[] FLASH_OPTIONS = {
             CameraView.FLASH_AUTO,
@@ -104,7 +94,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
             R.drawable.ic_flash_auto,
             R.drawable.ic_flash_off,
             R.drawable.ic_flash_on,
-
     };
 
     private static final int[] FLASH_TITLES = {
@@ -118,20 +107,8 @@ public class ImagePickerDemo extends AppCompatActivity implements
     private CameraView mCameraView;
 
     private Handler mBackgroundHandler;
-    private RecyclerView galleryView;
-
-    private ImageGalleryAdapter imageGalleryAdapter;
-
-    private Uri cameraImageUri;
-
 
     ArrayList<Uri> selectedUriList;
-    ArrayList<Uri> tempUriList;
-
-    static final int REQ_CODE_CAMERA = 1;
-    static final int REQ_CODE_GALLERY = 2;
-    static final String EXTRA_CAMERA_IMAGE_URI = "camera_image_uri";
-    static final String EXTRA_CAMERA_SELECTED_IMAGE_URI = "camera_selected_image_uri";
 
     TedBottomPicker bottomSheetDialogFragment;
     Activity iActivity;
@@ -140,8 +117,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
     private FrameLayout bottomSheetView;
 
     private String pickerType;
-    Uri selectedUri;
-
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -154,9 +129,7 @@ public class ImagePickerDemo extends AppCompatActivity implements
                     break;
                 case R.id.btn_image_preview_save:
                     //get the content of picture
-
                     break;
-
             }
         }
     };
@@ -168,7 +141,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
         mCameraView = (CameraView) findViewById(R.id.camera);
         bottomSheetView = (FrameLayout) findViewById(R.id.container);
 
-        // setRecyclerView();
         iActivity = this;
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
@@ -187,7 +159,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
-
     }
 
     @Override
@@ -196,16 +167,12 @@ public class ImagePickerDemo extends AppCompatActivity implements
         if (checkPermission()) {
             mCameraView.start();
             if (bottomSheetDialogFragment == null || !bottomSheetDialogFragment.isVisible()) {
-
                 if (pickerType.equalsIgnoreCase("single"))
                     showBottomPicker();
                 else if (pickerType.equalsIgnoreCase("multi")) {
                     showMultiBottomPicker();
                 }
-
-
             }
-
         } else {
             requestPermission();
         }
@@ -288,9 +255,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
 
             }
         });
-
-
-        //
     }
 
     @Override
@@ -421,80 +385,13 @@ public class ImagePickerDemo extends AppCompatActivity implements
                 }
             });
         }
-
     };
 
-    @Override
-    public void onClick(View v) {
-
-    }
-
-    public static class ConfirmationDialogFragment extends DialogFragment {
-
-        private static final String ARG_MESSAGE = "message";
-        private static final String ARG_PERMISSIONS = "permissions";
-        private static final String ARG_REQUEST_CODE = "request_code";
-        private static final String ARG_NOT_GRANTED_MESSAGE = "not_granted_message";
-
-        public static ConfirmationDialogFragment newInstance(@StringRes int message,
-                                                             String[] permissions, int requestCode, @StringRes int notGrantedMessage) {
-            ConfirmationDialogFragment fragment = new ConfirmationDialogFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_MESSAGE, message);
-            args.putStringArray(ARG_PERMISSIONS, permissions);
-            args.putInt(ARG_REQUEST_CODE, requestCode);
-            args.putInt(ARG_NOT_GRANTED_MESSAGE, notGrantedMessage);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Bundle args = getArguments();
-            return new AlertDialog.Builder(getActivity())
-                    .setMessage(args.getInt(ARG_MESSAGE))
-                    .setPositiveButton(android.R.string.ok,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String[] permissions = args.getStringArray(ARG_PERMISSIONS);
-                                    if (permissions == null) {
-                                        throw new IllegalArgumentException();
-                                    }
-                                    ActivityCompat.requestPermissions(getActivity(),
-                                            permissions, args.getInt(ARG_REQUEST_CODE));
-                                }
-                            })
-                    .setNegativeButton(android.R.string.cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getActivity(),
-                                            args.getInt(ARG_NOT_GRANTED_MESSAGE),
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                    .create();
-        }
-
-    }
-
-    private void setRecyclerView() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);
-        galleryView.setLayoutManager(gridLayoutManager);
-        galleryView.addItemDecoration(
-                new GridSpacingItemDecoration(gridLayoutManager.getSpanCount(), 10, false));
-    }
-
-
     private void requestPermission() {
-
-        ActivityCompat.requestPermissions(ImagePickerDemo.this,
+        ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
-
     }
 
     @Override
@@ -518,7 +415,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
                     } else {
                         Toast.makeText(ImagePickerDemo.this, "Permission Denied",
                                 Toast.LENGTH_LONG).show();
-
                     }
                 }
 
@@ -535,7 +431,6 @@ public class ImagePickerDemo extends AppCompatActivity implements
         return FirstPermissionResult == PackageManager.PERMISSION_GRANTED &&
                 SecondPermissionResult == PackageManager.PERMISSION_GRANTED;
     }
-
 
     public void imagePreview(final Uri uri) {
         final Dialog dialog = new Dialog(this, android.R.style.Theme_Light);
@@ -554,18 +449,14 @@ public class ImagePickerDemo extends AppCompatActivity implements
                 SELECT_IMAGE_STATUS = 1;
                 dialog.dismiss();
                 iActivity.setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri.getPath()));
-                iActivity.finish();
-                //setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri));
-                //finish();
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SELECT_IMAGE_STATUS =0;
+                SELECT_IMAGE_STATUS = 0;
                 dialog.dismiss();
-
-
+                iActivity.setResult(Activity.RESULT_CANCELED);
             }
         });
         dialog.show();
