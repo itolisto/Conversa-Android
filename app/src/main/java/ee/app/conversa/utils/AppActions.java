@@ -54,7 +54,6 @@ public class AppActions {
             }
         }).start();
 
-
         AblyConnection.getInstance().disconnectAbly();
         Account.logOut();
 

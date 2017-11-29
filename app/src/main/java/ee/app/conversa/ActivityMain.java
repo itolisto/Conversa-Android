@@ -60,9 +60,9 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         setContentView(R.layout.activity_main);
 
         ParseUser currentUser = ParseUser.getCurrentUser();
+
         if (currentUser == null) {
-            // If to verify if deep link was opened when no session is
-            // active,
+            // Verify if deep link was opened when no session is active
             Intent go = new Intent(this, ActivitySignIn.class);
             startActivity(go);
             finish();
@@ -122,7 +122,6 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                         .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
             } else {
                 AblyConnection.getInstance().subscribeToChannels();
-                AblyConnection.getInstance().subscribeToPushChannels();
             }
 
             initialization();
@@ -133,13 +132,6 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
     protected void initialization() {
         super.initialization();
         mFsvSearch.setOnClickListener(this);
-//        if (checkPlayServices()) {
-//            // Start IntentService to register this application with GCM.
-//            Intent intent = new Intent(this, RegistrationIntentService.class);
-//            startService(intent);
-
-
-//        }
         checkForCrashes();
         Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
     }
@@ -262,26 +254,5 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
             startActivity(intent);
         }
     }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-//    private boolean checkPlayServices() {
-//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-//        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-//        if (resultCode != ConnectionResult.SUCCESS) {
-//            if (apiAvailability.isUserResolvableError(resultCode)) {
-//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-//                        .show();
-//            } else {
-//                Log.i(TAG, "This device is not supported.");
-//                finish();
-//            }
-//            return false;
-//        }
-//        return true;
-//    }
 
 }

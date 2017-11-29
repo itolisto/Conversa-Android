@@ -63,7 +63,7 @@
         android:layout_alignStart="@id/vDivider" />
 
     <ImageView
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/ivUnread"
         android:layout_width="14dp"
         android:layout_height="14dp"

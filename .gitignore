@@ -1,3 +1,6 @@
+# Log memory errors
+*.log
+
 # built application files
 *.apk
 *.ap_
@@ -37,3 +40,4 @@ local.properties
 *.ipr
 *~
 *.swp
+app/src/main/java/ee/app/conversa/notifications/MyFirebaseInstanceIDService\.java~pubnub

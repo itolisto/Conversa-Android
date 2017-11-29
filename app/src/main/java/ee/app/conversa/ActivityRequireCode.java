@@ -3,9 +3,8 @@ package ee.app.conversa;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -14,26 +13,21 @@ import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-
-import ee.app.conversa.R;
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.view.LightTextView;
-import ee.app.conversa.view.URLSpanNoUnderline;
 
 public class ActivityRequireCode extends BaseActivity implements View.OnClickListener {
 
-
     private Button mBtnEnterCode;
     private Button mBtnGetOne;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_require_code);
         initialization();
     }
-
 
     @Override
     protected void initialization() {
@@ -46,9 +40,6 @@ public class ActivityRequireCode extends BaseActivity implements View.OnClickLis
 
         ImageView mivLanguage = (ImageView) findViewById(R.id.ivLanguage);
         mivLanguage.setOnClickListener(this);
-
-
-
 
         LightTextView mLtvClickHere = (LightTextView) findViewById(R.id.ltvTapHere);
         String text = getString(R.string.tap_here);
@@ -70,8 +61,6 @@ public class ActivityRequireCode extends BaseActivity implements View.OnClickLis
         mLtvClickHere.setMovementMethod(LinkMovementMethod.getInstance());
         mLtvClickHere.setText(styledString);
         mLtvClickHere.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -82,7 +71,6 @@ public class ActivityRequireCode extends BaseActivity implements View.OnClickLis
                 Intent intent = new Intent(this, ActivityEnterCode.class);
                 this.startActivity(intent);
                 break;
-
             }
             case R.id.btnGetOne:{
                 Intent intent = new Intent(this, ActivityGetCode.class);
@@ -92,7 +80,7 @@ public class ActivityRequireCode extends BaseActivity implements View.OnClickLis
             case R.id.ltvTapHere: {
                 Intent intent = new Intent(this, ActivityLogIn.class);
                 startActivity(intent);
-
+                break;
             }
             case R.id.ivLanguage: {
                 final int index;
@@ -127,7 +115,5 @@ public class ActivityRequireCode extends BaseActivity implements View.OnClickLis
             }
 
         }
-
-
     }
 }

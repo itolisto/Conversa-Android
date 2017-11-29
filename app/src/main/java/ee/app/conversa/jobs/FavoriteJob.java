@@ -21,7 +21,7 @@ import ee.app.conversa.utils.Logger;
 
 public class FavoriteJob extends Job {
 
-    private final String TAG = ReceiveMessageJob.class.getSimpleName();
+    private final String TAG = FavoriteJob.class.getSimpleName();
     private final String businessId;
     private final boolean favorite;
 
