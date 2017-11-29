@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.jobs.CustomerInfoJob;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.PubnubConnection;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
@@ -67,7 +67,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
             startActivity(go);
             finish();
         } else {
-            AblyConnection.getInstance().initAbly();
+            PubnubConnection.getInstance().initAbly();
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setTitle("");
@@ -121,11 +121,15 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                         .getJobManager()
                         .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
             } else {
-                AblyConnection.getInstance().subscribeToChannels();
+                PubnubConnection.getInstance().subscribeToChannels();
+                PubnubConnection.getInstance().subscribeToPushChannels();
             }
 
             initialization();
         }
+
+        Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
+        //checkForCrashes();
 	}
 
     @Override

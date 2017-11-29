@@ -38,19 +38,19 @@ import ee.app.conversa.utils.Logger;
 /**
  * Created by edgargomez on 8/17/16.
  */
-public class AblyConnection extends SubscribeCallback {
+public class PubnubConnection extends SubscribeCallback {
 
-    private final String TAG = AblyConnection.class.getSimpleName();
-    private static AblyConnection instance;
+    private final String TAG = PubnubConnection.class.getSimpleName();
+    private static PubnubConnection instance;
     private final Context context;
     private PubNub ablyRealtime;
 
     public static void initAblyManager(@NonNull Context context) {
-        instance = new AblyConnection(context);
+        instance = new PubnubConnection(context);
     }
 
     @Nullable
-    public static AblyConnection getInstance() {
+    public static PubnubConnection getInstance() {
         if (instance == null) {
             return null;
         }
@@ -58,7 +58,7 @@ public class AblyConnection extends SubscribeCallback {
         return instance;
     }
 
-    private AblyConnection(Context context) {
+    private PubnubConnection(Context context) {
         this.context = context;
     }
 
@@ -66,7 +66,7 @@ public class AblyConnection extends SubscribeCallback {
         return ablyRealtime;
     }
 
-    public void initAbly()  {
+    public void initAbly() {
         PNConfiguration pnConfiguration = new PNConfiguration();
         pnConfiguration.setSubscribeKey("sub-c-48b216f4-4131-11e5-8ea0-0619f8945a4f");
         pnConfiguration.setPublishKey("pub-c-42c67520-a6a4-4bb0-a054-809e202a2332");
@@ -91,11 +91,11 @@ public class AblyConnection extends SubscribeCallback {
                 .channels(getChannels())
                 .deviceId(ConversaApp.getInstance(context).getPreferences().getPushKey())
                 .async(new PNCallback<PNPushAddChannelResult>() {
-            @Override
-            public void onResponse(PNPushAddChannelResult result, PNStatus status) {
-                Log.e("onResponse", "Result: " + result + ". Status: " + status);
-            }
-        });
+                    @Override
+                    public void onResponse(PNPushAddChannelResult result, PNStatus status) {
+                        Log.e("onResponse", "Result: " + result + ". Status: " + status);
+                    }
+                });
     }
 
     public void disconnectAbly() {
@@ -116,9 +116,7 @@ public class AblyConnection extends SubscribeCallback {
     }
 
     /**
-     *
      * HELP METHODS
-     *
      */
     public void userHasStartedTyping(String channelName) {
         final HashMap<String, Object> params = new HashMap<>(3);
@@ -240,5 +238,4 @@ public class AblyConnection extends SubscribeCallback {
 //            }
 //        }
     }
-
 }

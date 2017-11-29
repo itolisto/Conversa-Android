@@ -43,7 +43,7 @@ import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.camera.ImagePickerDemo;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.interfaces.OnMessageClickListener;
-import ee.app.conversa.management.AblyConnection;
+import ee.app.conversa.management.PubnubConnection;
 import ee.app.conversa.messaging.MessageDeleteReason;
 import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.messaging.SendMessageAsync;
@@ -187,7 +187,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		@Override
 		public void run() {
 			Logger.error("isUserTypingRunnable", "Try to send typing ended update");
-			AblyConnection.getInstance().userHasEndedTyping(businessObject.getBusinessId());
+			PubnubConnection.getInstance().userHasEndedTyping(businessObject.getBusinessId());
 			typingFlag = false;
 		}
 	};
@@ -216,7 +216,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 				if (!typingFlag) {
 					Logger.error("isUserTypingRunnable", "Try to send typing started update");
-					AblyConnection.getInstance().userHasStartedTyping(businessObject.getBusinessId());
+					PubnubConnection.getInstance().userHasStartedTyping(businessObject.getBusinessId());
 					typingFlag = true;
 				}
 
