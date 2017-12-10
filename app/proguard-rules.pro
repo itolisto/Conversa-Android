@@ -122,3 +122,4 @@
 # HockeyApp
 -keep public class net.hockeyapp.android.utils.* { public *; }
 -dontwarn net.hockeyapp.android.utils.**
+-ignorewarnings
