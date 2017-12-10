@@ -10,6 +10,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.flurry.android.FlurryAgent;
@@ -28,29 +32,39 @@ import java.util.List;
 import java.util.Map;
 
 import ee.app.conversa.adapters.BusinessAdapter;
+import ee.app.conversa.adapters.FavsAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.interfaces.OnContactClickListener;
+import ee.app.conversa.interfaces.OnFavoriteClickListener;
+import ee.app.conversa.model.Favorite;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 
-public class ActivityBusiness extends ConversaActivity implements OnContactClickListener {
+public class ActivityFavorite extends ConversaActivity implements OnFavoriteClickListener {
 
-    private int page;
-    private boolean custom;
+    //private int page;
+    //private int mPreviousTotal;
     private boolean loadMore;
-    private String categoryId;
-    private boolean loadingPage;
-    private RecyclerView mRvBusiness;
+    //private boolean loadingPage;*/
+
+    private int visibleThreshold = 20;
+    private int currentPage = 0;
+    private int previousTotal = 0;
+    private boolean loading = false;
+
+
+    private GridView mRvBusiness;
     private RelativeLayout mRlNoConnection;
-    private BusinessAdapter mBusinessListAdapter;
+    private FavsAdapter mBusinessListAdapter;
     private AVLoadingIndicatorView mPbLoadingCategory;
+    private LinearLayout mLoadBusiness;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_business);
+        setContentView(R.layout.activity_favorites);
         checkInternetConnection = false;
         initialization();
     }
@@ -59,45 +73,65 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
     protected void initialization() {
         super.initialization();
 
-        categoryId = getIntent().getExtras().getString(Const.kObjectRowObjectIdKey);
-        custom = getIntent().getExtras().getBoolean("custom");
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarFavs);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(getIntent().getExtras().getString(Const.kClassCategory));
+            actionBar.setTitle(getResources().getString(R.string.favorites_title));
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        page = 0;
-        loadingPage = false;
+        //page = 0;
+        loading = true;
         loadMore = true;
+        //mPreviousTotal=0;*/
 
-        mRlNoConnection = (RelativeLayout) findViewById(R.id.rlNoConnection);
-        mPbLoadingCategory = (AVLoadingIndicatorView) findViewById(R.id.pbLoadingCategory);
-        mRvBusiness = (RecyclerView) findViewById(R.id.rvBusiness);
+        mRlNoConnection = (RelativeLayout) findViewById(R.id.rlNoConnectionFavs);
+        mPbLoadingCategory = (AVLoadingIndicatorView) findViewById(R.id.pbLoadingCategoryFavs);
 
-        mBusinessListAdapter = new BusinessAdapter(this, this);
-        mRvBusiness.setHasFixedSize(true);
-        mRvBusiness.setLayoutManager(new LinearLayoutManager(this));
+
+        mRvBusiness = (GridView) findViewById(R.id.gvFavoritesGrid);
+        mLoadBusiness = (LinearLayout) findViewById(R.id.rlLoadingBusiness);
+
+        mBusinessListAdapter = new FavsAdapter(this, this, mRvBusiness);
         mRvBusiness.setAdapter(mBusinessListAdapter);
-        mRvBusiness.setItemAnimator(new DefaultItemAnimator());
-        mRvBusiness.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRvBusiness.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                Logger.error("onScroll", "firstVisible:" + firstVisibleItem + " visibleItems:" + visibleItemCount + " totalItems:" + totalItemCount );
                 // 1. If load more is true retrieve more messages otherwise skip
-                if (loadMore) {
-                    final int lastVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager())
-                            .findLastCompletelyVisibleItemPosition();
-                    final int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+                /*if (loadMore) {
+                   // final int lastVisibleItem = 1;//((LinearLayoutManager)view.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                   // final int totalItemCount = 2;//view.getLayoutManager().getItemCount();
 
                     // 2. Check if app isn't checking for new messages and last visible item is on the top
-                    if (!loadingPage && lastVisibleItem == (totalItemCount - 1)) {
-                        loadingPage = true;
-                        mBusinessListAdapter.addLoad(true);
+                   // if (!loadingPage && lastVisibleItem == (totalItemCount - 1)) {
+                    //    loadingPage = true;
+                        //mBusinessListAdapter.addLoad(true);
+                    //    getBusinessByCategoryAsync();
+                    if(totalItemCount > mPreviousTotal) {
+                        mPreviousTotal = totalItemCount;
+                        page++;
+
+                        if(totalItemCount)
+                    }
+                }*/
+                // If loadMore true it's means that we can possible have more items we need to retrieve
+                if(loadMore) {
+                    if (!loading && ((firstVisibleItem + visibleItemCount) >= totalItemCount)) {
+//                        // I load the next page of gigs using a background task,
+//                        // but you can call any function here.
+                        //mBusinessListAdapter.addLoad(true);
+                        mLoadBusiness.setVisibility(View.VISIBLE);
                         getBusinessByCategoryAsync();
+
+                        //Logger.error("onScroll", "Calling for more favs");
                     }
                 }
             }
@@ -108,6 +142,7 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Logger.error("OnOptionsItemSelected", "recibido, recibido :" + item.getItemId());
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -118,29 +153,24 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
 
     private void getBusinessByCategoryAsync() {
         if (hasInternetConnection()) {
-            if (page == 0)
+            if (currentPage == 0)
                 mPbLoadingCategory.smoothToShow();
 
+            loading = true;
             HashMap<String, Object> params = new HashMap<>(2);
-            params.put("page", page);
-            params.put("categoryId", categoryId);
-            params.put("custom", custom);
-            ParseCloud.callFunctionInBackground("getCategoryBusinesses", params, new FunctionCallback<String>() {
+            params.put("skip", currentPage);
+            params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
+            ParseCloud.callFunctionInBackground("getCustomerFavs", params, new FunctionCallback<String>() {
                 @Override
                 public void done(String result, ParseException e) {
-                    if (page == 0)
+                    if (currentPage == 0)
                         mPbLoadingCategory.smoothToHide();
-
-                    if (loadingPage) {
-                        loadingPage = false;
-                        mBusinessListAdapter.addLoad(false);
-                    }
 
                     if (e != null) {
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);
                         } else {
-                            if (page == 0)
+                            if (currentPage == 0)
                                 findViewById(R.id.llNoResultsContainer).setVisibility(View.VISIBLE);
                         }
                     } else {
@@ -149,16 +179,16 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
                             int size = results.length();
 
                             if (size > 0) {
-                                List<dbBusiness> businesses = new ArrayList<>(size);
+                                List<Favorite> businesses = new ArrayList<>(size);
 
                                 for (int i = 0; i < size; i++) {
                                     JSONObject businessReg = results.getJSONObject(i);
 
-                                    dbBusiness business = new dbBusiness();
-                                    business.setBusinessId(businessReg.getString("ob"));
-                                    business.setDisplayName(businessReg.getString("dn"));
-                                    business.setConversaId(businessReg.getString("cn"));
-                                    business.setAvatarThumbFileId(businessReg.getString("av"));
+                                    Favorite business = new Favorite(
+                                            businessReg.getString("oj"),
+                                            businessReg.getString("dn"),
+                                            businessReg.getString("av")
+                                    );
 
                                     businesses.add(business);
                                 }
@@ -169,21 +199,28 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
 
                                 mBusinessListAdapter.addItems(businesses);
 
+
                                 if (mRlNoConnection.getVisibility() == View.VISIBLE) {
                                     mRlNoConnection.setVisibility(View.GONE);
                                 }
 
-                                if (page == 0) {
+                                if (loading) {
+                                    loading = false;
+                                    //mBusinessListAdapter.addLoad(false);
+                                    mLoadBusiness.setVisibility(View.GONE);
+                                }
+
+                                if (currentPage == 0) {
                                     mRvBusiness.setVisibility(View.VISIBLE);
                                 }
                             } else {
-                                if (page == 0) {
+                                if (currentPage == 0) {
                                     findViewById(R.id.llNoResultsContainer).setVisibility(View.VISIBLE);
                                 }
                                 loadMore = false;
                             }
 
-                            page++;
+                            currentPage++;
                         } catch (JSONException f) {
                             Logger.error("parseResult", f.getMessage());
                         }
@@ -197,30 +234,31 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
     }
 
     @Override
-    public void onContactClick(dbBusiness contact, View v, int position) {
-        // Check if selected business is already saved on local db
+    public void onFavoriteClick(Favorite contact, View v, int position) {
+        // Do something
+        Logger.error("OnFavoriteClick", "recibido, recibido :" + contact.getBusinessName());
+
         dbBusiness business = ConversaApp.getInstance(this)
                 .getDB()
-                .isContact(contact.getBusinessId());
+                .isContact(contact.getObjectId());
         Intent intent = new Intent(this, ActivityProfile.class);
 
         if (business == null) {
-            // Business is not on local db
             business = new dbBusiness();
-            business.setBusinessId(contact.getBusinessId());
-            business.setDisplayName(contact.getDisplayName());
-            business.setConversaId(contact.getConversaId());
+            business.setBusinessId(contact.getObjectId());
+            business.setDisplayName(contact.getBusinessName());
+            business.setConversaId("");
             intent.putExtra(Const.iExtraAddBusiness, true);
         } else {
             intent.putExtra(Const.iExtraAddBusiness, false);
         }
 
         if (TextUtils.isEmpty(business.getAvatarThumbFileId())) {
-            business.setAvatarThumbFileId(contact.getAvatarThumbFileId());
+            business.setAvatarThumbFileId(contact.getAvatarUrl());
         } else {
-            if (!business.getAvatarThumbFileId().equals(contact.getAvatarThumbFileId())) {
+            if (!business.getAvatarThumbFileId().equals(contact.getAvatarUrl())) {
                 // Update avatar
-                business.setAvatarThumbFileId(contact.getAvatarThumbFileId());
+                business.setAvatarThumbFileId(contact.getAvatarUrl());
             }
         }
 

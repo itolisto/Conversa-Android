@@ -97,8 +97,8 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
                     final String mSignInEmail = mEtSignInEmail.getText().toString();
                     final String mSignInPassword = mEtSignInPassword.getText().toString();
 
-                    final ProgressDialog progress = new ProgressDialog(this);
-                    progress.show();
+                    final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
+                    progress.setContentView(R.layout.progress_layout);
 
                     ParseUser.logInInBackground(mSignInEmail, mSignInPassword, new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {

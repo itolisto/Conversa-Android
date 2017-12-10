@@ -270,5 +270,8 @@
     <string name="message_share_code">
         The old ways to contact business are now dead. There\'s a new king in town. Conversa is here to stay. See what  all this buzz is about.  Download the app and get your early access code.  #conversachat #conversacode
     </string>
+    <string name="highlight_explore"> You can explore businesses here!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="favorites_title">Favorites</string>
 
 </resources>

@@ -22,6 +22,7 @@ public class AppActions {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+        ConversaApp.getInstance(activity).getPreferences().setGuideExplore(false);
         ConversaApp.getInstance(activity).getPreferences().setShowTutorial(false);
         ConversaApp.getInstance(activity).getPreferences().setUploadQuality(1);
         ConversaApp.getInstance(activity).getPreferences().setDownloadAutomatically(false);

@@ -1,5 +1,6 @@
 package ee.app.conversa;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +12,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
+import com.flurry.android.FlurryAgent;
 import com.parse.ParseUser;
 import com.taplytics.sdk.Taplytics;
 
@@ -31,6 +35,10 @@ import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.view.MediumTextView;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
+import tourguide.tourguide.Overlay;
+import tourguide.tourguide.Pointer;
+import tourguide.tourguide.ToolTip;
+import tourguide.tourguide.TourGuide;
 
 public class ActivityMain extends ConversaActivity implements View.OnClickListener {
 
@@ -38,10 +46,12 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
     private final String TAG = ActivityMain.class.getSimpleName();
     private ViewPager mViewPager;
     private boolean resetNotifications;
-
+    private TourGuide mTourGuideHandler;
+    //private boolean hasTutorialBeenDisplay;
     private ImageView mIvConversa;
-    private CardView mFsvSearch;
+    private RelativeLayout mRlCategoryToolbar;
     private MediumTextView mRtvTitle;
+    private Activity mActivity;
 
     private final int[] tabIcons = {
             R.drawable.tab_chat_inactive,
@@ -58,6 +68,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mActivity = this;
 
         ParseUser currentUser = ParseUser.getCurrentUser();
 
@@ -71,7 +82,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             toolbar.setTitle("");
-            mFsvSearch = (CardView) toolbar.findViewById(R.id.fsvSearch);
+            mRlCategoryToolbar = (RelativeLayout) toolbar.findViewById(R.id.rlCategoryToolbar);
             mIvConversa = (ImageView) toolbar.findViewById(R.id.ivConversa);
             mRtvTitle = (MediumTextView) toolbar.findViewById(R.id.rtvTitle);
             setSupportActionBar(toolbar);
@@ -96,6 +107,16 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                     mViewPager.setCurrentItem(p);
                     supportInvalidateOptionsMenu();
                     tab.setIcon(tabSelectedIcons[p]);
+                    if (p == 1) { // is tab explore is selected.
+                        if (mTourGuideHandler != null) {
+                            mTourGuideHandler.cleanUp();
+                            mTourGuideHandler = TourGuide.init((mActivity)).with(TourGuide.Technique.Click)
+                                    .setPointer(new Pointer())
+                                    .setToolTip(new ToolTip().setTitle(getString(R.string.tutorial_title_one)).setDescription(getString(R.string.highlight_explore)))
+                                    .setOverlay(new Overlay())
+                                    .playOn(findViewById(R.id.fsvSearch));
+                        }
+                    }
                 }
 
                 @Override
@@ -114,6 +135,15 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                 public void onTabReselected(TabLayout.Tab tab) { }
             });
 
+            if (!ConversaApp.getInstance(this).getPreferences().getGuideExplore()) {
+                View exploreTab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1);
+                mTourGuideHandler = TourGuide.init(this).with(TourGuide.Technique.Click)
+                        .setPointer(new Pointer())
+                        .setToolTip(new ToolTip().setTitle(getString(R.string.tutorial_title_one)).setDescription(getString(R.string.highlight_explore)))
+                        .setOverlay(new Overlay())
+                        .playOn(exploreTab);
+            }
+
             // 1. Subscribe to Customer channels if not subscribed already
             if (ConversaApp.getInstance(this).getPreferences().getAccountCustomerId().isEmpty()) {
                 // 1. Get Customer Id
@@ -131,7 +161,8 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
     @Override
     protected void initialization() {
         super.initialization();
-        mFsvSearch.setOnClickListener(this);
+        findViewById(R.id.fsvSearch).setOnClickListener(this);
+        findViewById(R.id.ivFavs).setOnClickListener(this);
         checkForCrashes();
         Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
     }
@@ -218,18 +249,18 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         switch (mViewPager.getCurrentItem()) {
             case 1: {
                 mIvConversa.setVisibility(View.GONE);
-                mFsvSearch.setVisibility(View.VISIBLE);
+                mRlCategoryToolbar.setVisibility(View.VISIBLE);
                 mRtvTitle.setVisibility(View.GONE);
                 break;
             }
             case 0: {
-                mFsvSearch.setVisibility(View.GONE);
+                mRlCategoryToolbar.setVisibility(View.GONE);
                 mIvConversa.setVisibility(View.VISIBLE);
                 mRtvTitle.setVisibility(View.GONE);
                 break;
             }
             default: {
-                mFsvSearch.setVisibility(View.GONE);
+                mRlCategoryToolbar.setVisibility(View.GONE);
                 mIvConversa.setVisibility(View.GONE);
                 mRtvTitle.setVisibility(View.VISIBLE);
                 break;
@@ -250,7 +281,18 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.fsvSearch) {
-            Intent intent = new Intent(getApplicationContext(), ActivitySearch.class);
+            if (mTourGuideHandler != null) {
+                mTourGuideHandler.cleanUp();
+                mTourGuideHandler = null;
+                ConversaApp.getInstance(this).getPreferences().setGuideExplore(true);
+            } else {
+                Intent intent = new Intent(getApplicationContext(), ActivitySearch.class);
+                startActivity(intent);
+            }
+        } else if (view.getId() == R.id.ivFavs) {
+            // Accion
+            Intent intent = new Intent(getApplicationContext(), ActivityFavorite.class);
+            FlurryAgent.logEvent("user_favorites_selected");
             startActivity(intent);
         }
     }

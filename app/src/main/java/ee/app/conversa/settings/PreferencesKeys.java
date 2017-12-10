@@ -26,4 +26,5 @@ public class PreferencesKeys {
     public static final String ACCOUNT_DISPLAY_NAME_KEY = "sett_account_display_name_key";
     public static final String ACCOUNT_GENDER_KEY = "sett_account_gender_key";
     public static final String ACCOUNT_BIRTHDAY_KEY = "sett_account_birthday_key";
+    public static final String GUIDE_EXPLORE_KEY = "guide_expore__key";
 }

@@ -363,8 +363,7 @@ public class ImagePickerDemo extends AppCompatActivity implements
                             imageFileName);
 
                     OutputStream os = null;
-                    Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-                            getApplicationContext().getPackageName() + ".provider", file);
+                    Uri photoURI = Uri.fromFile(file);
 
                     bottomSheetDialogFragment.onActivityResultCamera(photoURI);
                     try {
@@ -449,6 +448,7 @@ public class ImagePickerDemo extends AppCompatActivity implements
                 SELECT_IMAGE_STATUS = 1;
                 dialog.dismiss();
                 iActivity.setResult(Activity.RESULT_OK, new Intent().putExtra("imageUri", uri.getPath()));
+                iActivity.finish();
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -457,6 +457,7 @@ public class ImagePickerDemo extends AppCompatActivity implements
                 SELECT_IMAGE_STATUS = 0;
                 dialog.dismiss();
                 iActivity.setResult(Activity.RESULT_CANCELED);
+                iActivity.finish();
             }
         });
         dialog.show();

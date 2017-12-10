@@ -16,6 +16,8 @@
         android:layout_marginRight="10dp"
         android:layout_marginEnd="10dp"
         fresco:fadeDuration="300"
+        fresco:roundingBorderWidth="1dp"
+        fresco:roundingBorderColor="@color/green"
         fresco:actualImageScaleType="centerInside"
         fresco:placeholderImage="@drawable/ic_business_default"
         fresco:placeholderImageScaleType="centerInside"

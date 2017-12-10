@@ -75,6 +75,10 @@ public class Preferences {
         return getBooleanPreference(PreferencesKeys.TUTORIAL_KEY, true);
     }
 
+    public boolean getGuideExplore(){
+        return getBooleanPreference(PreferencesKeys.GUIDE_EXPLORE_KEY,false);
+    }
+
     public String getAccountCustomerId() {
         return getStringPreference(PreferencesKeys.ACCOUNT_CUSTOMER_ID_KEY, "");
     }
@@ -90,6 +94,7 @@ public class Preferences {
     public String getAccountBirthday() {
         return getStringPreference(PreferencesKeys.ACCOUNT_BIRTHDAY_KEY, "");
     }
+
 
     public String getLanguage() {
         return getStringPreference(PreferencesKeys.MAIN_LANGUAGE_KEY, "es");
@@ -160,6 +165,8 @@ public class Preferences {
         return getBooleanPreference(PreferencesKeys.NOTIFICATION_INAPP_PREVIEW_KEY, true);
     }
 
+
+
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
@@ -172,6 +179,12 @@ public class Preferences {
     public void setShowTutorial(boolean value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(PreferencesKeys.TUTORIAL_KEY, value);
+        editor.apply();
+    }
+
+    public void setGuideExplore(boolean value){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PreferencesKeys.GUIDE_EXPLORE_KEY, value);
         editor.apply();
     }
 
