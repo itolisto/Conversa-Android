@@ -20,6 +20,7 @@ import ee.app.conversa.holders.NHeaderViewHolder;
 import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.interfaces.OnFavoriteClickListener;
 import ee.app.conversa.model.Favorite;
+import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.MediumTextView;
 
@@ -63,8 +64,6 @@ public class FavsAdapter extends BaseAdapter implements AdapterView.OnItemClickL
         if (convertView == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
             convertView = layoutInflater.inflate(R.layout.favorite_item, null);
-        } else {
-            convertView.setOnClickListener(null);
         }
 
         final SimpleDraweeView imageView = (SimpleDraweeView) convertView.findViewById(R.id.sdvFavoriteImage);
@@ -97,6 +96,7 @@ public class FavsAdapter extends BaseAdapter implements AdapterView.OnItemClickL
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Logger.error("FAVSADAPER", "LocalListener: " + localListener);
         if (localListener != null) {
             localListener.onFavoriteClick( (Favorite)mFavorites.get(position), view, position);
         }

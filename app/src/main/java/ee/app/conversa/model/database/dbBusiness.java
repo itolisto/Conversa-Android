@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.View;
 
 import ee.app.conversa.actions.ContactAction;
 import ee.app.conversa.contact.ContactIntentService;
@@ -50,11 +51,13 @@ public class dbBusiness implements Parcelable {
     private boolean mMuted;
     private long mRecent;
     private long mCreated;
+    private int mAvatarVisibility;
 
     public dbBusiness() {
         this.mId = -1;
         this.mCreated = System.currentTimeMillis();
         this.mRecent = this.mCreated;
+        this.mAvatarVisibility = View.VISIBLE;
     }
 
     public long getId() { return mId; }
@@ -68,6 +71,7 @@ public class dbBusiness implements Parcelable {
     public boolean isMuted() { return mMuted; }
     public long getRecent() { return mRecent; }
     public long getCreated() { return mCreated; }
+    public int getmAvatarVisibility() {return mAvatarVisibility;}
 
     public void setId(long mId) { this.mId = mId; }
     public void setBusinessId(String mBusinessId) { this.mBusinessId = mBusinessId; }
@@ -79,6 +83,7 @@ public class dbBusiness implements Parcelable {
     public void setMuted(boolean mMuted) { this.mMuted = mMuted; }
     public void setRecent(long mRecent) { this.mRecent = mRecent; }
     public void setCreated(long mCreated) { this.mCreated = mCreated; }
+    public void setAvatarVisibility(int visibility) { this.mAvatarVisibility = visibility; }
 
     /* ******************************************************************************************* */
     /* ******************************************************************************************* */

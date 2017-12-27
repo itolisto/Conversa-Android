@@ -38,12 +38,12 @@
         <ImageView
             android:id="@+id/ivFavs"
             android:src="@drawable/big_heart"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginLeft="7dp"
             android:layout_marginStart="7dp"
-            android:layout_marginRight="7dp"
-            android:layout_marginEnd="7dp"
+            android:layout_marginRight="14dp"
+            android:layout_marginEnd="14dp"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"/>

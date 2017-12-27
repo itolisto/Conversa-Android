@@ -161,7 +161,7 @@ public class ReceiveMessageJob extends Job {
 
         if (dbmessage.getId() == -1) {
             Logger.error(TAG, "Error guardando Message");
-            return;
+       //     return;
         }
 
         if (Foreground.get().isBackground()) {

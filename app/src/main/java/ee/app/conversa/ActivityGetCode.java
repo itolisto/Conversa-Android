@@ -187,8 +187,8 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, ActivityRequireCode.class);
-        startActivity(intent);
+       // Intent intent = new Intent(this, ActivityRequireCode.class);
+        //startActivity(intent);
     }
 
     public class ArrayAdapterWithIcon extends ArrayAdapter<String> {

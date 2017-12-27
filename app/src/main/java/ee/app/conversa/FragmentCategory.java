@@ -172,7 +172,9 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
                     JSONObject object = results.getJSONObject(i);
 
                     HeaderItem headerItem = new HeaderItem(String.valueOf(i), object.optString("tn", ""));
+
                     mAdapter.addSection(headerItem);
+
 
                     JSONArray categories = object.getJSONArray("cat");
                     int categoriesSize = categories.length();
@@ -190,6 +192,7 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
                                     category.optBoolean("cs", false)
                                 )
                         );
+
                         mAdapter.addItemToSection(categoryReg, headerItem, h);
                     }
                 }
@@ -215,6 +218,7 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
         if (v.getId() == R.id.btnRetryResult) {
             getCategoriesAsync();
         }
+        //if( v.getId() == R.id.)
     }
 
 }

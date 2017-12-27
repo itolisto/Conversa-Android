@@ -2,7 +2,9 @@ package ee.app.conversa.holders;
 
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -21,6 +23,7 @@ public class BusinessViewHolder extends BaseHolder {
     public TextView tvBusiness;
     public TextView tvConversaId;
     public SimpleDraweeView sdvCategoryImage;
+    public RelativeLayout mrlBusinessLayout;
     public Object object;
 
     private OnContactClickListener localListener;
@@ -31,6 +34,8 @@ public class BusinessViewHolder extends BaseHolder {
         this.tvBusiness = (TextView) itemView.findViewById(R.id.mtvDisplayName);
         this.tvConversaId = (TextView) itemView.findViewById(R.id.ltvConversaId);
         this.sdvCategoryImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvBusinessImage);
+        this.mrlBusinessLayout = (RelativeLayout)  itemView.findViewById(R.id.rlBusinessItem) ;
+
 
         itemView.setOnClickListener(this);
     }
@@ -41,15 +46,38 @@ public class BusinessViewHolder extends BaseHolder {
 
         dbBusiness business = (dbBusiness) object;
         this.tvBusiness.setText(business.getDisplayName());
-        this.tvConversaId.setText(business.getFormattedConversaId());
 
-        Uri uri = Utils.getUriFromString(business.getAvatarThumbFileId());
 
-        if (uri == null) {
-            uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
+
+
+        if (business.getmAvatarVisibility() == View.VISIBLE) {
+
+            this.sdvCategoryImage.setVisibility(View.VISIBLE);
+            //this.tvConversaId.setVisibility(View.VISIBLE);
+            this.mrlBusinessLayout.getLayoutParams().height =160;
+            this.mrlBusinessLayout.requestLayout();
+            this.tvConversaId.setText(business.getFormattedConversaId());
+
+            Uri uri = Utils.getUriFromString(business.getAvatarThumbFileId());
+
+            if (uri == null) {
+                uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
+                this.sdvCategoryImage.setImageURI(uri);
+            }
+            this.sdvCategoryImage.setImageURI(uri);
         }
+        else {
+            this.sdvCategoryImage.setVisibility(View.INVISIBLE);
+            //this.tvConversaId.setVisibility(View.GONE);
+            this.mrlBusinessLayout.getLayoutParams().height =90;
 
-        this.sdvCategoryImage.setImageURI(uri);
+            this.mrlBusinessLayout.requestLayout();
+            this.tvConversaId.setText(business.getConversaId());
+
+
+            }
+
+
     }
 
     @Override

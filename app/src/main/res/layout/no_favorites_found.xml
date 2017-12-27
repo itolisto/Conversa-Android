@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/rlNoChats"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <ImageView
+                android:id="@+id/tvNoUsers"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:src="@drawable/broken_heart_trans___copia"
+                android:layout_marginBottom="7dp"
+                android:scaleType="fitCenter" />
+
+            <ee.app.conversa.view.MediumTextView
+                android:id="@+id/tvNoMessages"
+                android:text="@string/no_Favorites"
+                android:textColor="#AAAAAA"
+                android:textSize="22sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ee.app.conversa.view.LightTextView
+                android:id="@+id/tvNoMessagesDescription"
+                android:text="@string/no_favorites_message"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_marginTop="14dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:textSize="12sp"
+                android:layout_marginTop="14dp"
+                android:id="@+id/btnStartBrowsingF"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:paddingEnd="12dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingStart="12dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:textAllCaps="false"
+                android:text="@string/start_browsing"
+                android:textStyle="bold"
+                android:textColor="@drawable/textcolor_green_state"
+                android:background="@drawable/button_shape_green_border" />
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/lvUsers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@null"
+            android:clipToPadding="true"
+            android:listSelector="@android:color/transparent"
+            android:overScrollMode="ifContentScrolls"
+            android:visibility="gone" />
+
+</android.support.constraint.ConstraintLayout>

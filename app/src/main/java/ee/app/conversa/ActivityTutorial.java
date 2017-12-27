@@ -120,7 +120,7 @@ public class ActivityTutorial extends BaseActivity {
             if (currentUser != null) {
                 mContext.startActivity(new Intent(mContext, ActivityMain.class));
             } else {
-                mContext.startActivity(new Intent(mContext, ActivityRequireCode.class));
+                mContext.startActivity(new Intent(mContext, ActivitySignIn.class));
             }
         }
     }

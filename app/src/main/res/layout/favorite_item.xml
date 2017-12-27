@@ -2,18 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
-    android:layout_width="110dp"
-    android:layout_height="110dp"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
     android:clipToPadding="false" >
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/sdvFavoriteImage"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         fresco:fadeDuration="300"
-        fresco:roundingBorderWidth="1dp"
-        fresco:roundingBorderColor="@color/green"
+        fresco:roundingBorderWidth="0.3dp"
+        fresco:roundingBorderColor="@color/light_gray"
         fresco:actualImageScaleType="centerInside"
         fresco:placeholderImage="@drawable/ic_business_default"
         fresco:placeholderImageScaleType="centerInside"
@@ -24,16 +25,16 @@
         fresco:roundAsCircle="true" />
 
     <ee.app.conversa.view.MediumTextView
+        android:minLines="2"
         android:maxLines="2"
         android:ellipsize="end"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:layout_marginTop="7dp"
         android:textAlignment="center"
         android:id="@+id/mtvFavoriteDisplayName"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/sdvFavoriteImage"
         android:layout_width="wrap_content"
-        android:layout_alignBaseline="@id/sdvFavoriteImage"
         android:layout_height="wrap_content"
         android:textColor="@color/black" />
 

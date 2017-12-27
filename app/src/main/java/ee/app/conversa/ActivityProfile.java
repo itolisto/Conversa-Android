@@ -217,13 +217,17 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         mMtvBusinessName.setText(businessObject.getDisplayName());
         mBtvConversaId.setText(businessObject.getFormattedConversaId());
 
-        Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
-        if (uri == null) {
-            uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
-        }
+        //if (businessObject.getmAvatarVisibility() == View.VISIBLE) {
+            Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
-        mSdvBusinessImage.setImageURI(uri);
+            if (uri == null) {
+                uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
+            }
+            mSdvBusinessImage.setImageURI(uri);
+        //}else {
+            //mSdvBusinessImage.setVisibility(View.GONE);
+        //}
 
         mBtnFavorite.setOnClickListener(this);
         findViewById(R.id.btnStartChat).setOnClickListener(this);

@@ -1,6 +1,7 @@
 package ee.app.conversa.extendables;
 
 import android.content.Intent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -152,6 +153,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
         // Show in-app notification
         if (mRlPushNotification != null) {
             InAppNotification.make(this, mRlPushNotification).show(response);
+           // mRlPushNotification.setVisibility(View.VISIBLE);
         }
     }
 

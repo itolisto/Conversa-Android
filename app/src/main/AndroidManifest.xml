@@ -193,12 +193,9 @@
 
         <!-- *************************************HOCKEY APP*********************************************** -->
         <meta-data
-            android:name="net.hockeyapp.android.appIdentifier"
-            android:value="9ca43ca3e2504597a27b6efc969f5fb3" />
-        <meta-data
-            android:name="net.hockeyapp.android.appSecret"
-            android:value="d4877799232376e37c0bc33af10bbdc7" />
-
+            android:name="io.fabric.ApiKey"
+            android:value="617c5ff8d2055123134c25a4b496d078123ef1da"
+            />
         <!-- **************************************************************************************** -->
         <receiver android:name=".management.ConnectionChangeReceiver">
             <intent-filter>

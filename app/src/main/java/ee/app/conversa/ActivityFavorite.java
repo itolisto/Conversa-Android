@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -49,7 +50,7 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
     private boolean loadMore;
     //private boolean loadingPage;*/
 
-    private int visibleThreshold = 20;
+    //private int visibleThreshold = 20;
     private int currentPage = 0;
     private int previousTotal = 0;
     private boolean loading = false;
@@ -60,6 +61,7 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
     private FavsAdapter mBusinessListAdapter;
     private AVLoadingIndicatorView mPbLoadingCategory;
     private LinearLayout mLoadBusiness;
+    private Button mStartBrowsingf;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,9 +95,19 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
 
         mRvBusiness = (GridView) findViewById(R.id.gvFavoritesGrid);
         mLoadBusiness = (LinearLayout) findViewById(R.id.rlLoadingBusiness);
+        mStartBrowsingf = (Button)findViewById(R.id.btnStartBrowsingF);
+
 
         mBusinessListAdapter = new FavsAdapter(this, this, mRvBusiness);
         mRvBusiness.setAdapter(mBusinessListAdapter);
+        mStartBrowsingf.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Logger.error("onClick","clickover");
+                finish();
+            }
+        });
+
         mRvBusiness.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {

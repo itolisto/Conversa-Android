@@ -179,8 +179,8 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
                         user.put(Const.kUserGender, 1);
                     }
 
-                    final ProgressDialog progress = new ProgressDialog(this);
-                    progress.show();
+                    final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
+                    progress.setContentView(R.layout.progress_layout);
 
                     user.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {

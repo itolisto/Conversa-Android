@@ -7,6 +7,9 @@
     android:layout_width="match_parent"
     tools:context="ee.app.conversa.ActivityMain">
 
+
+
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/ablToolbar"
         android:layout_width="match_parent"
@@ -35,13 +38,19 @@
             style="@style/MyCustomTabLayout" />
     </android.support.design.widget.AppBarLayout>
 
+
+
+
     <include layout="@layout/no_internet_notification"
         android:id="@+id/rlNoInternetNotification"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 
     <include layout="@layout/push_notification"
         android:id="@+id/rlPushNotification"
-        android:visibility="gone" />
+        android:visibility="invisible"
+
+        />
+
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"

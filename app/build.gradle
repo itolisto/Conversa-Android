@@ -2,6 +2,11 @@ apply plugin: 'com.android.application'
 
 apply from: 'dependencies_android.gradle'
 apply from: 'dependencies.gradle'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 ext {
     SUPPORT_LIB_VERSION = '25.4.0'
@@ -89,7 +94,6 @@ dependencies {
     compile 'com.parse:parse-android:1.16.3'
     compile 'com.facebook.fresco:fresco:1.5.0'
     compile 'com.parse.bolts:bolts-android:1.4.0'
-    compile 'net.hockeyapp.android:HockeySDK:5.0.3'
     compile 'eu.davidea:flexible-adapter:5.0.0-rc1'
     compile 'com.flurry.android:analytics:8.0.2@aar'
     compile 'com.github.jd-alexander:LikeButton:0.2.1'
@@ -97,6 +101,10 @@ dependencies {
     compile 'com.github.arimorty:floatingsearchview:2.1.1'
     compile 'de.psdev.licensesdialog:licensesdialog:1.8.3'
     compile 'com.afollestad.material-dialogs:core:0.9.2.3'
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+        transitive = true;
+    }
 
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.chaos.view:pinview:1.1.0'

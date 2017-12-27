@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlBusinessItem"
     android:background="@android:color/white"
     android:layout_width="match_parent"
     android:layout_height="80dp"
@@ -16,8 +17,8 @@
         android:layout_marginRight="10dp"
         android:layout_marginEnd="10dp"
         fresco:fadeDuration="300"
-        fresco:roundingBorderWidth="1dp"
-        fresco:roundingBorderColor="@color/green"
+        fresco:roundingBorderWidth="0.3dp"
+        fresco:roundingBorderColor="@color/light_gray"
         fresco:actualImageScaleType="centerInside"
         fresco:placeholderImage="@drawable/ic_business_default"
         fresco:placeholderImageScaleType="centerInside"

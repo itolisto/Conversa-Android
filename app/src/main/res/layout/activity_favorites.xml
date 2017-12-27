@@ -11,8 +11,49 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize">
 
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/pbLoadingCategoryFavs"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            style="@style/AVLoadingIndicatorView"
+            app:indicatorName="BallPulseIndicator"
+            app:indicatorColor="@color/no_connection_background" />
+        <include
+            layout="@layout/no_favorites_found"
+            android:visibility="gone"
+            android:id="@+id/llNoResultsContainer"
+            ></include>
+
+        <GridView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:layout_marginEnd="7dp"
+            android:layout_marginRight="7dp"
+            android:paddingTop="25dp"
+            android:clipToPadding="false"
+            android:id="@+id/gvFavoritesGrid"
+
+            android:numColumns="3"
+            android:verticalSpacing="20dp"
+            android:horizontalSpacing="20dp"/>
+
+        <include
+            layout="@layout/loader_item"
+            android:id="@+id/rlLoadingBusiness"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:visibility="gone" />
+
         <RelativeLayout
             android:visibility="gone"
+            android:background="@color/white"
             android:id="@+id/rlNoConnectionFavs"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -42,39 +83,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </RelativeLayout>
-
-        <com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/pbLoadingCategoryFavs"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:visibility="gone"
-            style="@style/AVLoadingIndicatorView"
-            app:indicatorName="BallPulseIndicator"
-            app:indicatorColor="@color/no_connection_background" />
-
-
-
-        <GridView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            android:id="@+id/gvFavoritesGrid"
-            android:numColumns="3"
-            android:verticalSpacing="7dp"/>
-
-
-
-    <include
-        layout="@layout/loader_item"
-        android:id="@+id/rlLoadingBusiness"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:visibility="gone"
-        />
 
     </RelativeLayout>
 

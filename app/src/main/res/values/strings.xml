@@ -270,8 +270,14 @@
     <string name="message_share_code">
         The old ways to contact business are now dead. There\'s a new king in town. Conversa is here to stay. See what  all this buzz is about.  Download the app and get your early access code.  #conversachat #conversacode
     </string>
-    <string name="highlight_explore"> You can explore businesses here!</string>
+    <string name="highlight_explore">Search and find businesses here</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="favorites_title">Favorites</string>
+    <string name="no_Favorites">You don\'t have favorites yet :(</string>
+    <string name="no_favorites_message">Start to explore and find your\nfavorites business</string>
+    <string name="conversa_agent_cell">Didn\'t find what your looking for?</string>
+    <string name="conversa_agent_subtitle">Chat with a Conversa agent</string>
+    <string name="guide_two_title">Something specific?</string>
+    <string name="guide_two_description">With the search bar find businesess quicker</string>
 
 </resources>

@@ -20,7 +20,10 @@ import com.flurry.android.FlurryAgent;
 import com.parse.ParseUser;
 import com.taplytics.sdk.Taplytics;
 
-import net.hockeyapp.android.CrashManager;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
+
+
 
 import org.json.JSONObject;
 
@@ -70,6 +73,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         setContentView(R.layout.activity_main);
         mActivity = this;
 
+        Fabric.with(this, new Crashlytics());
         ParseUser currentUser = ParseUser.getCurrentUser();
 
         if (currentUser == null) {
@@ -112,7 +116,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                             mTourGuideHandler.cleanUp();
                             mTourGuideHandler = TourGuide.init((mActivity)).with(TourGuide.Technique.Click)
                                     .setPointer(new Pointer())
-                                    .setToolTip(new ToolTip().setTitle(getString(R.string.tutorial_title_one)).setDescription(getString(R.string.highlight_explore)))
+                                    .setToolTip(new ToolTip().setTitle(getResources().getString(R.string.guide_two_title)).setDescription(getResources().getString(R.string.guide_two_description)))
                                     .setOverlay(new Overlay())
                                     .playOn(findViewById(R.id.fsvSearch));
                         }
@@ -163,13 +167,11 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         super.initialization();
         findViewById(R.id.fsvSearch).setOnClickListener(this);
         findViewById(R.id.ivFavs).setOnClickListener(this);
-        checkForCrashes();
+
         Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
     }
 
-    private void checkForCrashes() {
-        CrashManager.register(this);
-    }
+
 
     @Override
     public void onStart() {

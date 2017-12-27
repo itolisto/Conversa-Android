@@ -264,6 +264,12 @@
     <string name="message_share_code">
         Las anticuadas formas de comunicación con empresas han muerto. Hay un nuevo rey en la ciudad. Conversa llego para quedarse.  Ve de que se trata. Descarga la app y solicita tu código de acceso.  #conversachat #conversacode
     </string>
-    <string name="highlight_explore"> Puedes explorar los negocios aca!</string>
+    <string name="highlight_explore">Busca y encuentra las empresas aquí</string>
 <string name="favorites_title">Favoritos</string>
+    <string name="no_Favorites">Aún no tienes favoritos :(</string>
+    <string name="no_favorites_message">Empieza a explorar y encuentra tus\n empresas favoritas</string>
+    <string name="conversa_agent_cell">¿No encontraste lo que buscabas?</string>
+    <string name="conversa_agent_subtitle">Chatea con un agente Conversa</string>
+    <string name="guide_two_title">¿Algo más específico?</string>
+    <string name="guide_two_description">Encuentra empresas super rápido con la barra de búsqueda</string>
 </resources>

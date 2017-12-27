@@ -155,12 +155,20 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
                                     JSONObject businessReg = results.getJSONObject(i);
 
                                     dbBusiness business = new dbBusiness();
+
                                     business.setBusinessId(businessReg.getString("ob"));
                                     business.setDisplayName(businessReg.getString("dn"));
                                     business.setConversaId(businessReg.getString("cn"));
                                     business.setAvatarThumbFileId(businessReg.getString("av"));
 
-                                    businesses.add(business);
+                                    if (businessReg.has("fx")) {
+                                        business.setDisplayName(getResources().getString(R.string.conversa_agent_cell));
+                                        business.setConversaId(getResources().getString(R.string.conversa_agent_subtitle));
+                                        businesses.add(0, business);
+                                        business.setAvatarVisibility(View.INVISIBLE);
+                                    }
+                                    else
+                                    {   businesses.add(business);}
                                 }
 
                                 if (size < 20) {
