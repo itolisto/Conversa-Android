@@ -2,8 +2,9 @@ package ee.app.conversa.holders;
 
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,22 +21,23 @@ import ee.app.conversa.utils.Utils;
 
 public class BusinessViewHolder extends BaseHolder {
 
-    public TextView tvBusiness;
-    public TextView tvConversaId;
-    public SimpleDraweeView sdvCategoryImage;
-    public RelativeLayout mrlBusinessLayout;
-    public Object object;
+    private View vDividerTwo;
+    private TextView tvBusiness;
+    private TextView tvConversaId;
+    private SimpleDraweeView sdvCategoryImage;
+    private RelativeLayout mrlBusinessLayout;
+    private Object object;
 
     private OnContactClickListener localListener;
 
     public BusinessViewHolder(View itemView, AppCompatActivity activity) {
         super(itemView, activity);
 
+        this.vDividerTwo = itemView.findViewById(R.id.vDividerTwo);
         this.tvBusiness = (TextView) itemView.findViewById(R.id.mtvDisplayName);
         this.tvConversaId = (TextView) itemView.findViewById(R.id.ltvConversaId);
         this.sdvCategoryImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvBusinessImage);
         this.mrlBusinessLayout = (RelativeLayout)  itemView.findViewById(R.id.rlBusinessItem) ;
-
 
         itemView.setOnClickListener(this);
     }
@@ -45,17 +47,19 @@ public class BusinessViewHolder extends BaseHolder {
         this.localListener = localListener;
 
         dbBusiness business = (dbBusiness) object;
-        this.tvBusiness.setText(business.getDisplayName());
 
+        if (business.getAvatarVisibility() == View.VISIBLE) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)this.vDividerTwo.getLayoutParams();
+            params.leftMargin = Utils.dpToPixels(activity, 84);
+//            params.setMargins(Utils.dpToPixels(activity, 84), 0, 0, 0);
+//            this.vDividerTwo.setLayoutParams(params);
+            this.vDividerTwo.requestLayout();
 
-
-
-        if (business.getmAvatarVisibility() == View.VISIBLE) {
+            this.mrlBusinessLayout.getLayoutParams().height = Utils.dpToPixels(activity, 80);
+            this.mrlBusinessLayout.requestLayout();
 
             this.sdvCategoryImage.setVisibility(View.VISIBLE);
-            //this.tvConversaId.setVisibility(View.VISIBLE);
-            this.mrlBusinessLayout.getLayoutParams().height =160;
-            this.mrlBusinessLayout.requestLayout();
+            this.tvBusiness.setText(business.getDisplayName());
             this.tvConversaId.setText(business.getFormattedConversaId());
 
             Uri uri = Utils.getUriFromString(business.getAvatarThumbFileId());
@@ -64,20 +68,22 @@ public class BusinessViewHolder extends BaseHolder {
                 uri = Utils.getDefaultImage(activity, R.drawable.ic_business_default);
                 this.sdvCategoryImage.setImageURI(uri);
             }
+
             this.sdvCategoryImage.setImageURI(uri);
-        }
-        else {
-            this.sdvCategoryImage.setVisibility(View.INVISIBLE);
-            //this.tvConversaId.setVisibility(View.GONE);
-            this.mrlBusinessLayout.getLayoutParams().height =90;
+        } else {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)this.vDividerTwo.getLayoutParams();
+            params.leftMargin = 0;
+//            params.setMargins(0, 0, 0, 0);
+//            this.vDividerTwo.setLayoutParams(params);
+            this.vDividerTwo.requestLayout();
 
+            this.mrlBusinessLayout.getLayoutParams().height = Utils.dpToPixels(activity, 50);
             this.mrlBusinessLayout.requestLayout();
-            this.tvConversaId.setText(business.getConversaId());
 
-
-            }
-
-
+            this.sdvCategoryImage.setVisibility(View.INVISIBLE);
+            this.tvBusiness.setText(activity.getResources().getString(R.string.conversa_agent_cell));
+            this.tvConversaId.setText(activity.getResources().getString(R.string.conversa_agent_subtitle));
+        }
     }
 
     @Override

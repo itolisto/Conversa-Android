@@ -71,7 +71,7 @@ public class dbBusiness implements Parcelable {
     public boolean isMuted() { return mMuted; }
     public long getRecent() { return mRecent; }
     public long getCreated() { return mCreated; }
-    public int getmAvatarVisibility() {return mAvatarVisibility;}
+    public int getAvatarVisibility() { return mAvatarVisibility; }
 
     public void setId(long mId) { this.mId = mId; }
     public void setBusinessId(String mBusinessId) { this.mBusinessId = mBusinessId; }
@@ -119,6 +119,7 @@ public class dbBusiness implements Parcelable {
         dest.writeByte(this.mMuted ? (byte) 1 : (byte) 0);
         dest.writeLong(this.mRecent);
         dest.writeLong(this.mCreated);
+        dest.writeInt(this.mAvatarVisibility);
     }
 
     // Using the `in` variable, we can retrieve the values that
@@ -135,6 +136,7 @@ public class dbBusiness implements Parcelable {
         this.mMuted = in.readByte() != 0;
         this.mRecent = in.readLong();
         this.mCreated = in.readLong();
+        this.mAvatarVisibility = in.readInt();
     }
 
     // After implementing the `Parcelable` interface, we need to create the

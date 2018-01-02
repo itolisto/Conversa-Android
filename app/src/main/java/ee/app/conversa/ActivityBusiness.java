@@ -162,13 +162,11 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
                                     business.setAvatarThumbFileId(businessReg.getString("av"));
 
                                     if (businessReg.has("fx")) {
-                                        business.setDisplayName(getResources().getString(R.string.conversa_agent_cell));
-                                        business.setConversaId(getResources().getString(R.string.conversa_agent_subtitle));
                                         businesses.add(0, business);
                                         business.setAvatarVisibility(View.INVISIBLE);
+                                    } else {
+                                        businesses.add(business);
                                     }
-                                    else
-                                    {   businesses.add(business);}
                                 }
 
                                 if (size < 20) {

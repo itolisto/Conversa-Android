@@ -218,7 +218,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         mBtvConversaId.setText(businessObject.getFormattedConversaId());
 
 
-        //if (businessObject.getmAvatarVisibility() == View.VISIBLE) {
+        //if (businessObject.getAvatarVisibility() == View.VISIBLE) {
             Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
             if (uri == null) {
