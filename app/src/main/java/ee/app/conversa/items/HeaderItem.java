@@ -1,6 +1,7 @@
 package ee.app.conversa.items;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -60,8 +61,8 @@ public class HeaderItem extends AbstractHeaderItem<HeaderViewHolder>
     }
 
     @Override
-    public HeaderViewHolder createViewHolder(FlexibleAdapter adapter, LayoutInflater inflater, ViewGroup parent) {
-        return new HeaderViewHolder(inflater.inflate(getLayoutRes(), parent, false), adapter);
+    public HeaderViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
+        return new HeaderViewHolder(view, adapter);
     }
 
     @Override

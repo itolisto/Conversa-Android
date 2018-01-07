@@ -24,6 +24,7 @@
 
 package ee.app.conversa;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.StrictMode;
@@ -42,6 +43,9 @@ import com.parse.ParseObject;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.events.MyEventBusIndex;
 import ee.app.conversa.management.AblyConnection;
@@ -50,7 +54,12 @@ import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.settings.Preferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
+import ee.app.conversa.utils.Logger;
 import io.branch.referral.Branch;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Basic Application class, holds references to often used single instance
@@ -107,12 +116,18 @@ public class ConversaApp extends MultiDexApplication {
 
 		// Initialize Parse
 		if (BuildConfig.DEV_BUILD) {
+			OkHttpClient.Builder client = new OkHttpClient.Builder()
+					.addNetworkInterceptor(new LoggingInterceptor())
+					.connectTimeout(60, TimeUnit.SECONDS)
+					.readTimeout(60, TimeUnit.SECONDS);
+
 			Parse.initialize(new Parse.Configuration.Builder(this)
 					//localhost
 					.applicationId("b15c83")
 					.clientKey(null)
 					.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
 				//	.server("http://192.168.1.8:1337/parse/")
+					.clientBuilder(client)
 					.build()
 			);
 		} else {
@@ -245,6 +260,25 @@ public class ConversaApp extends MultiDexApplication {
 
 	public Typeface getTfRalewayBold() {
 		return mTfRalewayBold;
+	}
+
+	class LoggingInterceptor implements Interceptor {
+		@SuppressLint("DefaultLocale")
+		@Override public Response intercept(Interceptor.Chain chain) throws IOException {
+			Request request = chain.request();
+
+			long t1 = System.nanoTime();
+			Logger.error("LoggingInterceptor", String.format("Sending request %s on %s%n%s",
+					request.url(), chain.connection(), request.headers()));
+
+			Response response = chain.proceed(request);
+
+			long t2 = System.nanoTime();
+			Logger.error("LoggingInterceptor", String.format("Received response for %s in %.1fms%n%s",
+					response.request().url(), (t2 - t1) / 1e6d, response.headers()));
+
+			return response;
+		}
 	}
 
 }

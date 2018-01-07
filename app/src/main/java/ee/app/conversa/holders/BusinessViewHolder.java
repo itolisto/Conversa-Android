@@ -51,8 +51,6 @@ public class BusinessViewHolder extends BaseHolder {
         if (business.getAvatarVisibility() == View.VISIBLE) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)this.vDividerTwo.getLayoutParams();
             params.leftMargin = Utils.dpToPixels(activity, 84);
-//            params.setMargins(Utils.dpToPixels(activity, 84), 0, 0, 0);
-//            this.vDividerTwo.setLayoutParams(params);
             this.vDividerTwo.requestLayout();
 
             this.mrlBusinessLayout.getLayoutParams().height = Utils.dpToPixels(activity, 80);
@@ -73,8 +71,6 @@ public class BusinessViewHolder extends BaseHolder {
         } else {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)this.vDividerTwo.getLayoutParams();
             params.leftMargin = 0;
-//            params.setMargins(0, 0, 0, 0);
-//            this.vDividerTwo.setLayoutParams(params);
             this.vDividerTwo.requestLayout();
 
             this.mrlBusinessLayout.getLayoutParams().height = Utils.dpToPixels(activity, 50);

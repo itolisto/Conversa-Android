@@ -2,6 +2,7 @@ package ee.app.conversa.items;
 
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -42,8 +43,8 @@ public class SectionableItem extends AbstractSectionableItem<CategoryViewHolder,
     }
 
     @Override
-    public CategoryViewHolder createViewHolder(FlexibleAdapter adapter, LayoutInflater inflater, ViewGroup parent) {
-        return new CategoryViewHolder(inflater.inflate(getLayoutRes(), parent, false), adapter, activity, listener);
+    public CategoryViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
+        return new CategoryViewHolder(view, adapter, activity, listener);
     }
 
     @Override

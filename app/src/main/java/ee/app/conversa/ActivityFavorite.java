@@ -55,7 +55,6 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
     private int previousTotal = 0;
     private boolean loading = false;
 
-
     private GridView mRvBusiness;
     private RelativeLayout mRlNoConnection;
     private FavsAdapter mBusinessListAdapter;
@@ -117,33 +116,14 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 Logger.error("onScroll", "firstVisible:" + firstVisibleItem + " visibleItems:" + visibleItemCount + " totalItems:" + totalItemCount );
-                // 1. If load more is true retrieve more messages otherwise skip
-                /*if (loadMore) {
-                   // final int lastVisibleItem = 1;//((LinearLayoutManager)view.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-                   // final int totalItemCount = 2;//view.getLayoutManager().getItemCount();
-
-                    // 2. Check if app isn't checking for new messages and last visible item is on the top
-                   // if (!loadingPage && lastVisibleItem == (totalItemCount - 1)) {
-                    //    loadingPage = true;
-                        //mBusinessListAdapter.addLoad(true);
-                    //    getBusinessByCategoryAsync();
-                    if(totalItemCount > mPreviousTotal) {
-                        mPreviousTotal = totalItemCount;
-                        page++;
-
-                        if(totalItemCount)
-                    }
-                }*/
                 // If loadMore true it's means that we can possible have more items we need to retrieve
                 if(loadMore) {
                     if (!loading && ((firstVisibleItem + visibleItemCount) >= totalItemCount)) {
-//                        // I load the next page of gigs using a background task,
-//                        // but you can call any function here.
+                        // I load the next page of gigs using a background task,
+                        // but you can call any function here.
                         //mBusinessListAdapter.addLoad(true);
                         mLoadBusiness.setVisibility(View.VISIBLE);
                         getBusinessByCategoryAsync();
-
-                        //Logger.error("onScroll", "Calling for more favs");
                     }
                 }
             }
