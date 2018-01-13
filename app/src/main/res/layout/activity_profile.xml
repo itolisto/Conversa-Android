@@ -126,7 +126,7 @@
                     android:layout_alignEnd="@id/sdvProfileAvatar"
                     android:layout_alignRight="@id/sdvProfileAvatar"
                     android:layout_alignBottom="@id/sdvProfileAvatar"
-                    android:background="@drawable/circular_status_offline" />
+                    android:background="@drawable/circular_status_unknown" />
             </RelativeLayout>
             <LinearLayout
                 android:weightSum="3"

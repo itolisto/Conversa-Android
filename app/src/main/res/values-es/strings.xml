@@ -66,7 +66,7 @@
     <string name="test_string">Cadena de prueba</string>
     <string name="terms_of_use_preference">Términos y Condiciones de Uso</string>
     <string name="summary_go_intent_preference">Sitio oficial de Conversa</string>
-    <string name="string_signin_title_two">CHATEA CON EMPRESAS LOCALES \nEN SEGUNDOS</string>
+    <string name="string_signin_title_two">CHATEA CON EMPRESAS\nLOCALES  EN SEGUNDOS</string>
     <string name="string_signin_title_one">Habla con cualquier negocio</string>
     <string name="string_signin_sign_up_business_two">NEGOCIO? PRESIONA AQUÌ</string>
     <string name="string_signin_sign_up_business_one">¿BUSCANDO REGISTRAR TU</string>
@@ -267,7 +267,7 @@
     <string name="highlight_explore">Busca y encuentra las empresas aquí</string>
 <string name="favorites_title">Favoritos</string>
     <string name="no_Favorites">Aún no tienes favoritos :(</string>
-    <string name="no_favorites_message">Empieza a explorar y encuentra tus\n empresas favoritas</string>
+    <string name="no_favorites_message">Empieza a explorar y encuentra\ntus empresas favoritas</string>
     <string name="conversa_agent_cell">¿No encontraste lo que buscabas?</string>
     <string name="conversa_agent_subtitle">Chatea con un agente Conversa</string>
     <string name="guide_two_title">¿Algo más específico?</string>

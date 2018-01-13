@@ -32,6 +32,7 @@
     <color name="status_offline">#F44336</color>
     <color name="status_online">#00E676</color>
     <color name="status_away">#FFC107</color>
+    <color name="status_unknown">#686868</color>
 
     <!-- Tabs -->
     <color name="regular_tabs">#06F28F</color>

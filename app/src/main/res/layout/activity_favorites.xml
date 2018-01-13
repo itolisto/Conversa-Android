@@ -20,11 +20,11 @@
             style="@style/AVLoadingIndicatorView"
             app:indicatorName="BallPulseIndicator"
             app:indicatorColor="@color/no_connection_background" />
+
         <include
             layout="@layout/no_favorites_found"
             android:visibility="gone"
-            android:id="@+id/llNoResultsContainer"
-            ></include>
+            android:id="@+id/llNoResultsContainer" />
 
         <GridView
             android:layout_width="match_parent"
