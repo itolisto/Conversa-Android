@@ -40,6 +40,7 @@ public class CategoryViewHolder extends FlexibleViewHolder {
         this.mVDivider = view.findViewById(vDivider);
         this.listener = listener;
         this.activity = activity;
+        getContentView().setOnClickListener(this);
     }
 
     public void setCategory(nCategory category) {

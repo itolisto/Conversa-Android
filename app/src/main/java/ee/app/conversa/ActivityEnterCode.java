@@ -51,13 +51,11 @@ public class ActivityEnterCode extends BaseActivity implements View.OnClickListe
 
     public void processPin() {
         String pin = mPinView.getText().toString();
-        // Llamar funcion y cambiar a pantalla o mostrar alerta de pin invalido
-
         HashMap<String, String> params = new HashMap<>(2);
         params.put("code", pin);
+
         final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
         progress.setContentView(R.layout.progress_layout);
-
 
         ParseCloud.callFunctionInBackground("validateConversaCode", params, new FunctionCallback<String>() {
             @Override

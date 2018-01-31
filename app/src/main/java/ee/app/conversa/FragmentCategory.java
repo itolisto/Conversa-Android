@@ -141,6 +141,7 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
     @Override
     public void onCategoryClick(nCategory category, View itemView, int position) {
         Intent intent = new Intent(getContext(), ActivityBusiness.class);
+
         intent.putExtra(Const.kObjectRowObjectIdKey, category.getObjectId());
         intent.putExtra("custom", category.isCustom());
         String categoryName = category.getCategoryName(getActivity());
@@ -174,7 +175,6 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
                     HeaderItem headerItem = new HeaderItem(String.valueOf(i), object.optString("tn", ""));
 
                     mAdapter.addSection(headerItem);
-
 
                     JSONArray categories = object.getJSONArray("cat");
                     int categoriesSize = categories.length();
@@ -218,7 +218,6 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
         if (v.getId() == R.id.btnRetryResult) {
             getCategoriesAsync();
         }
-        //if( v.getId() == R.id.)
     }
 
 }

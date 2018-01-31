@@ -208,7 +208,8 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
         dbBusiness business = ConversaApp.getInstance(this)
                 .getDB()
                 .isContact(contact.getBusinessId());
-        Intent intent = new Intent(this, ActivityProfile.class);
+
+        boolean addBusiness = true;
 
         if (business == null) {
             // Business is not on local db
@@ -216,9 +217,8 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
             business.setBusinessId(contact.getBusinessId());
             business.setDisplayName(contact.getDisplayName());
             business.setConversaId(contact.getConversaId());
-            intent.putExtra(Const.iExtraAddBusiness, true);
         } else {
-            intent.putExtra(Const.iExtraAddBusiness, false);
+            addBusiness = false;
         }
 
         if (TextUtils.isEmpty(business.getAvatarThumbFileId())) {
@@ -230,14 +230,24 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
             }
         }
 
-        Map<String, String> articleParams = new HashMap<>(1);
-        articleParams.put("fromCategory", String.valueOf(true));
-        FlurryAgent.logEvent("user_profile_open", articleParams);
+        if (contact.getAvatarVisibility() == View.INVISIBLE) {
+            Intent intent = new Intent(this, ActivityChatWall.class);
+            intent.putExtra(Const.iExtraBusiness, business);
+            intent.putExtra(Const.iExtraAddBusiness, addBusiness);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, ActivityProfile.class);
+            Map<String, String> articleParams = new HashMap<>(1);
+            articleParams.put("fromCategory", String.valueOf(true));
+            FlurryAgent.logEvent("user_profile_open", articleParams);
 
-        intent.putExtra(Const.iExtraBusiness, business);
-        startActivity(intent);
-        // Override transitions: we don't want the normal window animation in addition
-        // to our custom one
-        overridePendingTransition(0, 0);
+            intent.putExtra(Const.iExtraBusiness, business);
+            intent.putExtra(Const.iExtraAddBusiness, addBusiness);
+
+            startActivity(intent);
+            // Override transitions: we don't want the normal window animation in addition
+            // to our custom one
+            overridePendingTransition(0, 0);
+        }
     }
 }

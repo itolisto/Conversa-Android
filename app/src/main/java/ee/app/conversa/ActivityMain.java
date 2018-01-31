@@ -155,7 +155,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                         .getJobManager()
                         .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
             } else {
-                AblyConnection.getInstance().subscribeToChannels();
+                //AblyConnection.getInstance().subscribeToChannels();
             }
 
             initialization();

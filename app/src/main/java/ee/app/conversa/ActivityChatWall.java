@@ -525,7 +525,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 													}
 												}
 											} else {
-												diff = diff - (63 * 60 * 1000);
+												diff = diff - (3 * 60 * 1000);
 												long diffh = diff / (1000 * 60 * 60);
 												long diffd = diff / (1000 * 60 * 60 * 24);
 												long diffw = diff / (1000 * 60 * 60 * 24 * 7);
