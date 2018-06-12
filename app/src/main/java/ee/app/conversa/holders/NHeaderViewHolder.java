@@ -16,7 +16,7 @@ public class NHeaderViewHolder extends BaseHolder {
 
     public NHeaderViewHolder(View itemView, AppCompatActivity activity) {
         super(itemView, activity);
-        this.mRtvHeader = (MediumTextView) itemView.findViewById(R.id.rtvHeader);
+        this.mRtvHeader = itemView.findViewById(R.id.rtvHeader);
     }
 
     public void setHeaderTitle(String title) {

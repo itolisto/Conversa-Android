@@ -1,7 +1,10 @@
 package ee.app.conversa;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -9,9 +12,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.RequestPasswordResetCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.utils.Utils;
@@ -34,10 +37,10 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
     @Override
     protected void initialization() {
         super.initialization();
-        mEtSendPasswordEmail = (EditText) findViewById(R.id.etSendEmail);
-        mBtnSendPassword = (Button) findViewById(R.id.btnSendPassword);
+        mEtSendPasswordEmail = findViewById(R.id.etSendEmail);
+        mBtnSendPassword = findViewById(R.id.btnSendPassword);
 
-        TextInputLayout mTilForgotPassword = (TextInputLayout) findViewById(R.id.tilPasswordForgot);
+        TextInputLayout mTilForgotPassword = findViewById(R.id.tilPasswordForgot);
         mTilForgotPassword.setOnClickListener(this);
 
         if (mBtnSendPassword != null) {
@@ -67,38 +70,45 @@ public class ActivityForgotPassword extends BaseActivity implements View.OnClick
             case R.id.btnSendPassword:
                 if (validateForm()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage(getString(R.string.confirm_email, mEtSendPasswordEmail.getText().toString()))
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    String sentToEmail = mEtSendPasswordEmail.getText().toString();
-                                    ParseUser.requestPasswordResetInBackground(sentToEmail, new RequestPasswordResetCallback() {
-                                        public void done(ParseException e) {
-                                            String title;
+                    final String sentToEmail = mEtSendPasswordEmail.getText().toString();
 
-                                            if (e == null) {
-                                                title = getString(R.string.email_sent);
-                                            } else {
-                                                title = getString(R.string.email_fail_sent);
-                                            }
+                    builder.setMessage(getString(R.string.confirm_email, sentToEmail))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                final ProgressDialog progress = ProgressDialog.show(ActivityForgotPassword.this, null, null, true, false);
+                                progress.setContentView(R.layout.progress_layout);
 
-                                            new AlertDialog.Builder(getApplicationContext())
-                                                    .setTitle(title)
-                                                    .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int which) {
-                                                            dialog.dismiss();
-                                                        }
-                                                    })
-                                                    .show();
+                                FirebaseAuth.getInstance().sendPasswordResetEmail(sentToEmail)
+                                    .addOnCompleteListener(ActivityForgotPassword.this, new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        progress.dismiss();
+                                        String title;
+
+                                        if (task.isSuccessful()) {
+                                            title = getString(R.string.email_sent);
+                                        } else {
+                                            title = getString(R.string.email_fail_sent);
                                         }
-                                    });
-                                }
-                            })
-                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.dismiss();
-                                }
-                            });
+
+                                        new AlertDialog.Builder(ActivityForgotPassword.this)
+                                            .setTitle(title)
+                                            .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .show();
+                                    }
+                                });
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
                     builder.show();
                 }
                 break;

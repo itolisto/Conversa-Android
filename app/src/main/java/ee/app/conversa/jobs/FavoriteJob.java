@@ -6,12 +6,12 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
 import java.util.HashMap;
 
 import ee.app.conversa.ConversaApp;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Logger;
 
@@ -51,7 +51,7 @@ public class FavoriteJob extends Job {
             params.put("favorite", true);
         }
 
-        ParseCloud.callFunction("setCustomerFavorite", params);
+        NetworkingManager.getInstance().postSync("setCustomerFavorite", params);
     }
 
     @Override
@@ -61,8 +61,8 @@ public class FavoriteJob extends Job {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        if (throwable instanceof ParseException) {
-            if (AppActions.validateParseException((ParseException) throwable)) {
+        if (throwable instanceof FirebaseCustomException) {
+            if (AppActions.validateParseException((FirebaseCustomException) throwable)) {
                 AppActions.appLogout(getApplicationContext(), true);
                 return RetryConstraint.CANCEL;
             }

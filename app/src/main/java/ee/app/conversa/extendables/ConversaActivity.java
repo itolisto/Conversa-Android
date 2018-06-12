@@ -1,7 +1,6 @@
 package ee.app.conversa.extendables;
 
 import android.content.Intent;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -50,7 +49,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     protected void initialization() {
         super.initialization();
         if (mRlPushNotification == null) {
-            mRlPushNotification = (RelativeLayout) findViewById(R.id.rlPushNotification);
+            mRlPushNotification = findViewById(R.id.rlPushNotification);
         }
     }
 

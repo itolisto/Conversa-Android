@@ -24,7 +24,8 @@
 package ee.app.conversa.tutorial;
 
 import android.support.annotation.NonNull;
-import android.support.compat.BuildConfig;
+
+import ee.app.conversa.BuildConfig;
 
 /**
  * Util class for creating bundle keys names.

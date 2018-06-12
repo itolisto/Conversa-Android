@@ -17,7 +17,7 @@ public class HeaderViewHolder extends FlexibleViewHolder {
 
     public HeaderViewHolder(View view, FlexibleAdapter adapter) {
         super(view, adapter, true);//True for sticky
-        this.mRtvHeader = (MediumTextView) view.findViewById(R.id.rtvHeader);
+        this.mRtvHeader = view.findViewById(R.id.rtvHeader);
     }
 
     public void setHeaderTitle(String title) {

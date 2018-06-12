@@ -35,8 +35,8 @@ public class CategoryViewHolder extends FlexibleViewHolder {
 
     public CategoryViewHolder(View view, FlexibleAdapter adapter, AppCompatActivity activity, OnCategoryClickListener listener) {
         super(view, adapter, false);
-        this.mTvCategoryTitle = (MediumTextView) view.findViewById(tvCategoryTitle);
-        this.mSdvCategoryImage = (SimpleDraweeView) view.findViewById(sdvCategoryImage);
+        this.mTvCategoryTitle = view.findViewById(tvCategoryTitle);
+        this.mSdvCategoryImage = view.findViewById(sdvCategoryImage);
         this.mVDivider = view.findViewById(vDivider);
         this.listener = listener;
         this.activity = activity;

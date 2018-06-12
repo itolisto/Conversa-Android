@@ -12,17 +12,18 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-import com.parse.SaveCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.HashMap;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.interfaces.FunctionCallback;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.view.LightTextView;
 
@@ -63,16 +64,16 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
     protected void initialization() {
         super.initialization();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setTitle(R.string.preferences__account);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        LightTextView mLtvEmail = (LightTextView) findViewById(R.id.ltvEmail);
-        mLtvName = (LightTextView) findViewById(R.id.ltvName);
+        LightTextView mLtvEmail = findViewById(R.id.ltvEmail);
+        mLtvName = findViewById(R.id.ltvName);
 
-        mLtvEmail.setText(Account.getCurrentUser().getEmail());
+        mLtvEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         mLtvName.setText(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountDisplayName());
 
         findViewById(R.id.llName).setOnClickListener(this);
@@ -197,9 +198,9 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                     params.put("displayName", newName);
                     params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
 
-                    ParseCloud.callFunctionInBackground("updateCustomerName", params, new FunctionCallback<Integer>() {
+                    NetworkingManager.getInstance().post("updateCustomerName", params, new FunctionCallback<Integer>() {
                         @Override
-                        public void done(Integer object, ParseException e) {
+                        public void done(Integer object, FirebaseCustomException e) {
                             if (e == null) {
                                 ConversaApp.getInstance(getApplicationContext())
                                         .getPreferences()
@@ -218,11 +219,12 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                 if (newValue.isEmpty()) {
                     showErrorMessage(getString(R.string.common_field_required));
                 } else {
-                    Account.getCurrentUser().setPassword(newValue);
-                    Account.getCurrentUser().saveInBackground(new SaveCallback() {
+                    FirebaseAuth.getInstance().getCurrentUser()
+                    .updatePassword(newValue)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
                                 showSuccessMessage(getString(R.string.settings_password_succesful));
                             } else {
                                 showErrorMessage(getString(R.string.settings_password_error));

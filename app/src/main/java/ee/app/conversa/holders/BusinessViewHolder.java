@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -34,10 +33,10 @@ public class BusinessViewHolder extends BaseHolder {
         super(itemView, activity);
 
         this.vDividerTwo = itemView.findViewById(R.id.vDividerTwo);
-        this.tvBusiness = (TextView) itemView.findViewById(R.id.mtvDisplayName);
-        this.tvConversaId = (TextView) itemView.findViewById(R.id.ltvConversaId);
-        this.sdvCategoryImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvBusinessImage);
-        this.mrlBusinessLayout = (RelativeLayout)  itemView.findViewById(R.id.rlBusinessItem) ;
+        this.tvBusiness = itemView.findViewById(R.id.mtvDisplayName);
+        this.tvConversaId = itemView.findViewById(R.id.ltvConversaId);
+        this.sdvCategoryImage = itemView.findViewById(R.id.sdvBusinessImage);
+        this.mrlBusinessLayout = itemView.findViewById(R.id.rlBusinessItem);
 
         itemView.setOnClickListener(this);
     }

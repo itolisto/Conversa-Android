@@ -112,7 +112,7 @@ public class CameraViewTest {
 
     @Test
     public void testAspectRatio() {
-        final CameraView cameraView = (CameraView) rule.getActivity().findViewById(R.id.camera);
+        final CameraView cameraView = rule.getActivity().findViewById(R.id.camera);
         final Set<AspectRatio> ratios = cameraView.getSupportedAspectRatios();
         for (AspectRatio ratio : ratios) {
             onView(withId(R.id.camera))
@@ -260,7 +260,7 @@ public class CameraViewTest {
                     return;
                 }
                 CameraView cameraView = (CameraView) view;
-                TextureView textureView = (TextureView) cameraView.findViewById(R.id.texture_view);
+                TextureView textureView = cameraView.findViewById(R.id.texture_view);
                 Bitmap bitmap = textureView.getBitmap();
                 int topLeft = bitmap.getPixel(0, 0);
                 int center = bitmap.getPixel(bitmap.getWidth() / 2, bitmap.getHeight() / 2);

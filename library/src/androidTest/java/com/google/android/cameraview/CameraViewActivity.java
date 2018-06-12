@@ -29,7 +29,7 @@ public class CameraViewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_view);
-        mCameraView = (CameraView) findViewById(R.id.camera);
+        mCameraView = findViewById(R.id.camera);
     }
 
     @Override

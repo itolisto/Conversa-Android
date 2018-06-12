@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
-import com.parse.ParseException;
+import com.google.firebase.auth.FirebaseAuth;
 
 import ee.app.conversa.ActivityMain;
 import ee.app.conversa.ActivitySignIn;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.management.AblyConnection;
-import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.networking.FirebaseCustomException;
 
 /**
  * Created by edgargomez on 10/25/16.
@@ -37,9 +37,8 @@ public class AppActions {
         activity.finish();
     }
 
-    public static boolean validateParseException(ParseException e) {
-        return (e.getCode() == ParseException.INVALID_SESSION_TOKEN ||
-                e.getCode() == ParseException.INVALID_LINKED_SESSION);
+    public static boolean validateParseException(FirebaseCustomException e) {
+        return (e.getMessage().equalsIgnoreCase("invalid-credential"));
     }
 
     public static void appLogout(final Context context, boolean invalidSession) {
@@ -56,7 +55,7 @@ public class AppActions {
         }).start();
 
         AblyConnection.getInstance().disconnectAbly();
-        Account.logOut();
+        FirebaseAuth.getInstance().signOut();
 
         Intent goToSignIn = new Intent(context, ActivitySignIn.class);
 

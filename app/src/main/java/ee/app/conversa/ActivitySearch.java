@@ -13,8 +13,6 @@ import android.widget.LinearLayout;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.flurry.android.FlurryAgent;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
@@ -40,6 +38,8 @@ import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbSearch;
 import ee.app.conversa.model.nHeaderTitle;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
@@ -118,7 +118,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
             }
         };
 
-        mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
+        mSearchView = findViewById(R.id.floating_search_view);
         mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
             @Override
             public void onHomeClicked() {
@@ -146,10 +146,10 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
             }
         });
 
-        mLlNoResultsContainer = (LinearLayout) findViewById(R.id.llNoResultsContainer);
-        mLlErrorContainer = (LinearLayout) findViewById(R.id.llErrorContainer);
-        mPbLoadingResults = (AVLoadingIndicatorView) findViewById(R.id.pbLoadingResults);
-        mRvSearchResults = (RecyclerView) findViewById(R.id.rvSearchResults);
+        mLlNoResultsContainer = findViewById(R.id.llNoResultsContainer);
+        mLlErrorContainer = findViewById(R.id.llErrorContainer);
+        mPbLoadingResults = findViewById(R.id.pbLoadingResults);
+        mRvSearchResults = findViewById(R.id.rvSearchResults);
 
         mBusinessListAdapter= new BusinessAdapter(this, this);
         mRvSearchResults.setHasFixedSize(true);
@@ -212,8 +212,8 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                     params.put("search", searchWith);
                     params.put("skip", page);
                     try {
-                        return ParseCloud.callFunction("searchBusiness", params);
-                    } catch (ParseException e) {
+                        return NetworkingManager.getInstance().postSync("searchBusiness", params);
+                    } catch (FirebaseCustomException e) {
                         Logger.error("Future task error: ", e.getMessage());
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);

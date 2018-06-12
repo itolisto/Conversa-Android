@@ -17,8 +17,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
 import org.json.JSONObject;
 
@@ -37,6 +35,8 @@ import ee.app.conversa.browser.CustomTabActivityHelper;
 import ee.app.conversa.browser.WebviewFallback;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.model.database.dbBusiness;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 
@@ -59,7 +59,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
     protected void initialization() {
         super.initialization();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setTitle(R.string.preferences__help);
@@ -244,7 +244,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                 HashMap<String, Object> pparams = new HashMap<>(2);
                 pparams.put("customer", 1);
                 pparams.put("purpose", Integer.parseInt(params[0]));
-                final String supportId = ParseCloud.callFunction("getConversaAccountId", pparams);
+                final String supportId = NetworkingManager.getInstance().postSync("getConversaAccountId", pparams);
 
                 add = false;
 
@@ -259,7 +259,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                     HashMap<String, Object> sparams = new HashMap<>(1);
                     sparams.put("accountId", supportId);
 
-                    final String json = ParseCloud.callFunction("getConversaAccount", sparams);
+                    final String json = NetworkingManager.getInstance().postSync("getConversaAccount", sparams);
 
                     JSONObject businessReg = new JSONObject(json);
                     dbBusiness = new dbBusiness();
@@ -271,8 +271,8 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
 
                 return dbBusiness;
             } catch (Exception e) {
-                if (e instanceof ParseException) {
-                    if (AppActions.validateParseException((ParseException)e)) {
+                if (e instanceof FirebaseCustomException) {
+                    if (AppActions.validateParseException((FirebaseCustomException)e)) {
                         AppActions.appLogout(getApplicationContext(), true);
                         cancel(true);
                     }

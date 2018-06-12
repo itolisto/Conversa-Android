@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -16,14 +15,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.flurry.android.FlurryAgent;
-import com.parse.ParseUser;
-import com.taplytics.sdk.Taplytics;
-
 import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
-
-
+import com.flurry.android.FlurryAgent;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.taplytics.sdk.Taplytics;
 
 import org.json.JSONObject;
 
@@ -31,13 +27,13 @@ import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.jobs.CustomerInfoJob;
 import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.database.dbBusiness;
-import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.view.MediumTextView;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
+import io.fabric.sdk.android.Fabric;
 import tourguide.tourguide.Overlay;
 import tourguide.tourguide.Pointer;
 import tourguide.tourguide.ToolTip;
@@ -74,7 +70,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         mActivity = this;
 
         Fabric.with(this, new Crashlytics());
-        ParseUser currentUser = ParseUser.getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
             // Verify if deep link was opened when no session is active
@@ -84,21 +80,21 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         } else {
             AblyConnection.getInstance().initAbly();
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.setTitle("");
-            mRlCategoryToolbar = (RelativeLayout) toolbar.findViewById(R.id.rlCategoryToolbar);
-            mIvConversa = (ImageView) toolbar.findViewById(R.id.ivConversa);
-            mRtvTitle = (MediumTextView) toolbar.findViewById(R.id.rtvTitle);
+            mRlCategoryToolbar = toolbar.findViewById(R.id.rlCategoryToolbar);
+            mIvConversa = toolbar.findViewById(R.id.ivConversa);
+            mRtvTitle = toolbar.findViewById(R.id.rtvTitle);
             setSupportActionBar(toolbar);
 
-            mViewPager = (ViewPager) findViewById(R.id.pager);
+            mViewPager = findViewById(R.id.pager);
             final PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
             mViewPager.setAdapter(mPagerAdapter);
             mViewPager.setOffscreenPageLimit(2);
 
             resetNotifications = true;
 
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+            TabLayout tabLayout = findViewById(R.id.tabLayout);
             tabLayout.setupWithViewPager(mViewPager);
             tabLayout.getTabAt(0).setIcon(tabSelectedIcons[0]);
             tabLayout.getTabAt(1).setIcon(tabIcons[1]);
@@ -114,7 +110,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                     if (p == 1) { // is tab explore is selected.
                         if (mTourGuideHandler != null) {
                             mTourGuideHandler.cleanUp();
-                            mTourGuideHandler = TourGuide.init((mActivity)).with(TourGuide.Technique.Click)
+                            mTourGuideHandler = TourGuide.init((mActivity)).with(TourGuide.Technique.CLICK)
                                     .setPointer(new Pointer())
                                     .setToolTip(new ToolTip().setTitle(getResources().getString(R.string.guide_two_title)).setDescription(getResources().getString(R.string.guide_two_description)))
                                     .setOverlay(new Overlay())
@@ -141,7 +137,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
 
             if (!ConversaApp.getInstance(this).getPreferences().getGuideExplore()) {
                 View exploreTab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1);
-                mTourGuideHandler = TourGuide.init(this).with(TourGuide.Technique.Click)
+                mTourGuideHandler = TourGuide.init(this).with(TourGuide.Technique.CLICK)
                         .setPointer(new Pointer())
                         .setToolTip(new ToolTip().setTitle(getString(R.string.tutorial_title_one)).setDescription(getString(R.string.highlight_explore)))
                         .setOverlay(new Overlay())
@@ -153,7 +149,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                 // 1. Get Customer Id
                 ConversaApp.getInstance(this)
                         .getJobManager()
-                        .addJobInBackground(new CustomerInfoJob(Account.getCurrentUser().getObjectId()));
+                        .addJobInBackground(new CustomerInfoJob(currentUser.getUid()));
             } else {
                 //AblyConnection.getInstance().subscribeToChannels();
             }

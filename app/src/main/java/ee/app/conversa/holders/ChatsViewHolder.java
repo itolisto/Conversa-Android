@@ -44,15 +44,15 @@ public class ChatsViewHolder extends BaseHolder {
                     OnContactLongClickListener longlistener) {
         super(itemView, activity);
 
-        this.ivUserImage = (SimpleDraweeView) itemView
+        this.ivUserImage = itemView
                 .findViewById(R.id.sdvContactAvatar);
-        this.tvUser = (MediumTextView) itemView
+        this.tvUser = itemView
                 .findViewById(R.id.mtvUser);
-        this.tvDate = (RegularTextView) itemView
+        this.tvDate = itemView
                 .findViewById(R.id.rtvDate);
-        this.tvLastMessage = (RegularTextView) itemView
+        this.tvLastMessage = itemView
                 .findViewById(R.id.rtvLastMessage);
-        this.ivUnread = (ImageView) itemView
+        this.ivUnread = itemView
                 .findViewById(R.id.ivUnread);
 
         this.listener = listener;

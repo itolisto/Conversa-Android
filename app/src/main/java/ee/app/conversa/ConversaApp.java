@@ -38,26 +38,21 @@ import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.flurry.android.FlurryAgent;
-import com.parse.Parse;
-import com.parse.ParseObject;
+import com.taplytics.sdk.Taplytics;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.events.MyEventBusIndex;
 import ee.app.conversa.management.AblyConnection;
-import ee.app.conversa.model.parse.Account;
-import ee.app.conversa.model.parse.Business;
 import ee.app.conversa.settings.Preferences;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Logger;
 import io.branch.referral.Branch;
 import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -97,47 +92,16 @@ public class ConversaApp extends MultiDexApplication {
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 		initializeBranch();
-		initializeParse();
 		initializeDeveloperBuild();
 		initializeJobManager();
 		initializeEventBus();
         initializeFlurry();
 		initializeTypefaces();
+		initializeTaplytics();
 	}
 
 	private void initializeBranch() {
 		Branch.getAutoInstance(this);
-	}
-
-	private void initializeParse() {
-		// Register subclassing for using as Parse objects
-		ParseObject.registerSubclass(Account.class);
-		ParseObject.registerSubclass(Business.class);
-
-		// Initialize Parse
-		if (BuildConfig.DEV_BUILD) {
-			OkHttpClient.Builder client = new OkHttpClient.Builder()
-					.addNetworkInterceptor(new LoggingInterceptor())
-					.connectTimeout(60, TimeUnit.SECONDS)
-					.readTimeout(60, TimeUnit.SECONDS);
-
-			Parse.initialize(new Parse.Configuration.Builder(this)
-					//localhost
-					.applicationId("b15c83")
-					.clientKey(null)
-					.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
-				//	.server("http://192.168.1.8:1337/parse/")
-					.clientBuilder(client)
-					.build()
-			);
-		} else {
-			Parse.initialize(new Parse.Configuration.Builder(this)
-					.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
-					.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
-					.server("https://api.conversachat.com/parse/")
-					.build()
-			);
-		}
 	}
 
 	private void initializeDeveloperBuild() {
@@ -211,6 +175,10 @@ public class ConversaApp extends MultiDexApplication {
 		mTfRalewayRegular = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Regular.ttf");
 		mTfRalewayMedium = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Medium.ttf");
 		mTfRalewayBold = Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Bold.ttf");
+	}
+
+	private void initializeTaplytics() {
+		Taplytics.startTaplytics(this, "YOUR TAPLYTICS API KEY");
 	}
 
 	/* ************************************************************************************************ */

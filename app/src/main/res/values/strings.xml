@@ -13,7 +13,7 @@
     <string name="category">Categories</string>
     <string name="chat_wall_message_hint">Write a message</string>
     <string name="close">close</string>
-    <string name="confirm_email">We\'ve sent you an email to %1s to reset your password</string>
+    <string name="confirm_email">We\'ll send you an email to %1s to reset your password</string>
     <string name="contact_number_title">Contact number</string>
     <string name="contacts_last_message_default">Message</string>
     <string name="contacts_last_message_image">Image</string>

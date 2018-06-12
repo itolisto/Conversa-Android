@@ -35,11 +35,7 @@ import android.widget.TextView;
 import com.birbit.android.jobqueue.JobManager;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.flurry.android.FlurryAgent;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -48,8 +44,11 @@ import java.util.List;
 import java.util.Map;
 
 import ee.app.conversa.extendables.ConversaActivity;
+import ee.app.conversa.interfaces.FunctionCallback;
 import ee.app.conversa.jobs.FavoriteJob;
 import ee.app.conversa.model.database.dbBusiness;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
@@ -195,7 +194,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         liked = false;
 
         jobManager = ConversaApp.getInstance(this).getJobManager();
-        mCvContainer = (CardView) findViewById(R.id.cvContainer);
+        mCvContainer = findViewById(R.id.cvContainer);
         mVwStatus = findViewById(R.id.vStatus);
 
         mBackground = new ColorDrawable(ResourcesCompat.getColor(getResources(),
@@ -206,28 +205,25 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         mCvContainer.setOnClickListener(this);
 
         // Profile views
-        mSdvBusinessHeader = (SimpleDraweeView) findViewById(R.id.sdvProfileHeader);
-        SimpleDraweeView mSdvBusinessImage = (SimpleDraweeView) findViewById(R.id.sdvProfileAvatar);
-        MediumTextView mMtvBusinessName = (MediumTextView) findViewById(R.id.mtvBusinessName);
-        RegularTextView mBtvConversaId = (RegularTextView) findViewById(R.id.rtvConversaId);
-        mBtvFollowers = (RegularTextView) findViewById(R.id.rtvFollowers);
+        mSdvBusinessHeader = findViewById(R.id.sdvProfileHeader);
+        SimpleDraweeView mSdvBusinessImage = findViewById(R.id.sdvProfileAvatar);
+        MediumTextView mMtvBusinessName = findViewById(R.id.mtvBusinessName);
+        RegularTextView mBtvConversaId = findViewById(R.id.rtvConversaId);
+        mBtvFollowers = findViewById(R.id.rtvFollowers);
         // Action buttons
-        mBtnFavorite = (Button) findViewById(R.id.btnFavorite);
+        mBtnFavorite = findViewById(R.id.btnFavorite);
 
         mMtvBusinessName.setText(businessObject.getDisplayName());
         mBtvConversaId.setText(businessObject.getFormattedConversaId());
 
 
-        //if (businessObject.getAvatarVisibility() == View.VISIBLE) {
-            Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
+        Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
-            if (uri == null) {
-                uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
-            }
-            mSdvBusinessImage.setImageURI(uri);
-        //}else {
-            //mSdvBusinessImage.setVisibility(View.GONE);
-        //}
+        if (uri == null) {
+            uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
+        }
+
+        mSdvBusinessImage.setImageURI(uri);
 
         mBtnFavorite.setOnClickListener(this);
         findViewById(R.id.btnStartChat).setOnClickListener(this);
@@ -248,13 +244,13 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         params.put("businessId", businessObject.getBusinessId());
         params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
 
-        ParseCloud.callFunctionInBackground("getBusinessProfile", params, new FunctionCallback<String>() {
+        NetworkingManager.getInstance().post("getBusinessProfile", params, new FunctionCallback<Object>() {
             @Override
-            public void done(String result, ParseException e) {
-                if(e == null) {
-                    parseResult(result);
+            public void done(Object json, FirebaseCustomException exception) {
+                if (exception == null) {
+                    parseResult(json);
                 } else {
-                    if (AppActions.validateParseException(e)) {
+                    if (AppActions.validateParseException(exception)) {
                         AppActions.appLogout(getApplicationContext(), true);
                     } else {
                         parseResult("");
@@ -395,68 +391,66 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         mBtvFollowers.setText(Utils.numberWithFormat(followers));
     }
 
-    private void parseResult(String result) {
+    private void parseResult(Object result) {
         try {
-            if (!result.isEmpty()) {
-                JSONObject jsonRootObject = new JSONObject(result);
+            JSONObject jsonRootObject = (JSONObject) result;
 
-                followers = jsonRootObject.optInt("followers", 0);
-                String headerUrl = jsonRootObject.optString("header", null);
-                boolean favorite = jsonRootObject.optBoolean("favorite", false);
-                int status = jsonRootObject.optInt("status", 0);
+            followers = jsonRootObject.optInt("followers", 0);
+            String headerUrl = jsonRootObject.optString("header", null);
+            boolean favorite = jsonRootObject.optBoolean("favorite", false);
+            int status = jsonRootObject.optInt("status", 0);
 
-                liked = favorite;
+            liked = favorite;
 
-                if (favorite) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        mBtnFavorite.setBackground
-                                (getResources().getDrawable(R.drawable.ic_fav, null));
-                    } else {
-                        mBtnFavorite.setBackground
-                                (getResources().getDrawable(R.drawable.ic_fav));
-                    }
+            if (favorite) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mBtnFavorite.setBackground
+                            (getResources().getDrawable(R.drawable.ic_fav, null));
+                } else {
+                    mBtnFavorite.setBackground
+                            (getResources().getDrawable(R.drawable.ic_fav));
                 }
-
-                setFollowersText(followers);
-
-                Uri uri = Utils.getUriFromString(headerUrl);
-
-                if (uri != null) {
-                    mSdvBusinessHeader.setImageURI(uri);
-                }
-
-                GradientDrawable shapeDrawable;
-
-                switch (status) {
-                    case 0: {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_online);
-                        } else {
-                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_online);
-                        }
-                        break;
-                    }
-                    case 1: {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_away);
-                        } else {
-                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_away);
-                        }
-                        break;
-                    }
-                    default: {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_offline);
-                        } else {
-                            shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_offline);
-                        }
-                        break;
-                    }
-                }
-
-                mVwStatus.setBackground(shapeDrawable);
             }
-        } catch (JSONException e) {
+
+            setFollowersText(followers);
+
+            Uri uri = Utils.getUriFromString(headerUrl);
+
+            if (uri != null) {
+                mSdvBusinessHeader.setImageURI(uri);
+            }
+
+            GradientDrawable shapeDrawable;
+
+            switch (status) {
+                case 0: {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_online);
+                    } else {
+                        shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_online);
+                    }
+                    break;
+                }
+                case 1: {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_away);
+                    } else {
+                        shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_away);
+                    }
+                    break;
+                }
+                default: {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        shapeDrawable = (GradientDrawable) getDrawable(R.drawable.circular_status_offline);
+                    } else {
+                        shapeDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_status_offline);
+                    }
+                    break;
+                }
+            }
+
+            mVwStatus.setBackground(shapeDrawable);
+        } catch (ClassCastException e) {
             Logger.error("parseResult", e.getMessage());
         } finally {
             mBtnFavorite.setEnabled(true);
@@ -475,7 +469,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         @Override
         public @NonNull View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            TextView textView = view.findViewById(android.R.id.text1);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 textView.setCompoundDrawablesRelativeWithIntrinsicBounds(images.get(position), null, null, null);

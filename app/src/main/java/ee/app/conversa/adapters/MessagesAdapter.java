@@ -309,14 +309,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<BaseHolder> {
 		MessageViewHolder(View itemView, AppCompatActivity activity) {
 			super(itemView, activity);
 
-			this.mTvDate = (LightTextView) itemView.findViewById(R.id.tvDate);
-			this.mRlBackground = (RelativeLayout) itemView.findViewById(R.id.rlBackground);
-			this.mRtvMessageText = (RegularTextView) itemView.findViewById(R.id.rtvMessageText);
+			this.mTvDate = itemView.findViewById(R.id.tvDate);
+			this.mRlBackground = itemView.findViewById(R.id.rlBackground);
+			this.mRtvMessageText = itemView.findViewById(R.id.rtvMessageText);
 			//this.mRlImageContainer = (RelativeLayout) itemView.findViewById(R.id.rlImageContainer);
-			this.mMvMessageMap = (MapView) itemView.findViewById(R.id.mvMessageMap);
-			this.mSdvMessageImage = (SimpleDraweeView) itemView.findViewById(R.id.sdvMessageImage);
-			this.mSdvMessageImageLand = (SimpleDraweeView) itemView.findViewById(R.id.sdvMessageImageLand);
-			this.mLtvSubText = (LightTextView) itemView.findViewById(R.id.ltvSubText);
+			this.mMvMessageMap = itemView.findViewById(R.id.mvMessageMap);
+			this.mSdvMessageImage = itemView.findViewById(R.id.sdvMessageImage);
+			this.mSdvMessageImageLand = itemView.findViewById(R.id.sdvMessageImageLand);
+			this.mLtvSubText = itemView.findViewById(R.id.ltvSubText);
 
 			this.mMvMessageMap.setClickable(false);
 

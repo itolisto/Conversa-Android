@@ -29,7 +29,7 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
-        mWebView = (WebView) findViewById(R.id.web_view);
+        mWebView = findViewById(R.id.web_view);
         url = getIntent().getStringExtra(EXTRA_URL);
         mWebView.setWebViewClient(new WebViewClient());
         WebSettings webSettings = mWebView.getSettings();
@@ -42,10 +42,10 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
     @SuppressWarnings("ConstantConditions")
     protected void initialization() {
         super.initialization();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        RegularTextView mTitleTextView = (RegularTextView) toolbar.findViewById(R.id.rtvUrl);
-        FrameLayout mBackButton = (FrameLayout) toolbar.findViewById(R.id.flBack);
-        ImageButton mIbBackButton = (ImageButton) toolbar.findViewById(R.id.ibBack);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        RegularTextView mTitleTextView = toolbar.findViewById(R.id.rtvUrl);
+        FrameLayout mBackButton = toolbar.findViewById(R.id.flBack);
+        ImageButton mIbBackButton = toolbar.findViewById(R.id.ibBack);
         mIbBackButton.setOnClickListener(this);
         mBackButton.setOnClickListener(this);
         mTitleTextView.setText(url);

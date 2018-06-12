@@ -52,8 +52,8 @@ public class FragmentUsersChat extends ConversaFragment implements OnContactClic
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_users, container, false);
 
-        mRvUsers = (RecyclerView) rootView.findViewById(R.id.lvUsers);
-        mRlNoUsers = (LinearLayout) rootView.findViewById(R.id.rlNoChats);
+        mRvUsers = rootView.findViewById(R.id.lvUsers);
+        mRlNoUsers = rootView.findViewById(R.id.rlNoChats);
 
         mUserListAdapter = new ChatsAdapter((AppCompatActivity) getActivity(), this, this);
         mRvUsers.setHasFixedSize(true);
@@ -205,9 +205,9 @@ public class FragmentUsersChat extends ConversaFragment implements OnContactClic
                 .autoDismiss(true)
                 .build();
 
-        RelativeLayout select = (RelativeLayout) dialog.getCustomView().findViewById(R.id.rlDialogUserSelect);
-        RelativeLayout clear = (RelativeLayout) dialog.getCustomView().findViewById(R.id.rlDialogUserClear);
-        RelativeLayout delete = (RelativeLayout) dialog.getCustomView().findViewById(R.id.rlDialogUserDelete);
+        RelativeLayout select = dialog.getCustomView().findViewById(R.id.rlDialogUserSelect);
+        RelativeLayout clear = dialog.getCustomView().findViewById(R.id.rlDialogUserClear);
+        RelativeLayout delete = dialog.getCustomView().findViewById(R.id.rlDialogUserDelete);
 
         select.setOnClickListener(new View.OnClickListener() {
             @Override

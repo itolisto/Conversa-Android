@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -19,8 +20,14 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
-import com.parse.ParseException;
-import com.parse.SignUpCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -31,7 +38,6 @@ import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.settings.language.DynamicLanguage;
 import ee.app.conversa.utils.AppActions;
-import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.URLSpanNoUnderline;
@@ -65,15 +71,15 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     @Override
     protected void initialization() {
         super.initialization();
-        mBtnSignUpUp = (Button) findViewById(btnSignUpUp);
-        radioSexGroup = (RadioGroup)findViewById(R.id.rgGender);
-        mEtSignUpEmail = (EditText) findViewById(R.id.etSignUpEmail);
-        mEtSignUpPassword = (EditText) findViewById(R.id.etSignUpPassword);
-        mEtSignUpBirthday = (EditText) findViewById(R.id.etSignUpBirthday);
+        mBtnSignUpUp = findViewById(btnSignUpUp);
+        radioSexGroup = findViewById(R.id.rgGender);
+        mEtSignUpEmail = findViewById(R.id.etSignUpEmail);
+        mEtSignUpPassword = findViewById(R.id.etSignUpPassword);
+        mEtSignUpBirthday = findViewById(R.id.etSignUpBirthday);
 
-        TextInputLayout mTilSignUpEmail = (TextInputLayout) findViewById(R.id.tilEmailSignUp);
-        TextInputLayout mTilSignUpPassword = (TextInputLayout) findViewById(R.id.tilPasswordSignUp);
-        TextInputLayout mTilSignUpBirthday = (TextInputLayout) findViewById(tilBirthdaySignUp);
+        TextInputLayout mTilSignUpEmail = findViewById(R.id.tilEmailSignUp);
+        TextInputLayout mTilSignUpPassword = findViewById(R.id.tilPasswordSignUp);
+        TextInputLayout mTilSignUpBirthday = findViewById(tilBirthdaySignUp);
 
         mTilSignUpEmail.setOnClickListener(this);
         mTilSignUpPassword.setOnClickListener(this);
@@ -84,7 +90,7 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
         mBtnSignUpUp.setOnClickListener(this);
         mBtnSignUpUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
 
-        LightTextView mLtvTermsPrivacy = (LightTextView) findViewById(R.id.ltvTermsPrivacy);
+        LightTextView mLtvTermsPrivacy = findViewById(R.id.ltvTermsPrivacy);
         String text = mLtvTermsPrivacy.getText().toString();
 
         String language = ConversaApp.getInstance(this).getPreferences().getLanguage();
@@ -159,42 +165,26 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
             }
             case btnSignUpUp: {
                 if (validateForm()) {
-                    Account user = new Account();
-                    String email = mEtSignUpEmail.getText().toString();
-                    user.setEmail(email);
-                    user.setUsername(email);
-                    user.setPassword(mEtSignUpPassword.getText().toString());
-                    user.put(Const.kUserTypeKey, 1);
-
-                    Calendar newDate = Calendar.getInstance();
-                    newDate.set(mYear, mMonth, mDay);
-
-                    user.put(Const.kUserBirthday, newDate.getTimeInMillis());
-
-                    int selectedId = radioSexGroup.getCheckedRadioButtonId();
-
-                    if (findViewById(selectedId).getId() == R.id.rbFemale) {
-                        user.put(Const.kUserGender, 0);
-                    } else {
-                        user.put(Const.kUserGender, 1);
-                    }
-
                     final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
                     progress.setContentView(R.layout.progress_layout);
 
-                    user.signUpInBackground(new SignUpCallback() {
-                        public void done(ParseException e) {
-                            progress.dismiss();
-                            if (e == null) {
-                                // Hooray! Let them use the app now.
-                                AuthListener(true, null);
-                            } else {
-                                // Sign up didn't succeed. Look at the ParseException
-                                // to figure out what went wrong
-                                AuthListener(false, e);
+                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+                    String email = mEtSignUpEmail.getText().toString();
+                    String password = mEtSignUpPassword.getText().toString();
+
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                progress.dismiss();
+                                if (task.isSuccessful()) {
+                                    AuthListener(true, null);
+                                } else {
+                                    AuthListener(false, task.getException());
+                                }
                             }
-                        }
-                    });
+                        });
                 }
                 break;
             }
@@ -279,8 +269,49 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
         return true;
     }
 
-    public void AuthListener(boolean result, ParseException error) {
+    public void AuthListener(boolean result, Exception error) {
         if (result) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            Account user = new Account();
+
+            String email = mEtSignUpEmail.getText().toString();
+            String parts[] = TextUtils.split(email, "@");
+            String username = parts[0];
+            String domain = TextUtils.split(parts[1], "\\.")[0];
+            String fusername = username + domain;
+
+            Calendar newDate = Calendar.getInstance();
+            newDate.set(mYear, mMonth, mDay);
+
+            user.setEmail(email);
+            user.setUsername(fusername);
+            user.setUserType(1);
+            user.setBirthday(newDate.getTime());
+
+            int selectedId = radioSexGroup.getCheckedRadioButtonId();
+
+            if (findViewById(selectedId).getId() == R.id.rbFemale) {
+                user.setGender(0);
+            } else {
+                user.setGender(1);
+            }
+
+            db.collection("User")
+                .add(user.toMap())
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
             AppActions.initSession(this);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

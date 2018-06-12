@@ -62,7 +62,7 @@ public class ActivityImageDetail extends AppCompatActivity implements OnClickLis
         // Set up ViewPager and backing adapter
         // TODO: Here we should have a reference of how many images this conversation has
         mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), 1);
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(2);
 
@@ -71,7 +71,7 @@ public class ActivityImageDetail extends AppCompatActivity implements OnClickLis
 
         // Enable some additional newer visibility and ActionBar features to create a more
         // immersive photo viewing experience
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
         if (toolbar != null) {
             toolbar.getBackground().setAlpha(100);

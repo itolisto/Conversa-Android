@@ -33,16 +33,16 @@ public class ActivitySettingsChat extends ConversaActivity implements View.OnCli
     protected void initialization() {
         super.initialization();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setTitle(R.string.preferences__chats);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         findViewById(R.id.llQualityUpload).setOnClickListener(this);
-        SwitchCompat mScSoundSending = (SwitchCompat) findViewById(R.id.scSoundSending);
-        SwitchCompat mScSoundReceiving = (SwitchCompat) findViewById(R.id.scSoundReceiving);
-        mLtvQualitySummary = (LightTextView) findViewById(R.id.ltvQualitySummary);
+        SwitchCompat mScSoundSending = findViewById(R.id.scSoundSending);
+        SwitchCompat mScSoundReceiving = findViewById(R.id.scSoundReceiving);
+        mLtvQualitySummary = findViewById(R.id.ltvQualitySummary);
 
         mScSoundSending.setChecked(
                 ConversaApp.getInstance(this).getPreferences().getPlaySoundWhenSending()

@@ -13,9 +13,6 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.flurry.android.FlurryAgent;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
@@ -29,8 +26,11 @@ import java.util.Map;
 
 import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
+import ee.app.conversa.interfaces.FunctionCallback;
 import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.model.database.dbBusiness;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
@@ -62,7 +62,7 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
         categoryId = getIntent().getExtras().getString(Const.kObjectRowObjectIdKey);
         custom = getIntent().getExtras().getBoolean("custom");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -75,9 +75,9 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
         loadingPage = false;
         loadMore = true;
 
-        mRlNoConnection = (RelativeLayout) findViewById(R.id.rlNoConnection);
-        mPbLoadingCategory = (AVLoadingIndicatorView) findViewById(R.id.pbLoadingCategory);
-        mRvBusiness = (RecyclerView) findViewById(R.id.rvBusiness);
+        mRlNoConnection = findViewById(R.id.rlNoConnection);
+        mPbLoadingCategory = findViewById(R.id.pbLoadingCategory);
+        mRvBusiness = findViewById(R.id.rvBusiness);
 
         mBusinessListAdapter = new BusinessAdapter(this, this);
         mRvBusiness.setHasFixedSize(true);
@@ -125,9 +125,9 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
             params.put("page", page);
             params.put("categoryId", categoryId);
             params.put("custom", custom);
-            ParseCloud.callFunctionInBackground("getCategoryBusinesses", params, new FunctionCallback<String>() {
+            NetworkingManager.getInstance().post("getCategoryBusinesses", params, new FunctionCallback<String>() {
                 @Override
-                public void done(String result, ParseException e) {
+                public void done(String json, FirebaseCustomException exception) {
                     if (page == 0)
                         mPbLoadingCategory.smoothToHide();
 
@@ -136,8 +136,8 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
                         mBusinessListAdapter.addLoad(false);
                     }
 
-                    if (e != null) {
-                        if (AppActions.validateParseException(e)) {
+                    if (exception != null) {
+                        if (AppActions.validateParseException(exception)) {
                             AppActions.appLogout(getApplicationContext(), true);
                         } else {
                             if (page == 0)
@@ -145,7 +145,7 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
                         }
                     } else {
                         try {
-                            JSONArray results = new JSONArray(result);
+                            JSONArray results = new JSONArray(json);
                             int size = results.length();
 
                             if (size > 0) {

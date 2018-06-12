@@ -15,9 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
-import ee.app.conversa.holders.BaseHolder;
-import ee.app.conversa.holders.NHeaderViewHolder;
-import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.interfaces.OnFavoriteClickListener;
 import ee.app.conversa.model.Favorite;
 import ee.app.conversa.utils.Logger;
@@ -66,8 +63,8 @@ public class FavsAdapter extends BaseAdapter implements AdapterView.OnItemClickL
             convertView = layoutInflater.inflate(R.layout.favorite_item, null);
         }
 
-        final SimpleDraweeView imageView = (SimpleDraweeView) convertView.findViewById(R.id.sdvFavoriteImage);
-        final MediumTextView nameTextView = (MediumTextView) convertView.findViewById(R.id.mtvFavoriteDisplayName);
+        final SimpleDraweeView imageView = convertView.findViewById(R.id.sdvFavoriteImage);
+        final MediumTextView nameTextView = convertView.findViewById(R.id.mtvFavoriteDisplayName);
 
         Uri uri = Utils.getUriFromString(favorite.getAvatarUrl());
 

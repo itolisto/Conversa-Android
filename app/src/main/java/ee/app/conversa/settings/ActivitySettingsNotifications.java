@@ -26,16 +26,16 @@ public class ActivitySettingsNotifications extends ConversaActivity implements S
     protected void initialization() {
         super.initialization();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setTitle(R.string.preferences__notifications);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        SwitchCompat mScPushSound = (SwitchCompat) findViewById(R.id.scPushSound);
-        SwitchCompat mScPushPreview = (SwitchCompat) findViewById(R.id.scPushPreview);
-        SwitchCompat mScInAppSound = (SwitchCompat) findViewById(R.id.scInAppSound);
-        SwitchCompat mScInAppPreview = (SwitchCompat) findViewById(R.id.scInAppPreview);
+        SwitchCompat mScPushSound = findViewById(R.id.scPushSound);
+        SwitchCompat mScPushPreview = findViewById(R.id.scPushPreview);
+        SwitchCompat mScInAppSound = findViewById(R.id.scInAppSound);
+        SwitchCompat mScInAppPreview = findViewById(R.id.scInAppPreview);
 
         mScPushSound.setChecked(
                 ConversaApp.getInstance(this).getPreferences().getPushNotificationSound()

@@ -169,7 +169,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
                 foregroundDrawable = ContextCompat.getDrawable(context,R.drawable.gallery_photo_selected);
             }
 
-            ((FrameLayout) holder.root).setForeground(isSelected ? foregroundDrawable : null);
+            holder.root.setForeground(isSelected ? foregroundDrawable : null);
         }
 
 
@@ -198,7 +198,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
     }
 
     public interface OnItemClickListener {
-        public void onItemClick(View view, int position);
+        void onItemClick(View view, int position);
     }
 
 
@@ -280,8 +280,8 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
 
         public GalleryViewHolder(View view) {
             super(view);
-            root = (TedSquareFrameLayout) view.findViewById(R.id.root);
-            iv_thumbnail = (TedSquareImageView) view.findViewById(R.id.iv_thumbnail);
+            root = view.findViewById(R.id.root);
+            iv_thumbnail = view.findViewById(R.id.iv_thumbnail);
 
         }
 

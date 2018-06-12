@@ -19,9 +19,6 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.flurry.android.FlurryAgent;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
@@ -34,10 +31,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import ee.app.conversa.extendables.BaseActivity;
+import ee.app.conversa.interfaces.FunctionCallback;
 import ee.app.conversa.interfaces.OnCategoryClickListener;
 import ee.app.conversa.items.HeaderItem;
 import ee.app.conversa.items.SectionableItem;
 import ee.app.conversa.model.nCategory;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
@@ -61,11 +61,11 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
 
         View rootView = inflater.inflate(R.layout.fragment_category, container, false);
 
-        mRlNoConnection = (RelativeLayout) rootView.findViewById(R.id.rlNoConnection);
-        mRvCategory = (RecyclerView) rootView.findViewById(R.id.rvCategories);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.srlCategories);
-        mPbLoadingCategories = (AVLoadingIndicatorView) rootView.findViewById(R.id.pbLoadingCategories);
-        Button mBtnRetry = (Button) rootView.findViewById(R.id.btnRetryResult);
+        mRlNoConnection = rootView.findViewById(R.id.rlNoConnection);
+        mRvCategory = rootView.findViewById(R.id.rvCategories);
+        mSwipeRefreshLayout = rootView.findViewById(R.id.srlCategories);
+        mPbLoadingCategories = rootView.findViewById(R.id.pbLoadingCategories);
+        Button mBtnRetry = rootView.findViewById(R.id.btnRetryResult);
 
         mBtnRetry.setOnClickListener(this);
 
@@ -116,13 +116,13 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
             // Call Parse for registry
             HashMap<String, Object> params = new HashMap<>(1);
             params.put("language", language);
-            ParseCloud.callFunctionInBackground("getCategories", params, new FunctionCallback<String>() {
+            NetworkingManager.getInstance().post("getCategories", params, new FunctionCallback<String>() {
                 @Override
-                public void done(String result, ParseException e) {
-                    if (e == null) {
-                        parseResult(result, true);
+                public void done(String json, FirebaseCustomException exception) {
+                    if (exception == null) {
+                        parseResult(json, true);
                     } else {
-                        if (AppActions.validateParseException(e)) {
+                        if (AppActions.validateParseException(exception)) {
                             AppActions.appLogout(getActivity(), true);
                         } else {
                             parseResult("", true);

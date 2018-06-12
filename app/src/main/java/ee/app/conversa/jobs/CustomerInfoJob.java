@@ -6,8 +6,7 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONObject;
 
@@ -15,7 +14,8 @@ import java.util.HashMap;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.management.AblyConnection;
-import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Logger;
 
@@ -42,10 +42,10 @@ public class CustomerInfoJob extends Job {
     public void onRun() throws Throwable {
         HashMap<String, String> params = new HashMap<>();
 
-        String json = ParseCloud.callFunction("getCustomerId", params);
+        String json = NetworkingManager.getInstance().postSync("getCustomerId", params);
         JSONObject jsonRootObject = new JSONObject(json);
 
-        String objectId = jsonRootObject.optString("ob", Account.getCurrentUser().getObjectId());
+        String objectId = jsonRootObject.optString("ob", FirebaseAuth.getInstance().getUid());
         String displayName = jsonRootObject.optString("dn", "");
         int gender = jsonRootObject.optInt("gn", 2);
         String birthday = jsonRootObject.optString("bd", "");
@@ -66,8 +66,8 @@ public class CustomerInfoJob extends Job {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        if (throwable instanceof ParseException) {
-            if (AppActions.validateParseException((ParseException) throwable)) {
+        if (throwable instanceof FirebaseCustomException) {
+            if (AppActions.validateParseException((FirebaseCustomException) throwable)) {
                 AppActions.appLogout(getApplicationContext(), true);
                 return RetryConstraint.CANCEL;
             }

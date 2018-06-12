@@ -28,9 +28,6 @@ import android.widget.ImageButton;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.flurry.android.FlurryAgent;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -42,6 +39,7 @@ import java.util.TimerTask;
 import ee.app.conversa.adapters.MessagesAdapter;
 import ee.app.conversa.camera.ImagePickerDemo;
 import ee.app.conversa.extendables.ConversaActivity;
+import ee.app.conversa.interfaces.FunctionCallback;
 import ee.app.conversa.interfaces.OnMessageClickListener;
 import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.messaging.MessageDeleteReason;
@@ -49,6 +47,8 @@ import ee.app.conversa.messaging.MessageUpdateReason;
 import ee.app.conversa.messaging.SendMessageAsync;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
@@ -230,12 +230,12 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	protected void initialization() {
 		super.initialization();
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		mTitleTextView = (MediumTextView) toolbar.findViewById(R.id.tvChatName);
-		FrameLayout mBackButton = (FrameLayout) toolbar.findViewById(R.id.flBack);
-		ImageButton mIbBackButton = (ImageButton) toolbar.findViewById(R.id.ibBack);
-		mSubTitleTextView = (RegularTextView) toolbar.findViewById(R.id.tvChatStatus);
-		ivContactAvatar = (SimpleDraweeView) toolbar.findViewById(R.id.ivAvatarChat);
+		Toolbar toolbar = findViewById(R.id.toolbar);
+		mTitleTextView = toolbar.findViewById(R.id.tvChatName);
+		FrameLayout mBackButton = toolbar.findViewById(R.id.flBack);
+		ImageButton mIbBackButton = toolbar.findViewById(R.id.ibBack);
+		mSubTitleTextView = toolbar.findViewById(R.id.tvChatStatus);
+		ivContactAvatar = toolbar.findViewById(R.id.ivAvatarChat);
 
 		Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
 
@@ -251,15 +251,15 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		setSupportActionBar(toolbar);
 
-		mRvWallMessages = (RecyclerView) findViewById(R.id.rvWallMessages);
-		mEtMessageText = (EditText) findViewById(R.id.etWallMessage);
-		mBtnWallSend = (ImageButton) findViewById(R.id.btnWallSend);
+		mRvWallMessages = findViewById(R.id.rvWallMessages);
+		mEtMessageText = findViewById(R.id.etWallMessage);
+		mBtnWallSend = findViewById(R.id.btnWallSend);
 
 		mBtnWallSend.setEnabled(false);
 
 		myBottomSheet = MyBottomSheetDialogFragment.newInstance(businessObject.getBusinessId(), this);
 
-		ImageButton mBtnOpenSlidingDrawer = (ImageButton) findViewById(R.id.btnSlideButton);
+		ImageButton mBtnOpenSlidingDrawer = findViewById(R.id.btnSlideButton);
 
 		mEtMessageText.setTypeface(ConversaApp.getInstance(this).getTfRalewayRegular());
 		mEtMessageText.addTextChangedListener(isUserTypingTextWatcher);
@@ -406,7 +406,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			case R.id.flBack:
 				onBackPressed();
 				break;
-			case R.id.btnSlideButton:;
+			case R.id.btnSlideButton:
 				myBottomSheet.show(getSupportFragmentManager(), myBottomSheet.getTag());
 				break;
 			case R.id.btnWallSend:
@@ -497,9 +497,9 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						ParseCloud.callFunctionInBackground("getBusinessLastStatus", params, new FunctionCallback<Long>() {
+						NetworkingManager.getInstance().post("getBusinessLastStatus", params, new FunctionCallback<Long>() {
 							@Override
-							public void done(Long last, ParseException e) {
+							public void done(Long last, FirebaseCustomException e) {
 								if (e != null) {
 									if (AppActions.validateParseException(e)) {
 										AppActions.appLogout(getApplicationContext(), true);

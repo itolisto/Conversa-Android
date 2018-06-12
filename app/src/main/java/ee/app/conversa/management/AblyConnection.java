@@ -8,10 +8,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +19,10 @@ import java.util.List;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.events.TypingEvent;
+import ee.app.conversa.interfaces.FunctionCallback;
 import ee.app.conversa.messaging.CustomMessageService;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Logger;
 import io.ably.lib.realtime.AblyRealtime;
@@ -223,9 +222,9 @@ public class AblyConnection implements Channel.MessageListener,
         params.put("fromCustomer", 1);
         params.put("isTyping", true);
 
-        ParseCloud.callFunctionInBackground("sendPresenceMessage", params, new FunctionCallback<Integer>() {
+        NetworkingManager.getInstance().post("sendPresenceMessage", params, new FunctionCallback<Integer>() {
             @Override
-            public void done(Integer object, ParseException e) {
+            public void done(Integer object, FirebaseCustomException e) {
                 if (e != null) {
                     if (AppActions.validateParseException(e)) {
                         AppActions.appLogout(context, true);
@@ -241,9 +240,9 @@ public class AblyConnection implements Channel.MessageListener,
         params.put("channelName", channelName);
         params.put("fromCustomer", 1);
 
-        ParseCloud.callFunctionInBackground("sendPresenceMessage", params, new FunctionCallback<Integer>() {
+        NetworkingManager.getInstance().post("sendPresenceMessage", params, new FunctionCallback<Integer>() {
             @Override
-            public void done(Integer object, ParseException e) {
+            public void done(Integer object, FirebaseCustomException e) {
                 if (e != null) {
                     if (AppActions.validateParseException(e)) {
                         AppActions.appLogout(context, true);

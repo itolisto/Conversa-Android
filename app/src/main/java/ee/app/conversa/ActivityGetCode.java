@@ -50,10 +50,10 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
     protected void initialization() {
         super.initialization();
 
-        Button mBtnGetCode = (Button) findViewById(R.id.btnGetCode);
+        Button mBtnGetCode = findViewById(R.id.btnGetCode);
         mBtnGetCode.setOnClickListener(this);
 
-        MediumTextView mLtvClickHere = (MediumTextView) findViewById(R.id.ltvShareThis);
+        MediumTextView mLtvClickHere = findViewById(R.id.ltvShareThis);
         String text = getResources().getString(R.string.info_get_code2);
 
         int index=0;
@@ -203,7 +203,7 @@ public class ActivityGetCode extends BaseActivity implements View.OnClickListene
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            TextView textView = view.findViewById(android.R.id.text1);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 textView.setCompoundDrawablesRelativeWithIntrinsicBounds(images.get(position), null, null, null);

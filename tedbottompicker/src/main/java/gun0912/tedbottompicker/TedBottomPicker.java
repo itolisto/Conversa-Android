@@ -228,15 +228,15 @@ public class TedBottomPicker extends Fragment {
     private void initView(View contentView) {
 
         view_title_container = contentView.findViewById(R.id.view_title_container);
-        rc_gallery = (RecyclerView) contentView.findViewById(R.id.rc_gallery);
-        title = (TextView) contentView.findViewById(tv_title);
-        leftIcon = (TextView) contentView.findViewById(R.id.tv_left_icon);
-        rightIcon = (TextView) contentView.findViewById(R.id.tv_right_icon);
+        rc_gallery = contentView.findViewById(R.id.rc_gallery);
+        title = contentView.findViewById(tv_title);
+        leftIcon = contentView.findViewById(R.id.tv_left_icon);
+        rightIcon = contentView.findViewById(R.id.tv_right_icon);
 
-        selected_photos_container_frame = (FrameLayout) contentView.findViewById(R.id.selected_photos_container_frame);
-        hsv_selected_photos = (HorizontalScrollView) contentView.findViewById(R.id.hsv_selected_photos);
-        selected_photos_container = (LinearLayout) contentView.findViewById(R.id.selected_photos_container);
-        selected_photos_empty = (TextView) contentView.findViewById(R.id.selected_photos_empty);
+        selected_photos_container_frame = contentView.findViewById(R.id.selected_photos_container_frame);
+        hsv_selected_photos = contentView.findViewById(R.id.hsv_selected_photos);
+        selected_photos_container = contentView.findViewById(R.id.selected_photos_container);
+        selected_photos_empty = contentView.findViewById(R.id.selected_photos_empty);
 
         Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "FontAwesome.otf");
 
@@ -325,8 +325,8 @@ public class TedBottomPicker extends Fragment {
         selectedUriList.add(uri);
 
         final View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.tedbottompicker_selected_item, null);
-        ImageView thumbnail = (ImageView) rootView.findViewById(R.id.selected_photo);
-        ImageView iv_close = (ImageView) rootView.findViewById(R.id.iv_close);
+        ImageView thumbnail = rootView.findViewById(R.id.selected_photo);
+        ImageView iv_close = rootView.findViewById(R.id.iv_close);
         rootView.setTag(uri);
 
         selected_photos_container.addView(rootView, 0);

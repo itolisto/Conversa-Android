@@ -3,9 +3,6 @@ package ee.app.conversa;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -13,14 +10,10 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.flurry.android.FlurryAgent;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
@@ -32,25 +25,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.adapters.FavsAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.interfaces.OnContactClickListener;
+import ee.app.conversa.interfaces.FunctionCallback;
 import ee.app.conversa.interfaces.OnFavoriteClickListener;
 import ee.app.conversa.model.Favorite;
 import ee.app.conversa.model.database.dbBusiness;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
 
 public class ActivityFavorite extends ConversaActivity implements OnFavoriteClickListener {
 
-    //private int page;
-    //private int mPreviousTotal;
     private boolean loadMore;
-    //private boolean loadingPage;*/
 
-    //private int visibleThreshold = 20;
     private int currentPage = 0;
     private int previousTotal = 0;
     private boolean loading = false;
@@ -74,7 +64,7 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
     protected void initialization() {
         super.initialization();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarFavs);
+        Toolbar toolbar = findViewById(R.id.toolbarFavs);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -83,18 +73,16 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        //page = 0;
         loading = true;
         loadMore = true;
-        //mPreviousTotal=0;*/
 
-        mRlNoConnection = (RelativeLayout) findViewById(R.id.rlNoConnectionFavs);
-        mPbLoadingCategory = (AVLoadingIndicatorView) findViewById(R.id.pbLoadingCategoryFavs);
+        mRlNoConnection = findViewById(R.id.rlNoConnectionFavs);
+        mPbLoadingCategory = findViewById(R.id.pbLoadingCategoryFavs);
 
 
-        mRvBusiness = (GridView) findViewById(R.id.gvFavoritesGrid);
-        mLoadBusiness = (LinearLayout) findViewById(R.id.rlLoadingBusiness);
-        mStartBrowsingf = (Button)findViewById(R.id.btnStartBrowsingF);
+        mRvBusiness = findViewById(R.id.gvFavoritesGrid);
+        mLoadBusiness = findViewById(R.id.rlLoadingBusiness);
+        mStartBrowsingf = findViewById(R.id.btnStartBrowsingF);
 
 
         mBusinessListAdapter = new FavsAdapter(this, this, mRvBusiness);
@@ -152,14 +140,14 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
             HashMap<String, Object> params = new HashMap<>(2);
             params.put("skip", currentPage);
             params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
-            ParseCloud.callFunctionInBackground("getCustomerFavs", params, new FunctionCallback<String>() {
+            NetworkingManager.getInstance().post("getCustomerFavs", params, new FunctionCallback<String>() {
                 @Override
-                public void done(String result, ParseException e) {
+                public void done(String result, FirebaseCustomException exception) {
                     if (currentPage == 0)
                         mPbLoadingCategory.smoothToHide();
 
-                    if (e != null) {
-                        if (AppActions.validateParseException(e)) {
+                    if (exception != null) {
+                        if (AppActions.validateParseException(exception)) {
                             AppActions.appLogout(getApplicationContext(), true);
                         } else {
                             if (currentPage == 0)

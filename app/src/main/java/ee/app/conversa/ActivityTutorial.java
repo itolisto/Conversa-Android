@@ -8,7 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.parse.ParseUser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.tutorial.Direction;
@@ -116,7 +117,7 @@ public class ActivityTutorial extends BaseActivity {
 
         @Override
         public void onClick(View v) {
-            ParseUser currentUser = ParseUser.getCurrentUser();
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null) {
                 mContext.startActivity(new Intent(mContext, ActivityMain.class));
             } else {

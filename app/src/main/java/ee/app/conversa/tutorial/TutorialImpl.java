@@ -81,8 +81,8 @@ final class TutorialImpl<TFragment> {
     View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(mInternalFragment.getLayoutResId(), container, false);
 
-        mViewPager = (ViewPager) view.findViewById(mInternalFragment.getViewPagerResId());
-        mPageIndicator = (TutorialPageIndicator) view.findViewById(mInternalFragment.getIndicatorResId());
+        mViewPager = view.findViewById(mInternalFragment.getViewPagerResId());
+        mPageIndicator = view.findViewById(mInternalFragment.getIndicatorResId());
         mButtonSkip = view.findViewById(mInternalFragment.getButtonSkipResId());
         mSeparator = view.findViewById(mInternalFragment.getSeparatorResId());
 

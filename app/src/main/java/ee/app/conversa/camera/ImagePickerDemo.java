@@ -34,7 +34,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -45,10 +44,9 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.CameraView;
 
@@ -138,8 +136,8 @@ public class ImagePickerDemo extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_picker_demo);
-        mCameraView = (CameraView) findViewById(R.id.camera);
-        bottomSheetView = (FrameLayout) findViewById(R.id.container);
+        mCameraView = findViewById(R.id.camera);
+        bottomSheetView = findViewById(R.id.container);
 
         iActivity = this;
         if (mCameraView != null) {
@@ -149,11 +147,11 @@ public class ImagePickerDemo extends AppCompatActivity implements
         if (getIntent() != null) {
             pickerType = getIntent().getStringExtra("picker");
         }
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.take_picture);
+        FloatingActionButton fab = findViewById(R.id.take_picture);
         if (fab != null) {
             fab.setOnClickListener(mOnClickListener);
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -437,11 +435,12 @@ public class ImagePickerDemo extends AppCompatActivity implements
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.image_preview);
 
-        ImageView previewImage = (ImageView) dialog.findViewById(R.id.img_preview_image);
-        Button saveButton = (Button) dialog.findViewById(R.id.btn_image_preview_save);
-        Button cancelButton = (Button) dialog.findViewById(R.id.btn_image_preview_canel);
+        SimpleDraweeView previewImage = dialog.findViewById(R.id.img_preview_image);
+        Button saveButton = dialog.findViewById(R.id.btn_image_preview_save);
+        Button cancelButton = dialog.findViewById(R.id.btn_image_preview_canel);
 
-        Glide.with(this).load(uri).into(previewImage);
+        previewImage.setImageURI(uri);
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

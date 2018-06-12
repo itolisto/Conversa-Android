@@ -9,8 +9,8 @@ import android.support.v4.app.NotificationCompat;
 
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
-import ee.app.conversa.model.database.dbNotificationInformation;
 import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.model.database.dbNotificationInformation;
 import ee.app.conversa.notifications.NotificationDeleted;
 import ee.app.conversa.notifications.NotificationPressed;
 import ee.app.conversa.utils.Const;

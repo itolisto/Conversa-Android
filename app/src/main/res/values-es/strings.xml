@@ -11,7 +11,7 @@
     <string name="category">Categorías</string>
     <string name="chat_wall_message_hint">Escribe un mensaje</string>
     <string name="close">cerrar</string>
-    <string name="confirm_email">Te hemos enviado un correo a %1s para cambiar tu contraseña</string>
+    <string name="confirm_email">Te enviaremos un correo a %1s para cambiar tu contraseña</string>
     <string name="contact_number_title">Número de contacto</string>
     <string name="contacts_last_message_default">Mensaje</string>
     <string name="contacts_last_message_image">Imagen</string>

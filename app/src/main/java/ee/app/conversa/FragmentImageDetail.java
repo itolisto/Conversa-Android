@@ -76,7 +76,7 @@ public class FragmentImageDetail extends Fragment {
             Bundle savedInstanceState) {
         // Inflate and locate the main ImageView
         final View v = inflater.inflate(R.layout.image_detail_fragment, container, false);
-        mImageView = (ZoomableDraweeView) v.findViewById(R.id.imageView);
+        mImageView = v.findViewById(R.id.imageView);
         Uri uri = Utils.getUriFromString(mImageUrl);
 
         if (uri == null) {

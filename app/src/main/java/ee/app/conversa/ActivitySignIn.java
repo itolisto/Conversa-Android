@@ -71,11 +71,11 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
 
     protected void initialization() {
         super.initialization();
-        Button mBtnSignIn = (Button) findViewById(R.id.btnSignIn);
-        Button mBtnSignUp = (Button) findViewById(R.id.btnSignUp);
-        ImageView mivLanguage = (ImageView) findViewById(R.id.ivLanguage);
+        Button mBtnSignIn = findViewById(R.id.btnSignIn);
+        Button mBtnSignUp = findViewById(R.id.btnSignUp);
+        ImageView mivLanguage = findViewById(R.id.ivLanguage);
 
-        LightTextView mLtvClickHere = (LightTextView) findViewById(R.id.ltvClickHere);
+        LightTextView mLtvClickHere = findViewById(R.id.ltvClickHere);
         String text = getString(R.string.string_signin_sign_up_business_two);
 
         int index = TextUtils.indexOf(text, "?") + 2; // Index starts from zero but spannable string starts from one, plus whitespace

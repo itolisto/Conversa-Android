@@ -131,9 +131,9 @@ public class InAppNotification implements OnClickListener {
 				.getDB()
 				.isContact(message.getFromUserId());
 
-		TextView mTvUserName = (TextView) mPushLayout.findViewById(R.id.tvUserName);
-		TextView mTvNotification = (TextView) mPushLayout.findViewById(R.id.tvNotification);
-		SimpleDraweeView mSdvAvatar = (SimpleDraweeView) mPushLayout.findViewById(R.id.sdvPushAvatar);
+		TextView mTvUserName = mPushLayout.findViewById(R.id.tvUserName);
+		TextView mTvNotification = mPushLayout.findViewById(R.id.tvNotification);
+		SimpleDraweeView mSdvAvatar = mPushLayout.findViewById(R.id.sdvPushAvatar);
 
 		if (user != null) {
 			mTvUserName.setText(user.getDisplayName());

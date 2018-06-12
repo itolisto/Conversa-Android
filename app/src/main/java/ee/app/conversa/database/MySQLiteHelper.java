@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Locale;
 
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.model.database.dbNotificationInformation;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.model.database.dbNotificationInformation;
 import ee.app.conversa.model.database.dbSearch;
 import ee.app.conversa.model.nChatItem;
 import ee.app.conversa.utils.Const;

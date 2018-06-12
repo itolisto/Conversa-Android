@@ -61,8 +61,8 @@ public class FragmentPreferences extends ConversaFragment implements View.OnClic
         v.findViewById(R.id.rlShareContainer).setOnClickListener(this);
         v.findViewById(R.id.rlHelpContainer).setOnClickListener(this);
 
-        ImageView mIvProfile = (ImageView) v.findViewById(R.id.ivProfile);
-        LightTextView mLtvWelcomeMessage = (LightTextView) v.findViewById(R.id.ltvWelcomeMessage);
+        ImageView mIvProfile = v.findViewById(R.id.ivProfile);
+        LightTextView mLtvWelcomeMessage = v.findViewById(R.id.ltvWelcomeMessage);
 
         if (ConversaApp.getInstance(getContext()).getPreferences().getAccountGender() == 0) {
             mIvProfile.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_person_female));
@@ -191,10 +191,10 @@ public class FragmentPreferences extends ConversaFragment implements View.OnClic
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(PreferencesKeys.ACCOUNT_DISPLAY_NAME_KEY)) {
-            LightTextView mLtvWelcomeMessage = (LightTextView) getView().findViewById(R.id.ltvWelcomeMessage);
+            LightTextView mLtvWelcomeMessage = getView().findViewById(R.id.ltvWelcomeMessage);
             mLtvWelcomeMessage.setText(getActivity().getString(R.string.sett_preferences_welcome, ConversaApp.getInstance(getActivity()).getPreferences().getAccountDisplayName()));
         } else if (key.equals(PreferencesKeys.ACCOUNT_GENDER_KEY)) {
-            ImageView mIvProfile = (ImageView) getView().findViewById(R.id.ivProfile);
+            ImageView mIvProfile = getView().findViewById(R.id.ivProfile);
             if (ConversaApp.getInstance(getContext()).getPreferences().getAccountGender() == 0) {
                 mIvProfile.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_person_female));
             } else {
@@ -215,7 +215,7 @@ public class FragmentPreferences extends ConversaFragment implements View.OnClic
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            TextView textView = view.findViewById(android.R.id.text1);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 textView.setCompoundDrawablesRelativeWithIntrinsicBounds(images.get(position), null, null, null);

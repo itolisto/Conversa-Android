@@ -41,7 +41,7 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void initialization() {
         if (checkInternetConnection) {
-            mRlNoInternetNotification = (RelativeLayout) findViewById(R.id.rlNoInternetNotification);
+            mRlNoInternetNotification = findViewById(R.id.rlNoInternetNotification);
         }
     }
 
