@@ -29,15 +29,27 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import ee.app.conversa.extendables.BaseActivity;
+import ee.app.conversa.interfaces.FunctionCallback;
+import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.parse.Account;
+import ee.app.conversa.networking.FirebaseCustomException;
+import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.settings.language.DynamicLanguage;
 import ee.app.conversa.utils.AppActions;
+import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.URLSpanNoUnderline;
@@ -168,23 +180,39 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
                     final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
                     progress.setContentView(R.layout.progress_layout);
 
-                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                    final String email = mEtSignUpEmail.getText().toString();
+                    final String password = mEtSignUpPassword.getText().toString();
+                    String parts[] = TextUtils.split(email, "@");
+                    String username = parts[0];
 
-                    String email = mEtSignUpEmail.getText().toString();
-                    String password = mEtSignUpPassword.getText().toString();
+                    Calendar newDate = Calendar.getInstance();
+                    newDate.set(mYear, mMonth, mDay);
 
-                    mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progress.dismiss();
-                                if (task.isSuccessful()) {
-                                    AuthListener(true, null);
-                                } else {
-                                    AuthListener(false, task.getException());
-                                }
+                    int selectedId = radioSexGroup.getCheckedRadioButtonId();
+
+                    HashMap<String, Object> params = new HashMap<>(5);
+
+                    if (findViewById(selectedId).getId() == R.id.rbFemale) {
+                        params.put("gender", 0);
+                    } else {
+                        params.put("gender", 1);
+                    }
+
+                    params.put("email", email);
+                    params.put("password", password);
+                    params.put("username", username);
+                    params.put("birthday", newDate.getTime().getTime());
+                    NetworkingManager.getInstance().post("users", params, new FunctionCallback<JSONObject>() {
+                        @Override
+                        public void done(JSONObject json, FirebaseCustomException exception) {
+                            progress.dismiss();
+                            if (exception == null) {
+                                SignListener(true, null);
+                            } else {
+                                SignListener(false, exception);
                             }
-                        });
+                        }
+                    });
                 }
                 break;
             }
@@ -269,53 +297,47 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
         return true;
     }
 
-    public void AuthListener(boolean result, Exception error) {
+    public void SignListener(boolean result, Exception error) {
         if (result) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-            Account user = new Account();
-
             String email = mEtSignUpEmail.getText().toString();
-            String parts[] = TextUtils.split(email, "@");
-            String username = parts[0];
-            String domain = TextUtils.split(parts[1], "\\.")[0];
-            String fusername = username + domain;
+            String password = mEtSignUpPassword.getText().toString();
 
-            Calendar newDate = Calendar.getInstance();
-            newDate.set(mYear, mMonth, mDay);
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-            user.setEmail(email);
-            user.setUsername(fusername);
-            user.setUserType(1);
-            user.setBirthday(newDate.getTime());
-
-            int selectedId = radioSexGroup.getCheckedRadioButtonId();
-
-            if (findViewById(selectedId).getId() == R.id.rbFemale) {
-                user.setGender(0);
-            } else {
-                user.setGender(1);
-            }
-
-            db.collection("User")
-                .add(user.toMap())
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-
+            mAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        AuthListener(true, null);
+                    } else {
+                        AuthListener(false, task.getException());
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
-
-            AppActions.initSession(this);
+                }
+            });
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.signup_register_error));
+
+            String positiveText = getString(android.R.string.ok);
+            builder.setPositiveButton(positiveText,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
+
+    public void AuthListener(boolean result, Exception error) {
+        if (result) {
+            AppActions.initSession(this);
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.no_user_registered));
 
             String positiveText = getString(android.R.string.ok);
             builder.setPositiveButton(positiveText,

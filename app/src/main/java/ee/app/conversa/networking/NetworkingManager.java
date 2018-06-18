@@ -1,5 +1,7 @@
 package ee.app.conversa.networking;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -20,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import ee.app.conversa.BuildConfig;
 import ee.app.conversa.interfaces.FunctionCallback;
 import ee.app.conversa.interfaces.OnCompleteFileFunction;
 import okhttp3.Call;
@@ -42,7 +45,7 @@ public class NetworkingManager {
 
     private static NetworkingManager INSTANCE = null;
 
-    private final String BASE_URL = "https://api.twitter.com/1/";
+    private final String BASE_URL = "https://us-central1-luminous-inferno-3905.cloudfunctions.net/api/";
     private final MediaType MEDIA_JSON = MediaType.parse("application/json; charset=utf-8");
     private final MediaType MEDIA_IMAGE = MediaType.parse("image/png");
 
@@ -76,6 +79,9 @@ public class NetworkingManager {
         final Headers.Builder headersBuilder = new Headers.Builder();
         headersBuilder.set("Accept", "application/json");
         headersBuilder.set("Content-Type", "text/json; Charset=UTF-8");
+        headersBuilder.set("X-Conversa-Application-Id", "def");
+        headersBuilder.set("X-Conversa-Client-Version", BuildConfig.VERSION_NAME);
+        headersBuilder.set("X-Conversa-Client-Key", "fdas");
         headersBuilder.set("Authorization", "Bearer " + ((tokenId == null) ? "" : tokenId));
         return headersBuilder.build();
     }
@@ -99,20 +105,22 @@ public class NetworkingManager {
         }
     }
 
-    public void post(@NonNull final String functionName, @NonNull final HashMap<String, ?> requestJson, @Nullable final FunctionCallback callback) {
+    public <T> void post(@NonNull final String functionName, @NonNull final HashMap<String, ?> requestJson, @Nullable final FunctionCallback<T> callback) {
         FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+
+        final FormBody.Builder body = new FormBody.Builder();
+
+        for (Map.Entry<String, ?> entry : requestJson.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            body.add(key, value.toString());
+        }
+
         if (current != null) {
             current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                 @Override
                 public void onComplete(@NonNull Task<GetTokenResult> task) {
                     //RequestBody body = RequestBody.create(MEDIA_JSON, requestJson.toString());
-                    FormBody.Builder body = new FormBody.Builder();
-
-                    for (Map.Entry<String, ?> entry : requestJson.entrySet()) {
-                        String key = entry.getKey();
-                        Object value = entry.getValue();
-                        body.add(key, value.toString());
-                    }
 
                     Request request = new Request.Builder()
                             .headers(getFirebaseHeaders(task.getResult().getToken()))
@@ -123,37 +131,42 @@ public class NetworkingManager {
                 }
             });
         } else {
-            if (callback != null)
-                callback.done(null, new FirebaseCustomException(1,"No current firebase user to create request"));
+            Request request = new Request.Builder()
+                    .headers(getFirebaseHeaders(""))
+                    .url(getAbsoluteUrl(functionName))
+                    .post(body.build())
+                    .build();
+            execute(request, callback);
         }
     }
 
     @WorkerThread
     public <T> T postSync(@NonNull final String functionName, @NonNull final HashMap<String, ?> requestJson) throws FirebaseCustomException{
         FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+        String token = "";
+
         if (current != null) {
-            String token = current.getIdToken(true).getResult().getToken();
-            //RequestBody body = RequestBody.create(MEDIA_JSON, requestJson.toString());
-            FormBody.Builder body = new FormBody.Builder();
-
-            for (Map.Entry<String, ?> entry : requestJson.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                body.add(key, value.toString());
-            }
-
-            Request request = new Request.Builder()
-                    .headers(getFirebaseHeaders(token))
-                    .url(getAbsoluteUrl(functionName))
-                    .post(body.build())
-                    .build();
-            return executeSync(request);
-        } else {
-            return null;
+            token = current.getIdToken(false).getResult().getToken();
         }
+
+        //RequestBody body = RequestBody.create(MEDIA_JSON, requestJson.toString());
+        FormBody.Builder body = new FormBody.Builder();
+
+        for (Map.Entry<String, ?> entry : requestJson.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            body.add(key, value.toString());
+        }
+
+        Request request = new Request.Builder()
+                .headers(getFirebaseHeaders(token))
+                .url(getAbsoluteUrl(functionName))
+                .post(body.build())
+                .build();
+        return executeSync(request);
     }
 
-    public void get(@NonNull final String functionName, @Nullable final FunctionCallback callback) {
+    public void get(@NonNull final String functionName, @NonNull final HashMap<String, String> requestJson, @Nullable final FunctionCallback callback) {
         FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
         if (current != null) {
             current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -161,52 +174,36 @@ public class NetworkingManager {
                 public void onComplete(@NonNull Task<GetTokenResult> task) {
                     Request request = new Request.Builder()
                             .headers(getFirebaseHeaders(task.getResult().getToken()))
-                            .url(getAbsoluteUrl(functionName))
+                            .url(getUrlWithQueries(getAbsoluteUrl(functionName), requestJson))
                             .get()
                             .build();
                     execute(request, callback);
                 }
             });
         } else {
-            if (callback != null)
-                callback.done(null, new FirebaseCustomException(1, "No current firebase user to create request"));
-        }
-    }
-
-    public <T> T getSync(@NonNull final String functionName) throws FirebaseCustomException {
-        FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
-        if (current != null) {
-            String token = current.getIdToken(true).getResult().getToken();
             Request request = new Request.Builder()
-                    .headers(getFirebaseHeaders(token))
+                    .headers(getFirebaseHeaders(""))
                     .url(getAbsoluteUrl(functionName))
                     .get()
                     .build();
-            return (T) executeSync(request);
-        } else {
-            return null;
+            execute(request, callback);
         }
     }
 
-    public void upload(@NonNull final String uri, @NonNull final String filePath, @NonNull final String fileName, @NonNull final String functionName, @Nullable final OnCompleteFileFunction callback) {
+    public <T> T getSync(@NonNull final String functionName, @NonNull final HashMap<String, String> requestJson) throws FirebaseCustomException {
         FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+        String token = "";
+
         if (current != null) {
-            current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                @Override
-                public void onComplete(@NonNull Task<GetTokenResult> task) {
-                    String FILE_TYPE = "photo";
-                    RequestBody requestBody = new MultipartBody.Builder()
-                            .setType(MultipartBody.FORM)
-                            .addFormDataPart(FILE_TYPE, fileName, RequestBody.create(MEDIA_IMAGE, new File(filePath + fileName)))
-                            .build();
-                    Request request = new Request.Builder().headers(getFirebaseHeaders(task.getResult().getToken())).url(uri).post(requestBody).build();
-                    execute(request, callback);
-                }
-            });
-        } else {
-            if (callback != null)
-                callback.OnCompleteFileFunction(null, new Exception("No current firebase user to create request"));
+            token = current.getIdToken(true).getResult().getToken();
         }
+
+        Request request = new Request.Builder()
+                .headers(getFirebaseHeaders(token))
+                .url(getUrlWithQueries(getAbsoluteUrl(functionName), requestJson))
+                .get()
+                .build();
+        return (T) executeSync(request);
     }
 
     private void execute(@NonNull final Request request, @Nullable final FunctionCallback callback) {
@@ -214,35 +211,71 @@ public class NetworkingManager {
             OkHttpClient client = configureClient();
             client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(Call call, final IOException e) {
                     call.cancel();
-                    if (callback != null)
-                        callback.done(null, new FirebaseCustomException(e));
+                    if (callback != null) {
+                        Handler handler = new Handler(Looper.getMainLooper());
+
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.done(null, new FirebaseCustomException(e));
+                            }
+                        });
+                    }
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
                         String json = response.body().string().trim();
+                        Handler handler = new Handler(Looper.getMainLooper());
 
                         try {
-                            JSONArray results = new JSONArray(json);
-                            if (callback != null)
-                                callback.done(results, null);
+                            final JSONArray results = new JSONArray(json);
+                            if (callback != null) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.done(results, null);
+                                    }
+                                });
+                            }
                             return;
                         } catch (JSONException ignored) {}
 
                         try {
-                            JSONObject results = new JSONObject(json);
-                            if (callback != null)
-                                callback.done(results, null);
+                            final JSONObject results = new JSONObject(json);
+                            if (callback != null) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.done(results, null);
+                                    }
+                                });
+                            }
                             return;
                         } catch (JSONException ignored) {}
 
-                        if (callback != null)
-                            callback.done(null, new FirebaseCustomException(1, "Couldn't parse json string"));
+                        if (callback != null) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.done(null, new FirebaseCustomException(1, "Couldn't parse json string"));
+                                }
+                            });
+                        }
                     } else {
-                        throw new IOException("Unexpected code " + response);
+                        if (callback != null) {
+                            Handler handler = new Handler(Looper.getMainLooper());
+
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.done(null, new FirebaseCustomException(1, "Internal server error"));
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -258,51 +291,29 @@ public class NetworkingManager {
             Response response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                String json = response.body().string().trim();
+                String json = "";
+
+                if (response.body() != null)
+                    json = response.body().string().trim();
+
                 Object results;
 
                 try {
                     results = new JSONArray(json);
+                    return (T) results;
                 } catch (JSONException ignored) {}
 
                 try {
                     results = new JSONObject(json);
+                    return (T) results;
                 } catch (JSONException ignored) {}
 
-                results = json;
-
-                return (T) results;
+                return null;
             } else {
                 throw new IOException("Unexpected code " + response);
             }
         } catch (@NonNull IllegalStateException | IOException ignored) {
             return null;
-        }
-    }
-
-    private void execute(@NonNull final Request request, @Nullable final OnCompleteFileFunction callback) {
-        try {
-            OkHttpClient client = configureClient();
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    call.cancel();
-                    if (callback != null)
-                        callback.OnCompleteFileFunction(null, e);
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        String status = response.body().string().trim();
-                    } else {
-                        throw new IOException("Unexpected code " + response);
-                    }
-                }
-            });
-        } catch (@NonNull IllegalStateException e) {
-            if (callback != null)
-                callback.OnCompleteFileFunction(null, e);
         }
     }
 

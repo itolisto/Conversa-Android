@@ -42,8 +42,7 @@ public class CustomerInfoJob extends Job {
     public void onRun() throws Throwable {
         HashMap<String, String> params = new HashMap<>();
 
-        String json = NetworkingManager.getInstance().postSync("getCustomerId", params);
-        JSONObject jsonRootObject = new JSONObject(json);
+        JSONObject jsonRootObject = NetworkingManager.getInstance().postSync("customer/getCustomerId", params);
 
         String objectId = jsonRootObject.optString("ob", FirebaseAuth.getInstance().getUid());
         String displayName = jsonRootObject.optString("dn", "");
