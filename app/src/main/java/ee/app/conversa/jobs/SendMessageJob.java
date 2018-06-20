@@ -121,7 +121,7 @@ public class SendMessageJob extends Job {
         }
 
         try {
-            NetworkingManager.getInstance().postSync("sendUserMessage", params);
+            NetworkingManager.getInstance().postSync("message/sendUserMessage", params);
             message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusAllDelivered);
         } catch (FirebaseCustomException e) {
             if (AppActions.validateParseException(e)) {

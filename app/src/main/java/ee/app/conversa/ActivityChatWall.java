@@ -497,7 +497,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						NetworkingManager.getInstance().post("getBusinessLastStatus", params, new FunctionCallback<Long>() {
+						NetworkingManager.getInstance().post("business/getBusinessLastStatus", params, new FunctionCallback<Long>() {
 							@Override
 							public void done(Long last, FirebaseCustomException e) {
 								if (e != null) {

@@ -51,7 +51,7 @@ public class FavoriteJob extends Job {
             params.put("favorite", true);
         }
 
-        NetworkingManager.getInstance().postSync("setCustomerFavorite", params);
+        NetworkingManager.getInstance().postSync("customer/setCustomerFavorite", params);
     }
 
     @Override

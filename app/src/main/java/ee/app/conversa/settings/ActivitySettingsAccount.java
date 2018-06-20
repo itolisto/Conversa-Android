@@ -198,7 +198,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                     params.put("displayName", newName);
                     params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
 
-                    NetworkingManager.getInstance().post("updateCustomerName", params, new FunctionCallback<Integer>() {
+                    NetworkingManager.getInstance().post("customer/updateCustomerName", params, new FunctionCallback<Integer>() {
                         @Override
                         public void done(Integer object, FirebaseCustomException e) {
                             if (e == null) {
@@ -227,7 +227,8 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                             if (task.isSuccessful()) {
                                 showSuccessMessage(getString(R.string.settings_password_succesful));
                             } else {
-                                showErrorMessage(getString(R.string.settings_password_error));
+                                //showErrorMessage(getString(R.string.settings_password_error));
+                                showErrorMessage(task.getException().getMessage());
                             }
                         }
                     });

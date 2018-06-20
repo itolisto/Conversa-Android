@@ -140,7 +140,7 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
             HashMap<String, Object> params = new HashMap<>(2);
             params.put("skip", currentPage);
             params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
-            NetworkingManager.getInstance().post("getCustomerFavs", params, new FunctionCallback<String>() {
+            NetworkingManager.getInstance().post("customer/getCustomerFavs", params, new FunctionCallback<String>() {
                 @Override
                 public void done(String result, FirebaseCustomException exception) {
                     if (currentPage == 0)

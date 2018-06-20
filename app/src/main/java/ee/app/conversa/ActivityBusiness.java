@@ -125,7 +125,7 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
             params.put("page", page);
             params.put("categoryId", categoryId);
             params.put("custom", custom);
-            NetworkingManager.getInstance().post("getCategoryBusinesses", params, new FunctionCallback<String>() {
+            NetworkingManager.getInstance().post("general/getCategoryBusinesses", params, new FunctionCallback<String>() {
                 @Override
                 public void done(String json, FirebaseCustomException exception) {
                     if (page == 0)

@@ -212,7 +212,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                     params.put("search", searchWith);
                     params.put("skip", page);
                     try {
-                        return NetworkingManager.getInstance().postSync("searchBusiness", params);
+                        return NetworkingManager.getInstance().postSync("customer/searchBusiness", params);
                     } catch (FirebaseCustomException e) {
                         Logger.error("Future task error: ", e.getMessage());
                         if (AppActions.validateParseException(e)) {

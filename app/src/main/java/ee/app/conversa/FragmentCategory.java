@@ -116,16 +116,16 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
             // Call Parse for registry
             HashMap<String, Object> params = new HashMap<>(1);
             params.put("language", language);
-            NetworkingManager.getInstance().post("getCategories", params, new FunctionCallback<String>() {
+            NetworkingManager.getInstance().post("general/getCategories", params, new FunctionCallback<JSONArray>() {
                 @Override
-                public void done(String json, FirebaseCustomException exception) {
+                public void done(JSONArray json, FirebaseCustomException exception) {
                     if (exception == null) {
                         parseResult(json, true);
                     } else {
                         if (AppActions.validateParseException(exception)) {
                             AppActions.appLogout(getActivity(), true);
                         } else {
-                            parseResult("", true);
+                            parseResult(null, true);
                         }
                     }
                 }
@@ -133,7 +133,7 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
         } else {
             if (mRlNoConnection.getVisibility() == View.GONE) {
                 mSwipeRefreshLayout.setEnabled(false);
-                parseResult("", false);
+                parseResult(null, false);
             }
         }
     }
@@ -155,22 +155,21 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
         startActivity(intent);
     }
 
-    private void parseResult(String result, boolean connected) {
+    private void parseResult(JSONArray result, boolean connected) {
         if (mSwipeRefreshLayout.isRefreshing()) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
 
         try {
-            if (result.isEmpty()) {
+            if (result == null || result.length() == 0) {
                 mRvCategory.setVisibility(View.GONE);
             } else {
                 mAdapter.clear();
 
-                JSONArray results = new JSONArray(result);
-                int size = results.length() - 1;
+                int size = result.length() - 1;
 
                 for (int i = size; i >= 0; i--) {
-                    JSONObject object = results.getJSONObject(i);
+                    JSONObject object = result.getJSONObject(i);
 
                     HeaderItem headerItem = new HeaderItem(String.valueOf(i), object.optString("tn", ""));
 
