@@ -58,7 +58,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
 
     private final ExecutorService tpe;
     private final ExecutorService callResults;
-    Future<String> future;
+    Future<JSONArray> future;
     Future<?> futureResult;
 
     private LinearLayout mLlNoResultsContainer;
@@ -206,19 +206,19 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                 mPbLoadingResults.smoothToShow();
             }
 
-            future = tpe.submit(new Callable<String>() {
-                public String call() throws Exception {
+            future = tpe.submit(new Callable<JSONArray>() {
+                public JSONArray call() throws Exception {
                     HashMap<String, Object> params = new HashMap<>(2);
                     params.put("search", searchWith);
                     params.put("skip", page);
                     try {
-                        return NetworkingManager.getInstance().postSync("customer/searchBusiness", params);
+                        return (JSONArray)NetworkingManager.getInstance().postSync("customer/searchBusiness", params);
                     } catch (FirebaseCustomException e) {
                         Logger.error("Future task error: ", e.getMessage());
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);
                         }
-                        return "";
+                        return new JSONArray();
                     }
                 }
             });
@@ -228,7 +228,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                 public void run() {
                     try {
                         if (!future.isCancelled()) {
-                            final String result = future.get(30, TimeUnit.SECONDS);
+                            final JSONArray result = future.get(30, TimeUnit.SECONDS);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -241,7 +241,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                showResults("", true);
+                                showResults(new JSONArray(), true);
                             }
                         });
                     }
@@ -255,7 +255,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
         }
     }
 
-    private void showResults(String response, boolean error) {
+    private void showResults(JSONArray results, boolean error) {
         if (page == 0) {
             mPbLoadingResults.smoothToHide();
         }
@@ -268,9 +268,7 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
         boolean toJSONError = false;
 
         try {
-            if (!error) {
-                JSONObject jsonRootObject = new JSONObject(response);
-                JSONArray results = jsonRootObject.optJSONArray("results");
+            if (!error && results != null) {
                 int size = results.length();
 
                 List<Object> allResults = new ArrayList<>(size);
@@ -282,10 +280,10 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
                 for (int i = 0; i < size; i++) {
                     JSONObject object = results.getJSONObject(i);
                     dbBusiness business = new dbBusiness();
-                    business.setBusinessId(object.optString("oj"));
-                    business.setAvatarThumbFileId(object.optString("av"));
-                    business.setConversaId(object.optString("id"));
-                    business.setDisplayName(object.optString("dn"));
+                    business.setBusinessId(object.optString("objectID"));
+                    business.setAvatarThumbFileId(object.optString("avatar"));
+                    business.setConversaId(object.optString("conversaID"));
+                    business.setDisplayName(object.optString("displayName"));
                     allResults.add(business);
                 }
 
@@ -310,11 +308,11 @@ public class ActivitySearch extends ConversaActivity implements OnContactClickLi
             toJSONError = true;
             loadMore = false;
         } finally {
-            if (error || toJSONError) {
+            if (error || toJSONError || results == null) {
                 // Clear all results and show error
                 mLlNoResultsContainer.setVisibility(View.GONE);
                 mLlErrorContainer.setVisibility(View.VISIBLE);
-            } else if (response.isEmpty() || !response.startsWith("{")) {
+            } else if (results.length() == 0) {
                 mLlNoResultsContainer.setVisibility(View.GONE);
                 mLlErrorContainer.setVisibility(View.GONE);
             } else if (mBusinessListAdapter.getItemCount() <= 1) {

@@ -149,7 +149,6 @@ public class NetworkingManager {
             token = current.getIdToken(false).getResult().getToken();
         }
 
-        //RequestBody body = RequestBody.create(MEDIA_JSON, requestJson.toString());
         FormBody.Builder body = new FormBody.Builder();
 
         for (Map.Entry<String, ?> entry : requestJson.entrySet()) {
@@ -163,7 +162,7 @@ public class NetworkingManager {
                 .url(getAbsoluteUrl(functionName))
                 .post(body.build())
                 .build();
-        return executeSync(request);
+        return (T)executeSync(request);
     }
 
     public void get(@NonNull final String functionName, @NonNull final HashMap<String, String> requestJson, @Nullable final FunctionCallback callback) {

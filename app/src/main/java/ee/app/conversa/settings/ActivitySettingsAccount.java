@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 import ee.app.conversa.ConversaApp;
@@ -198,9 +200,9 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                     params.put("displayName", newName);
                     params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
 
-                    NetworkingManager.getInstance().post("customer/updateCustomerName", params, new FunctionCallback<Integer>() {
+                    NetworkingManager.getInstance().post("customer/updateCustomerName", params, new FunctionCallback<JSONObject>() {
                         @Override
-                        public void done(Integer object, FirebaseCustomException e) {
+                        public void done(JSONObject object, FirebaseCustomException e) {
                             if (e == null) {
                                 ConversaApp.getInstance(getApplicationContext())
                                         .getPreferences()
