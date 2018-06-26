@@ -140,9 +140,9 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
             HashMap<String, Object> params = new HashMap<>(2);
             params.put("skip", currentPage);
             params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
-            NetworkingManager.getInstance().post("customer/getCustomerFavs", params, new FunctionCallback<String>() {
+            NetworkingManager.getInstance().post("customer/getCustomerFavs", params, new FunctionCallback<JSONArray>() {
                 @Override
-                public void done(String result, FirebaseCustomException exception) {
+                public void done(JSONArray result, FirebaseCustomException exception) {
                     if (currentPage == 0)
                         mPbLoadingCategory.smoothToHide();
 
@@ -155,14 +155,13 @@ public class ActivityFavorite extends ConversaActivity implements OnFavoriteClic
                         }
                     } else {
                         try {
-                            JSONArray results = new JSONArray(result);
-                            int size = results.length();
+                            int size = result.length();
 
                             if (size > 0) {
                                 List<Favorite> businesses = new ArrayList<>(size);
 
                                 for (int i = 0; i < size; i++) {
-                                    JSONObject businessReg = results.getJSONObject(i);
+                                    JSONObject businessReg = result.getJSONObject(i);
 
                                     Favorite business = new Favorite(
                                             businessReg.getString("oj"),
