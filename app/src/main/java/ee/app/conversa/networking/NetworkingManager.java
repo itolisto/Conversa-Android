@@ -227,7 +227,13 @@ public class NetworkingManager {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
-                        String json = response.body().string().trim();
+                        String json = "";
+
+                        if (response.body() != null) {
+                            json = response.body().string().trim();
+                            response.body().close();
+                        }
+
                         Handler handler = new Handler(Looper.getMainLooper());
 
                         try {
@@ -292,20 +298,18 @@ public class NetworkingManager {
             if (response.isSuccessful()) {
                 String json = "";
 
-                if (response.body() != null)
+                if (response.body() != null) {
                     json = response.body().string().trim();
-
-                Object results;
-
-                try {
-                    results = new JSONArray(json);
-                    return (T) results;
-                } catch (JSONException ignored) {}
+                    response.body().close();
+                }
 
                 try {
-                    results = new JSONObject(json);
-                    return (T) results;
-                } catch (JSONException ignored) {}
+                    return (T) new JSONArray(json);
+                } catch (Exception ignored) {}
+
+                try {
+                    return (T) new JSONObject(json);
+                } catch (Exception ignored) {}
 
                 return null;
             } else {
