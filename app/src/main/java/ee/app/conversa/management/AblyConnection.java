@@ -34,7 +34,6 @@ import io.ably.lib.types.AblyException;
 import io.ably.lib.types.ClientOptions;
 import io.ably.lib.types.ErrorInfo;
 import io.ably.lib.types.Message;
-import io.ably.lib.util.IntentUtils;
 import io.ably.lib.util.Log;
 
 /**
@@ -49,18 +48,6 @@ public class AblyConnection implements Channel.MessageListener,
     private AblyRealtime ablyRealtime;
     private final String clientId;
     private boolean firstLoad;
-    private BroadcastReceiver mPushBroadcaster = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ErrorInfo error = IntentUtils.getErrorInfo(intent);
-            if (error != null) {
-                Logger.error(TAG, "PUSH ACTIVATE ERROR: " + error.message);
-                return;
-            }
-            // Subscribe to channels / listen for push etc.
-            subscribeToPushChannels();
-        }
-    };
 
     public static void initAblyManager(@NonNull Context context) {
         instance = new AblyConnection(context);
@@ -88,7 +75,6 @@ public class AblyConnection implements Channel.MessageListener,
 
         this.clientId = localId;
         Logger.error(TAG, "Client Id: " + localId);
-        ConversaApp.getInstance(context).getLocalBroadcastManager().unregisterReceiver(mPushBroadcaster);
     }
 
     public AblyRealtime getAblyRealtime() {
@@ -102,24 +88,6 @@ public class AblyConnection implements Channel.MessageListener,
         assignRealtime();
         // Register listener for state changes
         ablyRealtime.connection.on(this);
-        // Register local broadcast
-        ConversaApp.getInstance(context).getLocalBroadcastManager().registerReceiver(
-//                new BroadcastReceiver() {
-//                    @Override
-//                    public void onReceive(Context context, Intent intent) {
-//                        ErrorInfo error = IntentUtils.getErrorInfo(intent);
-//                        if (error != null) {
-//                            Logger.error(TAG, "PUSH ACTIVATE: " + error.message);
-//                            return;
-//                        }
-//                        // Subscribe to channels / listen for push etc.
-//                        subscribeToPushChannels();
-//                    }
-//                },
-                mPushBroadcaster,
-                new IntentFilter("io.ably.broadcast.PUSH_ACTIVATE")
-        );
-        ablyRealtime.push.activate(context);
     }
 
     private void assignRealtime() {
@@ -157,35 +125,6 @@ public class AblyConnection implements Channel.MessageListener,
         }
     }
 
-    private void subscribeToPushChannels() {
-        String channelname = ConversaApp.getInstance(context).getPreferences().getAccountCustomerId();
-
-        ablyRealtime.channels.get("upbc:" + channelname).push.subscribeDeviceAsync(context, new CompletionListener() {
-            @Override
-            public void onSuccess() {
-                Logger.error("onSuccess", "Public channel subscribed for push");
-            }
-
-            @Override
-            public void onError(ErrorInfo errorInfo) {
-                Logger.error("onError", "Public channel error for push: " + errorInfo.message);
-            }
-        });
-
-        ablyRealtime.channels.get("upvt:" + channelname).push.subscribeDeviceAsync(context, new CompletionListener() {
-            @Override
-            public void onSuccess() {
-                Logger.error("onSuccess", "Private channel subscribed for push");
-            }
-
-            @Override
-            public void onError(ErrorInfo errorInfo) {
-                Logger.error("onError", "Private channel error for push: " + errorInfo.message);
-            }
-
-        });
-    }
-
     private void reattach(Channel channel) {
         try {
             channel.subscribe(this);
@@ -196,8 +135,6 @@ public class AblyConnection implements Channel.MessageListener,
 
     public void disconnectAbly() {
         if (ablyRealtime != null) {
-            ConversaApp.getInstance(context).getLocalBroadcastManager().unregisterReceiver(mPushBroadcaster);
-            ablyRealtime.push.deactivate(context);
             ablyRealtime.connection.close();
         }
     }

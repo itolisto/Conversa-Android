@@ -38,6 +38,7 @@ import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.flurry.android.FlurryAgent;
+import com.onesignal.OneSignal;
 import com.taplytics.sdk.Taplytics;
 
 import org.greenrobot.eventbus.EventBus;
@@ -178,7 +179,14 @@ public class ConversaApp extends MultiDexApplication {
 	}
 
 	private void initializeTaplytics() {
-		Taplytics.startTaplytics(this, "YOUR TAPLYTICS API KEY");
+		Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
+	}
+
+	private void initializeOneSignal() {
+		OneSignal.startInit(this)
+				.inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+				.unsubscribeWhenNotificationsAreDisabled(true)
+				.init();
 	}
 
 	/* ************************************************************************************************ */

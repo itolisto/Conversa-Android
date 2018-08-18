@@ -180,12 +180,6 @@
             android:name=".browser.WebViewActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-
-        <!-- *************************************HOCKEY APP*********************************************** -->
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="617c5ff8d2055123134c25a4b496d078123ef1da"
-            />
         <!-- **************************************************************************************** -->
         <receiver android:name=".management.ConnectionChangeReceiver">
             <intent-filter>
@@ -197,11 +191,6 @@
         <service android:name=".notifications.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service android:name=".notifications.MyFirebaseInstanceIDService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
@@ -238,8 +227,6 @@
         <service
             android:name=".messaging.CustomMessageService"
             android:exported="false" />
-
-
     </application>
 
 </manifest>

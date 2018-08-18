@@ -1,11 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.firebase.firebase-perf'
-apply plugin: 'io.fabric'
 
-ext {
-    SUPPORT_LIB_VERSION = '25.4.0'
-    PLAY_LIB_VERSION = '11.4.2'
-}
+apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 android {
     signingConfigs {
@@ -35,6 +32,10 @@ android {
                 arguments = [ eventBusIndex : 'ee.app.conversa.events.MyEventBusIndex' ]
             }
         }
+        manifestPlaceholders = [
+                onesignal_app_id: 'a7c846a3-8f63-4200-8b24-15be48dcd6b2',
+                onesignal_google_project_number: 'REMOTE'
+        ]
     }
     buildTypes {
         // For developers
@@ -86,15 +87,17 @@ dependencies {
     implementation 'gun0912.ted:tedpermission:2.2.0'
     implementation 'com.facebook.fresco:fresco:1.9.0'
     implementation 'cn.pedant.sweetalert:library:1.3'
-    implementation 'com.taplytics.sdk:taplytics:+@aar'
     implementation 'io.branch.sdk.android:library:2.+'
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'com.taplytics.sdk:taplytics:+@aar'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'eu.davidea:flexible-adapter:5.0.0-rc4'
     implementation 'com.facebook.fresco:animated-gif:1.9.0'
     implementation 'com.flurry.android:analytics:8.0.2@aar'
     implementation 'eu.davidea:flexible-adapter-ui:1.0.0-b4'
-    implementation 'com.google.firebase:firebase-perf:16.0.0'
-    implementation 'com.google.firebase:firebase-auth:16.0.2'
+    implementation 'com.onesignal:OneSignal:[3.9.1, 3.99.99]'
+    implementation 'com.google.firebase:firebase-perf:16.1.0'
+    implementation 'com.google.firebase:firebase-auth:16.0.3'
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.github.jd-alexander:LikeButton:0.2.1'
     implementation 'com.birbit:android-priority-jobqueue:2.0.1'
@@ -102,12 +105,9 @@ dependencies {
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
     implementation 'de.psdev.licensesdialog:licensesdialog:1.8.3'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
-    implementation 'com.google.firebase:firebase-firestore:17.0.4'
-    implementation 'com.google.firebase:firebase-messaging:17.1.0'
-
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
-        transitive = true
-    }
+    implementation 'com.google.firebase:firebase-firestore:17.1.0'
+    implementation 'com.google.firebase:firebase-messaging:17.3.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
 
     implementation ('com.github.worker8:tourguide:1.0.19-SNAPSHOT@aar') {
         transitive = true
