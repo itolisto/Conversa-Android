@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -17,8 +18,11 @@ import android.widget.RelativeLayout;
 
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.taplytics.sdk.Taplytics;
 
 import org.json.JSONObject;
@@ -34,6 +38,7 @@ import ee.app.conversa.view.MediumTextView;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
 import io.fabric.sdk.android.Fabric;
+import okhttp3.Request;
 import tourguide.tourguide.Overlay;
 import tourguide.tourguide.Pointer;
 import tourguide.tourguide.ToolTip;
@@ -151,7 +156,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                         .getJobManager()
                         .addJobInBackground(new CustomerInfoJob(currentUser.getUid()));
             } else {
-                //AblyConnection.getInstance().subscribeToChannels();
+                AblyConnection.getInstance().subscribeToChannels();
             }
 
             initialization();
@@ -165,9 +170,18 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         findViewById(R.id.ivFavs).setOnClickListener(this);
 
         Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
+
+        FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (current != null) {
+            current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                @Override
+                public void onComplete(@NonNull Task<GetTokenResult> task) {
+                    ConversaApp.getInstance(getApplicationContext()).getPreferences().setFirebaseToken(task.getResult().getToken());
+                }
+            });
+        }
     }
-
-
 
     @Override
     public void onStart() {

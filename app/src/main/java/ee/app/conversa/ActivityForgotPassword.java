@@ -1,6 +1,5 @@
 package ee.app.conversa;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;

@@ -1,12 +1,9 @@
 package ee.app.conversa.management;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -53,12 +50,7 @@ public class AblyConnection implements Channel.MessageListener,
         instance = new AblyConnection(context);
     }
 
-    @Nullable
     public static AblyConnection getInstance() {
-        if (instance == null) {
-            return null;
-        }
-
         return instance;
     }
 
@@ -159,9 +151,9 @@ public class AblyConnection implements Channel.MessageListener,
         params.put("fromCustomer", 1);
         params.put("isTyping", true);
 
-        NetworkingManager.getInstance().post("message/sendPresenceMessage", params, new FunctionCallback<Integer>() {
+        NetworkingManager.getInstance().post("message/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
             @Override
-            public void done(Integer object, FirebaseCustomException e) {
+            public void done(JSONObject object, FirebaseCustomException e) {
                 if (e != null) {
                     if (AppActions.validateParseException(e)) {
                         AppActions.appLogout(context, true);
@@ -177,9 +169,9 @@ public class AblyConnection implements Channel.MessageListener,
         params.put("channelName", channelName);
         params.put("fromCustomer", 1);
 
-        NetworkingManager.getInstance().post("message/sendPresenceMessage", params, new FunctionCallback<Integer>() {
+        NetworkingManager.getInstance().post("message/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
             @Override
-            public void done(Integer object, FirebaseCustomException e) {
+            public void done(JSONObject object, FirebaseCustomException e) {
                 if (e != null) {
                     if (AppActions.validateParseException(e)) {
                         AppActions.appLogout(context, true);

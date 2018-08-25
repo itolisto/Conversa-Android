@@ -244,16 +244,16 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         params.put("businessId", businessObject.getBusinessId());
         params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
 
-        NetworkingManager.getInstance().post("general/getBusinessProfile", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("general/getBusinessProfile", params, new FunctionCallback<JSONObject>() {
             @Override
-            public void done(Object json, FirebaseCustomException exception) {
+            public void done(JSONObject json, FirebaseCustomException exception) {
                 if (exception == null) {
                     parseResult(json);
                 } else {
                     if (AppActions.validateParseException(exception)) {
                         AppActions.appLogout(getApplicationContext(), true);
                     } else {
-                        parseResult("");
+                        parseResult(new JSONObject());
                     }
                 }
             }
@@ -391,10 +391,8 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         mBtvFollowers.setText(Utils.numberWithFormat(followers));
     }
 
-    private void parseResult(Object result) {
+    private void parseResult(JSONObject jsonRootObject) {
         try {
-            JSONObject jsonRootObject = (JSONObject) result;
-
             followers = jsonRootObject.optInt("followers", 0);
             String headerUrl = jsonRootObject.optString("header", null);
             boolean favorite = jsonRootObject.optBoolean("favorite", false);

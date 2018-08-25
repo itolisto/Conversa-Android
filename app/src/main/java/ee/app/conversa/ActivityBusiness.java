@@ -125,9 +125,9 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
             params.put("page", page);
             params.put("categoryId", categoryId);
             params.put("custom", custom);
-            NetworkingManager.getInstance().post("general/getCategoryBusinesses", params, new FunctionCallback<String>() {
+            NetworkingManager.getInstance().post("general/getCategoryBusinesses", params, new FunctionCallback<JSONArray>() {
                 @Override
-                public void done(String json, FirebaseCustomException exception) {
+                public void done(JSONArray results, FirebaseCustomException exception) {
                     if (page == 0)
                         mPbLoadingCategory.smoothToHide();
 
@@ -145,7 +145,6 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
                         }
                     } else {
                         try {
-                            JSONArray results = new JSONArray(json);
                             int size = results.length();
 
                             if (size > 0) {

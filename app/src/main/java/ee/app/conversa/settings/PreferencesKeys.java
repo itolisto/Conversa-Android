@@ -27,4 +27,6 @@ public class PreferencesKeys {
     public static final String ACCOUNT_GENDER_KEY = "sett_account_gender_key";
     public static final String ACCOUNT_BIRTHDAY_KEY = "sett_account_birthday_key";
     public static final String GUIDE_EXPLORE_KEY = "guide_expore__key";
+
+    public static final String FIREBASE_TOKEN_ID = "firebase_token_id";
 }

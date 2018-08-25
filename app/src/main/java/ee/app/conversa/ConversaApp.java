@@ -135,7 +135,7 @@ public class ConversaApp extends MultiDexApplication {
 //			}
 //
 //			@Override
-//			public void afterCall(final RequestInformation requestInfo, final long elapsedTime, final int statusCode, final Object beforeCallData) {
+//			public void afterCall(final RequestInformation requestwInfo, final long elapsedTime, final int statusCode, final Object beforeCallData) {
 ////				taskEasyApplication.getTracker(TrackerName.APP_TRACKER)
 ////						.send(new HitBuilders.TimingBuilder()
 ////								.setCategory(requestInfo.getMethod() + " Timings")
@@ -153,6 +153,10 @@ public class ConversaApp extends MultiDexApplication {
 
 		AndroidNetworking.initialize(getApplicationContext(), client);
 //		AndroidNetworking.setParserFactory(new JacksonParserFactory());
+
+		if (BuildConfig.DEV_BUILD) {
+			AndroidNetworking.enableLogging();
+		}
 	}
 
 	private void initializeBranch() {

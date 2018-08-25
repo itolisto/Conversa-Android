@@ -2,31 +2,15 @@ package ee.app.conversa.jobs;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import ee.app.conversa.ConversaApp;
-import ee.app.conversa.delivery.DeliveryStatus;
-import ee.app.conversa.dialog.PushNotification;
-import ee.app.conversa.events.contact.ContactSaveEvent;
-import ee.app.conversa.events.message.MessageIncomingEvent;
 import ee.app.conversa.model.database.dbBusiness;
-import ee.app.conversa.model.database.dbMessage;
-import ee.app.conversa.model.database.dbNotificationInformation;
-import ee.app.conversa.model.parse.Business;
-import ee.app.conversa.networking.FirebaseCustomException;
-import ee.app.conversa.utils.AppActions;
-import ee.app.conversa.utils.Const;
-import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Logger;
 
 /**

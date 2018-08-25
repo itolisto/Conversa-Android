@@ -29,6 +29,8 @@ import android.widget.ImageButton;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.flurry.android.FlurryAgent;
 
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
@@ -497,9 +499,9 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						NetworkingManager.getInstance().post("business/getBusinessLastStatus", params, new FunctionCallback<Long>() {
+						NetworkingManager.getInstance().post("business/getBusinessLastStatus", params, new FunctionCallback<JSONObject>() {
 							@Override
-							public void done(Long last, FirebaseCustomException e) {
+							public void done(JSONObject json, FirebaseCustomException e) {
 								if (e != null) {
 									if (AppActions.validateParseException(e)) {
 										AppActions.appLogout(getApplicationContext(), true);
@@ -508,6 +510,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 									ActivityChatWall activity = wActivity.get();
 									if (activity != null) {
 										long now = System.currentTimeMillis();
+										long last = json.optLong("success", 0);
 
 										if (last <= now) {
 											long diff = now - last;

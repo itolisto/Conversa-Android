@@ -21,35 +21,24 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.interfaces.FunctionCallback;
-import ee.app.conversa.model.database.dbBusiness;
-import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.networking.FirebaseCustomException;
 import ee.app.conversa.networking.NetworkingManager;
 import ee.app.conversa.settings.language.DynamicLanguage;
 import ee.app.conversa.utils.AppActions;
-import ee.app.conversa.utils.Logger;
 import ee.app.conversa.utils.Utils;
 import ee.app.conversa.view.LightTextView;
 import ee.app.conversa.view.URLSpanNoUnderline;
