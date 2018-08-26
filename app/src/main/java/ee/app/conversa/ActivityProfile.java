@@ -244,7 +244,7 @@ public class ActivityProfile extends ConversaActivity implements View.OnClickLis
         params.put("businessId", businessObject.getBusinessId());
         params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
 
-        NetworkingManager.getInstance().post("general/getBusinessProfile", params, new FunctionCallback<JSONObject>() {
+        NetworkingManager.getInstance().post(this,"general/getBusinessProfile", params, new FunctionCallback<JSONObject>() {
             @Override
             public void done(JSONObject json, FirebaseCustomException exception) {
                 if (exception == null) {

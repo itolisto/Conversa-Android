@@ -44,6 +44,12 @@
             android:noHistory="true"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name="ee.app.conversa.ActivityLoading"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:launchMode="singleTop" />
+
         <activity-alias
             android:name=".Launcher"
             android:noHistory="true"

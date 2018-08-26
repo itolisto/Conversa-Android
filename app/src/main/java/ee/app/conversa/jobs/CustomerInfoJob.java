@@ -8,11 +8,13 @@ import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
 import ee.app.conversa.ConversaApp;
+import ee.app.conversa.events.account.AccountEvent;
 import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.networking.FirebaseCustomException;
 import ee.app.conversa.networking.NetworkingManager;
@@ -42,20 +44,20 @@ public class CustomerInfoJob extends Job {
     public void onRun() throws Throwable {
         HashMap<String, String> params = new HashMap<>();
 
-        JSONObject jsonRootObject = NetworkingManager.getInstance().postSync("customer/getCustomerId", params);
+        JSONObject jsonRootObject = NetworkingManager.getInstance().postSync(getApplicationContext(),"customer/getCustomerId", params);
 
         String objectId = jsonRootObject.optString("ob", FirebaseAuth.getInstance().getUid());
         String displayName = jsonRootObject.optString("dn", "");
         int gender = jsonRootObject.optInt("gn", 2);
         String birthday = jsonRootObject.optString("bd", "");
 
-        // 1. Save Customer object id
+        // Save Customer object id
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountCustomerId(objectId, false);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountDisplayName(displayName, false);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountGender(gender, false);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountBirthday(birthday, false);
-        // 2. Subscribe to Customer channels
-        AblyConnection.getInstance().subscribeToChannels();
+        // Notify loading
+        EventBus.getDefault().post(new AccountEvent());
     }
 
     @Override

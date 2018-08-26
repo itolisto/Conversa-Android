@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import ee.app.conversa.ActivityLoading;
 import ee.app.conversa.ActivityMain;
 import ee.app.conversa.ActivitySignIn;
 import ee.app.conversa.ConversaApp;
@@ -18,7 +19,7 @@ import ee.app.conversa.networking.FirebaseCustomException;
 public class AppActions {
 
     public static void initSession(AppCompatActivity activity) {
-        Intent intent = new Intent(activity, ActivityMain.class);
+        Intent intent = new Intent(activity, ActivityLoading.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -38,7 +39,7 @@ public class AppActions {
     }
 
     public static boolean validateParseException(FirebaseCustomException e) {
-        return (e.getMessage().equalsIgnoreCase("invalid-credential"));
+        return e.getCode() == FirebaseCustomException.INVALID_SESSION_TOKEN || e.getCode() == FirebaseCustomException.ACCOUNT_NOT_FOUND;
     }
 
     public static void appLogout(final Context context, boolean invalidSession) {

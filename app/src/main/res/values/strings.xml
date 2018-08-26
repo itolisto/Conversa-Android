@@ -280,4 +280,5 @@
     <string name="guide_two_title">Something specific?</string>
     <string name="guide_two_description">With the search bar find businesess quicker</string>
 
+    <string name="activity_loading_info">Please wait while we load your information</string>
 </resources>

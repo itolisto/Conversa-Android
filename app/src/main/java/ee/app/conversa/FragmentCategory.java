@@ -116,7 +116,7 @@ public class FragmentCategory extends Fragment implements OnCategoryClickListene
             // Call Parse for registry
             HashMap<String, Object> params = new HashMap<>(1);
             params.put("language", language);
-            NetworkingManager.getInstance().post("general/getCategories", params, new FunctionCallback<JSONArray>() {
+            NetworkingManager.getInstance().post(getActivity(),"general/getCategories", params, new FunctionCallback<JSONArray>() {
                 @Override
                 public void done(JSONArray json, FirebaseCustomException exception) {
                     if (exception == null) {

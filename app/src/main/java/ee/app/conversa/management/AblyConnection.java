@@ -151,7 +151,7 @@ public class AblyConnection implements Channel.MessageListener,
         params.put("fromCustomer", 1);
         params.put("isTyping", true);
 
-        NetworkingManager.getInstance().post("message/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
+        NetworkingManager.getInstance().post(context,"message/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
             @Override
             public void done(JSONObject object, FirebaseCustomException e) {
                 if (e != null) {
@@ -169,7 +169,7 @@ public class AblyConnection implements Channel.MessageListener,
         params.put("channelName", channelName);
         params.put("fromCustomer", 1);
 
-        NetworkingManager.getInstance().post("message/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
+        NetworkingManager.getInstance().post(context,"message/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
             @Override
             public void done(JSONObject object, FirebaseCustomException e) {
                 if (e != null) {

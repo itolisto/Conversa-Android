@@ -244,7 +244,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                 HashMap<String, Object> pparams = new HashMap<>(2);
                 pparams.put("customer", 1);
                 pparams.put("purpose", Integer.parseInt(params[0]));
-                final String supportId = NetworkingManager.getInstance().postSync("support/getConversaAccountId", pparams);
+                final String supportId = NetworkingManager.getInstance().postSync(getApplicationContext(),"support/getConversaAccountId", pparams);
 
                 add = false;
 
@@ -259,7 +259,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                     HashMap<String, Object> sparams = new HashMap<>(1);
                     sparams.put("accountId", supportId);
 
-                    final String json = NetworkingManager.getInstance().postSync("support/getConversaAccount", sparams);
+                    final String json = NetworkingManager.getInstance().postSync(getApplicationContext(),"support/getConversaAccount", sparams);
 
                     JSONObject businessReg = new JSONObject(json);
                     dbBusiness = new dbBusiness();
@@ -286,7 +286,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
         protected void onPostExecute(dbBusiness result) {
             dialogInterface.dismiss();
 
-            if (isCancelled() || isDestroyed() || isFinishing())
+            if (isCancelled() || isFinishing())
                 return;
 
             if (result == null) {

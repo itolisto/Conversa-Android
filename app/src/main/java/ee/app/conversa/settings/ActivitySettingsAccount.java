@@ -200,7 +200,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                     params.put("displayName", newName);
                     params.put("customerId", ConversaApp.getInstance(this).getPreferences().getAccountCustomerId());
 
-                    NetworkingManager.getInstance().post("customer/updateCustomerName", params, new FunctionCallback<JSONObject>() {
+                    NetworkingManager.getInstance().post(this, "customer/updateCustomerName", params, new FunctionCallback<JSONObject>() {
                         @Override
                         public void done(JSONObject object, FirebaseCustomException e) {
                             if (e == null) {

@@ -25,6 +25,8 @@ public class ActivitySplashScreen extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null) {
+            ConversaApp.getInstance(this).getPreferences().setFirebaseLoadToken(true);
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {

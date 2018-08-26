@@ -191,7 +191,7 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
                     params.put("password", password);
                     params.put("username", username);
                     params.put("birthday", newDate.getTime().getTime());
-                    NetworkingManager.getInstance().post("users", params, new FunctionCallback<JSONObject>() {
+                    NetworkingManager.getInstance().post(this,"users", params, new FunctionCallback<JSONObject>() {
                         @Override
                         public void done(JSONObject json, FirebaseCustomException exception) {
                             progress.dismiss();

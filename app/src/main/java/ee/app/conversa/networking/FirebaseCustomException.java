@@ -211,7 +211,7 @@ public class FirebaseCustomException extends Exception {
     /**
      * Error code indicating that an an account being linked is already linked to another user.
      */
-    public static final int ACCOUNT_ALREADY_LINKED = 208;
+    public static final int ACCOUNT_NOT_FOUND = 208;
 
     /**
      * Error code indicating that the current session token is invalid.

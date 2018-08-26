@@ -165,6 +165,10 @@ public class Preferences {
         return getBooleanPreference(PreferencesKeys.NOTIFICATION_INAPP_PREVIEW_KEY, true);
     }
 
+    public boolean getFirebaseLoadToken() {
+        return getBooleanPreference(PreferencesKeys.FIREBASE_LOAD_TOKEN_ID, true);
+    }
+
     public String getFirebaseToken() {
         return getStringPreference(PreferencesKeys.FIREBASE_TOKEN_ID, "");
     }
@@ -284,10 +288,16 @@ public class Preferences {
         editor.apply();
     }
 
+    public void setFirebaseLoadToken(boolean value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PreferencesKeys.FIREBASE_LOAD_TOKEN_ID, value);
+        editor.commit();
+    }
+
     public void setFirebaseToken(String value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PreferencesKeys.FIREBASE_TOKEN_ID, value);
-        editor.apply();
+        editor.commit();
     }
 
     /* ******************************************************************************** */

@@ -99,16 +99,15 @@ dependencies {
     implementation 'com.squareup.retrofit:retrofit:1.9.0@jar'
     implementation 'com.google.firebase:firebase-perf:16.1.0'
     implementation 'com.google.firebase:firebase-auth:16.0.3'
-    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-core:16.0.3'
     implementation 'com.github.jd-alexander:LikeButton:0.2.1'
     implementation 'com.birbit:android-priority-jobqueue:2.0.1'
     implementation 'com.google.firebase:firebase-storage:16.0.1'
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
     implementation 'de.psdev.licensesdialog:licensesdialog:1.8.3'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
-    implementation 'com.google.firebase:firebase-firestore:17.1.0'
     implementation 'com.google.firebase:firebase-messaging:17.3.0'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
     implementation 'com.amitshekhar.android:android-networking:1.0.2'
 
     implementation ('com.github.worker8:tourguide:1.0.19-SNAPSHOT@aar') {

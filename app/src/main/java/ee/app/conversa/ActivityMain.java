@@ -149,15 +149,28 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                         .playOn(exploreTab);
             }
 
-            // 1. Subscribe to Customer channels if not subscribed already
-            if (ConversaApp.getInstance(this).getPreferences().getAccountCustomerId().isEmpty()) {
-                // 1. Get Customer Id
-                ConversaApp.getInstance(this)
-                        .getJobManager()
-                        .addJobInBackground(new CustomerInfoJob(currentUser.getUid()));
-            } else {
-                AblyConnection.getInstance().subscribeToChannels();
+            // Load new token for current session
+            if (ConversaApp.getInstance(this).getPreferences().getFirebaseLoadToken()) {
+                FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+
+                if (current != null) {
+                    current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+                            // TODO: Should evaluate the necessity of refreshing token after certain time and not onlly after Splash Screen is launched
+                            if (task.isSuccessful()) {
+                                ConversaApp.getInstance(getApplicationContext()).getPreferences().setFirebaseToken(task.getResult().getToken());
+                            } else {
+                                Logger.error(TAG, "Shouldn't reach this piece of code. Probably logout user automatically");
+                            }
+
+                            ConversaApp.getInstance(getApplicationContext()).getPreferences().setFirebaseLoadToken(false);
+                        }
+                    });
+                }
             }
+
+            AblyConnection.getInstance().subscribeToChannels();
 
             initialization();
         }
@@ -170,17 +183,6 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
         findViewById(R.id.ivFavs).setOnClickListener(this);
 
         Taplytics.startTaplytics(this, "1a214e395c9db615a2cf2819a576bd9f17372ca5");
-
-        FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (current != null) {
-            current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                @Override
-                public void onComplete(@NonNull Task<GetTokenResult> task) {
-                    ConversaApp.getInstance(getApplicationContext()).getPreferences().setFirebaseToken(task.getResult().getToken());
-                }
-            });
-        }
     }
 
     @Override
