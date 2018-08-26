@@ -124,7 +124,11 @@ public class ActivityBusiness extends ConversaActivity implements OnContactClick
             HashMap<String, Object> params = new HashMap<>(2);
             params.put("page", page);
             params.put("categoryId", categoryId);
-            params.put("custom", custom);
+
+            if (custom) {
+                params.put("custom", custom);
+            }
+
             NetworkingManager.getInstance().post(this,"general/getCategoryBusinesses", params, new FunctionCallback<JSONArray>() {
                 @Override
                 public void done(JSONArray results, FirebaseCustomException exception) {

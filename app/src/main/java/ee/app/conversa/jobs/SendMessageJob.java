@@ -55,8 +55,8 @@ public class SendMessageJob extends Job {
                 .getMessageById(id);
 
         final HashMap<String, Object> params = new HashMap<>(9);
-        params.put("toId", message.getFromUserId());
-        params.put("fromId", message.getToUserId());
+        params.put("toId", message.getToUserId());
+        params.put("fromId", message.getFromUserId());
         params.put("fromCustomer", true);
         params.put("messageType", Integer.valueOf(message.getMessageType()));
 
