@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 import gun0912.tedbottompicker.R;
 import gun0912.tedbottompicker.TedBottomPicker;
+import gun0912.tedbottompicker.util.GlideApp;
+import gun0912.tedbottompicker.util.MyAppGlideModule;
 import gun0912.tedbottompicker.view.TedSquareFrameLayout;
 import gun0912.tedbottompicker.view.TedSquareImageView;
 
@@ -140,14 +142,14 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
         } else {
             Uri uri = pickerTile.getImageUri();
             if (builder.imageProvider == null) {
-//                Glide.with(context)
-//                        .load(uri)
-//                        .thumbnail(0.1f)
-//                        .dontAnimate()
-//                        .centerCrop()
-//                        .placeholder(R.drawable.ic_gallery)
-//                        .error(R.drawable.img_error)
-//                        .into(holder.iv_thumbnail);
+                GlideApp.with(context)
+                        .load(uri)
+                        .thumbnail(0.1f)
+                        .dontAnimate()
+                        .centerCrop()
+                        .placeholder(R.drawable.ic_gallery)
+                        .error(R.drawable.img_error)
+                        .into(holder.iv_thumbnail);
             } else {
                 builder.imageProvider.onProvideImage(holder.iv_thumbnail, uri);
             }

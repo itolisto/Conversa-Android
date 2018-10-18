@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 
 import gun0912.tedbottompicker.adapter.ImageGalleryAdapter;
+import gun0912.tedbottompicker.util.GlideApp;
 import gun0912.tedbottompicker.util.RealPathUtil;
 
 import static gun0912.tedbottompicker.R.id.tv_title;
@@ -336,14 +337,14 @@ public class TedBottomPicker extends Fragment {
         thumbnail.setLayoutParams(new FrameLayout.LayoutParams(px, px));
 
         if (builder.imageProvider == null) {
-//            Glide.with(getActivity())
-//                    .load(uri)
-//                    .thumbnail(0.1f)
-//                    .dontAnimate()
-//                    .centerCrop()
-//                    .placeholder(R.drawable.ic_gallery)
-//                    .error(R.drawable.img_error)
-//                    .into(thumbnail);
+            GlideApp.with(getActivity())
+                    .load(uri)
+                    .thumbnail(0.1f)
+                    .dontAnimate()
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_gallery)
+                    .error(R.drawable.img_error)
+                    .into(thumbnail);
         } else {
             builder.imageProvider.onProvideImage(thumbnail, uri);
         }

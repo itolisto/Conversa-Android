@@ -1,4 +1,4 @@
-package ee.app.conversa.utils;
+package gun0912.tedbottompicker.util;
 
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;
