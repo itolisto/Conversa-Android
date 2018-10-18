@@ -1,10 +1,5 @@
 package ee.app.conversa.model;
 
-import android.content.Context;
-import android.text.TextUtils;
-
-import ee.app.conversa.R;
-
 /**
  * Created by root on 3/12/17.
  */

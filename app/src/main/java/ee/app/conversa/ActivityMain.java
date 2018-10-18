@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -16,14 +15,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
 import com.parse.ParseUser;
 import com.taplytics.sdk.Taplytics;
-
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
-
-
 
 import org.json.JSONObject;
 
@@ -38,6 +33,7 @@ import ee.app.conversa.utils.PagerAdapter;
 import ee.app.conversa.view.MediumTextView;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
+import io.fabric.sdk.android.Fabric;
 import tourguide.tourguide.Overlay;
 import tourguide.tourguide.Pointer;
 import tourguide.tourguide.ToolTip;
@@ -114,7 +110,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
                     if (p == 1) { // is tab explore is selected.
                         if (mTourGuideHandler != null) {
                             mTourGuideHandler.cleanUp();
-                            mTourGuideHandler = TourGuide.init((mActivity)).with(TourGuide.Technique.Click)
+                            mTourGuideHandler = TourGuide.init((mActivity)).with(TourGuide.Technique.CLICK)
                                     .setPointer(new Pointer())
                                     .setToolTip(new ToolTip().setTitle(getResources().getString(R.string.guide_two_title)).setDescription(getResources().getString(R.string.guide_two_description)))
                                     .setOverlay(new Overlay())
@@ -141,7 +137,7 @@ public class ActivityMain extends ConversaActivity implements View.OnClickListen
 
             if (!ConversaApp.getInstance(this).getPreferences().getGuideExplore()) {
                 View exploreTab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1);
-                mTourGuideHandler = TourGuide.init(this).with(TourGuide.Technique.Click)
+                mTourGuideHandler = TourGuide.init(this).with(TourGuide.Technique.CLICK)
                         .setPointer(new Pointer())
                         .setToolTip(new ToolTip().setTitle(getString(R.string.tutorial_title_one)).setDescription(getString(R.string.highlight_explore)))
                         .setOverlay(new Overlay())

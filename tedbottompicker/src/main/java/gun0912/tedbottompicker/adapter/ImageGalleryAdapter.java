@@ -140,14 +140,14 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
         } else {
             Uri uri = pickerTile.getImageUri();
             if (builder.imageProvider == null) {
-                Glide.with(context)
-                        .load(uri)
-                        .thumbnail(0.1f)
-                        .dontAnimate()
-                        .centerCrop()
-                        .placeholder(R.drawable.ic_gallery)
-                        .error(R.drawable.img_error)
-                        .into(holder.iv_thumbnail);
+//                Glide.with(context)
+//                        .load(uri)
+//                        .thumbnail(0.1f)
+//                        .dontAnimate()
+//                        .centerCrop()
+//                        .placeholder(R.drawable.ic_gallery)
+//                        .error(R.drawable.img_error)
+//                        .into(holder.iv_thumbnail);
             } else {
                 builder.imageProvider.onProvideImage(holder.iv_thumbnail, uri);
             }

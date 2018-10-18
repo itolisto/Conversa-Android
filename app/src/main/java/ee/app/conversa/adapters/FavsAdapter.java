@@ -15,9 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversa.R;
-import ee.app.conversa.holders.BaseHolder;
-import ee.app.conversa.holders.NHeaderViewHolder;
-import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.interfaces.OnFavoriteClickListener;
 import ee.app.conversa.model.Favorite;
 import ee.app.conversa.utils.Logger;

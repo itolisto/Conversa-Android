@@ -11,19 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import ee.app.conversa.extendables.BaseActivity;
-import ee.app.conversa.model.parse.Account;
 import ee.app.conversa.utils.AppActions;
-import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Utils;
 
 /**

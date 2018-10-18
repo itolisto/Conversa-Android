@@ -24,8 +24,6 @@
 
 package ee.app.conversa.management;
 
-import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
-
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
@@ -38,6 +36,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+
+import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 
 /**
  * GPSTracker

@@ -3,9 +3,6 @@ package ee.app.conversa;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -13,7 +10,6 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -32,10 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ee.app.conversa.adapters.BusinessAdapter;
 import ee.app.conversa.adapters.FavsAdapter;
 import ee.app.conversa.extendables.ConversaActivity;
-import ee.app.conversa.interfaces.OnContactClickListener;
 import ee.app.conversa.interfaces.OnFavoriteClickListener;
 import ee.app.conversa.model.Favorite;
 import ee.app.conversa.model.database.dbBusiness;

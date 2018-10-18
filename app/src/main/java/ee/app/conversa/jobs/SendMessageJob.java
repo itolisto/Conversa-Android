@@ -17,9 +17,9 @@ import ee.app.conversa.ConversaApp;
 import ee.app.conversa.delivery.DeliveryStatus;
 import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.database.dbMessage;
+import ee.app.conversa.utils.AppActions;
 import ee.app.conversa.utils.Const;
 import ee.app.conversa.utils.Logger;
-import ee.app.conversa.utils.AppActions;
 
 /**
  * Created by edgargomez on 9/5/16.

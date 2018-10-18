@@ -336,14 +336,14 @@ public class TedBottomPicker extends Fragment {
         thumbnail.setLayoutParams(new FrameLayout.LayoutParams(px, px));
 
         if (builder.imageProvider == null) {
-            Glide.with(getActivity())
-                    .load(uri)
-                    .thumbnail(0.1f)
-                    .dontAnimate()
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_gallery)
-                    .error(R.drawable.img_error)
-                    .into(thumbnail);
+//            Glide.with(getActivity())
+//                    .load(uri)
+//                    .thumbnail(0.1f)
+//                    .dontAnimate()
+//                    .centerCrop()
+//                    .placeholder(R.drawable.ic_gallery)
+//                    .error(R.drawable.img_error)
+//                    .into(thumbnail);
         } else {
             builder.imageProvider.onProvideImage(thumbnail, uri);
         }

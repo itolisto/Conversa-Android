@@ -76,7 +76,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
                     }
                 };
 
-                new TedPermission(mActivity)
+                TedPermission.with(mActivity)
                         .setPermissionListener(permissionlistener)
                         .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                         .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
