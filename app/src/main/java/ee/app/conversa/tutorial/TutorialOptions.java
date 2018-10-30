@@ -25,11 +25,13 @@ package ee.app.conversa.tutorial;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.view.View;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * Class contains configuration for {@link TutorialSupportFragment} and {@link TutorialFragment}.
@@ -325,7 +327,7 @@ public final class TutorialOptions {
                 public TFragment providePage(int position) {
                     if (android.app.Fragment.class.equals(mClass)) {
                         return (TFragment) SimplePageFragment.newInstance(tutorialPageOptionsProvider.provide(position));
-                    } else if (android.support.v4.app.Fragment.class.equals(mClass)) {
+                    } else if (Fragment.class.equals(mClass)) {
                         return (TFragment) SimplePageSupportFragment.newInstance(tutorialPageOptionsProvider.provide(position));
                     }
                     throw new IllegalArgumentException("Invalid type of fragment.");

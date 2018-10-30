@@ -27,14 +27,14 @@ package ee.app.conversa.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.ArrayRes;
-import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import androidx.annotation.ArrayRes;
+import androidx.annotation.NonNull;
 import ee.app.conversa.R;
 
 /**

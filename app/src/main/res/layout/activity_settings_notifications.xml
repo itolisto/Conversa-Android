@@ -60,7 +60,7 @@
                         android:text="@string/sett_notification_sound_summary" />
                 </LinearLayout>
 
-                <android.support.v7.widget.SwitchCompat
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/scPushSound"
                     android:layout_marginLeft="14dp"
                     android:layout_marginStart="14dp"
@@ -103,7 +103,7 @@
                         android:text="@string/sett_notification_preview_summary" />
                 </LinearLayout>
 
-                <android.support.v7.widget.SwitchCompat
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/scPushPreview"
                     android:layout_marginLeft="14dp"
                     android:layout_marginStart="14dp"
@@ -154,7 +154,7 @@
                         android:text="@string/sett_notification_inapp_sound_summary" />
                 </LinearLayout>
 
-                <android.support.v7.widget.SwitchCompat
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/scInAppSound"
                     android:layout_marginLeft="14dp"
                     android:layout_marginStart="14dp"
@@ -197,7 +197,7 @@
                         android:text="@string/sett_notification_inapp_preview_summary" />
                 </LinearLayout>
 
-                <android.support.v7.widget.SwitchCompat
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/scInAppPreview"
                     android:layout_marginLeft="14dp"
                     android:layout_marginStart="14dp"

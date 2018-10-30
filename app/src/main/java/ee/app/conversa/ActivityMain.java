@@ -5,9 +5,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
@@ -17,11 +14,14 @@ import android.widget.RelativeLayout;
 
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
+import com.google.android.material.tabs.TabLayout;
 import com.parse.ParseUser;
 import com.taplytics.sdk.Taplytics;
 
 import org.json.JSONObject;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 import ee.app.conversa.extendables.ConversaActivity;
 import ee.app.conversa.jobs.CustomerInfoJob;
 import ee.app.conversa.management.AblyConnection;

@@ -2,8 +2,6 @@ package ee.app.conversa.adapters;
 
 import android.net.Uri;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -28,6 +26,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import ee.app.conversa.R;
 import ee.app.conversa.delivery.DeliveryStatus;
 import ee.app.conversa.holders.BaseHolder;

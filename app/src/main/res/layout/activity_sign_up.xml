@@ -28,7 +28,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
 
-		<android.support.design.widget.TextInputLayout
+		<com.google.android.material.textfield.TextInputLayout
 			android:layout_marginTop="14dp"
 			android:id="@+id/tilEmailSignUp"
 			android:layout_below="@id/btvTitle"
@@ -41,7 +41,7 @@
 			android:paddingStart="14dp"
 			android:paddingRight="14dp" >
 
-			<android.support.design.widget.TextInputEditText
+			<com.google.android.material.textfield.TextInputEditText
 				android:id="@+id/etSignUpEmail"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -53,9 +53,9 @@
 				android:textColor="@color/black"
 				android:textColorHint="@color/gray"
 				android:textSize="13sp" />
-		</android.support.design.widget.TextInputLayout>
+		</com.google.android.material.textfield.TextInputLayout>
 
-		<android.support.design.widget.TextInputLayout
+		<com.google.android.material.textfield.TextInputLayout
 			android:id="@+id/tilPasswordSignUp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
 			android:paddingStart="14dp"
 			android:paddingRight="14dp" >
 
-			<android.support.design.widget.TextInputEditText
+			<com.google.android.material.textfield.TextInputEditText
 				android:id="@+id/etSignUpPassword"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -79,9 +79,9 @@
 				android:textColor="@color/black"
 				android:textColorHint="@color/gray"
 				android:textSize="13sp" />
-		</android.support.design.widget.TextInputLayout>
+		</com.google.android.material.textfield.TextInputLayout>
 
-		<android.support.design.widget.TextInputLayout
+		<com.google.android.material.textfield.TextInputLayout
 			android:id="@+id/tilBirthdaySignUp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
 			android:paddingStart="14dp"
 			android:paddingRight="14dp" >
 
-			<android.support.design.widget.TextInputEditText
+			<com.google.android.material.textfield.TextInputEditText
 				android:id="@+id/etSignUpBirthday"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -106,7 +106,7 @@
 				android:textColor="@color/black"
 				android:textColorHint="@color/gray"
 				android:textSize="13sp" />
-		</android.support.design.widget.TextInputLayout>
+		</com.google.android.material.textfield.TextInputLayout>
 
 		<RadioGroup
 			android:layout_below="@id/tilBirthdaySignUp"

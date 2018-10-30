@@ -6,12 +6,12 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.support.customtabs.CustomTabsService;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.browser.customtabs.CustomTabsService;
 import ee.app.conversa.utils.Logger;
 
 /**

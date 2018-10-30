@@ -23,7 +23,7 @@
  */
 package ee.app.conversa.tutorial;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * {@link TFragment} instance provider

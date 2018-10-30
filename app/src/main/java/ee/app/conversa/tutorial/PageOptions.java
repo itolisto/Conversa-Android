@@ -23,7 +23,7 @@
  */
 package ee.app.conversa.tutorial;
 
-import android.support.annotation.LayoutRes;
+import androidx.annotation.LayoutRes;
 
 /**
  * Class contains configuration for creating {@link PageFragment} and {@link PageSupportFragment} instances.

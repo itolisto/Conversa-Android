@@ -5,9 +5,8 @@
  */
 package ee.app.conversa.utils;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import ee.app.conversa.FragmentPreferences;
 import ee.app.conversa.FragmentRoot;
 import ee.app.conversa.FragmentUsersChat;

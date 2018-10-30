@@ -28,9 +28,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.StrictMode;
-import android.support.multidex.MultiDexApplication;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
 import com.birbit.android.jobqueue.JobManager;
@@ -44,8 +41,10 @@ import com.parse.ParseObject;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.multidex.MultiDexApplication;
 import ee.app.conversa.database.MySQLiteHelper;
 import ee.app.conversa.events.MyEventBusIndex;
 import ee.app.conversa.management.AblyConnection;
@@ -57,7 +56,6 @@ import ee.app.conversa.utils.Foreground;
 import ee.app.conversa.utils.Logger;
 import io.branch.referral.Branch;
 import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -115,29 +113,29 @@ public class ConversaApp extends MultiDexApplication {
 		ParseObject.registerSubclass(Business.class);
 
 		// Initialize Parse
-		if (BuildConfig.DEV_BUILD) {
-			OkHttpClient.Builder client = new OkHttpClient.Builder()
-					.addNetworkInterceptor(new LoggingInterceptor())
-					.connectTimeout(60, TimeUnit.SECONDS)
-					.readTimeout(60, TimeUnit.SECONDS);
-
-			Parse.initialize(new Parse.Configuration.Builder(this)
-					//localhost
-					.applicationId("b15c83")
-					.clientKey(null)
-					.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
-				//	.server("http://192.168.1.8:1337/parse/")
-					.clientBuilder(client)
-					.build()
-			);
-		} else {
+//		if (BuildConfig.DEV_BUILD) {
+//			OkHttpClient.Builder client = new OkHttpClient.Builder()
+//					.addNetworkInterceptor(new LoggingInterceptor())
+//					.connectTimeout(60, TimeUnit.SECONDS)
+//					.readTimeout(60, TimeUnit.SECONDS);
+//
+//			Parse.initialize(new Parse.Configuration.Builder(this)
+//					//localhost
+//					.applicationId("b15c83")
+//					.clientKey(null)
+//					.server("http://35.172.0.182:1337/parse/") // The trailing slash is important.
+//				//	.server("http://192.168.1.8:1337/parse/")
+//					.clientBuilder(client)
+//					.build()
+//			);
+//		} else {
 			Parse.initialize(new Parse.Configuration.Builder(this)
 					.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
 					.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
-					.server("https://api.conversachat.com/parse/")
+					.server("http://35.172.0.182:1337/parse/")
 					.build()
 			);
-		}
+//		}
 	}
 
 	private void initializeDeveloperBuild() {

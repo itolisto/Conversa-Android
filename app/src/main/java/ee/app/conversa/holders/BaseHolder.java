@@ -1,14 +1,15 @@
 package ee.app.conversa.holders;
 
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by edgargomez on 10/31/16.
  */
 
-public class BaseHolder extends ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+public class BaseHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
     protected final AppCompatActivity activity;
 

@@ -24,8 +24,9 @@
 package ee.app.conversa.tutorial;
 
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 
 class SimplePageImpl {
 

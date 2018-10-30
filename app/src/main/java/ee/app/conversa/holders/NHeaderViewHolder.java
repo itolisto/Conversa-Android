@@ -1,8 +1,8 @@
 package ee.app.conversa.holders;
 
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversa.R;
 import ee.app.conversa.view.MediumTextView;
 

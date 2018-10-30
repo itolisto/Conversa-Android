@@ -74,7 +74,7 @@
             app:indicatorName="BallPulseIndicator"
             app:indicatorColor="@color/no_connection_background" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvBusiness"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
             android:overScrollMode="never" />
     </RelativeLayout>
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:theme="@style/ToolBarStyle"
         android:fitsSystemWindows="true"

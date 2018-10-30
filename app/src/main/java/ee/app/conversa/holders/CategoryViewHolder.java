@@ -1,13 +1,13 @@
 package ee.app.conversa.holders;
 
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversa.R;
 import ee.app.conversa.interfaces.OnCategoryClickListener;
 import ee.app.conversa.model.nCategory;
@@ -79,7 +79,7 @@ public class CategoryViewHolder extends FlexibleViewHolder {
     public void onClick(View view) {
         super.onClick(view);
         if (listener != null) {
-            listener.onCategoryClick(category, itemView, getAdapterPosition());
+            listener.onCategoryClick(category, view, getFlexibleAdapterPosition());
         }
     }
 

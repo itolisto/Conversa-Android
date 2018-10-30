@@ -16,14 +16,15 @@
 
 package com.google.android.cameraview;
 
-import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import androidx.annotation.NonNull;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 
-import android.support.annotation.NonNull;
-import android.support.test.espresso.UiController;
-import android.support.test.espresso.ViewAction;
 import android.view.View;
 
 import org.hamcrest.Matcher;
+
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 
 class CameraViewActions {
 

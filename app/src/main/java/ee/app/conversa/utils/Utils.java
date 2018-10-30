@@ -8,10 +8,6 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.annotation.AnyRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -28,6 +24,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import androidx.annotation.AnyRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 

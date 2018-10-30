@@ -86,7 +86,7 @@
 
     </RelativeLayout>
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarFavs"
         android:theme="@style/ToolBarStyle"
         android:fitsSystemWindows="true"

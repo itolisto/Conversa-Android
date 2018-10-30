@@ -18,8 +18,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Animatable;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ScrollingView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -36,6 +34,8 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyInflater;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeView;
 
+import androidx.annotation.Nullable;
+import androidx.core.view.ScrollingView;
 import ee.app.conversa.view.zoomableview.AnimatedZoomableController;
 import ee.app.conversa.view.zoomableview.GestureListenerWrapper;
 import ee.app.conversa.view.zoomableview.ZoomableController;

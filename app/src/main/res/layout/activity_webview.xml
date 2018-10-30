@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"/>
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
@@ -20,5 +20,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             layout="@layout/actionbar_webview" />
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 </RelativeLayout>

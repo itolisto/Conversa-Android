@@ -1,10 +1,10 @@
 package ee.app.conversa.items;
 
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversa.R;
 import ee.app.conversa.holders.CategoryViewHolder;
 import ee.app.conversa.interfaces.OnCategoryClickListener;

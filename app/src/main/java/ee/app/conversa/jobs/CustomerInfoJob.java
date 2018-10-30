@@ -1,8 +1,5 @@
 package ee.app.conversa.jobs;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
@@ -13,6 +10,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.management.AblyConnection;
 import ee.app.conversa.model.parse.Account;

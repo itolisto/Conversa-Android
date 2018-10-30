@@ -27,13 +27,6 @@ import android.animation.ArgbEvaluator;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +35,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import ee.app.conversa.R;
 
 @SuppressWarnings("UnusedParameters")
@@ -308,7 +308,7 @@ final class TutorialImpl<TFragment> {
     }
 
     /**
-     * Implementation of {@link android.support.v4.view.ViewPager.PageTransformer} that dispatch
+     * Implementation of {@link androidx.viewpager.widget.ViewPager.PageTransformer} that dispatch
      * transform page event whenever a visible/attached page is scrolled.
      */
     private class FragmentTransformer implements ViewPager.PageTransformer {

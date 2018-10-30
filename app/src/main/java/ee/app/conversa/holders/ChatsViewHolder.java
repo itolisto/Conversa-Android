@@ -1,7 +1,6 @@
 package ee.app.conversa.holders;
 
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +10,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.Calendar;
 import java.util.Locale;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.R;
 import ee.app.conversa.interfaces.OnContactClickListener;

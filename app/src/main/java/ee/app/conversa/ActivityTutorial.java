@@ -3,13 +3,13 @@ package ee.app.conversa;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.parse.ParseUser;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversa.extendables.BaseActivity;
 import ee.app.conversa.tutorial.Direction;
 import ee.app.conversa.tutorial.IndicatorOptions;

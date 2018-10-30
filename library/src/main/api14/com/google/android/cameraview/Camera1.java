@@ -20,7 +20,6 @@ import android.annotation.SuppressLint;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Build;
-import android.support.v4.util.SparseArrayCompat;
 import android.view.SurfaceHolder;
 
 import java.io.IOException;
@@ -29,6 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.collection.SparseArrayCompat;
 
 @SuppressWarnings("deprecation")
 class Camera1 extends CameraViewImpl {

@@ -10,13 +10,13 @@
 
 
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/ablToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             app:contentInsetLeft="0dp"
             app:contentInsetStart="0dp"
@@ -26,9 +26,9 @@
             android:theme="@style/ToolBarStyle"
             app:layout_scrollFlags="scroll|enterAlways">
             <include layout="@layout/actionbar_main" />
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             app:tabMode="fixed"
             app:tabGravity="fill"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:background="@color/regular_tabs"
             style="@style/MyCustomTabLayout" />
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
 
 
@@ -52,7 +52,7 @@
         />
 
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
         android:layout_below="@id/ablToolbar"
         android:layout_width="match_parent"

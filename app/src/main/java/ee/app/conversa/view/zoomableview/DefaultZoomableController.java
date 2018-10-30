@@ -15,13 +15,14 @@ package ee.app.conversa.view.zoomableview;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.support.annotation.IntDef;
 import android.view.MotionEvent;
 
 import com.facebook.common.logging.FLog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
 
 /**
  * Zoomable controller that calculates transformation based on touch events.

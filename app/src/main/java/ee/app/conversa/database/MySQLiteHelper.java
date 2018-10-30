@@ -16,7 +16,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -24,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.WorkerThread;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.model.database.dbBusiness;
 import ee.app.conversa.model.database.dbMessage;
@@ -429,12 +429,12 @@ public class MySQLiteHelper {
     public void insertFast(int insertCount) {
 
         // you can use INSERT only
-        String sql = "INSERT OR REPLACE INTO " + "" + " ( name, description ) VALUES ( ?, ? )";
+        String sql = "INSERT OR REPLACE INTO " + "test" + " ( name, description ) VALUES ( ?, ? )";
 
         SQLiteDatabase db = openDatabase();
 
         /*
-         * According to the docs http://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html
+         * According to the docs http://developer.andwroid.com/reference/android/database/sqlite/SQLiteDatabase.html
          * Writers should use beginTransactionNonExclusive() or beginTransactionWithListenerNonExclusive(SQLiteTransactionListener)
          * to start a transaction. Non-exclusive mode allows database file to be in readable by other threads executing queries.
          */

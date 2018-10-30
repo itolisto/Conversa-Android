@@ -3,8 +3,6 @@ package ee.app.conversa.management;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -19,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ee.app.conversa.ConversaApp;
 import ee.app.conversa.events.TypingEvent;
 import ee.app.conversa.messaging.CustomMessageService;

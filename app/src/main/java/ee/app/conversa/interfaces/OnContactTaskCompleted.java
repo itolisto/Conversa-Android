@@ -1,9 +1,8 @@
 package ee.app.conversa.interfaces;
 
-import android.support.annotation.UiThread;
-
 import java.util.List;
 
+import androidx.annotation.UiThread;
 import ee.app.conversa.contact.ContactUpdateReason;
 import ee.app.conversa.model.database.dbBusiness;
 

@@ -14,9 +14,10 @@ package ee.app.conversa.view.zoomableview;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.support.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
+
+import androidx.annotation.Nullable;
 
 /**
  * Abstract class for ZoomableController that adds animation capabilities to

@@ -2,9 +2,10 @@ package ee.app.conversa.tutorial;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * {@link SlidingTutorialViewPager} fix well-known bug (Issue 66620) when:

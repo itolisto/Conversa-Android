@@ -23,7 +23,7 @@
  */
 package ee.app.conversa.tutorial;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 final class ValidationUtil {
 

@@ -1,8 +1,6 @@
 package ee.app.conversa.extendables;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +11,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import ee.app.conversa.contact.ContactUpdateReason;
 import ee.app.conversa.events.TypingEvent;
 import ee.app.conversa.events.contact.ContactDeleteEvent;

@@ -26,17 +26,19 @@ package ee.app.conversa.tutorial;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * Base Fragment that contains {@link ViewPager} and where happens most logic like dispatching
@@ -267,9 +269,9 @@ public abstract class TutorialSupportFragment extends Fragment {
     protected abstract TutorialOptions provideTutorialOptions();
 
     /**
-     * Implementation of {@link android.support.v4.app.FragmentPagerAdapter} that in addition add empty last fragment.
+     * Implementation of {@link androidx.fragment.app.FragmentPagerAdapter} that in addition add empty last fragment.
      */
-    class TutorialAdapter extends android.support.v4.app.FragmentPagerAdapter {
+    class TutorialAdapter extends FragmentPagerAdapter {
 
         private TutorialAdapter(FragmentManager fm) {
             super(fm);

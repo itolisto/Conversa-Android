@@ -25,9 +25,10 @@ package ee.app.conversa.tutorial;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
 import android.view.View;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 
 /**
  * Class that represents the item that will be moved by associated characteristics like
